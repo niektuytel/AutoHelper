@@ -1,30 +1,25 @@
 ﻿import React from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden } from "@mui/material";
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
+import { Box, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-
 // local
 import { HashValues } from "../../i18n/HashValues";
-
 import ImageLogo from "../../components/logo/ImageLogo";
 import { colorOnIndex } from "../../i18n/ColorValues";
 import TextFieldPlaces from "./components/TextFieldPlaces";
+import TextFieldLicencePlates from "./components/TextFieldLicencePlates";
 
 interface IProps {
     isAdmin: boolean;
 }
 
-export default ({isAdmin}:IProps) => {
-    var hash = window.location.hash.length == 0 ? HashValues.default : window.location.hash;
-    const navigate = useNavigate();
-    const splitted_hash = hash.split("_")[0];
-    const { t } = useTranslation();
+export default ({ isAdmin }: IProps) => {
+    const path = window.location.pathname.split('/');
+    // 3>= is that we are don't count the first empty string for a path like "/one/two"
+    const showLicensePlate = path.length >= 3; 
 
-    return <>
+    return (
         <Box
             style={{
                 position: "relative",
@@ -46,10 +41,9 @@ export default ({isAdmin}:IProps) => {
                         alignItems: 'center'
                     }}
                 >
-                    <TextFieldPlaces />
+                    {showLicensePlate ? <TextFieldLicencePlates /> : <TextFieldPlaces />}
                 </Box>
-
             </Container>
         </Box>
-    </>
+    );
 }

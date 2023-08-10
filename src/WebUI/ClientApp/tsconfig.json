@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx", // This is for React 17 and later
-    "types": [ "node", "jest", "react-router-dom", "google.maps" ],
+    "types": [ "node", "jest", "react-router-dom" ],
     "downlevelIteration": true
   },
   "include": [

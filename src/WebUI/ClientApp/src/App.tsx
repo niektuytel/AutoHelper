@@ -8,6 +8,8 @@ import Home from './pages/home/Home';
 import Header from './components/header/Header';
 import StatusSnackbar from './components/snackbar/StatusSnackbar';
 import Footer from './components/footer/DefaultFooter';
+import SelectVehicle from './pages/select-vehicle/SelectVehicle';
+import { Redirect } from 'react-router-dom';
 
 //TODO: Add routes
 //<Route exact path='/about'>
@@ -38,7 +40,8 @@ export default () => {
     return <>
         <Header isAdmin={isAdmin} />
         <Routes>
-            <Route path='/' element={<Home isAdmin={true} />} />
+            <Route path='/' element={<Redirect to="/select-vehicle" />} />
+            <Route path='/select-vehicle' element={<SelectVehicle isAdmin={isAdmin} />} />
         </Routes>
         <StatusSnackbar />
         <Footer />
