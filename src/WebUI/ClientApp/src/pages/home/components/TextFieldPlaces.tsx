@@ -8,13 +8,15 @@ import { useNavigate } from "react-router-dom";
 import usePlacesAutocomplete, {
     getGeocode,
     getLatLng,
+    HookArgs,
 } from "use-places-autocomplete";
 import useOnclickOutside from "react-cool-onclickoutside";
 
 
-// local
+// own imports
 import { HashValues } from "../../../i18n/HashValues";
-import ReactPlayer from "react-player";
+
+
 
 interface IProps {
 }
@@ -30,18 +32,22 @@ export default ({  }: IProps) => {
     //const [inputValue, setInputValue] = React.useState<string>("");
 
     /////////////////////////
+
+    // settings for google places autocomplete
+    var request: HookArgs = {
+        requestOptions: {
+            componentRestrictions: { country: 'nl' },
+            types: ['address']
+        },
+        debounce: 300,
+    };
     const {
         ready,
         value,
         suggestions: { status, data },
         setValue,
         clearSuggestions,
-    } = usePlacesAutocomplete({
-        requestOptions: {
-            /* Define search scope here */
-        },
-        debounce: 300,
-    });
+    } = usePlacesAutocomplete(request);
     const ref = useOnclickOutside(() => handleClearInput());
 
     const handleInput = (e: any) => {
@@ -49,34 +55,20 @@ export default ({  }: IProps) => {
         setValue(e.target.value);
     };
 
-    const handleSelect =
-        ({ description }: any) =>
-            () => {
-                // When user selects a place, we can replace the keyword without request data from API
-                // by setting the second parameter to "false"
-                setValue(description, false);
-                clearSuggestions();
+    const handleSelect = (suggestion: any) => {
+        console.log(suggestion)
+        // When user selects a place, we can replace the keyword without request data from API
+        // by setting the second parameter to "false"
+        setValue(suggestion.structured_formatting.main_text, false);
+        clearSuggestions();
 
-                // Get latitude and longitude via utility functions
-                getGeocode({ address: description }).then((results) => {
-                    const { lat, lng } = getLatLng(results[0]);
-                    console.log("📍 Coordinates: ", { lat, lng });
-                });
-            };
-
-    const renderSuggestions = () =>
-        data.map((suggestion) => {
-            const {
-                place_id,
-                structured_formatting: { main_text, secondary_text },
-            } = suggestion;
-
-            return (
-                <li key={place_id} onClick={handleSelect(suggestion)}>
-                    <strong>{main_text}</strong> <small>{secondary_text}</small>
-                </li>
-            );
+        // Get latitude and longitude via utility functions
+        getGeocode({ address: suggestion.description }).then((results) => {
+            const { lat, lng } = getLatLng(results[0]);
+            console.log("📍 Coordinates: ", { lat, lng });
         });
+    };
+
     ///////////////////////////
     const handleClearInput = () => {
         clearSuggestions();
@@ -89,10 +81,12 @@ export default ({  }: IProps) => {
     }
 
 
+            //ref={ref}
     return <>
         <TextField
-            ref={ref}
             fullWidth
+            autoComplete="new-password" // Use this line instead of autoComplete="off", because it is not working
+            autoFocus={true}
             value={value}
             onChange={handleInput}
             disabled={!ready}
@@ -142,17 +136,19 @@ export default ({  }: IProps) => {
                 }
             }}
         />
-        {
-            status === "OK" && <ul>{renderSuggestions()}</ul> 
-            //inputValue && (
-            //    <Box mt={2} boxShadow={3} style={{ maxHeight: '200px', overflowY: 'auto', backgroundColor: '#fff' }}>
-            //        {suggestions.map((suggestion, index) => (
-            //            <Box key={index} p={1} borderBottom="1px solid #ddd">
-            //                {suggestion}
-            //            </Box>
-            //        ))}
-            //    </Box>
-            //)
+        {console.log(data)}
+        {status == "OK" && ready &&
+            <Box
+                mt={1} boxShadow={2} width="100%" >
+                {data.map((suggestion) => {
+                    const { place_id, structured_formatting: { main_text, secondary_text } } = suggestion;
+                    return (
+                        <Box key={place_id} p={1} borderBottom="1px solid #ddd" onClick={() => handleSelect(suggestion)}>
+                            {main_text}_{secondary_text}
+                        </Box>
+                    );
+                })}
+            </Box>
         }
     </>
 }

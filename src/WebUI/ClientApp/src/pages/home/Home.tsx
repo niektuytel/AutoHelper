@@ -9,11 +9,10 @@ import { useNavigate } from "react-router-dom";
 
 // local
 import { HashValues } from "../../i18n/HashValues";
-import ReactPlayer from "react-player";
 
 import ImageLogo from "../../components/logo/ImageLogo";
 import { colorOnIndex } from "../../i18n/ColorValues";
-import TextFieldPlacesAutocomplete from "./components/TextFieldPlacesAutocomplete";
+import TextFieldPlaces from "./components/TextFieldPlaces";
 
 interface IProps {
     isAdmin: boolean;
@@ -47,7 +46,7 @@ export default ({isAdmin}:IProps) => {
                         alignItems: 'center'
                     }}
                 >
-                    <TextFieldPlacesAutocomplete />
+                    <TextFieldPlaces />
                 </Box>
 
             </Container>
