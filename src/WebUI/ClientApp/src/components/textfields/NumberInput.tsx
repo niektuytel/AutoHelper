@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import { TextField, Typography } from "@material-ui/core"
+import { TextField, Typography } from "@mui/material"
 
 interface IProps {
     label: string;

@@ -1,16 +1,23 @@
 import React, { CSSProperties } from "react";
-import { ClickAwayListener, IconButton, Theme, Tooltip, Typography, withStyles } from "@material-ui/core";
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { Theme } from '@mui/system';
 
-const HtmlTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
+const pxToRem = (px: number) => `${px / 16}rem`;
+
+const HtmlTooltip = styled(Tooltip)(({ theme }: { theme: Theme }) => ({
+    '& .MuiTooltip-tooltip': {
         backgroundColor: '#f5f5f9',
         color: 'rgba(0, 0, 0, 0.87)',
         maxWidth: 220,
-        fontSize: theme.typography.pxToRem(12),
+        fontSize: pxToRem(12),
         border: '1px solid #dadde9',
     },
-}))(Tooltip);
+}));
 
 interface IProps {
     text:string;

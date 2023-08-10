@@ -1,6 +1,9 @@
 import React from "react";
-import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@material-ui/core";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SimpleTable, { ITableProps } from "./SimpleTable";
 
 export default ({ data, onCreate, onEdit, onDelete, isAdmin}:ITableProps) => {

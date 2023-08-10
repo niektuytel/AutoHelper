@@ -1,9 +1,9 @@
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import React from "react";
 
 const CopyRight = () => {
     return <>
-        <Box style={{textAlign:"center"}}>
+        <Box sx={{textAlign:"center"}}>
             <small>
                 ©{new Date().getFullYear()} Copyright: <a href={window.location.href}>{window.location.host}</a> (v1)
             </small>

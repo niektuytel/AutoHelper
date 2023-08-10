@@ -1,10 +1,9 @@
-import React from "react";
-import { Button, ButtonGroup } from "@material-ui/core";
-import AddIcon from '@material-ui/icons/Add';
-import SaveIcon from '@material-ui/icons/Save';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import React, { CSSProperties } from "react";
+import { Button, ButtonGroup } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
+import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 const ControlButtonsStyle = (): CSSProperties => ({
     margin:"10px", 

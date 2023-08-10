@@ -1,17 +1,17 @@
 import React from 'react';
-import { InputLabel, MenuItem, Select } from '@material-ui/core';
-import { createStyles, makeStyles } from '@material-ui/core';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
-const styles = makeStyles(() =>
-    createStyles({
+
+const styles = {
         inputLabel: {
             textAlign:"left"
         },
         selectBox: {
             width:"100%"
         }
-    }),
-);
+}
 
 interface IProps {
     title: string;
@@ -21,7 +21,6 @@ interface IProps {
 }
   
 export default ({title, data, value, setValue}:IProps) => {
-    const classes = styles();
     const [openSelect, setOpenSelect] = React.useState(false);
     
     const handleOpenSelect = () => {
@@ -33,10 +32,10 @@ export default ({title, data, value, setValue}:IProps) => {
     };
     
     return <>
-        <InputLabel id="label" className={classes.inputLabel}>{title}</InputLabel>
+        <InputLabel id="label" sx={styles.inputLabel}>{title}</InputLabel>
         <Select
             labelId="label"
-            className={classes.selectBox}
+            sx={styles.selectBox}
             value={value ? value : ""}
             open={openSelect}
             onOpen={handleOpenSelect}

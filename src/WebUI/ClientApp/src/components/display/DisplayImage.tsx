@@ -1,5 +1,5 @@
 import React from "react"; 
-import { Paper } from "@material-ui/core";
+import { Paper } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles

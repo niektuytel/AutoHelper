@@ -1,6 +1,23 @@
 import React from  "react";
-import { Box, TextareaAutosize, TextField } from "@material-ui/core";
-import EditTextStyle from "./EditTextStyle";
+import { Box, TextareaAutosize, TextField } from "@mui/material";
+
+const styles = {
+    paper: {
+        padding: "10px",
+        marginBottom: "20px",
+        display: 'flex',
+        flexDirection: 'column',
+        textAlign: "center"
+    },
+    text_field: {
+        width: "100%",
+        marginTop: "10px"
+    },
+    control_button: {
+        textAlign: "right",
+        marginTop: "10px"
+    }
+}
 
 interface IProps {
     label:string;
@@ -12,8 +29,6 @@ interface IProps {
 }
 
 export default ({label, value, setValue, multilines, isNumber, helperText}:IProps) => {
-    const classes = EditTextStyle();
-
     const onChange = (event:any) => {
         setValue(event.target.value);
     }
@@ -23,8 +38,7 @@ export default ({label, value, setValue, multilines, isNumber, helperText}:IProp
             <Box>
                 <TextareaAutosize
                     placeholder={label}
-                    className={classes.text_field}
-                    style={{minHeight:"25vh", minWidth:"300px", maxWidth:"400px"}}
+                    style={{...styles.text_field, minHeight:"25vh", minWidth:"300px", maxWidth:"400px"}}
                     value={value}
                     onChange={onChange}
                 />
@@ -37,7 +51,7 @@ export default ({label, value, setValue, multilines, isNumber, helperText}:IProp
                     type="number"
                     label={label}
                     variant="outlined" 
-                    className={classes.text_field}
+                    sx={styles.text_field}
                     value={value}
                     helperText={helperText}
                     onChange={onChange}
@@ -47,7 +61,7 @@ export default ({label, value, setValue, multilines, isNumber, helperText}:IProp
                     id="outlined-basic" 
                     label={label}
                     variant="outlined" 
-                    className={classes.text_field}
+                    sx={styles.text_field}
                     value={value}
                     helperText={helperText}
                     onChange={onChange}

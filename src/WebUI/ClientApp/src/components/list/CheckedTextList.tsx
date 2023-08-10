@@ -1,5 +1,5 @@
 import React from "react";
-import { Checkbox, List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { Checkbox, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { colorOnIndex } from "../../i18n/ColorValues";
 
 interface IProps {

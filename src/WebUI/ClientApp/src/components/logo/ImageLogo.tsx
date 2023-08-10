@@ -1,15 +1,14 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router-dom";
 
-const ImageIconStyle = makeStyles(() => ({
+const styles = {
     root: {
         "&:hover": {
             // background: "#efefef",
             cursor: "pointer"
         }
     }
-})) 
+}
 
 interface IProps {
     small?: boolean;
@@ -19,19 +18,18 @@ interface IProps {
 }
 
 export default ({ small, large, very_large, className }:IProps) => {
-    const history = useHistory();
-    const classes = ImageIconStyle();
+    const navigate = useNavigate();
     const size:string = small ? "32px" : large ? "70px" : very_large ? "140px" : "60px";
     
     const onClick = () => {
-        history.push("/");
+        navigate("/");
     }
 
     return <>
         <img 
             src="/images/ic_blue_autohelper.svg" 
             height={size}
-            className={`${classes.root} ${className || ''}`}
+            className={`${styles.root} ${className || ''}`}
             onClick={onClick}
             alt="AutoHelper.nl"
         />

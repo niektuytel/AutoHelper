@@ -1,9 +1,22 @@
 import React, { useState } from "react";
-import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@material-ui/core";
-
+import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import ControlButtons from "../control_buttons/ControlButtons";
-import { StyledTableRow, UseStyles } from "./SimpleTableStyle";
 import { colorOnIndex } from "../../i18n/ColorValues";
+
+const StyledTableRow = {
+    root: {
+        '&:nth-of-type(odd)': {
+            backgroundColor: "#c8c8c8",
+        },
+    },
+}
+
+const styles = {
+    table: {
+        width: "100%",
+    }
+}
+
 
 export interface ITableData {
     header: string[],
@@ -20,11 +33,10 @@ export interface ITableProps {
 }
 
 export default ({data, onCreate, onEdit, onDelete, fromAccordion, isAdmin}:ITableProps) => {
-    const classes = UseStyles();
     const [selected, setSelected] = useState(-1);
 
     return <>
-        <Table className={classes.table} aria-label="simple table">
+        <Table sx={styles.table} aria-label="simple table">
             <TableHead>
                 <TableRow>
                     {data.header.map((cell:string, cell_index:number) => 
@@ -54,32 +66,30 @@ export default ({data, onCreate, onEdit, onDelete, fromAccordion, isAdmin}:ITabl
                 </TableRow>
             </TableHead>
             <TableBody>
-                {data.data.map((row:React.Component[], index:number) => (
-                    <StyledTableRow key={`StyledTableRow-${index}`}>
-                         {/* style={{backgroundColor: (index % 2 === 0) ? colorOnIndex(index) + "39" : "none"}}> */}
-                        {
-                            row.map((row:React.Component, cell_index:number) => 
-                                (cell_index === 0) ? 
-                                    <TableCell component="th" scope="row" key={`table-cell=${cell_index}`}>
-                                        {isAdmin &&
-                                            <Checkbox
-                                                checked={index === selected}
-                                                onChange={() => setSelected(index)}
-                                                inputProps={{ 'aria-label': 'select all desserts' }}
-                                                style={{color:colorOnIndex(index)}}
-                                            />
-                                        }
-                                        {row}
-                                    </TableCell>
-                                :
-                                    <TableCell align="right" key={`table-cell=${cell_index}`}>
-                                        {row}
-                                    </TableCell>
-                            )
-                        }
-                    </StyledTableRow>
-                ))}
+                {/*{data.data.map((row: React.Component[], rowIndex: number) => (*/}
+                {/*    <div key={`StyledTableRow-${rowIndex}`} className={StyledTableRow}>*/}
+                {/*        {row.map((cell: React.Component, cellIndex: number) =>*/}
+                {/*            (cellIndex === 0) ?*/}
+                {/*                <TableCell component="th" scope="row" key={`table-cell=${cellIndex}`}>*/}
+                {/*                    {isAdmin &&*/}
+                {/*                        <Checkbox*/}
+                {/*                            checked={rowIndex === selected}*/}
+                {/*                            onChange={() => setSelected(rowIndex)}*/}
+                {/*                            inputProps={{ 'aria-label': 'select all desserts' }}*/}
+                {/*                            style={{ color: colorOnIndex(rowIndex) }}*/}
+                {/*                        />*/}
+                {/*                    }*/}
+                {/*                    {cell}*/}
+                {/*                </TableCell>*/}
+                {/*                :*/}
+                {/*                <TableCell align="right" key={`table-cell=${cellIndex}`}>*/}
+                {/*                    {cell}*/}
+                {/*                </TableCell>*/}
+                {/*        )}*/}
+                {/*    </div>*/}
+                {/*))}*/}
             </TableBody>
+
         </Table>
     </>
 }

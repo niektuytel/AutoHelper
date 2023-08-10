@@ -1,22 +1,24 @@
 import React from "react"
-import { Snackbar } from "@material-ui/core"
-import { Alert } from "@material-ui/lab"
+import { Snackbar } from "@mui/material";
+import { Alert } from "@mui/lab";
 import { useTranslation } from "react-i18next"
 import { useDispatch, useSelector } from "react-redux"
-import { setErrorStatus, setSuccessStatus } from "../../store/status/StatusActions"
-import StatusState from "../../store/status/StatusState"
+// import { setErrorStatus, setSuccessStatus } from "../../store/status/StatusActions"
+//import StatusState from "../../store/status/StatusState"
 
 export default () => {
     const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const { error_message, success_message }:StatusState = useSelector((state:any) => state.status)
+    // const dispatch = use// dispatch();
+    //const { error_message, success_message }:StatusState = useSelector((state:any) => state.status)
+    const error_message = "";
+    const success_message = "";
     
     const onCloseError = () => {
-        dispatch(setErrorStatus(""))
+        // dispatch(setErrorStatus(""))
     }
     
     const onCloseSuccess = () => {
-        dispatch(setSuccessStatus(""))
+        // dispatch(setSuccessStatus(""))
     }
     
     return <>

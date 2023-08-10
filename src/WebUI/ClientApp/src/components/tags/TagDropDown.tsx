@@ -1,8 +1,26 @@
 import React from 'react';
-import { Box, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { Box, InputLabel, MenuItem, Select } from '@mui/material';
 import ITag from '../../interfaces/tag/ITag';
 import ProgressBox from '../progress/ProgressBox';
-import TagDropDownStyle from './TagDropDownStyle';
+
+const styles = {
+    dialog: {
+        width: "400px"
+    },
+    width: {
+        width: "100%"
+    },
+    inputLabel: {
+        textAlign: "left"
+    },
+    selectBox: {
+        width: "100%"
+    },
+    percentageBox: {
+        margin: "30px",
+        textAlign: "center"
+    }
+}
 
 interface IProps {
     tags:ITag[]|undefined;
@@ -11,7 +29,6 @@ interface IProps {
 }
   
 export default ({tags, value, setValue}:IProps) => {
-    const classes = TagDropDownStyle();
     const [openSelect, setOpenSelect] = React.useState(false);
     
     const handleOpenSelect = () => {
@@ -28,11 +45,11 @@ export default ({tags, value, setValue}:IProps) => {
         {!tags ?
             <ProgressBox/>
             :
-            <Box className={classes.width}>
-                <InputLabel id="label" className={classes.inputLabel}>Tag</InputLabel>
+            <Box sx={styles.width}>
+                <InputLabel id="label" sx={styles.inputLabel}>Tag</InputLabel>
                 <Select
                     labelId="label"
-                    className={classes.selectBox}
+                    sx={styles.selectBox}
                     value={value.id}
                     open={openSelect}
                     onOpen={handleOpenSelect}

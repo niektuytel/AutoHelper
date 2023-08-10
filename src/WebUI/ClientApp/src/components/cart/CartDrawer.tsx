@@ -1,18 +1,40 @@
 import React from "react";
-import { Box, Button, Divider, Drawer, Grid, Hidden, Typography } from "@material-ui/core";
-import LocalShippingIcon from '@material-ui/icons/LocalShipping';
-import { useHistory } from "react-router";
+import { Box, Button, Divider, Drawer, Grid, Hidden, Typography, IconButton } from "@mui/material";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import { useNavigate } from "react-router-dom";
 import { ICookieProduct } from "../../interfaces/ICookieProduct";
 import CartItem from "./CartItem";
-import CartState from "../../store/cart/CartState";
+//import CartState from "../../store/cart/CartState";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import SimpleToolTip from "../tooltip/SimpleToolTip";
-import CartDrawerStyle from "./CartDrawerStyle";
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import CloseIcon from '@material-ui/icons/Close';
+//import CartDrawerStyles from "./CartDrawerStyles";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import CloseIcon from '@mui/icons-material/Close';
+
+const styles = {
+    total_height: {
+        height: "100%"
+    },
+    delivery_box: {
+        bottom: "0%",
+        position: "fixed",
+        backgroundColor: "#FFFFFF"
+    },
+    delivery_button: {
+        margin: "20px",
+        width: "-webkit-fill-available",
+        color: "black",
+        borderColor: "black"
+    },
+    align_right: {
+        textAlign: "right",
+    },
+    margin_left: {
+        marginLeft: "20px"
+    }
+}
 
 interface IProps {
     cartOpen: boolean;
@@ -20,10 +42,11 @@ interface IProps {
 }
 
 export default ({cartOpen, setCartOpen}:IProps) => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { t } = useTranslation();
-    const classes = CartDrawerStyle();
-    const { items }:CartState = useSelector((state:any) => state.cart);
+    //const { items }:CartState = useSelector((state:any) => state.cart);
+    const items: ICookieProduct[] = [];
+
 
     var totalPrice = 0;
     items.forEach((item:ICookieProduct) => {
@@ -38,7 +61,7 @@ export default ({cartOpen, setCartOpen}:IProps) => {
 
     const finishOrder = () => {
         if(items.length === 0) return;
-        history.push("/checkout")
+        navigate("/checkout")
         setCartOpen(false);
     }
     
@@ -46,7 +69,7 @@ export default ({cartOpen, setCartOpen}:IProps) => {
         <Drawer 
             anchor="right" 
             open={cartOpen} 
-            className={classes.total_height}
+            sx={styles.total_height}
             onClose={() => setCartOpen(false)}
         >
             <Hidden mdUp>
@@ -61,7 +84,7 @@ export default ({cartOpen, setCartOpen}:IProps) => {
                     <CartItem key={index} item={item} show_text controllable/>
                 )}
             </Box>
-            <Box className={classes.delivery_box}>
+            <Box sx={styles.delivery_box}>
                 <Grid container style={{padding:"10px"}}>
                     <Grid xs={4} item>
                         <Typography variant="h6">
@@ -69,7 +92,7 @@ export default ({cartOpen, setCartOpen}:IProps) => {
                         </Typography>
                     </Grid>
                     <Grid xs={8} item>
-                        <Typography variant="h6" className={classes.align_right}>
+                        <Typography variant="h6" sx={styles.align_right}>
                             €{totalPrice.toFixed(2)}
                         </Typography>
                     </Grid>
@@ -80,7 +103,7 @@ export default ({cartOpen, setCartOpen}:IProps) => {
                         </Typography>
                     </Grid>
                     <Grid xs={6} item>
-                        <Typography variant="h6" className={classes.align_right}>
+                        <Typography variant="h6" sx={styles.align_right}>
                             €{deliveryPrice.toFixed(2)}
                         </Typography>
                     </Grid>
@@ -92,14 +115,14 @@ export default ({cartOpen, setCartOpen}:IProps) => {
                     </Grid>
                     <Grid xs={8} item>
                         <Divider/>
-                        <Typography variant="h6" className={classes.align_right}>
+                        <Typography variant="h6" sx={styles.align_right}>
                             €{(totalPrice + deliveryPrice).toFixed(2)}
                         </Typography>
                     </Grid>
                 </Grid>
-                <Button variant="outlined" size="large" className={classes.delivery_button} onClick={() => finishOrder()}>
+                <Button variant="outlined" size="large" sx={styles.delivery_button} onClick={() => finishOrder()}>
                     {t("finish_order")}
-                    <LocalShippingIcon className={classes.margin_left}/>
+                    <LocalShippingIcon sx={styles.margin_left}/>
                 </Button>
             </Box>
         </Drawer>

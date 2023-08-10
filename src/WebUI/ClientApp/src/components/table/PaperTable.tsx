@@ -1,5 +1,5 @@
 import React from "react";
-import { Paper, TableContainer } from "@material-ui/core";
+import { Paper, TableContainer } from "@mui/material";
 
 import SimpleTable, { ITableProps } from "./SimpleTable";
 

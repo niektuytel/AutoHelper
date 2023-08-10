@@ -1,10 +1,44 @@
 import React, { useState } from "react";
-import { Chip } from "@material-ui/core";
+import { Chip, Box } from "@mui/material";
 import InfoDialog from "../dialog/InfoDialog";
 import { useTranslation } from "react-i18next";
-import TagItemsStyle from "./TagItemsStyle";
-import TagStyle from "./TagStyle";
+//import TagItemsStyle from "./TagItemsStyle";
 import ITagSupplement, { emptyTagSupplement } from "../../interfaces/tag/ITagSupplement";
+
+import { CSSProperties } from "react";
+import { colorOnIndex } from "../../i18n/ColorValues";
+
+export const TagStyle = (index: number): CSSProperties => ({
+    borderColor: colorOnIndex(index),
+    color: "#000",
+    borderRadius: "5px",
+    marginLeft: "1px"
+});
+
+const styles = {
+    chips: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        marginBottom: "2px",
+        '& > *': {
+            margin: "2px",
+        }
+    },
+    chips_ellipsis: {
+        display: "-webkit-box",
+        lineClamp: 2,
+        boxOrient: "vertical",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+    },
+    admin_chip: {
+        backgroundColor: "rgb(223 255 212)",
+        borderColor: "rgb(223 255 212)",
+        color: "#000",
+        borderRadius: "5px"
+    }
+}
 
 interface IProps {
     data: ITagSupplement[],
@@ -17,7 +51,7 @@ interface IProps {
 
 export default ({data, ellipsis, isAdmin, onCreate, onEdit, onDelete}:IProps) => {
     const {t} = useTranslation();
-    const classes = TagItemsStyle();
+    //const styles = TagItemsStyle();
     const [currentTag, setCurrentTag] = useState<ITagSupplement>(emptyTagSupplement);
     const [showInfo, setShowInfo] = useState(false);
     
@@ -28,7 +62,7 @@ export default ({data, ellipsis, isAdmin, onCreate, onEdit, onDelete}:IProps) =>
     }
     
     return <>
-        <div className={ellipsis ? classes.chips_ellipsis : classes.chips}>
+        <Box sx={ellipsis ? styles.chips_ellipsis : styles.chips}>
             {data && data.map((productTag:ITagSupplement, index:number) => (productTag.tag) &&
                 <Chip 
                     key={`label-chip-${index}`}
@@ -59,7 +93,7 @@ export default ({data, ellipsis, isAdmin, onCreate, onEdit, onDelete}:IProps) =>
                     label={"New Tag"}
                     variant="outlined"
                     size="small" 
-                    className={`${classes.admin_chip}`} 
+                    className={`${styles.admin_chip}`} 
                     onClick={onCreate}
                 />
             }
@@ -71,7 +105,7 @@ export default ({data, ellipsis, isAdmin, onCreate, onEdit, onDelete}:IProps) =>
                 content={currentTag.tag.description}
                 hasResource={currentTag.tag.hasResource}
             />
-        </div>
+        </Box>
     </>
 }
 

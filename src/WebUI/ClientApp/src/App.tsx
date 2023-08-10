@@ -1,53 +1,47 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { Route, useLocation } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 
-import Dashboard from './pages/dashboard/Dashboard';
-import Checkout from './pages/checkout/Checkout';
+// own imports
+import { HasAdminCredential } from './oidcConfig';
 import Home from './pages/home/Home';
-import Product from './pages/product/Product';
-import Products from './pages/products/Products';
-import { HasAdminCredential } from './msalConfig';
 import Header from './components/header/Header';
 import StatusSnackbar from './components/snackbar/StatusSnackbar';
-import { Container } from '@material-ui/core';
 import Footer from './components/footer/DefaultFooter';
-import About from './pages/about/About';
 
-
+//TODO: Add routes
+//<Route exact path='/about'>
+//    <About isAdmin={isAdmin} />
+//</Route>
+//<Route exact path='/product/:id'>
+//    <Product isAdmin={isAdmin} />
+//</Route>
+//<Route exact path='/products'>
+//    <Products isAdmin={isAdmin}/>
+//</Route>
+//<Route exact path='/checkout'>
+//    <Checkout/>
+//</Route>
+//<Route exact path='/dashboard'>
+//    <Dashboard isAdmin={isAdmin}/>
+//</Route>
 
 export default () => {
-    const { pathname } = useLocation();
     const [isAdmin, SetIsAdmin] = React.useState(HasAdminCredential());
 
     // Setting page scroll to 0 when changing the route
+    console.log(window.location.pathname);
     useEffect(() => {
         document.documentElement.scrollTop = 0;
-    }, [pathname]);
+    }, [window.location.pathname]);
 
     return <>
-        <Header isAdmin={isAdmin}/>
-        <Route exact path='/'>
-            <Home isAdmin={isAdmin} />
-        </Route>
-
-        <Route exact path='/about'>
-            <About isAdmin={isAdmin} />
-        </Route>
-        <Route exact path='/product/:id'>
-            <Product isAdmin={isAdmin} />
-        </Route>
-        <Route exact path='/products'>
-            <Products isAdmin={isAdmin}/>
-        </Route>
-        <Route exact path='/checkout'>
-            <Checkout/>
-        </Route>
-        <Route exact path='/dashboard'>
-            <Dashboard isAdmin={isAdmin}/>
-        </Route>
-
-        <StatusSnackbar/>
-        <Footer/>
+        <Header isAdmin={isAdmin} />
+        <Routes>
+            <Route path='/' element={<Home isAdmin={true} />} />
+        </Routes>
+        <StatusSnackbar />
+        <Footer />
     </>;
+
 }

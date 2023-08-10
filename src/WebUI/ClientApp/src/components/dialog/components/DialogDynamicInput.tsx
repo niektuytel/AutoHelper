@@ -1,19 +1,25 @@
 import React, { ReactNode, useState } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import Typography from '@material-ui/core/Typography';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { createStyles, Grid, makeStyles, Theme, Switch, FormControlLabel, InputLabel, Select, MenuItem } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Grid from '@mui/material/Grid';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import { styled, useTheme } from '@mui/material/styles';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useTranslation } from 'react-i18next';
 import EditText from '../../textfields/EditText';
 import TagDropDown from '../../tags/TagDropDown';
 import ITag from '../../../interfaces/tag/ITag';
-import TagTargetDropDown from '../../../pages/dashboard/components/TagTargetDropDown';
-import TagFilterDropDown from '../../../pages/dashboard/components/TagFilterDropDown';
+//import TagTargetDropDown from '../../../pages/dashboard/components/TagTargetDropDown';
+//import TagFilterDropDown from '../../../pages/dashboard/components/TagFilterDropDown';
 import INoteOnKey from '../../../interfaces/INoteOnKey';
 import IProductSpecLine from '../../../interfaces/product/IProductSpecLine';
 import DialogDropDown from './DialogDropDown';
@@ -46,13 +52,11 @@ const isNumber = (input:any) => {
     return typeof(input) === "number";
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+const useStyles = {
     input: {
       display: 'none',
     },
-  }),
-);
+}
 
 interface IProps {
     title:string;
@@ -78,7 +82,6 @@ export default ({
     noteOnKeys
 
 }:IProps) => {
-    const classes = useStyles();
     const [randint, setRandint] = useState(randomNumberInRange(1, 1000000));
 
     const updateData = (key:string, value:any) => {
@@ -130,19 +133,19 @@ export default ({
 
                 if (key === "filtertargetid")
                 {
-                    return <TagTargetDropDown 
-                        key={`${title}-targetdropdown-${index}-${randint}`} 
-                        targetId={item[1]} 
-                        setTargetId={(value:number) => updateData(item[0], value)}
-                    />
+                    //return <TagTargetDropDown 
+                    //    key={`${title}-targetdropdown-${index}-${randint}`} 
+                    //    targetId={item[1]} 
+                    //    setTargetId={(value:number) => updateData(item[0], value)}
+                    ///>
                 }
                 else if (key === "filterid")
                 {
-                    return <TagFilterDropDown 
-                        key={`${title}-filterdropdown-${index}-${randint}`} 
-                        filterId={item[1]} 
-                        setFilterId={(value:number) => updateData(item[0], value)}
-                    />
+                    //return <TagFilterDropDown 
+                    //    key={`${title}-filterdropdown-${index}-${randint}`} 
+                    //    filterId={item[1]} 
+                    //    setFilterId={(value:number) => updateData(item[0], value)}
+                    ///>
                 }
                 else if (key === "childof" && specifications)
                 {
@@ -198,7 +201,7 @@ export default ({
                         <Grid item xs={9}>
                             <input 
                                 id="icon-button-file" 
-                                className={classes.input} 
+                                style={useStyles.input} 
                                 accept="image/*" type="file"
                                 onChange={(event:any) => onImageChange(event)}
                             />

@@ -1,5 +1,5 @@
-import { LogLevel } from "@azure/msal-browser";
-import { msalInstance } from ".";
+//import { LogLevel } from "@azure/msal-browser";
+//import { msalInstance } from ".";
 
 export const APPLICATION_ADMIN = "application_admin";
 export const APPLICATION_MANAGER = "application_manager";
@@ -24,18 +24,18 @@ export const msalConfig = {
                 }		
                 
                 switch (level) {		
-                    case LogLevel.Error:		
-                        console.error(message);		
-                        return;		
-                    case LogLevel.Info:		
-                        // console.info(message);		
-                        return;		
-                    case LogLevel.Verbose:		
-                        // console.debug(message);		
-                        return;		
-                    case LogLevel.Warning:		
-                        console.warn(message);		
-                        return;		
+                    //case LogLevel.Error:		
+                    //    console.error(message);		
+                    //    return;		
+                    //case LogLevel.Info:		
+                    //    // console.info(message);		
+                    //    return;		
+                    //case LogLevel.Verbose:		
+                    //    // console.debug(message);		
+                    //    return;		
+                    //case LogLevel.Warning:		
+                    //    console.warn(message);		
+                    //    return;		
                 }	
             }	
         }	
@@ -61,28 +61,28 @@ export const logoutRequest = {
 }
 
 export const IsLoggedIn = ():boolean => {
-    var accounts =  msalInstance.getAllAccounts();
+    //var accounts =  msalInstance.getAllAccounts();
     
-    if(accounts.length > 0)
-    {
-        msalInstance.setActiveAccount(accounts[0]);
-        return true;
-    }
+    //if(accounts.length > 0)
+    //{
+    //    msalInstance.setActiveAccount(accounts[0]);
+    //    return true;
+    //}
 
     return false;
 }
 
 export const HasAdminCredential = ():boolean => {
-    const account = msalInstance.getAllAccounts()[0];
-    if(account)
-    {
-        msalInstance.setActiveAccount(account);
-        return true;
+    //const account = msalInstance.getAllAccounts()[0];
+    //if(account)
+    //{
+    //    msalInstance.setActiveAccount(account);
+    //    return true;
         
-        // const claims:any = account.idTokenClaims;
-        // const roles:string[] = claims["roles"];
-        // return roles.includes(APPLICATION_ADMIN);
-    }
+    //    // const claims:any = account.idTokenClaims;
+    //    // const roles:string[] = claims["roles"];
+    //    // return roles.includes(APPLICATION_ADMIN);
+    //}
     
     return false;
 }

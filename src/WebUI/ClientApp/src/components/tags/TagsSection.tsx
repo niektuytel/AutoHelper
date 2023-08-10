@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 
 import ITag from "../../interfaces/tag/ITag";
 import TagItems from "./TagItems";
-import { httpGetTags } from "../../services/TagService";
-import { setErrorStatus, setSuccessStatus } from "../../store/status/StatusActions";
+//import { httpGetTags } from "../../services/TagService";
+// import { setErrorStatus, setSuccessStatus } from "../../store/status/StatusActions";
 import ITagSupplement, { emptyTagSupplement } from "../../interfaces/tag/ITagSupplement";
-import { httpDeleteProductTag, httpPostProductTag, httpPutProductTag } from "../../services/ProductService";
+//import { httpDeleteProductTag, httpPostProductTag, httpPutProductTag } from "../../services/ProductService";
 import EditKeyValueDialog from "../dialog/EditKeyValueDialog";
 
 interface IProps {
@@ -20,7 +20,7 @@ interface IProps {
 export default ({productId, default_data, isAdmin}:IProps) => {
     const { t } = useTranslation();
     const { id }:any = useParams();
-    const dispatch = useDispatch();
+    // const dispatch = use// dispatch();
     const [ isLoading, setIsLoading ] = useState<boolean|undefined>(undefined);
     const [ tags, setTags ] = useState<ITag[]|undefined>(undefined);
     const [ productTag, setProductTag ] = useState<ITagSupplement>(emptyTagSupplement);
@@ -36,67 +36,67 @@ export default ({productId, default_data, isAdmin}:IProps) => {
             if(tags === undefined && isLoading === undefined)
             {
                 setIsLoading(true);
-                httpGetTags(
-                    (data:ITag[]) => {
-                        setTags(data);
-                        setIsLoading(false);
-                    },
-                    (message:string) => {
-                        dispatch(setErrorStatus(message));
-                    }
-                )
+                //httpGetTags(
+                //    (data:ITag[]) => {
+                //        setTags(data);
+                //        setIsLoading(false);
+                //    },
+                //    (message:string) => {
+                //        // dispatch(setErrorStatus(message));
+                //    }
+                //)
             }
         }
     })
 
     const onCreateTag = () => {
-        httpPostProductTag({...newProductTag, productId:productId}, 
-            (_id:number) => {
-                let item = {...newProductTag, id:_id};
-                let items = [...productTags, item];
+        //httpPostProductTag({...newProductTag, productId:productId}, 
+        //    (_id:number) => {
+        //        let item = {...newProductTag, id:_id};
+        //        let items = [...productTags, item];
 
-                setProductTags(items);
-                setProductTag(emptyTagSupplement)
-                setNewProductTag(emptyTagSupplement)
+        //        setProductTags(items);
+        //        setProductTag(emptyTagSupplement)
+        //        setNewProductTag(emptyTagSupplement)
 
-                setVisableCreateTags(false);
-                dispatch(setSuccessStatus("On Success"));
-            },
-            (message:string) => {
-                dispatch(setErrorStatus(message));
-            }
-        );
+        //        setVisableCreateTags(false);
+        //        // dispatch(setSuccessStatus("On Success"));
+        //    },
+        //    (message:string) => {
+        //        // dispatch(setErrorStatus(message));
+        //    }
+        //);
     }
     
     const onEditTag = () => {
-        httpPutProductTag(productTag, 
-            (id:number) => {
-                let items = productTags.map(tag => tag.id === id ? productTag : tag);
+        //httpPutProductTag(productTag, 
+        //    (id:number) => {
+        //        let items = productTags.map(tag => tag.id === id ? productTag : tag);
 
-                setProductTags(items);
-                setProductTag(emptyTagSupplement)
+        //        setProductTags(items);
+        //        setProductTag(emptyTagSupplement)
 
-                setVisableEditTags(false);
-                dispatch(setSuccessStatus("On Success"));
-            },
-            (message:string) => {
-                dispatch(setErrorStatus(message));
-            }
-        );
+        //        setVisableEditTags(false);
+        //        // dispatch(setSuccessStatus("On Success"));
+        //    },
+        //    (message:string) => {
+        //        // dispatch(setErrorStatus(message));
+        //    }
+        //);
     }
     
     const onDeleteTag = (target:ITagSupplement) => {
-        httpDeleteProductTag(String(productId), target.id,
-            (_id:number) => {
-                let items = productTags.filter(tag =>  tag.id !== _id);
+        //httpDeleteProductTag(String(productId), target.id,
+        //    (_id:number) => {
+        //        let items = productTags.filter(tag =>  tag.id !== _id);
 
-                setProductTags(items);
-                dispatch(setSuccessStatus("On Success"));
-            },
-            (message: string) => {
-                dispatch(setErrorStatus(message));
-            }
-        )
+        //        setProductTags(items);
+        //        // dispatch(setSuccessStatus("On Success"));
+        //    },
+        //    (message: string) => {
+        //        // dispatch(setErrorStatus(message));
+        //    }
+        //)
     }
 
     const editTag = (target:ITagSupplement) => {
