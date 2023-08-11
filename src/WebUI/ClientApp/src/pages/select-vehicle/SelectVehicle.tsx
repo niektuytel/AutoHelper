@@ -1,7 +1,7 @@
 ﻿import React from "react";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // local
 import { HashValues } from "../../i18n/HashValues";
@@ -11,14 +11,12 @@ import TextFieldPlaces from "./components/TextFieldPlaces";
 import TextFieldLicencePlates from "./components/TextFieldLicencePlates";
 
 interface IProps {
-    isAdmin: boolean;
 }
 
-export default ({ isAdmin }: IProps) => {
-    const path = window.location.pathname.split('/');
-    // 3>= is that we are don't count the first empty string for a path like "/one/two"
-    const showLicensePlate = path.length >= 3; 
+export default ({ }: IProps) => {
+    const { licence_plate } = useParams();
 
+    
     return (
         <Box
             style={{
@@ -41,7 +39,30 @@ export default ({ isAdmin }: IProps) => {
                         alignItems: 'center'
                     }}
                 >
-                    {showLicensePlate ? <TextFieldLicencePlates /> : <TextFieldPlaces />}
+                    {licence_plate ?
+                        <TextFieldPlaces licence_plate={licence_plate} />
+                        :
+                        <TextFieldLicencePlates/>
+                    }
+                    {/*
+                    Voordelen van autohelper, in een paar klikken:(should be 2 cards horizontal aligned with an image and an title and an body)
+                    - Onderhoud geven
+                    - Informatie uitlezen
+                    - Geschiedenis uitlezen
+
+                    Stel je eens voor een website waar je alles kan inzien en alles kan regelen voor je auto?
+                    Tja, hier is autohelper.nl door onstaan om online je auto reparatie of onderhoud te regelen met 
+                    de garage die je wil. Het ophalen en brengen van je auto is ook mogelijk door een goede planning 
+                    aan te bieden bij je garage. Met ons motto 'makkelijk is al moeilijk genoeg' streven wij naar een perfecte 
+                    service voor klant en garage. 
+
+                    Als u een service via de autohelper.nl laat lopen of u garage laat het via de autohelper.nl lopen dan
+                    worden de reparaties of onderhouds informatie opgelagen, en is inleesbaar door alle gebruikers
+
+                    Met Vriedelijke groeten.
+                    AutoHelper.nl
+
+                    */}
                 </Box>
             </Container>
         </Box>

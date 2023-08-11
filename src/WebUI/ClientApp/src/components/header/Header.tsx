@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Container, Grid, Hidden } from "@mui/material";
+import { Container, Grid, Hidden, IconButton } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
+
+import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import MenuDrawer from "./components/MenuDrawer";
 import CartDrawer from "../cart/CartDrawer";
@@ -12,45 +14,6 @@ import ImageLogo from "../logo/ImageLogo";
 // own imports
 import { StyledAppBar, StyledToolbar, StyledIconButton, StyledBadge } from "./HeaderStyle";
 import { ICookieProduct } from "../../interfaces/ICookieProduct";
-
-const styles = {
-    margin_5: {
-        margin: "5px"
-    },
-    chip: {
-        margin: "2px",
-    },
-    headerHeight: {
-        margin: "75px"
-    },
-    appbar: {
-        background: "white"
-    },
-    toolbar: {
-        minHeight: "50px",
-        marginLeft: "calc(100vw - 100%)",
-        marginRight: "0"
-    },
-    container: {
-        padding: 0
-    },
-    logoBox: {
-        width: "fit-content",
-        display: "inline-table",
-        marginRight: "5px"
-    },
-    iconGrid: {
-        textAlign: "right",
-        color: "black"
-    },
-    icon: {
-        color: "black"
-    },
-    badge: {
-        backgroundColor: colorOnIndex(0),
-        color: "white"
-    }
-}
 
 interface IProps {
     isAdmin: boolean;
