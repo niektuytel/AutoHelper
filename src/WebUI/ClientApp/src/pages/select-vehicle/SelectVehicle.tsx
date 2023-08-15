@@ -165,24 +165,20 @@ export default ({ }: IProps) => {
                         </Card>
                     ))}
                 </Slider>
-                <Typography variant="h6" gutterBottom mt={5}>
-                    Stel je eens voor een website waar je alles kan inzien en alles kan regelen voor je auto?
-                </Typography>
-                <Typography gutterBottom>
-                    Tja, hier is autohelper.nl door onstaan om online je auto reparatie of onderhoud te regelen met
-                    de garage die je wil. Het ophalen en brengen van je auto is ook mogelijk door een goede planning
-                    aan te bieden bij je garage. Met ons motto 'makkelijk is al moeilijk genoeg' streven wij naar een perfecte
-                    service voor klant en garage.
-                </Typography>
+                <Box sx={{margin:"20px"}}>
+                    <Typography gutterBottom>
+                        Welkom bij AutoHelper.nl, hét online platform voor al uw autozaken. Op onze website kunt u eenvoudig alle benodigde informatie over uw voertuig inzien en beheren. Wij zorgen voor een gestroomlijnde ervaring bij zowel autoreparaties als regulier onderhoud. U selecteert de gewenste garage en bepaalt zelf of u de auto wilt ophalen of afzetten bij de garage. Ongeacht uw keuze, houden wij u nauwgezet op de hoogte van de status van uw auto.
+                    </Typography>
+                    <br/>
+                    <Typography gutterBottom>
+                        Bij gebruik van onze diensten, of wanneer uw garage onze platform gebruikt voor het uitvoeren van diensten aan uw auto, wordt alle relevante informatie over de reparaties of onderhoud centraal opgeslagen. Dit zorgt voor een transparant overzicht, toegankelijk voor alle betrokken partijen.
+                    </Typography>
+                    <br />
+                    <Typography gutterBottom>
+                        Ons streven is om het beheer van autozaken zo eenvoudig mogelijk te maken. Zoals ons motto luidt: 'Makkelijk is al moeilijk genoeg'. We zetten ons in voor optimale tevredenheid van zowel klant als garage.
+                    </Typography>
+                </Box>
 
-                <Typography gutterBottom>
-                    Als u een service via de autohelper.nl laat lopen of u garage laat het via de autohelper.nl lopen dan
-                    worden de reparaties of onderhouds informatie opgelagen, en is inleesbaar door alle gebruikers.
-                </Typography>
-
-                <Typography variant="h6" mt={5} sx={{ textAlign: "center" }}>
-                    Met Vriendelijke groeten,
-                </Typography>
             </Container>
         </>
     );
