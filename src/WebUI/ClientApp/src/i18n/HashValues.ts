@@ -1,5 +1,9 @@
 ﻿
 export const HashValues = {
+    select_vehicle_default: "#maintenance",
+    select_vehicle_maintanance: "#maintenance",
+    select_vehicle_overview: "#overview",
+
     default: "#about",
     contact: "#contact",
     about: "#about",

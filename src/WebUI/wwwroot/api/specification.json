@@ -414,6 +414,68 @@
         ]
       }
     },
+    "/api/Vehicle/search": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_SearchVehicle",
+        "parameters": [
+          {
+            "name": "licencePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicencePlateBriefResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/overview": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_GetVehicleOverview",
+        "parameters": [
+          {
+            "name": "licencePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicencePlateBriefResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/WeatherForecast": {
       "get": {
         "tags": [
@@ -665,6 +727,15 @@
           "title": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "LicencePlateBriefResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "licencePlate": {
+            "type": "string"
           }
         }
       },

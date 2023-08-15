@@ -473,6 +473,96 @@ export class TodoListsClient implements ITodoListsClient {
     }
 }
 
+export interface IVehicleClient {
+
+    searchVehicle(licencePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
+
+    getVehicleOverview(licencePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
+}
+
+export class VehicleClient implements IVehicleClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    searchVehicle(licencePlate: string | null | undefined): Promise<LicencePlateBriefResponse> {
+        let url_ = this.baseUrl + "/api/Vehicle/search?";
+        if (licencePlate !== undefined && licencePlate !== null)
+            url_ += "licencePlate=" + encodeURIComponent("" + licencePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSearchVehicle(_response);
+        });
+    }
+
+    protected processSearchVehicle(response: Response): Promise<LicencePlateBriefResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LicencePlateBriefResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<LicencePlateBriefResponse>(null as any);
+    }
+
+    getVehicleOverview(licencePlate: string | null | undefined): Promise<LicencePlateBriefResponse> {
+        let url_ = this.baseUrl + "/api/Vehicle/overview?";
+        if (licencePlate !== undefined && licencePlate !== null)
+            url_ += "licencePlate=" + encodeURIComponent("" + licencePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetVehicleOverview(_response);
+        });
+    }
+
+    protected processGetVehicleOverview(response: Response): Promise<LicencePlateBriefResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LicencePlateBriefResponse.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<LicencePlateBriefResponse>(null as any);
+    }
+}
+
 export interface IWeatherForecastClient {
 
     get(): Promise<WeatherForecast[]>;
@@ -1063,6 +1153,42 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
 export interface IUpdateTodoListCommand {
     id?: number;
     title?: string | undefined;
+}
+
+export class LicencePlateBriefResponse implements ILicencePlateBriefResponse {
+    licencePlate?: string;
+
+    constructor(data?: ILicencePlateBriefResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.licencePlate = _data["licencePlate"];
+        }
+    }
+
+    static fromJS(data: any): LicencePlateBriefResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new LicencePlateBriefResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["licencePlate"] = this.licencePlate;
+        return data;
+    }
+}
+
+export interface ILicencePlateBriefResponse {
+    licencePlate?: string;
 }
 
 export class WeatherForecast implements IWeatherForecast {

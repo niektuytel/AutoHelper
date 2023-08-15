@@ -88,7 +88,7 @@ export default ({ licence_plate }: IProps) => {
 
 
     // TODO: Set autofill the value of the textfield from the cookie
-
+    // TODO: search or trigger: handleSearch when press enter button.
     return <>
         <TextField
             fullWidth
@@ -173,9 +173,11 @@ export default ({ licence_plate }: IProps) => {
                     </InputAdornment>
                 ),
                 style: {
+                    marginTop: '60px',
                     height: '50px',
                     fontSize: '1.2em',
                     paddingRight: '0',
+                    backgroundColor: 'white'
                 }
             }}
         />

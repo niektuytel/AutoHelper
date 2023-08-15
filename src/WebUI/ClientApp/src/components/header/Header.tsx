@@ -30,12 +30,27 @@ const Header = ({ isAdmin }: IProps) => {
     var badgeContent = 0;
     items.forEach(item => badgeContent += item.quantity);
 
+
+    // Step 1: Create a ref for the header and a state to store its height.
+    const headerRef = React.useRef<HTMLDivElement | null>(null);
+    const [headerHeight, setHeaderHeight] = useState(75);  // default to 75px
+
+    // Step 2: Use an effect to set the header's height to the state.
+    React.useEffect(() => {
+        if (headerRef.current) {
+            setHeaderHeight(headerRef.current.offsetHeight);
+        }
+    }, [headerRef.current]);
+
     return (
         <>
-            <div style={{ margin: "75px" }} />
-            <StyledAppBar style={{
-                boxShadow: "0px 2px 2px -1px rgb(0 0 0 / 20%), 0px 1px 2px 0px rgb(0 0 0 / 14%), 0px 1px 1px 0px rgb(0 0 0 / 12%)"
-            }}>
+            <div style={{ margin: `${headerHeight}px 0` }} />
+            <StyledAppBar
+                ref={headerRef}
+                style={{
+                    boxShadow: "0px 2px 2px -1px rgb(0 0 0 / 20%), 0px 1px 2px 0px rgb(0 0 0 / 14%), 0px 1px 1px 0px rgb(0 0 0 / 12%)"
+                }}
+            >
                 <StyledToolbar>
                     <Grid container>
                         <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
