@@ -50,6 +50,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="ClientApp\src\pages\select-vehicle\components\NavSection.tsx" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Folder Include="ClientApp\src\pages\overview-vehicle\" />
       <Folder Include="ClientApp\src\pages\overview-garage\" />
     </ItemGroup>

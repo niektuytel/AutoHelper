@@ -1,27 +1,16 @@
 ﻿import React from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List } from "@mui/material";
-import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
+import { InputAdornment, TextField, IconButton, Button, Hidden } from "@mui/material";
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import usePlacesAutocomplete, {
-    getGeocode,
-    getLatLng,
-    HookArgs,
-    Suggestion,
-} from "use-places-autocomplete";
 import useOnclickOutside from "react-cool-onclickoutside";
 
 
 // own imports
 import { HashValues } from "../../../i18n/HashValues";
 import { VehicleClient } from "../../../app/web-api-client";
-
-
-
 
 interface IProps {
 }
@@ -37,52 +26,28 @@ export default ({ }: IProps) => {
     const ref = useOnclickOutside(() => handleClearInput());
 
     const handleInput = (e: any) => {
-        var licence = e.target.value.toUpperCase(); // Zet alles om naar hoofdletters.
+        let license = e.target.value.toUpperCase().replace(/-/g, '');
 
-        // Alleen toegestane karakters behouden (nummers en specifieke letters)
-        licence = licence.replace(/[^GHJKLNPRSTXZ0-9-]/g, '');
-
-        // Verboden lettercombinaties verwijderen
-        const forbiddenCombinations = ["GVD", "KKK", "KVT", "LPF", "NSB", "PKK", "PSV", "TBS", "SS", "SD", "PVV", "SGP", "VVD"];
-        forbiddenCombinations.forEach(combo => {
-            if (licence.includes(combo)) {
-                licence = licence.replace(combo, '');
-            }
-        });
-
-        const formatLicence = (str: string, format: string) => {
-            let result = "";
-            let strIndex = 0;
-            for (let i = 0; i < format.length; i++) {
-                if ((format[i] === 'X' && /[GHJKLNPRSTXZ]/.test(str[strIndex])) || (format[i] === '9' && /[0-9]/.test(str[strIndex]))) {
-                    result += str[strIndex++];
-                } else {
-                    result += format[i];
-                }
-            }
-            return result;
+        switch (license.length) {
+            case 6:
+                license =
+                    /^[A-Z]{2}\d{3}[A-Z]$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 5)}-${license.slice(5)}` :
+                        /^[A-Z]\d{3}[A-Z]{2}$/.test(license) ? `${license.slice(0, 1)}-${license.slice(1, 4)}-${license.slice(4)}` :
+                            /^[A-Z]{3}\d{2}[A-Z]$/.test(license) ? `${license.slice(0, 3)}-${license.slice(3, 5)}-${license.slice(5)}` :
+                                /^\d[A-Z]{2}\d{3}$/.test(license) ? `${license.slice(0, 1)}-${license.slice(1, 3)}-${license.slice(3)}` :
+                                    /^[A-Z]{2}\d{2}[A-Z]{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4)}` :
+                                        /^\d{2}[A-Z]{3}\d$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 5)}-${license.slice(5)}` :
+                                            /^[A-Z]{2}\d{2}\d{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4, 6)}` :
+                                                /^\d{2}\d{2}[A-Z]{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4, 6)}` :  // Added for 83-93-SV
+                                                    /^[A-Z]{2}[A-Z]{2}\d{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4, 6)}` :  // Added for JH-XD-30
+                                                        license;
+                break;
+            case 7:
+                license = `${license.slice(0, 3)}-${license.slice(3, 5)}-${license.slice(5)}`;
+                break;
         }
 
-        if (licence.length === 6 || licence.length === 8) {
-            licence = licence.replace(/-/g, '');
-
-            const formats = ['XXX-X-XX', 'XX-XXX-X', 'X-XX-XXX', 'XXX-XX-X', 'X-XXX-XX', 'XX-X-XXX', 'XX-99-99', '99-99-XX', '99-XX-99', 'XX-99-XX', 'XX-XX-99', '99-XX-XX', '99-XXX-9', '9-XXX-99', 'XX-999-X', 'X-999-XX', 'XXX-99-X', 'X-99-XXX', '9-XX-999', '999-XX-9'];
-
-            for (const format of formats) {
-                if (format.replace(/-/g, '').length === licence.length) {
-                    licence = formatLicence(licence, format);
-                    break;
-                }
-            }
-        }
-
-        // Verwijder L en T voor kentekenseries na 11
-        const series11AndAfter = ['XXX-99-X', 'X-99-XXX', '9-XX-999', '999-XX-9'];
-        if (series11AndAfter.some(format => licence.includes(format))) {
-            licence = licence.replace(/[LT]/g, '');
-        }
-
-        setValue(licence);
+        setValue(license);
     }
 
     const handleClearInput = () => {
@@ -107,7 +72,12 @@ export default ({ }: IProps) => {
             });
     }
 
-    //TODO: search or trigger: handleSearch when press enter button.
+    const handleEnterPress = (event:any) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
     return <>
         <TextField
             fullWidth
@@ -115,6 +85,7 @@ export default ({ }: IProps) => {
             autoFocus={true}
             value={value}
             onChange={handleInput}
+            onKeyDown={handleEnterPress}
             variant="outlined"
             placeholder={t("search_licenceplate_placeholder")}
             InputProps={{

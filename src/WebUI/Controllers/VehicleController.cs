@@ -15,7 +15,8 @@ public class VehicleController : ApiControllerBase
     [HttpGet("search")]
     public async Task<ActionResult<LicencePlateBriefResponse>> SearchVehicle([FromQuery] string licencePlate)
     {
-        var url = $"https://opendata.rdw.nl/resource/5xwu-cdq3.json?kenteken={licencePlate}&limit=1";
+        licencePlate = licencePlate.Replace("-", "").ToUpper();
+        var url = $"https://opendata.rdw.nl/resource/5xwu-cdq3.json?kenteken={licencePlate}";
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, url);

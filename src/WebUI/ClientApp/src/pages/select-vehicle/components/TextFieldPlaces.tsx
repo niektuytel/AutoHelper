@@ -4,6 +4,7 @@ import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -86,6 +87,12 @@ export default ({ licence_plate }: IProps) => {
 
     const ref = useOnclickOutside(() => handleClearInput());
 
+    const handleBackNavigation = () => {
+        if (window.history) {
+            window.history.back();
+        }
+    };
+
 
     // TODO: Set autofill the value of the textfield from the cookie
     // TODO: search or trigger: handleSearch when press enter button.
@@ -102,6 +109,9 @@ export default ({ licence_plate }: IProps) => {
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
+                        <IconButton onClick={handleBackNavigation}>
+                            <ArrowBackIosIcon color="action" />
+                        </IconButton>
                         <LocationOnOutlinedIcon color="action" />
                     </InputAdornment>
                 ),
@@ -173,7 +183,7 @@ export default ({ licence_plate }: IProps) => {
                     </InputAdornment>
                 ),
                 style: {
-                    marginTop: '60px',
+                    marginTop: '10px',
                     height: '50px',
                     fontSize: '1.2em',
                     paddingRight: '0',
