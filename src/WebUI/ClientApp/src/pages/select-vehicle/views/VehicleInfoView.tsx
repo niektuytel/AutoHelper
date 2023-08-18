@@ -56,7 +56,7 @@ interface IProps {
 
 export default ({ licence_plate }: IProps) => {
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
-    const [expanded, setExpanded] = React.useState<string | false>('panel1');
+    const [expanded, setExpanded] = React.useState<string | false>(false);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [vehicleInformation, setVehicleInformation] = React.useState<VehicleInformationResponse | undefined>(undefined);
 
@@ -95,48 +95,73 @@ export default ({ licence_plate }: IProps) => {
 
     return (
         <>
-            <Box sx={{ padding: "5vh" }}>
+            <Box>
                 <Typography variant="h6" color="black" style={{ textAlign: 'center' }}>
                     Informatie over voertuig: <b>{licence_plate}</b>
                 </Typography>
             </Box>
-            <Box sx={{ marginBottom: "40px" }}>
-                {isLoading ? (
+            <Box sx={{ marginBottom: "40px", padding: "5vh"}}>
+                {isLoading ?
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
                     </Box>
-                ) : vehicleInformation?.data && vehicleInformation.data.map((section, index) => (
-                    <Accordion expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
-                        <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
-                            <Typography>{section.title}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
+                : vehicleInformation?.data &&
+                    <>
+                        <Card>
                             <Table>
                                 <TableBody>
-                                    {section.values!.map((line, rowIndex) => (
+                                    {vehicleInformation.cardInfo!.map((line, rowIndex) => (
                                         <TableRow
                                             key={rowIndex}
                                             sx={{
                                                 backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
                                             }}
                                         >
-                                            <TableCell
-                                                style={{ width: '50%', textAlign: 'left' }}
-                                            >
-                                                {line.name}
-                                            </TableCell>
-                                            <TableCell
-                                                style={{ width: '50%', textAlign: 'left' }}
-                                            >
-                                                {line.value}
-                                            </TableCell>
+                                            {line!.map((value) => (
+
+                                                <TableCell
+                                                    style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
+                                                >
+                                                    {value}
+                                                </TableCell>
+                                            ))}
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
-                        </AccordionDetails>
-                    </Accordion>
-                ))}
+                        </Card>
+                        {vehicleInformation.data.map((section, index) => (
+                            <Accordion expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+                                <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
+                                    <Typography>{section.title}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails sx={{ padding: "0" }}>
+                                    <Table>
+                                        <TableBody>
+                                            {section.values!.map((line, rowIndex) => (
+                                                <TableRow
+                                                    key={rowIndex}
+                                                    sx={{
+                                                        backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
+                                                    }}
+                                                >
+                                                    {line!.map((value, cellIndex) => (
+
+                                                        <TableCell
+                                                            style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
+                                                        >
+                                                            {value}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </AccordionDetails>
+                            </Accordion>
+                        ))}
+                    </>
+                }
             </Box>
         </>
     );

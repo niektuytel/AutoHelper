@@ -478,8 +478,6 @@ export interface IVehicleClient {
     searchVehicle(licensePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
 
     getVehicleInformation(licensePlate: string | null | undefined): Promise<VehicleInformationResponse>;
-
-    getVehicleGeneralInfo(licensePlate: string | null | undefined): Promise<VehicleInformationSection>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -562,42 +560,6 @@ export class VehicleClient implements IVehicleClient {
             });
         }
         return Promise.resolve<VehicleInformationResponse>(null as any);
-    }
-
-    getVehicleGeneralInfo(licensePlate: string | null | undefined): Promise<VehicleInformationSection> {
-        let url_ = this.baseUrl + "/api/Vehicle?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetVehicleGeneralInfo(_response);
-        });
-    }
-
-    protected processGetVehicleGeneralInfo(response: Response): Promise<VehicleInformationSection> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleInformationSection.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<VehicleInformationSection>(null as any);
     }
 }
 
@@ -1230,6 +1192,7 @@ export interface ILicencePlateBriefResponse {
 }
 
 export class VehicleInformationResponse implements IVehicleInformationResponse {
+    cardInfo?: string[][];
     data?: VehicleInformationSection[];
 
     constructor(data?: IVehicleInformationResponse) {
@@ -1243,6 +1206,11 @@ export class VehicleInformationResponse implements IVehicleInformationResponse {
 
     init(_data?: any) {
         if (_data) {
+            if (Array.isArray(_data["cardInfo"])) {
+                this.cardInfo = [] as any;
+                for (let item of _data["cardInfo"])
+                    this.cardInfo!.push(item);
+            }
             if (Array.isArray(_data["data"])) {
                 this.data = [] as any;
                 for (let item of _data["data"])
@@ -1260,6 +1228,11 @@ export class VehicleInformationResponse implements IVehicleInformationResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.cardInfo)) {
+            data["cardInfo"] = [];
+            for (let item of this.cardInfo)
+                data["cardInfo"].push(item);
+        }
         if (Array.isArray(this.data)) {
             data["data"] = [];
             for (let item of this.data)
@@ -1270,12 +1243,13 @@ export class VehicleInformationResponse implements IVehicleInformationResponse {
 }
 
 export interface IVehicleInformationResponse {
+    cardInfo?: string[][];
     data?: VehicleInformationSection[];
 }
 
 export class VehicleInformationSection implements IVehicleInformationSection {
     title?: string;
-    values?: VehicleInformationSectionValue[];
+    values?: string[][];
 
     constructor(data?: IVehicleInformationSection) {
         if (data) {
@@ -1292,7 +1266,7 @@ export class VehicleInformationSection implements IVehicleInformationSection {
             if (Array.isArray(_data["values"])) {
                 this.values = [] as any;
                 for (let item of _data["values"])
-                    this.values!.push(VehicleInformationSectionValue.fromJS(item));
+                    this.values!.push(item);
             }
         }
     }
@@ -1310,7 +1284,7 @@ export class VehicleInformationSection implements IVehicleInformationSection {
         if (Array.isArray(this.values)) {
             data["values"] = [];
             for (let item of this.values)
-                data["values"].push(item.toJSON());
+                data["values"].push(item);
         }
         return data;
     }
@@ -1318,47 +1292,7 @@ export class VehicleInformationSection implements IVehicleInformationSection {
 
 export interface IVehicleInformationSection {
     title?: string;
-    values?: VehicleInformationSectionValue[];
-}
-
-export class VehicleInformationSectionValue implements IVehicleInformationSectionValue {
-    name?: string;
-    value?: string;
-
-    constructor(data?: IVehicleInformationSectionValue) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.value = _data["value"];
-        }
-    }
-
-    static fromJS(data: any): VehicleInformationSectionValue {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleInformationSectionValue();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["value"] = this.value;
-        return data;
-    }
-}
-
-export interface IVehicleInformationSectionValue {
-    name?: string;
-    value?: string;
+    values?: string[][];
 }
 
 export class WeatherForecast implements IWeatherForecast {

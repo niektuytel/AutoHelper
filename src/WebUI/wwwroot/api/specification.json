@@ -476,37 +476,6 @@
         }
       }
     },
-    "/api/Vehicle": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetVehicleGeneralInfo",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VehicleInformationSection"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/WeatherForecast": {
       "get": {
         "tags": [
@@ -774,6 +743,15 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "cardInfo": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
           "data": {
             "type": "array",
             "items": {
@@ -792,20 +770,11 @@
           "values": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/VehicleInformationSectionValue"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
-          }
-        }
-      },
-      "VehicleInformationSectionValue": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
           }
         }
       },

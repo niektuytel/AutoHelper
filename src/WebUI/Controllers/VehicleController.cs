@@ -7,6 +7,7 @@ using AutoHelper.Application.TodoLists.Queries.GetTodos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using WebUI.Extensions;
 using WebUI.Models.Response;
 using YamlDotNet.Core.Tokens;
 
@@ -54,20 +55,20 @@ public class VehicleController : ApiControllerBase
             #region General
             result.Data.Add(new VehicleInformationSection("Algemeen")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Voertuigcategorie", value: data["europese_voertuigcategorie"].ToString()),
-                    //new("Carrosserietype", value: $"Hatchback (AB)"),
-                    new("Inrichting", value: data["inrichting"].ToString()),
-                    new("Merk", value: data["merk"].ToString()),
-                    new("Type", value: data["type"].ToString()),
-                    new("Variant", value: data["variant"].ToString()),
-                    new("Uitvoering", value: data["uitvoering"].ToString()),
-                    new("Kleur", value: data["eerste_kleur"].ToString()),
-                    new("Handelsbenaming", value: data["handelsbenaming"].ToString()),
-                    new("Typegoedkeuringsnummer", value: data["typegoedkeuringsnummer"].ToString()),
-                    new("Plaats chassisnummer", value: data["plaats_chassisnummer"].ToString()),
+                Values = new List<List<string>> {
+                    new(){"Voertuigcategorie", data.GetSafeValue("europese_voertuigcategorie")},
+                    // new(){"Carrosserietype", $"Hatchback (AB)"},// This is not registered
+                    new(){"Inrichting", data.GetSafeValue("inrichting")},
+                    new(){"Merk", data.GetSafeValue("merk")},
+                    new(){"Type", data.GetSafeValue("type")},
+                    new(){"Variant", data.GetSafeValue("variant")},
+                    new(){"Uitvoering", data.GetSafeValue("uitvoering")},
+                    new(){"Kleur", data.GetSafeValue("eerste_kleur")},
+                    new(){"Handelsbenaming", data.GetSafeValue("handelsbenaming")},
+                    new(){"Typegoedkeuringsnummer", data.GetSafeValue("typegoedkeuringsnummer")},
+                    new(){"Plaats chassisnummer", data.GetSafeValue("plaats_chassisnummer")},
                     // The is no registered value for this owners amount: '4/0'
-                    new("Aantal eigenaren privé / zakelijk", value: "Niet geregistreerd"),
+                    //new(){"Aantal eigenaren privé / zakelijk", "Niet geregistreerd"},
                 }
             });
             #endregion
@@ -75,16 +76,16 @@ public class VehicleController : ApiControllerBase
             #region Expiration dates and history
             result.Data.Add(new VehicleInformationSection("Vervaldata en historie")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Vervaldatum APK", value: DateTime.Parse(data["vervaldatum_apk_dt"].ToString()).ToString("dd-MM-yyyy")),
-                    new("Datum eerste tenaamstelling in Nederland", value: DateTime.Parse(data["datum_eerste_tenaamstelling_in_nederland_dt"].ToString()).ToString("dd-MM-yyyy")),
-                    new("Datum eerste toelating", value: DateTime.Parse(data["datum_eerste_toelating_dt"].ToString()).ToString("dd-MM-yyyy")),
-                    new("Datum inschrijving voertuig in Nederland", value: DateTime.Parse(data["datum_eerste_toelating_in_nederland_dt"].ToString()).ToString("dd-MM-yyyy")),
+                Values = new List<List<string>> {
+                    new(){"Vervaldatum APK", data.GetSafeDateValue("vervaldatum_apk_dt")},
+                    new(){"Datum eerste tenaamstelling in Nederland", data.GetSafeDateValue("datum_eerste_tenaamstelling_in_nederland_dt")},
+                    new(){"Datum eerste toelating", data.GetSafeDateValue("datum_eerste_toelating_dt")},
+                    new(){"Datum inschrijving voertuig in Nederland", data.GetSafeDateValue("datum_eerste_toelating_in_nederland_dt")},
                     // There is no "Registratie datum goedkeuring" in the provided JSON, so we set a default value
-                    new("Registratie datum goedkeuring", value: "Niet geregistreerd"),
-                    new("Datum laatste tenaamstelling", value: DateTime.Parse(data["datum_tenaamstelling_dt"].ToString()).ToString("dd-MM-yyyy")),
+                    //new(){"Registratie datum goedkeuring", "Niet geregistreerd"},
+                    new(){"Datum laatste tenaamstelling", data.GetSafeDateValue("datum_tenaamstelling_dt")},
                     // There's no separate "Tijdstip laatste tenaamstelling" field in the JSON. Using the time part of "datum_tenaamstelling_dt"
-                    new("Tijdstip laatste tenaamstelling", value: "Niet geregistreerd"),
+                    //new(){"Tijdstip laatste tenaamstelling", "Niet geregistreerd"},
                 }
             });
             #endregion
@@ -92,14 +93,14 @@ public class VehicleController : ApiControllerBase
             #region Weights
             result.Data.Add(new VehicleInformationSection("Gewichten")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Massa rijklaar", value: $"{data["massa_rijklaar"]} kg"),
-                    new("Massa ledig voertuig", value: $"{data["massa_ledig_voertuig"]} kg"),
-                    new("Technische max. massa voertuig", value: $"{data["technische_max_massa_voertuig"]} kg"),
-                    new("Toegestane max. massa voertuig", value: $"{data["toegestane_maximum_massa_voertuig"]} kg"),
-                    new("Maximum massa samenstel", value: $"{data["maximum_massa_samenstelling"]} kg"),
-                    new("Aanhangwagen geremd", value: $"{data["maximum_trekken_massa_geremd"]} kg"),
-                    new("Aanhangwagen ongeremd", value: $"{data["maximum_massa_trekken_ongeremd"]} kg"),
+                Values = new List<List<string>> {
+                    new(){"Massa rijklaar", $"{data.GetSafeValue("massa_rijklaar")} kg"},
+                    new(){"Massa ledig voertuig", $"{data.GetSafeValue("massa_ledig_voertuig")} kg"},
+                    new(){"Technische max. massa voertuig", $"{data.GetSafeValue("technische_max_massa_voertuig")} kg"},
+                    new(){"Toegestane max. massa voertuig", $"{data.GetSafeValue("toegestane_maximum_massa_voertuig")} kg"},
+                    new(){"Maximum massa samenstel", $"{data.GetSafeValue("maximum_massa_samenstelling")} kg"},
+                    new(){"Aanhangwagen geremd", $"{data.GetSafeValue("maximum_trekken_massa_geremd")} kg"},
+                    new(){"Aanhangwagen ongeremd", $"{data.GetSafeValue("maximum_massa_trekken_ongeremd")} kg"},
                 }
             });
             #endregion
@@ -107,39 +108,41 @@ public class VehicleController : ApiControllerBase
             #region Counter readings
             result.Data.Add(new VehicleInformationSection("Tellerstanden")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Jaar laatste registratie", value: $"{data["jaar_laatste_registratie_tellerstand"]}"),
-                    new("Oordeel", value: $"{data["tellerstandoordeel"]}"),
-                    new("Toelichting", value: GetCounterReadingsDescription(data["code_toelichting_tellerstandoordeel"].ToString()))
+                Values = new List<List<string>> {
+                    new(){"Jaar laatste registratie", $"{data.GetSafeValue("jaar_laatste_registratie_tellerstand")}"},
+                    new(){"Oordeel", $"{data.GetSafeValue("tellerstandoordeel")}"},
+                    new(){"Toelichting", GetCounterReadingsDescription(data.GetSafeValue("code_toelichting_tellerstandoordeel")) }
                 }
-            }); ;
+            });
             #endregion
 
             #region Status of the vehicle
             result.Data.Add(new VehicleInformationSection("Status van het voertuig")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Gestolen", value: $"Niet geregistreerd"),  // Replace with actual data extraction logic if available
-                    new("Geëxporteerd", value: $"{data["export_indicator"]}"), // Assuming "export_indicator" field holds this value
-                    new("WAM verzekerd", value: $"{data["wam_verzekerd"]}"),
+                Values = new List<List<string>> {
+                    // https://groups.google.com/g/voertuigen-open-data/search?q=gestolen
+                    //new(){"Gestolen", $"Niet geregistreerd"},  // Replace with actual data extraction logic if available
+                    new(){"Geëxporteerd", $"{data.GetSafeValue("export_indicator")}"}, // Assuming "export_indicator" field holds this value
+                    new(){"WAM verzekerd", $"{data.GetSafeValue("wam_verzekerd")}"},
         
-                    // Not sure which field from JSON indicates "Verbod voor rijden op de weg", for demonstration, I've left it as static "Nee"
-                    new("Verbod voor rijden op de weg", value: "Niet geregistreerd"),  // Replace with actual data extraction logic if available
+                    //// Not sure which field from JSON indicates "Verbod voor rijden op de weg", for demonstration, I've left it as static "Nee"
+                    //new(){"Verbod voor rijden op de weg", "Niet geregistreerd"},  // Replace with actual data extraction logic if available
         
-                    new("Tenaamstellen mogelijk", value: $"{data["tenaamstellen_mogelijk"]}")
+                    new(){"Tenaamstellen mogelijk", $"{data.GetSafeValue("tenaamstellen_mogelijk")}" }
                 }
             });
             #endregion
 
             #region Recall
-            string terugroepactieStatus = data["openstaande_terugroepactie_indicator"].ToString() == "Nee"
+            // Adjust based on the possible values in the dataset
+            string terugroepactieStatus = data.GetSafeValue("openstaande_terugroepactie_indicator") == "Nee"
                 ? "Geen terugroepactie(s) geregistreerd"
-                : "Er zijn openstaande terugroepactie(s)"; // Adjust based on the possible values in the dataset
+                : "Er zijn openstaande terugroepactie(s)"; 
 
             result.Data.Add(new VehicleInformationSection("Terugroepacties")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Status terugroepactie(s)", value: terugroepactieStatus),
+                Values = new List<List<string>> {
+                    new(){"Status terugroepactie(s)", terugroepactieStatus},
                 }
             });
             #endregion
@@ -148,83 +151,120 @@ public class VehicleController : ApiControllerBase
             #region Moter
             result.Data.Add(new VehicleInformationSection("Moter")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Cilinderinhoud", value: $"{data["cilinderinhoud"]} cm³"),
-                    new("Aantal cilinders", value: data["aantal_cilinders"].ToString()),
-                    new("Type gasinstallatie", value: "Niet van toepassing"),
-                    new("Emissieklasse diesel", value: "Niet van toepassing"),
+                Values = new List<List<string>> {
+                    new(){"Cilinderinhoud", $"{data.GetSafeValue("cilinderinhoud")} cm³"},
+                    new(){"Aantal cilinders", data.GetSafeValue("aantal_cilinders")},
+                    new(){"Type gasinstallatie", "Niet van toepassing"},
+                    new(){"Emissieklasse diesel", "Niet van toepassing"},
                 }
             });
             #endregion
 
-            //#region Environmental performance
+            var fuelInfo = await GetVehicleFuel(licensePlate);
+            // TODO: #region Environmental performance
             //result.Data.Add(new VehicleInformationSection("Milleuprestaties")
             //{
-            //    Values = new List<VehicleInformationSectionValue> {
-            //        new("Brandstof", value: "Benzine"),
-            //        new("Brandstofverbruik NEDC", value: "7 l/100km"),
-            //        new("Brandstofverbruik WLTP", value: "Niet geregistreerd"),
-            //        new("Elektrisch verbruik NEDC", value: "Niet geregistreerd"),
-            //        new("Elektrisch verbruik WLTP", value: "Niet geregistreerd"),
-            //        new("Elektrische actieradius NEDC", value: "Niet geregistreerd"),
-            //        new("Elektrische actieradius WLTP", value: "Niet geregistreerd"),
-            //        new("Geluidsniveau stationair", value: "83 dB(A)"),
-            //        new("Geluidsniveau toerental motor", value: "4125 min-1"),
-            //        new("Geluidsniveau rijdend", value: "73 dB(A)"),
-            //        new("Nettomaximumvermogen", value: "55 kW"),
-            //        new("Nominaal continu maximumvermogen", value: "Niet geregistreerd"),
-            //        new("Maximum vermogen 60 minuten", value: "Niet geregistreerd"),
-            //        new("Netto maximumvermogen elektrisch", value: "Niet geregistreerd"),
+            //    Values = new List<List<string>> {
+            //        new(){"Brandstof", "Benzine"},
+            //        new(){"Brandstofverbruik NEDC", "7 l/100km"},
+            //        new(){"Brandstofverbruik WLTP", "Niet geregistreerd"},
+            //        new(){"Elektrisch verbruik NEDC", "Niet geregistreerd"},
+            //        new(){"Elektrisch verbruik WLTP", "Niet geregistreerd"},
+            //        new(){"Elektrische actieradius NEDC", "Niet geregistreerd"},
+            //        new(){"Elektrische actieradius WLTP", "Niet geregistreerd"},
+            //        new(){"Geluidsniveau stationair", "83 dB(A)"},
+            //        new(){"Geluidsniveau toerental motor", "4125 min-1"},
+            //        new(){"Geluidsniveau rijdend", "73 dB(A)"},
+            //        new(){"Nettomaximumvermogen", "55 kW"},
+            //        new(){"Nominaal continu maximumvermogen", "Niet geregistreerd"},
+            //        new(){"Maximum vermogen 60 minuten", "Niet geregistreerd"},
+            //        new(){"Netto maximumvermogen elektrisch", "Niet geregistreerd"},
             //    }
             //});
 
-            //#region Emissions
-            //result.Data.Add(new VehicleInformationSection("Uitstoot")
-            //{
-            //    Values = new List<VehicleInformationSectionValue> {
-            //        new("Brandstof", value: "Benzine"),
-            //        new("Uitstoot deeltjes (licht)", value: "Niet geregistreerd"),
-            //        new("Uitstoot deeltjes (zwaar)", value: "Niet geregistreerd"),
-            //        new("Roetuitstoot", value: "Niet geregistreerd"),
-            //        new("Af Fabriek Roetfilter APK", value: "Niet van toepassing"),
-            //        new("CO2-uitstoot NEDC", value: "165 g/km"),
-            //        new("CO2-uitstoot WLTP", value: "Niet geregistreerd"),
-            //        new("Emissieklasse", value: "4"),
-            //        new("Milieuklasse EG", value: "EURO 4"),
-            //        new("Milieuklasse EG Goedkeuring (licht)", value: "70/220*2003/76B"),
-            //        new("Milieuklasse EG Goedkeuring (zwaar)", value: "Niet geregistreerd")
-            //    }
-            //});
-            //#endregion
+            #region Emissions
+            if(fuelInfo.HasValues)
+            {
+                result.Data.Add(new VehicleInformationSection("Uitstoot")
+                {
+                    Values = new List<List<string>> {
+                        new(){"Brandstof", fuelInfo.GetSafeValue("brandstof_omschrijving")},
+                        new(){"Uitstoot deeltjes (licht)", fuelInfo.GetSafeValue("uitstoot_deeltjes_licht")},
+                        new(){"Uitstoot deeltjes (zwaar)", fuelInfo.GetSafeValue("uitstoot_deeltjes_zwaar")},
+                        new(){"Roetuitstoot", fuelInfo.GetSafeValue("roetuitstoot")},
+                        new(){"Af Fabriek Roetfilter APK", "Niet van toepassing"},
+                        new(){"CO2-uitstoot NEDC", $"{fuelInfo.GetSafeValue("co2_uitstoot_gecombineerd")} g/km"},
+                        new(){"CO2-uitstoot WLTP", $"{fuelInfo.GetSafeValue("emis_co2_gewogen_gecombineerd_wltp")} g/km" },
+                        new(){"Emissieklasse", fuelInfo.GetSafeValue("emissiecode_omschrijving")},
+                        new(){"Milieuklasse EG", fuelInfo.GetSafeValue("uitlaatemissieniveau")},
+                        new(){"Milieuklasse EG Goedkeuring (licht)", fuelInfo.GetSafeValue("milieuklasse_eg_goedkeuring_licht")},
+                        new(){"Milieuklasse EG Goedkeuring (zwaar)", fuelInfo.GetSafeValue("milieuklasse_eg_goedkeuring_zwaar") }
+                    }
+                });
+            }
+            #endregion
 
             // Technisch
             #region Characteristics
             result.Data.Add(new VehicleInformationSection("Eigenschappen")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Aantal zitplaatsen", value: data["aantal_zitplaatsen"].ToString()),
-                    new("Aantal rolstoelplaatsen", value: data["aantal_rolstoelplaatsen"].ToString() == "0" ? "Niet geregistreerd" : data["aantal_rolstoelplaatsen"].ToString()),
-                    new("Aantal assen", value: "2"), // Assuming this is always 2
-                    new("Aantal wielen", value: data["aantal_wielen"].ToString()),
-                    new("Wielbasis", value: data["wielbasis"].ToString() + " cm"),
-                    new("Afstand voorzijde voertuig tot hart koppeling", value: data["afstand_voorzijde_voertuig_tot_hart_koppeling"].ToString() == "0" ? "Niet geregistreerd" : data["afstand_voorzijde_voertuig_tot_hart_koppeling"].ToString())
+                Values = new List<List<string>> {
+                    new(){"Aantal zitplaatsen", data.GetSafeValue("aantal_zitplaatsen") },
+                    new(){"Aantal rolstoelplaatsen", data.GetSafeValue("aantal_rolstoelplaatsen") == "0" ? "Niet geregistreerd" : data.GetSafeValue("aantal_rolstoelplaatsen")},
+                    new(){"Aantal assen", "2"}, // Assuming this is always 2
+                    new(){"Aantal wielen", data.GetSafeValue("aantal_wielen")},
+                    new(){"Wielbasis", data.GetSafeValue("wielbasis") + " cm"},
+                    new(){"Afstand voorzijde voertuig tot hart koppeling", data.GetSafeValue("afstand_voorzijde_voertuig_tot_hart_koppeling") == "0" ? "Niet geregistreerd" : data.GetSafeValue("afstand_voorzijde_voertuig_tot_hart_koppeling") }
                 }
             });
             #endregion
 
             #region Shafts
+            var shafts = await GetVehicleShafts(licensePlate);
+            var numbers = shafts!.Select((x) => x.GetSafeValue("as_nummer")).Prepend("Nr").ToList();
+            var drivenShafts = shafts!.Select((x) => "Niet geregistreerd").Prepend("Aangedreven as").ToList();// do not have the value for this
+            var placedCodeShafts = shafts!.Select((x) => "Niet geregistreerd").Prepend("Plaatscode as").ToList();// do not have the value for this
+            var trackWidth = shafts!.Select((x) => x.GetSafeValue("spoorbreedte")).Prepend("Spoorbreedte").ToList();
+            var misconductCode = shafts!.Select((x) => "Niet geregistreerd").Prepend("Weggedrag code").ToList();// do not have the value for this
+            var maxWeightTechinicalShafts = shafts!.Select((x) => x.GetSafeValue("technisch_toegestane_maximum_aslast")).Prepend("Technisch toegestane maximum aslast").ToList();
+            var maxWeightLegalShafts = shafts!.Select((x) => x.GetSafeValue("wettelijk_toegestane_maximum_aslast")).Prepend("Wettelijk toegestane maximum aslast").ToList();
+
             result.Data.Add(new VehicleInformationSection("Assen")
             {
-                Values = new List<VehicleInformationSectionValue> {
-                    new("Aantal zitplaatsen", value: "5"),
-                    new("Aantal rolstoelplaatsen", value: "Niet geregistreerd"),
-                    new("Aantal assen", value: "2"),
-                    new("Aantal wielen", value: "4"),
-                    new("Wielbasis", value: "259 cm"),
-                    new("Afstand voorzijde voertuig tot hart koppeling", value: "Niet geregistreerd"),
+                Values = new List<List<string>> {
+                    numbers,
+                    drivenShafts,
+                    placedCodeShafts,
+                    trackWidth,
+                    misconductCode,
+                    maxWeightTechinicalShafts,
+                    maxWeightLegalShafts,
                 }
             });
             #endregion
+
+            // Fiscal
+            #region Fiscal
+            result.Data.Add(new VehicleInformationSection("Fiscaal")
+            {
+                Values = new List<List<string>> {
+                    new(){ "Bruto BPM", data.GetSafeValue("bruto_bpm") },
+                    new(){ "Catalogusprijs", data.GetSafeValue("catalogusprijs") }
+                }
+            });
+            #endregion
+
+
+            // Card Info
+            result.CardInfo = new()
+            {
+                new(){ "Merk", $"{data.GetSafeValue("merk")} {data.GetSafeValue("handelsbenaming")}" },
+                new(){"Brandstof", fuelInfo.GetSafeValue("brandstof_omschrijving") },
+                new(){ "Vervaldatum APK", data.GetSafeDateValue("vervaldatum_apk_dt") },
+                new(){ "Kilometer stand", $"{data.GetSafeValue("tellerstandoordeel")}" },
+
+            };
+
         }
 
         return Ok(result);
@@ -234,7 +274,7 @@ public class VehicleController : ApiControllerBase
     /// <summary>
     /// https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=87GRN6
     /// </summary>
-    public async Task<JToken?> GetVehicle(string licensePlate)
+    private async Task<JToken?> GetVehicle(string licensePlate)
     {
         licensePlate = licensePlate.Replace("-", "").ToUpper();
         var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken={licensePlate}";
@@ -253,7 +293,7 @@ public class VehicleController : ApiControllerBase
     /// <summary>
     /// https://opendata.rdw.nl/resource/3huj-srit.json?kenteken=87GRN6
     /// </summary>
-    public async Task<JArray?> GetVehicleShafts(string licensePlate)
+    private async Task<JArray?> GetVehicleShafts(string licensePlate)
     {
         licensePlate = licensePlate.Replace("-", "").ToUpper();
         var url = $"https://opendata.rdw.nl/resource/3huj-srit.json?kenteken={licensePlate}";
@@ -270,9 +310,28 @@ public class VehicleController : ApiControllerBase
     }
 
     /// <summary>
+    /// https://opendata.rdw.nl/resource/8ys7-d773.json?kenteken=87GRN6
+    /// </summary>
+    private async Task<JToken?> GetVehicleFuel(string licensePlate)
+    {
+        licensePlate = licensePlate.Replace("-", "").ToUpper();
+        var url = $"https://opendata.rdw.nl/resource/8ys7-d773.json?kenteken={licensePlate}";
+
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JArray.Parse(json)?.First();
+    }
+
+    /// <summary>
     /// https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Tellerstandoordeel-Trend-Toelichting/jqs4-4kvw
     /// </summary>
-    public string GetCounterReadingsDescription(string judgement)
+    private string GetCounterReadingsDescription(string judgement)
     {
         switch (judgement)
         {
@@ -296,6 +355,5 @@ public class VehicleController : ApiControllerBase
                 return "Niet geregistreerd.";
         }
     }
-
 
 }

@@ -2,6 +2,8 @@
 
 public class VehicleInformationResponse
 {
+    public List<List<string>> CardInfo { get; set; } = new();
+
     public List<VehicleInformationSection> Data { get; set; } = new List<VehicleInformationSection>();
 }
 
