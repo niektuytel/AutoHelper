@@ -1,12 +1,12 @@
 ﻿import React from 'react';
 import { Box, Grid, Hidden, Typography } from "@mui/material";
-import TextFieldLicensePlates from "../components/LicensePlateTextField";
+import LicensePlateTextField from "../components/LicensePlateTextField";
 
 export default () => {
 
     return (
         <>
-            <TextFieldLicensePlates />
+            <LicensePlateTextField />
             <Hidden mdDown>
                 <Grid container sx={{ minHeight: "50vh" }} >
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "30px" }}>

@@ -88,9 +88,7 @@ export default ({ licence_plate }: IProps) => {
     const ref = useOnclickOutside(() => handleClearInput());
 
     const handleBackNavigation = () => {
-        if (window.history) {
-            window.history.back();
-        }
+        navigate(`/select-vehicle`);
     };
 
 

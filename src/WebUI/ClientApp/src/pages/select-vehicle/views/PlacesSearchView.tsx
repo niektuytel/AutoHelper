@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Box, Grid, Hidden, Typography } from "@mui/material";
 import TextFieldLicensePlates from "../components/LicensePlateTextField";
-import TextFieldPlaces from '../components/TextFieldPlaces';
+import PlacesTextField from '../components/PlacesTextField';
 import { useParams } from 'react-router-dom';
 
 interface IProps {
@@ -12,7 +12,7 @@ export default ({ licence_plate }: IProps) => {
 
     return (
         <>
-            <TextFieldPlaces licence_plate={licence_plate} />
+            <PlacesTextField licence_plate={licence_plate} />
             <Hidden mdDown>
                 <Grid container sx={{ minHeight: "50vh" }} >
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "30px" }}>
@@ -25,8 +25,8 @@ export default ({ licence_plate }: IProps) => {
                     </Grid>
                     <Grid item xs={6} sx={{ alignSelf: "center" }}>
                         <img
-                            src="/images/mauntain_with_car_key.png"
-                            height="200px"
+                            src="/images/carbridge.png"
+                            height="350px"
                             alt="Car key is not been found"
                         />
                     </Grid>
@@ -41,9 +41,10 @@ export default ({ licence_plate }: IProps) => {
                         <b>met de garage in de buurt</b>
                     </Typography>
                     <img
-                        src="/images/mauntain_with_car_key.png"
+                        src="/images/carbridge.png"
                         height="200px"
                         alt="Car key is not been found"
+                        style={{ marginTop:"20px"}}
                     />
                 </Box>
             </Hidden>

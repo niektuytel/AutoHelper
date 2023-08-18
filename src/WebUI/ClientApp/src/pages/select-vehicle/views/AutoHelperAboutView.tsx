@@ -58,7 +58,7 @@ export default () => {
                     </Card>
                 ))}
             </Slider>
-            <Box sx={{ margin: "20px" }}>
+            <Box sx={{ margin: "20px", paddingBottom:"40px" }}>
                 <Typography gutterBottom>
                     Welkom bij AutoHelper.nl, hét online platform voor al uw autozaken. Op onze website kunt u eenvoudig alle benodigde informatie over uw voertuig inzien en beheren. Wij zorgen voor een gestroomlijnde ervaring bij zowel autoreparaties als regulier onderhoud. U selecteert de gewenste garage en bepaalt zelf of u de auto wilt ophalen of afzetten bij de garage. Ongeacht uw keuze, houden wij u nauwgezet op de hoogte van de status van uw auto.
                 </Typography>

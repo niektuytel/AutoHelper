@@ -422,7 +422,7 @@
         "operationId": "Vehicle_SearchVehicle",
         "parameters": [
           {
-            "name": "licencePlate",
+            "name": "licensePlate",
             "in": "query",
             "schema": {
               "type": "string",
@@ -445,15 +445,15 @@
         }
       }
     },
-    "/api/Vehicle/overview": {
+    "/api/Vehicle/information": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetVehicleOverview",
+        "operationId": "Vehicle_GetVehicleInformation",
         "parameters": [
           {
-            "name": "licencePlate",
+            "name": "licensePlate",
             "in": "query",
             "schema": {
               "type": "string",
@@ -468,7 +468,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/LicencePlateBriefResponse"
+                  "$ref": "#/components/schemas/VehicleInformationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_GetVehicleGeneralInfo",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleInformationSection"
                 }
               }
             }
@@ -735,6 +766,45 @@
         "additionalProperties": false,
         "properties": {
           "licencePlate": {
+            "type": "string"
+          }
+        }
+      },
+      "VehicleInformationResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleInformationSection"
+            }
+          }
+        }
+      },
+      "VehicleInformationSection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleInformationSectionValue"
+            }
+          }
+        }
+      },
+      "VehicleInformationSectionValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
             "type": "string"
           }
         }

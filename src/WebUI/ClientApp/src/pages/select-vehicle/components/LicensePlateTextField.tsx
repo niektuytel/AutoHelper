@@ -1,5 +1,12 @@
 ﻿import React from "react";
-import { InputAdornment, TextField, IconButton, Button, Hidden } from "@mui/material";
+import {
+    InputAdornment,
+    TextField,
+    IconButton,
+    Button,
+    Hidden,
+    CircularProgress
+} from "@mui/material";
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -18,11 +25,11 @@ interface IProps {
 export default ({ }: IProps) => {
     var hash = window.location.hash.length == 0 ? HashValues.select_vehicle_default : window.location.hash;
     const navigate = useNavigate();
-    const publicUrl = process.env.PUBLIC_URL;
-    const vehicleClient = new VehicleClient(`${publicUrl}`);
+    const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
     const { t } = useTranslation();
 
     const [value, setValue] = React.useState<string>("");
+    const [isSearching, setIsSearching] = React.useState<boolean>(false);
     const ref = useOnclickOutside(() => handleClearInput());
 
     const handleInput = (e: any) => {
@@ -55,12 +62,14 @@ export default ({ }: IProps) => {
     };
 
     const handleSearch = () => {
+        setIsSearching(true);
+
         vehicleClient.searchVehicle(value)
             .then(response => {
                 if (response) {
                     console.log("Response received:", response);
 
-                    navigate(`/select-vehicle/${response.licencePlate}`);
+                    navigate(`/select-vehicle/${value}`);
                 } else {
                     // TODO: trigger snackbar
                     console.error("Failed to get vehicle by license plate");
@@ -69,6 +78,9 @@ export default ({ }: IProps) => {
             .catch(error => {
                 // TODO: trigger snackbar
                 console.error("Error occurred:", error);
+            })
+            .finally(() => {
+                setIsSearching(false);
             });
     }
 
@@ -103,7 +115,7 @@ export default ({ }: IProps) => {
                         }
                         <Hidden mdUp>
                             <IconButton onClick={handleSearch} style={{ marginRight: "10px" }}>
-                                <SearchIcon />
+                                {isSearching ? <CircularProgress size={24} /> : <SearchIcon />}
                             </IconButton>
                         </Hidden>
                         <Hidden mdDown>
@@ -123,7 +135,7 @@ export default ({ }: IProps) => {
                                     }
                                 }}
                             >
-                                {t("search_camelcase")}
+                                {isSearching ? <CircularProgress size={24} color="inherit" /> : t("search_camelcase")}
                             </Button>
                         </Hidden>
                     </InputAdornment>
