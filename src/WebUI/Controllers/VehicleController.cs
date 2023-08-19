@@ -161,29 +161,41 @@ public class VehicleController : ApiControllerBase
             #endregion
 
             var fuelInfo = await GetVehicleFuel(licensePlate);
-            // TODO: #region Environmental performance
-            //result.Data.Add(new VehicleInformationSection("Milleuprestaties")
-            //{
-            //    Values = new List<List<string>> {
-            //        new(){"Brandstof", "Benzine"},
-            //        new(){"Brandstofverbruik NEDC", "7 l/100km"},
-            //        new(){"Brandstofverbruik WLTP", "Niet geregistreerd"},
-            //        new(){"Elektrisch verbruik NEDC", "Niet geregistreerd"},
-            //        new(){"Elektrisch verbruik WLTP", "Niet geregistreerd"},
-            //        new(){"Elektrische actieradius NEDC", "Niet geregistreerd"},
-            //        new(){"Elektrische actieradius WLTP", "Niet geregistreerd"},
-            //        new(){"Geluidsniveau stationair", "83 dB(A)"},
-            //        new(){"Geluidsniveau toerental motor", "4125 min-1"},
-            //        new(){"Geluidsniveau rijdend", "73 dB(A)"},
-            //        new(){"Nettomaximumvermogen", "55 kW"},
-            //        new(){"Nominaal continu maximumvermogen", "Niet geregistreerd"},
-            //        new(){"Maximum vermogen 60 minuten", "Niet geregistreerd"},
-            //        new(){"Netto maximumvermogen elektrisch", "Niet geregistreerd"},
-            //    }
-            //});
+
+            #region Environmental performance
+            var fuelUsages = $"{fuelInfo!.GetSafeValue("brandstofverbruik_gecombineerd")} l/100km";
+            var netMaximumPower = $"{fuelInfo!.GetSafeValue("nettomaximumvermogen")} kW";
+            if (fuelInfo?.HasValues == true)
+            { 
+                var fuelUsagesWltp = $"{fuelInfo!.GetSafeValue("brandstof_verbruik_gecombineerd_wltp")} l/100km";
+                var decibelstationair = $"{fuelInfo.GetSafeValue("geluidsniveau_stationair")} dB(A)";
+                var idleSpeed = $"{fuelInfo.GetSafeValue("toerental_geluidsniveau")} min-1";
+                var soundlevelDriving = $"{fuelInfo.GetSafeValue("geluidsniveau_rijdend")} dB(A)";
+
+                result.Data.Add(new VehicleInformationSection("Milleuprestaties")
+                {
+                    Values = new List<List<string>> {
+                        new(){"Brandstof", $"{fuelInfo.GetSafeValue("brandstof_omschrijving")}"},
+                        new(){"Brandstofverbruik NEDC", fuelUsages},
+                        new(){"Brandstofverbruik WLTP", fuelUsagesWltp},
+                        new(){"Elektrisch verbruik NEDC", fuelInfo.GetSafeValue("elektrisch_verbruik_extern_opladen_wltp") },
+                        new(){"Elektrisch verbruik WLTP", fuelInfo.GetSafeValue("elektrisch_verbruik_enkel_elektrisch_wltp") },
+                        new(){"Elektrische actieradius NEDC", fuelInfo.GetSafeValue("actie_radius_enkel_elektrisch_stad_wltp") },
+                        new(){"Elektrische actieradius WLTP", fuelInfo.GetSafeValue("actie_radius_enkel_elektrisch_wltp") },
+                        new(){"Geluidsniveau stationair", decibelstationair},
+                        new(){"Geluidsniveau toerental motor", idleSpeed },
+                        new(){"Geluidsniveau rijdend", soundlevelDriving },
+                        new(){"Nettomaximumvermogen", netMaximumPower},
+                        new(){"Nominaal continu maximumvermogen", fuelInfo.GetSafeValue("nominaal_continu_maximumvermogen")},
+                        new(){"Maximum vermogen 60 minuten", fuelInfo.GetSafeValue("max_vermogen_60_minuten")},
+                        new(){"Netto maximumvermogen elektrisch", fuelInfo.GetSafeValue("netto_max_vermogen_elektrisch")},
+                    }
+                });
+            }
+            #endregion
 
             #region Emissions
-            if(fuelInfo.HasValues)
+            if (fuelInfo.HasValues)
             {
                 result.Data.Add(new VehicleInformationSection("Uitstoot")
                 {
@@ -224,10 +236,10 @@ public class VehicleController : ApiControllerBase
             var numbers = shafts!.Select((x) => x.GetSafeValue("as_nummer")).Prepend("Nr").ToList();
             var drivenShafts = shafts!.Select((x) => "Niet geregistreerd").Prepend("Aangedreven as").ToList();// do not have the value for this
             var placedCodeShafts = shafts!.Select((x) => "Niet geregistreerd").Prepend("Plaatscode as").ToList();// do not have the value for this
-            var trackWidth = shafts!.Select((x) => x.GetSafeValue("spoorbreedte")).Prepend("Spoorbreedte").ToList();
+            var trackWidth = shafts!.Select((x) => $"{x.GetSafeValue("spoorbreedte")} cm").Prepend("Spoorbreedte").ToList();
             var misconductCode = shafts!.Select((x) => "Niet geregistreerd").Prepend("Weggedrag code").ToList();// do not have the value for this
-            var maxWeightTechinicalShafts = shafts!.Select((x) => x.GetSafeValue("technisch_toegestane_maximum_aslast")).Prepend("Technisch toegestane maximum aslast").ToList();
-            var maxWeightLegalShafts = shafts!.Select((x) => x.GetSafeValue("wettelijk_toegestane_maximum_aslast")).Prepend("Wettelijk toegestane maximum aslast").ToList();
+            var maxWeightTechinicalShafts = shafts!.Select((x) => $"{x.GetSafeValue("technisch_toegestane_maximum_aslast")} kg").Prepend("Technisch toegestane maximum aslast").ToList();
+            var maxWeightLegalShafts = shafts!.Select((x) => $"{x.GetSafeValue("wettelijk_toegestane_maximum_aslast")} kg").Prepend("Wettelijk toegestane maximum aslast").ToList();
 
             result.Data.Add(new VehicleInformationSection("Assen")
             {
@@ -248,18 +260,24 @@ public class VehicleController : ApiControllerBase
             result.Data.Add(new VehicleInformationSection("Fiscaal")
             {
                 Values = new List<List<string>> {
-                    new(){ "Bruto BPM", data.GetSafeValue("bruto_bpm") },
-                    new(){ "Catalogusprijs", data.GetSafeValue("catalogusprijs") }
+                    new(){ "Bruto BPM", $"€ {data.GetSafeValue("bruto_bpm")}" },
+                    new(){ "Catalogusprijs", $"€ {data.GetSafeValue("catalogusprijs")}" }
                 }
             });
             #endregion
 
 
             // Card Info
+            var amount = fuelInfo!.GetSafeDecimalValue("brandstofverbruik_gecombineerd");
+            var fuelUsagesDecription = amount != 0
+                ? $"{(100M / amount).ToString("F2")}km op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving")}"
+                : "Niet geregistreerd";
+
             result.CardInfo = new()
             {
-                new(){ "Merk", $"{data.GetSafeValue("merk")} {data.GetSafeValue("handelsbenaming")}" },
-                new(){"Brandstof", fuelInfo.GetSafeValue("brandstof_omschrijving") },
+                new(){ "Merk", $"{data.GetSafeValue("merk")} ({data.GetSafeValue("handelsbenaming")})" },
+                new(){ "Verbruik", fuelUsagesDecription },
+                new(){ "Vermogen", netMaximumPower },
                 new(){ "Vervaldatum APK", data.GetSafeDateValue("vervaldatum_apk_dt") },
                 new(){ "Kilometer stand", $"{data.GetSafeValue("tellerstandoordeel")}" },
 
@@ -269,7 +287,6 @@ public class VehicleController : ApiControllerBase
 
         return Ok(result);
     }
-
 
     /// <summary>
     /// https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=87GRN6

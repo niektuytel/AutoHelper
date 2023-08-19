@@ -4,6 +4,20 @@ namespace WebUI.Extensions;
 
 public static class JTokenExtentions
 {
+
+    public static decimal GetSafeDecimalValue(this JToken data, string key)
+    {
+        if (data[key] != null)
+        {
+            if (decimal.TryParse(data[key].ToString(), out var value))
+            {
+                return value;
+            }
+        }
+
+        return 0;
+    }
+
     public static string GetSafeDateValue(this JToken data, string key)
     {
         if (data[key] != null)

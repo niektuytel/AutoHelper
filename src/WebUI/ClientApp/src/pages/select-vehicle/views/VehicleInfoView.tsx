@@ -1,5 +1,5 @@
 ﻿import React, { useEffect } from 'react';
-import { Box, Card, CardContent, Grid, Hidden, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, Hidden, Link, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
 import Slider from 'react-slick';
 
@@ -15,12 +15,9 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { VehicleClient, VehicleInformationResponse } from "../../../app/web-api-client";
 
 const Accordion = styled((props: AccordionProps) => (
-    <MuiAccordion disableGutters elevation={0} square {...props} />
+    <MuiAccordion elevation={0} square {...props} />
 ))(({ theme }) => ({
     border: `1px solid ${theme.palette.divider}`,
-    '&:not(:last-child)': {
-        borderBottom: 0,
-    },
     '&:before': {
         display: 'none',
     },
@@ -39,6 +36,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
         flexDirection: 'row-reverse',
         '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
             transform: 'rotate(90deg)',
+            marginRight: theme.spacing(1),
         },
         '& .MuiAccordionSummary-content': {
             marginLeft: theme.spacing(1),
@@ -56,7 +54,7 @@ interface IProps {
 
 export default ({ licence_plate }: IProps) => {
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
-    const [expanded, setExpanded] = React.useState<string | false>(false);
+    const [expanded, setExpanded] = React.useState<string[]>([]);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [vehicleInformation, setVehicleInformation] = React.useState<VehicleInformationResponse | undefined>(undefined);
 
@@ -88,18 +86,16 @@ export default ({ licence_plate }: IProps) => {
         }
     }, []);
 
-    const handleChange =
-        (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-            setExpanded(newExpanded ? panel : false);
-        };
+    const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+        if (newExpanded) {
+            setExpanded((prev) => [...prev, panel]);
+        } else {
+            setExpanded((prev) => prev.filter((item) => item !== panel));
+        }
+    };
 
     return (
         <>
-            <Box>
-                <Typography variant="h6" color="black" style={{ textAlign: 'center' }}>
-                    Informatie over voertuig: <b>{licence_plate}</b>
-                </Typography>
-            </Box>
             <Box sx={{ marginBottom: "40px", padding: "5vh"}}>
                 {isLoading ?
                     <Box display="flex" justifyContent="center">
@@ -107,31 +103,44 @@ export default ({ licence_plate }: IProps) => {
                     </Box>
                 : vehicleInformation?.data &&
                     <>
-                        <Card>
-                            <Table>
-                                <TableBody>
-                                    {vehicleInformation.cardInfo!.map((line, rowIndex) => (
-                                        <TableRow
-                                            key={rowIndex}
-                                            sx={{
-                                                backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
-                                            }}
-                                        >
-                                            {line!.map((value) => (
+                        <Box sx={{ margin: "auto", maxWidth: "600px"}}>
+                            <Typography variant="body2" style={{ textAlign: 'right', margin: "5px" }}>
+                                <i>
+                                    (bron: <Link href="https://ovi.rdw.nl" target="_blank" rel="noopener noreferrer">rdw.nl</Link>)
+                                </i>
+                            </Typography>
+                            <Card sx={{ alignContent: "center" }} elevation={6}>
+                                <Typography variant="h6" color="black" style={{ textAlign: 'center', margin: "20px" }}>
+                                    <b>Informatie: {licence_plate}</b>
+                                </Typography>
+                                <Table>
+                                    <TableBody>
+                                        {vehicleInformation.cardInfo!.map((line, rowIndex) => (
+                                            <TableRow
+                                                key={rowIndex}
+                                                sx={{
+                                                    backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
+                                                }}
+                                            >
+                                                {line!.map((value) => (
 
-                                                <TableCell
-                                                    style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
-                                                >
-                                                    {value}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </Card>
+                                                    <TableCell
+                                                        style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
+                                                    >
+                                                        {value}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </Card>
+                        </Box>
+                        <Typography variant="h6" color="#1C94F3" style={{ textAlign: 'center', marginTop:"40px"  }}>
+                            <b>Alle informatie</b>
+                        </Typography>
                         {vehicleInformation.data.map((section, index) => (
-                            <Accordion expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+                            <Accordion expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
                                 <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
                                     <Typography>{section.title}</Typography>
                                 </AccordionSummary>
