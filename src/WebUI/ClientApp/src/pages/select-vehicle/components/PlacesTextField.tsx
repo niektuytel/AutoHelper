@@ -94,6 +94,7 @@ export default ({ licence_plate }: IProps) => {
 
     // TODO: Set autofill the value of the textfield from the cookie
     // TODO: search or trigger: handleSearch when press enter button.
+    // TODO: surgestions are on content, everything below it is jumping down, surgestion should be an static/external layer
     return <>
         <TextField
             fullWidth
