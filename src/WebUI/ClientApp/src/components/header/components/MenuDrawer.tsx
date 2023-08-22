@@ -12,11 +12,14 @@ import InfoIcon from '@mui/icons-material/Info';
 import LabelOffIcon from '@mui/icons-material/LabelOff';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
-import { Accordion, AccordionDetails, AccordionSummary, Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { IsLoggedIn, loginRequest, logoutRequest } from "../../../oidcConfig";
 //import { msalInstance } from "../../../index";
+
 import { useTranslation } from "react-i18next";
+import { useAuth0 } from "@auth0/auth0-react";
+
+
 import { HashValues } from "../../../i18n/HashValues";
 
 interface IProps {
@@ -26,6 +29,7 @@ interface IProps {
 }
 
 export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
+    const { loginWithRedirect, logout, isAuthenticated, isLoading, error } = useAuth0();
     const path = window.location.pathname;
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -33,6 +37,16 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
         navigate(url)
         setOnMenu(false);
     }
+
+    if (error) {
+        console.error("Auth0 Error:", error);
+    }
+    
+    //if (isLoading) {
+    //    return (
+    //        <div>Loading...</div>
+    //    );
+    //}
 
     return (
         <Drawer open={onMenu} onClose={() => setOnMenu(!onMenu)}>
@@ -43,7 +57,28 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
                     justifyContent: 'flex-end',
                     width: "250px"
                 }}
-            />
+            >
+                {isLoading ? (<div>Loading ...</div>)
+                    : isAuthenticated ? (
+                    <Button 
+                        variant="contained" 
+                        color="secondary"
+                        startIcon={<LockOpenOutlinedIcon />}
+                            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                    >
+                        Logout
+                    </Button>
+                ) : (
+                    <Button 
+                        variant="contained" 
+                        color="primary"
+                        startIcon={<LockOpenOutlinedIcon />}
+                        onClick={() => loginWithRedirect()}
+                    >
+                        Login
+                    </Button>
+                )}
+            </Toolbar>
             <Divider />
             <List component="nav">
                 <ListItem button onClick={() => onClick("/")}>
@@ -136,7 +171,7 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
                         </ListItem>
                     </>
                     :
-                    IsLoggedIn() ? 
+                    isAuthenticated ? 
                         <ListItem button>{/* onClick={() => msalInstance.logoutRedirect(logoutRequest)}>*/}
                             <ListItemIcon>
                                 <LockOpenOutlinedIcon />

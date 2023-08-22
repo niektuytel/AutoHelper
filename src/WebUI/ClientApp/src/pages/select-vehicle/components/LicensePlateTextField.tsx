@@ -17,16 +17,19 @@ import useOnclickOutside from "react-cool-onclickoutside";
 
 // own imports
 import { HashValues } from "../../../i18n/HashValues";
-import { VehicleClient } from "../../../app/web-api-client";
+import { useAuth0 } from "@auth0/auth0-react";
+import GetVehicleClient from "../../../app/vehicleClient";
+
 
 interface IProps {
 }
 
 export default ({ }: IProps) => {
-    var hash = window.location.hash.length == 0 ? HashValues.select_vehicle_default : window.location.hash;
     const navigate = useNavigate();
-    const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
     const { t } = useTranslation();
+    const { getAccessTokenSilently } = useAuth0();
+
+
 
     const [value, setValue] = React.useState<string>("");
     const [isSearching, setIsSearching] = React.useState<boolean>(false);
@@ -61,9 +64,11 @@ export default ({ }: IProps) => {
         setValue("");
     };
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         setIsSearching(true);
 
+        var accessToken = await getAccessTokenSilently();
+        const vehicleClient = GetVehicleClient(accessToken);
         vehicleClient.searchVehicle(value)
             .then(response => {
                 if (response) {
@@ -84,7 +89,7 @@ export default ({ }: IProps) => {
             });
     }
 
-    const handleEnterPress = (event:any) => {
+    const handleEnterPress = async (event:any) => {
         if (event.key === 'Enter') {
             handleSearch();
         }

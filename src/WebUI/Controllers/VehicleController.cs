@@ -15,6 +15,7 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class VehicleController : ApiControllerBase
 {
+    [Authorize]
     [HttpGet("search")]
     public async Task<ActionResult<LicencePlateBriefResponse>> SearchVehicle([FromQuery] string licensePlate)
     {
@@ -41,6 +42,7 @@ public class VehicleController : ApiControllerBase
         return NotFound(response404);
     }
 
+    [Authorize]
     [HttpGet("information")]
     public async Task<ActionResult<VehicleInformationResponse>> GetVehicleInformation([FromQuery] string licensePlate)
     {

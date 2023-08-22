@@ -55,7 +55,6 @@
 
     <ItemGroup>
       <Folder Include="ClientApp\src\pages\dashboard-garage\" />
-      <Folder Include="ClientApp\src\pages\login\" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

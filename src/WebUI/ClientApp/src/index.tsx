@@ -13,20 +13,26 @@ import './i18n/config';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { Auth0ProviderWithNavigate } from "./auth0-provider-with-navigate";
 
-// TODO: Add your own OIDC client application
+// // TODO: Set to Env variable
+// const domain = "dev-2vmjtds0ooonfild.us.auth0.com";
+// const clientID = "XszCN9wJpomTtgmxiEiriEEJ4bJrZ7kC";
+// const redirectUri = `${window.location.origin}/auth-callback`;
 
 const element = document.getElementById('root');
 const root = createRoot(element!);
 root.render(
-    <Provider store={store}>
-        <HistoryRouter history={history}>
-            <CookiesProvider>
-                <CssBaseline/>
-                <App/>
-            </CookiesProvider>
-        </HistoryRouter>
-    </Provider>
+        <Provider store={store}>
+            <HistoryRouter history={history}>
+                <Auth0ProviderWithNavigate>
+                    <CookiesProvider>
+                        <CssBaseline />
+                            <App />
+                    </CookiesProvider>
+                </Auth0ProviderWithNavigate>
+            </HistoryRouter>
+        </Provider>,
 );
 
             
