@@ -9,32 +9,32 @@ interface Auth0ProviderWithNavigateProps {
 export const Auth0ProviderWithNavigate = ({
   children,
 }: PropsWithChildren<Auth0ProviderWithNavigateProps>): JSX.Element | null => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const domain = process.env.REACT_APP_AUTH0_DOMAIN;
-  const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
-  const redirectUri = `${window.location.origin}${process.env.REACT_APP_AUTH0_CALLBACK_PATH}`;
-  const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
+    const domain = process.env.REACT_APP_AUTH0_DOMAIN;
+    const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+    const redirectUri = `${window.location.origin}${process.env.REACT_APP_AUTH0_CALLBACK_PATH}`;
+    const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
-  const onRedirectCallback = (appState?: AppState) => {
-    navigate(appState?.returnTo || window.location.pathname);
-  };
+    const onRedirectCallback = (appState?: AppState) => {
+        navigate(appState?.returnTo || window.location.pathname);
+    };
 
-  if (!(domain && clientId && redirectUri && audience)) {
-    return null;
-  }
+    if (!(domain && clientId && redirectUri && audience)) {
+        return <div>Invalid Auth0</div>;
+    }
 
-  return (
+    return (
     <Auth0Provider
-      domain={domain}
-      clientId={clientId}
-      authorizationParams={{
+        domain={domain}
+        clientId={clientId}
+        authorizationParams={{
         audience: audience,
         redirect_uri: redirectUri,
-      }}
-      onRedirectCallback={onRedirectCallback}
+        }}
+        onRedirectCallback={onRedirectCallback}
     >
-      {children}
+        {children}
     </Auth0Provider>
-  );
+    );
 };

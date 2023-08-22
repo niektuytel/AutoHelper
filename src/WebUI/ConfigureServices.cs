@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
+using WebUI.Models.Response;
+using WebUI.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -20,32 +22,59 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddWebUIServices(this IServiceCollection services, IConfiguration configuration)
     {
-        var audience = configuration["OAuth0:AUTH0_AUDIENCE"];
-        services.AddDatabaseDeveloperPageExceptionFilter();
+        services.AddDatabaseDeveloperPageExceptionFilter()
+                .AddHttpContextAccessor()
+                .AddAuthenticationServices(configuration)
+                .AddControllerServices()
+                .AddAuthorizationServices()
+                .AddOpenApiServices(configuration)
+                .AddHealthChecks()
+                .AddDbContextCheck<ApplicationDbContext>();
 
+        return services;
+    }
+
+    private static IServiceCollection AddControllerServices(this IServiceCollection services)
+    {
+        services.AddHttpClient<IRDWService, RDWService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-        services.AddHttpContextAccessor();
-
-        services.AddHealthChecks()
-            .AddDbContextCheck<ApplicationDbContext>();
+        services.AddScoped<IVehicleInformationService, VehicleInformationService>();
 
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())
                 .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.Authority = configuration["OAuth0:AUTH0_DOMAIN"];
-                options.Audience = audience;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true
-                };
-            });
+        services.AddSpaStaticFiles(configuration =>
+        {
+            configuration.RootPath = "ClientApp/build";  // In production, the React files will be served from this directory
+        });
 
+        services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+
+        return services;
+    }
+
+    private static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        var audience = configuration["OAuth0:Audience"];
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = configuration["OAuth0:Domain"];
+                    options.Audience = audience;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true
+                    };
+                });
+
+        return services;
+    }
+
+    private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
+    {
         services.AddAuthorization(options =>
         {
             options.AddPolicy("read:admin-messages", policy =>
@@ -56,27 +85,22 @@ public static class ConfigureServices
 
         services.AddSingleton<IAuthorizationHandler, RbacHandler>();
 
-        services.AddSpaStaticFiles(configuration =>
-        {
-            // In production, the React files will be served from this directory
-            configuration.RootPath = "ClientApp/build";
-        });
+        return services;
+    }
 
-
-        // Customise default API behaviour
-        services.Configure<ApiBehaviorOptions>(options =>
-            options.SuppressModelStateInvalidFilter = true);
+    private static IServiceCollection AddOpenApiServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        var audience = configuration["OAuth0:Audience"];
 
         services.AddOpenApiDocument(configure =>
         {
             configure.Title = "AutoHelper API";
-
             configure.AddSecurity("OAuth2", new[] { audience }, new OpenApiSecurityScheme
             {
                 Type = OpenApiSecuritySchemeType.OAuth2,
                 Flow = OpenApiOAuth2Flow.Implicit,
-                AuthorizationUrl = $"{configuration["OAuth0:AUTH0_DOMAIN"]}/authorize",
-                TokenUrl = $"{configuration["OAuth0:AUTH0_DOMAIN"]}/oauth/token"
+                AuthorizationUrl = $"{configuration["OAuth0:Domain"]}/authorize",
+                TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
             });
         });
 
@@ -85,33 +109,57 @@ public static class ConfigureServices
 
     public static WebApplication UseWebUIServices(this WebApplication app)
     {
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
-            app.UseMigrationsEndPoint();
-
-            // Initialise and seed database
-            using (var scope = app.Services.CreateScope())
-            {
-                var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-                initialiser.InitialiseAsync().Wait();
-                initialiser.SeedAsync().Wait();
-            }
+            UseDevelopmentServices(app);
         }
         else
         {
-            app.UseExceptionHandler("/Error");
-            app.UseHsts();
+            UseProductionServices(app);
         }
 
+        UseCommonWebUIServices(app);
+
+        return app;
+    }
+
+    private static void UseDevelopmentServices(WebApplication app)
+    {
+        app.UseDeveloperExceptionPage();
+        app.UseMigrationsEndPoint();
+
+        // Initialise and seed database
+        using (var scope = app.Services.CreateScope())
+        {
+            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            initialiser.InitialiseAsync().Wait();
+            initialiser.SeedAsync().Wait();
+        }
+    }
+
+    private static void UseProductionServices(WebApplication app)
+    {
+        app.UseExceptionHandler("/Error");
+        app.UseHsts();
+    }
+
+    private static void UseCommonWebUIServices(WebApplication app)
+    {
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+
         if (!app.Environment.IsDevelopment())
         {
             app.UseSpaStaticFiles();
         }
 
+        UseOpenApi(app);
+        UseRoutingAndAuth(app);
+        UseSpaServices(app);
+    }
+
+    private static void UseOpenApi(WebApplication app)
+    {
         app.UseOpenApi(configure =>
         {
             configure.DocumentName = "v1";
@@ -122,28 +170,30 @@ public static class ConfigureServices
         {
             settings.OAuth2Client = new OAuth2ClientSettings
             {
-                ClientId = app.Configuration["OAuth0:AUTH0_CLIENTID"],
+                ClientId = app.Configuration["OAuth0:ClientID"],
                 AppName = "AutoHelper API",
                 UsePkceWithAuthorizationCodeGrant = false,
                 AdditionalQueryStringParameters =
                 {
-                    { "audience", app.Configuration["OAuth0:AUTH0_AUDIENCE"] }
+                    { "audience", app.Configuration["OAuth0:Audience"] }
                 }
             };
             settings.Path = "/swagger";
             settings.DocumentPath = "/swagger/v1/swagger.json";
         });
+    }
 
+    private static void UseRoutingAndAuth(WebApplication app)
+    {
         app.UseRouting();
         app.UseAuthentication();
-        app.UseIdentityServer();
         app.UseAuthorization();
         app.UseHealthChecks("/health");
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
+    }
 
+    private static void UseSpaServices(WebApplication app)
+    {
         app.UseSpa(spa =>
         {
             spa.Options.SourcePath = "ClientApp";
@@ -152,7 +202,6 @@ public static class ConfigureServices
                 spa.UseReactDevelopmentServer(npmScript: "start");
             }
         });
-
-        return app;
     }
 }
+

@@ -6,13 +6,14 @@ import HomeIcon from '@mui/icons-material/Home';
 import LabelIcon from '@mui/icons-material/Label';
 import ReorderIcon from '@mui/icons-material/Reorder';
 import HorizontalSplitIcon from '@mui/icons-material/HorizontalSplit';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import InfoIcon from '@mui/icons-material/Info';
 import LabelOffIcon from '@mui/icons-material/LabelOff';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
-import { Accordion, AccordionDetails, AccordionSummary, Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Button } from "@mui/material";
+import { Accordion, CircularProgress,  AccordionDetails, AccordionSummary, Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 //import { msalInstance } from "../../../index";
 
@@ -42,12 +43,6 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
         console.error("Auth0 Error:", error);
     }
     
-    //if (isLoading) {
-    //    return (
-    //        <div>Loading...</div>
-    //    );
-    //}
-
     return (
         <Drawer open={onMenu} onClose={() => setOnMenu(!onMenu)}>
             <Toolbar
@@ -55,23 +50,29 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'flex-end',
-                    width: "250px"
+                    width: "100%",
+                    padding: "12px!important",  // Add padding around the toolbar
                 }}
             >
-                {isLoading ? (<div>Loading ...</div>)
-                    : isAuthenticated ? (
-                    <Button 
-                        variant="contained" 
-                        color="secondary"
-                        startIcon={<LockOpenOutlinedIcon />}
-                            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                {isLoading ? (
+                    <Box display="flex" justifyContent="center" width="100%">
+                        <CircularProgress color="secondary" />  {/* Loading bar */}
+                    </Box>
+                ) : isAuthenticated ? (
+                    <Button
+                        variant="contained"
+                        fullWidth  // Make button full width
+                        style={{ backgroundColor: 'black' }} // Set color to black
+                            startIcon={<LockOutlinedIcon />}
+                        onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
                     >
                         Logout
                     </Button>
                 ) : (
-                    <Button 
-                        variant="contained" 
-                        color="primary"
+                    <Button
+                        variant="contained"
+                        fullWidth  // Make button full width
+                        style={{ backgroundColor: '#1C94F3' }}  // Set custom color
                         startIcon={<LockOpenOutlinedIcon />}
                         onClick={() => loginWithRedirect()}
                     >
@@ -80,7 +81,7 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
                 )}
             </Toolbar>
             <Divider />
-            <List component="nav">
+            <List component="nav" sx={{ width: "250px"}}>
                 <ListItem button onClick={() => onClick("/")}>
                     <ListItemIcon>
                         <HomeIcon />

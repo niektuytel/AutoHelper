@@ -15,24 +15,19 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { Auth0ProviderWithNavigate } from "./auth0-provider-with-navigate";
 
-// // TODO: Set to Env variable
-// const domain = "dev-2vmjtds0ooonfild.us.auth0.com";
-// const clientID = "XszCN9wJpomTtgmxiEiriEEJ4bJrZ7kC";
-// const redirectUri = `${window.location.origin}/auth-callback`;
-
 const element = document.getElementById('root');
 const root = createRoot(element!);
 root.render(
-        <Provider store={store}>
-            <HistoryRouter history={history}>
-                <Auth0ProviderWithNavigate>
-                    <CookiesProvider>
-                        <CssBaseline />
-                            <App />
-                    </CookiesProvider>
-                </Auth0ProviderWithNavigate>
-            </HistoryRouter>
-        </Provider>,
+    <Provider store={store}>
+        <HistoryRouter history={history}>
+            <Auth0ProviderWithNavigate>
+                <CookiesProvider>
+                    <CssBaseline />
+                    <App />
+                </CookiesProvider>
+            </Auth0ProviderWithNavigate>
+        </HistoryRouter>
+    </Provider>
 );
 
             

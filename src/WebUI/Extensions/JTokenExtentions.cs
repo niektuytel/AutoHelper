@@ -18,6 +18,19 @@ public static class JTokenExtentions
         return 0;
     }
 
+    public static int GetSafeDateYearValue(this JToken data, string key)
+    {
+        if (data[key] != null)
+        {
+            if (DateTime.TryParse(data[key].ToString(), out var value))
+            {
+                return value.Year;
+            }
+        }
+
+        return 0;
+    }
+
     public static string GetSafeDateValue(this JToken data, string key)
     {
         if (data[key] != null)

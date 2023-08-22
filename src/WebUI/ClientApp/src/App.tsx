@@ -30,18 +30,10 @@ import { NotFoundPage } from './pages/not-found-page';
 //</Route>
 
 export default () => {
-    //const { isLoading } = useAuth0();
-
     // Setting page scroll to 0 when changing the route
     useEffect(() => {
         document.documentElement.scrollTop = 0;
     }, [window.location.pathname]);
-
-    //if (isLoading) {
-    //    return (
-    //        <div>Loading...</div>
-    //    );
-    //}
 
     return <>
         <Header isAdmin={false} />
