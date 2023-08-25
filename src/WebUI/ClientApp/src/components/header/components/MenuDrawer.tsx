@@ -1,27 +1,30 @@
-import React from "react";
+import React, { useState, MouseEvent, useEffect } from 'react';
 import StoreIcon from '@mui/icons-material/Store';
 import LoyaltyIcon from '@mui/icons-material/Loyalty';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import HomeIcon from '@mui/icons-material/Home';
 import LabelIcon from '@mui/icons-material/Label';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import ReorderIcon from '@mui/icons-material/Reorder';
-import HorizontalSplitIcon from '@mui/icons-material/HorizontalSplit';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
-import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
-import InfoIcon from '@mui/icons-material/Info';
-import LabelOffIcon from '@mui/icons-material/LabelOff';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import AnnouncementIcon from '@mui/icons-material/Announcement';
-import { Accordion, CircularProgress,  AccordionDetails, AccordionSummary, Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Button, Box } from "@mui/material";
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import BuildIcon from '@mui/icons-material/Build';
+import GroupIcon from '@mui/icons-material/Group';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+import { Accordion, CircularProgress,  AccordionDetails, AccordionSummary, Divider, Drawer, Hidden, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, Button, Box, Menu, MenuItem, Collapse, ListItemButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 //import { msalInstance } from "../../../index";
 
 import { useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
+import jwt_decode from 'jwt-decode'; 
 
 
 import { HashValues } from "../../../i18n/HashValues";
+
 
 interface IProps {
     onMenu: boolean;
@@ -30,14 +33,73 @@ interface IProps {
 }
 
 export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
-    const { loginWithRedirect, logout, isAuthenticated, isLoading, error } = useAuth0();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [userRoles, setUserRoles] = useState<string[] | null>(null);
+    const [open, setOpen] = React.useState(true);
+    const { loginWithRedirect, logout, isAuthenticated, isLoading, error, getAccessTokenSilently, getIdTokenClaims } = useAuth0();
     const path = window.location.pathname;
     const navigate = useNavigate();
     const { t } = useTranslation();
+
+    const rolesClaim = `${window.location.origin}/roles`
+
+    useEffect(() => {
+        const fetchRole = async () => {
+            try {
+                const idTokenClaims: any = await getIdTokenClaims();
+                console.log(idTokenClaims);
+
+                const roles = idTokenClaims[rolesClaim];
+                setUserRoles(roles);
+            } catch (e) {
+                console.error("Error fetching role:", e);
+            }
+        };
+
+        fetchRole();
+    }, [getIdTokenClaims]);
+
+
     const onClick = (url: string) => {
         navigate(url)
         setOnMenu(false);
     }
+
+    
+    const handleClick2 = () => {
+        setOpen(!open);
+    };
+
+    const handleClick = (event: MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogin = (role: string) => {
+        if (role === 'garage') {
+            loginWithRedirect({
+                appState: {
+                    returnTo: "/garage/overview"
+                },
+                authorizationParams: {
+                    signUpAsGarage: true
+                }
+            });
+        } else {
+            loginWithRedirect({
+                appState: {
+                    returnTo: "/select-vehicle"
+                }
+            });
+        }
+
+        handleClose();
+    };
+
+
 
     if (error) {
         console.error("Auth0 Error:", error);
@@ -63,130 +125,96 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
                         variant="contained"
                         fullWidth  // Make button full width
                         style={{ backgroundColor: 'black' }} // Set color to black
-                            startIcon={<LockOutlinedIcon />}
-                        onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                        onClick={() => {
+                            setUserRoles(null);
+                            logout({ logoutParams: { returnTo: window.location.origin } })
+                        }}
                     >
                         Logout
                     </Button>
-                ) : (
+                    ) : (<>
                     <Button
                         variant="contained"
-                        fullWidth  // Make button full width
-                        style={{ backgroundColor: '#1C94F3' }}  // Set custom color
-                        startIcon={<LockOpenOutlinedIcon />}
-                        onClick={() => loginWithRedirect()}
+                        fullWidth 
+                        style={{ backgroundColor: '#1C94F3' }}
+                        onClick={handleClick}
                     >
                         Login
                     </Button>
-                )}
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        <MenuItem onClick={() => handleLogin('user')}>Login as User</MenuItem>
+                        <MenuItem onClick={() => handleLogin('garage')}>Login as Garage</MenuItem>
+                    </Menu>
+                </>)}
             </Toolbar>
             <Divider />
-            <List component="nav" sx={{ width: "250px"}}>
-                <ListItem button onClick={() => onClick("/")}>
+            <List component="nav" sx={{ width: "250px" }}>
+                <ListItemButton onClick={handleClick2}>
                     <ListItemIcon>
-                        <HomeIcon />
+                        <AccountBoxIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Home" />
-                </ListItem>
-                {path === "/" &&
-                    <Hidden smUp>
-                        <ListItem button onClick={() => onClick(`/${HashValues.contact}`)}>
+                    <ListItemText primary="Account" />
+                    {open ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItem button onClick={() => onClick("/user/overview")}>
                             <ListItemIcon>
-                                <AlternateEmailIcon />
+                                <HomeIcon />
                             </ListItemIcon>
-                            <ListItemText primary={t("contact")} />
+                            <ListItemText primary="Overview" />
                         </ListItem>
-                        <ListItem button onClick={() => onClick(`/${HashValues.info}`)}>
-                            <ListItemIcon>
-                                <AnnouncementIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={t("news")}/>
-                        </ListItem>
-                    </Hidden>
-                }
-                <ListItem button onClick={() => onClick("/products")}>
-                    <ListItemIcon>
-                        <StoreIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Products" />
-                </ListItem>
-                {isAdmin ?
+                    </List>
+                </Collapse>
+                {userRoles?.includes('garage') && (
                     <>
-                        <Divider/>
-                        <ListItem button onClick={() => onClick("/dashboard#tags")}>
+                        <ListItem button onClick={() => onClick("/garage/overview")}>
                             <ListItemIcon>
-                                <LabelIcon />
+                                <DashboardIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Tags" />
+                            <ListItemText primary="Overview" />
                         </ListItem>
-                        <Accordion>
-                            <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                            >
-                                <Typography>Tags filter (Beta)</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                            
-                                <List component="nav">
-                                    <ListItem button onClick={() => onClick("/dashboard#tagtargets")}>
-                                        <ListItemIcon>
-                                            <LoyaltyIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Tag Targets" />
-                                    </ListItem>
-                                    <ListItem button onClick={() => onClick("/dashboard#tagfilters")}>
-                                        <ListItemIcon>
-                                            <LocalOfferIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Tag Filters" />
-                                    </ListItem>
-                                    <ListItem button onClick={() => onClick("/dashboard#tagsituations")}>
-                                        <ListItemIcon>
-                                            <LabelOffIcon />
-                                        </ListItemIcon>
-                                        <ListItemText primary="Tag Situations" />
-                                    </ListItem>
-                                </List>
-                            </AccordionDetails>
-                        </Accordion>
-                        {/* <Divider/> */}
-                        <ListItem button onClick={() => onClick("/dashboard#orders")}>
+                        <ListItem button onClick={() => onClick("/garage/agenda")}>
                             <ListItemIcon>
-                                <ReorderIcon />
+                                <CalendarTodayIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Orders" />
+                            <ListItemText primary="Agenda" />
                         </ListItem>
-                        <ListItem button onClick={() => onClick("/dashboard#products")}>
+                        <ListItem button onClick={() => onClick("/garage/services")}>
                             <ListItemIcon>
-                                <HorizontalSplitIcon />
+                                <BuildIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Products" />
+                            <ListItemText primary="Services" />
                         </ListItem>
-                        <ListItem button>{/* onClick={() => msalInstance.logoutRedirect(logoutRequest)}>*/}
+                        <ListItemButton onClick={handleClick2}>
                             <ListItemIcon>
-                                <LockOpenOutlinedIcon />
+                                <GroupIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Logout" />
+                            <ListItemText primary="All Colleagues" />
+                            {open ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                <ListItem button onClick={() => onClick("/garage/colleague1")}>
+                                    <ListItemIcon>
+                                        {/* Icon for Colleague 1 */}
+                                    </ListItemIcon>
+                                    <ListItemText primary="Colleague 1" />
+                                </ListItem>
+                            </List>
+                        </Collapse>
+                        <ListItem button onClick={() => onClick("/garage/settings")}>
+                            <ListItemIcon>
+                                <SettingsIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Settings" />
                         </ListItem>
                     </>
-                    :
-                    isAuthenticated ? 
-                        <ListItem button>{/* onClick={() => msalInstance.logoutRedirect(logoutRequest)}>*/}
-                            <ListItemIcon>
-                                <LockOpenOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Logout" />
-                        </ListItem>
-                    :
-                        <ListItem button>{/* onClick={() => msalInstance.loginRedirect(loginRequest)}>*/}
-                            <ListItemIcon>
-                                <LockOpenOutlinedIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Login" />
-                        </ListItem>
-                }
+                )}
             </List>
         </Drawer>
     );
