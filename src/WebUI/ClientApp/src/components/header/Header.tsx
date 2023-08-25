@@ -16,10 +16,10 @@ import { StyledAppBar, StyledToolbar, StyledIconButton, StyledBadge } from "./He
 import { ICookieProduct } from "../../interfaces/ICookieProduct";
 
 interface IProps {
-    isAdmin: boolean;
+
 }
 
-const Header = ({ isAdmin }: IProps) => {
+const Header = ({ }: IProps) => {
     const path = window.location.pathname;
     const [onMenu, setOnMenu] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
@@ -73,7 +73,7 @@ const Header = ({ isAdmin }: IProps) => {
                     </Grid>
                 </StyledToolbar>
             </StyledAppBar>
-            <MenuDrawer onMenu={onMenu} setOnMenu={setOnMenu} isAdmin={isAdmin} />
+            <MenuDrawer onMenu={onMenu} setOnMenu={setOnMenu} />
             <CartDrawer cartOpen={cartOpen} setCartOpen={setCartOpen} />
         </>
     );

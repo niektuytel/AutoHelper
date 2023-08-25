@@ -4,6 +4,29 @@
   "search_camelcase": "Search",
   "next_camelcase": "Next",
   "suggestions_camelcase": "Suggestions",
+  "login_camelcase": "Login",
+  "logout_camelcase": "Logout",
+  "as_user": "As user",
+  "as_garage": "As garage",
+  "overview_camelcase": "Overview",
+  "agenda_camelcase": "Agenda",
+  "services_camelcase": "Services",
+  "colleagues_camelcase": "Colleagues",
+  "settings_camelcase": "Settings",
+  "account_camelcase": "Account",
+  "vehicle_search_camelcase": "Vehicle search",
+
+
+
+
+
+
+
+
+
+
+
+
 
   "contact": "Contact",
   "autohelper_phone": "+31618395668",

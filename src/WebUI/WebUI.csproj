@@ -50,11 +50,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="ClientApp\src\components\ProtectedRoute.tsx" />
       <None Remove="ClientApp\src\pages\select-vehicle\components\NavSection.tsx" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ClientApp\src\pages\dashboard-garage\" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
