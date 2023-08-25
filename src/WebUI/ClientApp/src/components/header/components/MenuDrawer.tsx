@@ -36,12 +36,12 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [userRoles, setUserRoles] = useState<string[] | null>(null);
     const [open, setOpen] = React.useState(true);
-    const { loginWithRedirect, logout, isAuthenticated, isLoading, error, getAccessTokenSilently, getIdTokenClaims } = useAuth0();
+    const { loginWithRedirect, logout, isAuthenticated, isLoading, error, getAccessTokenSilently, getIdTokenClaims, user } = useAuth0();
     const path = window.location.pathname;
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const rolesClaim = `${window.location.origin}/roles`
+    const rolesClaim = `https://autohelper.nl/roles`
 
     useEffect(() => {
         const fetchRole = async () => {
@@ -56,8 +56,11 @@ export default ({ onMenu, setOnMenu, isAdmin }: IProps) => {
             }
         };
 
-        fetchRole();
-    }, [getIdTokenClaims]);
+        if (isAuthenticated) {
+            console.log(user);
+            fetchRole();
+        }
+    }, [isLoading, isAuthenticated]);
 
 
     const onClick = (url: string) => {
