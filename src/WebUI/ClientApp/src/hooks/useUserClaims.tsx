@@ -18,7 +18,9 @@ export default () => {
                     if (setUserRoles) setUserRoles(roles);
 
                     const guid = idTokenClaims[GARAGEGUIDCLAIM];
-                    if (setGarageGUID) setGarageGUID(guid);
+                    if (setGarageGUID) {
+                        setGarageGUID(guid);
+                    }
                 } catch (e) {
                     console.error("Error fetching role:", e);
                     // Handle error, possibly by redirecting to an error page or showing a message.

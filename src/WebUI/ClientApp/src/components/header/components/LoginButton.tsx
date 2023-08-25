@@ -35,7 +35,7 @@ export default ({  }:IProps) => {
         if (role === ROLES.GARAGE) {
             loginWithRedirect({
                 appState: {
-                    returnTo: RoutesGarageOverview("login")
+                    returnTo: ROUTES.GARAGE.OVERVIEW
                 },
                 authorizationParams: {
                     signUpAsGarage: true
