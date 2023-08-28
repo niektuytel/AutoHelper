@@ -19,4 +19,10 @@ public interface IApplicationDbContext
     //DbSet<OrderItem> Orders { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+    //// Deprecated, samples
+    //DbSet<TodoList> TodoLists { get; }
+
+    //DbSet<TodoItem> TodoItems { get; }
+
 }
