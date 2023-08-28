@@ -1,7 +1,7 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
 using AutoHelper.Application.TodoLists.Commands.UpdateTodoList;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -14,7 +14,7 @@ public class UpdateTodoListTests : BaseTestFixture
     [Test]
     public async Task ShouldRequireValidTodoListId()
     {
-        var command = new UpdateTodoListCommand { Id = 99, Title = "New Title" };
+        var command = new UpdateTodoListCommand { Id = Guid.Empty, Title = "New Title" };
         await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<NotFoundException>();
     }
 

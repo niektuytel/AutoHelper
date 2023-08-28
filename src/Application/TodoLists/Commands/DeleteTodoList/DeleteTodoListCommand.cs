@@ -1,12 +1,12 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.TodoLists.Commands.DeleteTodoList;
 
-public record DeleteTodoListCommand(int Id) : IRequest;
+public record DeleteTodoListCommand(Guid Id) : IRequest;
 
 public class DeleteTodoListCommandHandler : IRequestHandler<DeleteTodoListCommand>
 {
@@ -19,18 +19,18 @@ public class DeleteTodoListCommandHandler : IRequestHandler<DeleteTodoListComman
 
     public async Task<Unit> Handle(DeleteTodoListCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.TodoLists
-            .Where(l => l.Id == request.Id)
-            .SingleOrDefaultAsync(cancellationToken);
+        //var entity = await _context.TodoLists
+        //    .Where(l => l.Id == request.Id)
+        //    .SingleOrDefaultAsync(cancellationToken);
 
-        if (entity == null)
-        {
-            throw new NotFoundException(nameof(TodoList), request.Id);
-        }
+        //if (entity == null)
+        //{
+        //    throw new NotFoundException(nameof(TodoList), request.Id);
+        //}
 
-        _context.TodoLists.Remove(entity);
+        //_context.TodoLists.Remove(entity);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }

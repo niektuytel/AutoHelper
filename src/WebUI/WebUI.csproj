@@ -50,6 +50,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Controllers\TodoItemsController.cs" />
+      <Compile Remove="Controllers\TodoListsController.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Remove="ClientApp\src\components\ProtectedRoute.tsx" />
       <None Remove="ClientApp\src\pages\select-vehicle\components\NavSection.tsx" />
     </ItemGroup>

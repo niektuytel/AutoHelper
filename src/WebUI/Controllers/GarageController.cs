@@ -1,19 +1,21 @@
-﻿using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+﻿using AutoHelper.Application.Garages.Queries.GetGarageOverview;
+using AutoHelper.Application.Garages.Queries.GetGarageSettings;
+using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoHelper.WebUI.Controllers;
 
 public class GarageController : ApiControllerBase
 {
-    [HttpGet($"{nameof(Overview)}")]
-    public async Task<IEnumerable<WeatherForecast>> Overview()
+    [HttpGet($"{{id}}/{nameof(Overview)}")]
+    public async Task<GarageOverview> Overview([FromRoute]Guid id)
     {
-        return await Mediator.Send(new GetWeatherForecastsQuery());
+        return await Mediator.Send(new GetGarageOverviewQuery(id));
     }
 
-    [HttpPost($"{nameof(Settings)}")]
-    public async Task<IEnumerable<WeatherForecast>> Settings()
+    [HttpPost($"{{id}}/{nameof(Settings)}")]
+    public async Task<GarageSettings> Settings([FromRoute] Guid id)
     {
-        return await Mediator.Send(new GetWeatherForecastsQuery());
+        return await Mediator.Send(new GetGarageSettingsQuery(id));
     }
 }

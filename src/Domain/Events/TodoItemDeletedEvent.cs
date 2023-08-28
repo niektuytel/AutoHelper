@@ -1,4 +1,6 @@
-﻿namespace AutoHelper.Domain.Events;
+﻿using AutoHelper.Domain.Entities.Deprecated;
+
+namespace AutoHelper.Domain.Events;
 
 public class TodoItemDeletedEvent : BaseEvent
 {

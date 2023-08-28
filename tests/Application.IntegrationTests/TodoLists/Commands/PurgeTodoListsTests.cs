@@ -2,7 +2,7 @@
 using AutoHelper.Application.Common.Security;
 using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
 using AutoHelper.Application.TodoLists.Commands.PurgeTodoLists;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
 using FluentAssertions;
 using NUnit.Framework;
 

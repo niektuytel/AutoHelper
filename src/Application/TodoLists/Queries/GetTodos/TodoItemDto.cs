@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
 
 namespace AutoHelper.Application.TodoLists.Queries.GetTodos;
 

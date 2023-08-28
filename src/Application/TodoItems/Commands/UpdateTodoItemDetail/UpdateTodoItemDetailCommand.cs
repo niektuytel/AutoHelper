@@ -1,6 +1,6 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Enums;
 using MediatR;
 
@@ -8,7 +8,7 @@ namespace AutoHelper.Application.TodoItems.Commands.UpdateTodoItemDetail;
 
 public record UpdateTodoItemDetailCommand : IRequest
 {
-    public int Id { get; init; }
+    public Guid Id { get; init; }
 
     public int ListId { get; init; }
 
@@ -28,20 +28,20 @@ public class UpdateTodoItemDetailCommandHandler : IRequestHandler<UpdateTodoItem
 
     public async Task<Unit> Handle(UpdateTodoItemDetailCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.TodoItems
-            .FindAsync(new object[] { request.Id }, cancellationToken);
+        //var entity = await _context.TodoItems
+        //    .FindAsync(new object[] { request.Id }, cancellationToken);
 
-        if (entity == null)
+        if (true)//entity == null)
         {
             throw new NotFoundException(nameof(TodoItem), request.Id);
         }
 
-        entity.ListId = request.ListId;
-        entity.Priority = request.Priority;
-        entity.Note = request.Note;
+        ////entity.ListId = request.ListId;
+        //entity.Priority = request.Priority;
+        //entity.Note = request.Note;
 
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
 
-        return Unit.Value;
+        //return Unit.Value;
     }
 }

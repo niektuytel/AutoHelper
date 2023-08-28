@@ -1,4 +1,4 @@
-﻿using AutoHelper.Domain.Entities;
+﻿using AutoHelper.Domain.Entities.Deprecated;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

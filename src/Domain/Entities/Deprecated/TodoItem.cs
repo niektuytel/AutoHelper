@@ -1,8 +1,8 @@
-﻿namespace AutoHelper.Domain.Entities;
+﻿namespace AutoHelper.Domain.Entities.Deprecated;
 
 public class TodoItem : BaseAuditableEntity
 {
-    public int ListId { get; set; }
+    //public int ListId { get; set; }
 
     public string? Title { get; set; }
 

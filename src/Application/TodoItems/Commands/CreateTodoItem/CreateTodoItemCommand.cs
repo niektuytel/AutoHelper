@@ -1,18 +1,19 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
 using MediatR;
 
 namespace AutoHelper.Application.TodoItems.Commands.CreateTodoItem;
 
-public record CreateTodoItemCommand : IRequest<int>
+public record CreateTodoItemCommand : IRequest<Guid>
 {
     public int ListId { get; init; }
 
     public string? Title { get; init; }
 }
 
-public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, int>
+public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
 
@@ -21,20 +22,20 @@ public class CreateTodoItemCommandHandler : IRequestHandler<CreateTodoItemComman
         _context = context;
     }
 
-    public async Task<int> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateTodoItemCommand request, CancellationToken cancellationToken)
     {
         var entity = new TodoItem
         {
-            ListId = request.ListId,
+            //ListId = request.ListId,
             Title = request.Title,
             Done = false
         };
 
-        entity.AddDomainEvent(new TodoItemCreatedEvent(entity));
+        //entity.AddDomainEvent(new TodoItemCreatedEvent(entity));
 
-        _context.TodoItems.Add(entity);
+        //_context.TodoItems.Add(entity);
 
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
 
         return entity.Id;
     }

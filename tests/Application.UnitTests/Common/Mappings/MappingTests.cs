@@ -3,8 +3,8 @@ using AutoMapper;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.TodoLists.Queries.GetTodos;
-using AutoHelper.Domain.Entities;
 using NUnit.Framework;
+using AutoHelper.Domain.Entities.Deprecated;
 
 namespace AutoHelper.Application.UnitTests.Common.Mappings;
 
