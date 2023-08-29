@@ -10,9 +10,10 @@ interface IProps {
 }
 
 export default ({ onMenu, setOnMenu }: IProps) => {
-    
     return (
-        <Drawer open={onMenu} onClose={() => setOnMenu(!onMenu)}>
+        <Drawer
+            open={onMenu} 
+            onClose={() => setOnMenu(!onMenu)}>
             <Toolbar
                 sx={{
                     display: 'flex',

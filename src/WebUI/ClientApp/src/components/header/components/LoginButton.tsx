@@ -4,6 +4,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import GarageIcon from '@mui/icons-material/Garage';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useTranslation } from 'react-i18next';
+import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/ExitToApp'; 
 
 // custom imports
 import { ROUTES, RoutesGarageOverview } from '../../../constants/routes';
@@ -11,7 +13,9 @@ import { ROLES } from '../../../constants/roles';
 import { COLORS } from '../../../constants/colors';
 import { useLocation } from 'react-router';
 
-interface IProps { }
+interface IProps {
+    asIcon?: boolean
+}
 
 const StyledButton = styled(Button)({
     backgroundColor: COLORS.BLUE,
@@ -21,7 +25,7 @@ const StyledButton = styled(Button)({
     }
 });
 
-export default ({  }:IProps) => {
+export default ({ asIcon }:IProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
@@ -51,6 +55,21 @@ export default ({  }:IProps) => {
 
         handleClose();
     };
+
+    if (asIcon) {
+        return (
+            <IconButton
+                onClick={() => {
+                    logout({ logoutParams: { returnTo: window.location.origin } });
+                }}
+                style={{ color: 'black' }}
+                aria-label="logout"
+                title={t('logout_camelcase')}
+            >
+                <LogoutIcon />
+            </IconButton>
+        );
+    }
 
     if (isLoading) return <CircularProgress color="secondary" />;
     if (isAuthenticated) {

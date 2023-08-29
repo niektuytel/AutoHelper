@@ -1,10 +1,16 @@
 ﻿import React, { useEffect } from "react";
-import { Box, Button, Container, Dialog, DialogContent, DialogContentText, DialogTitle, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Drawer, FormControl, Hidden, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, TextField, Toolbar, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BankingInfoItem, BusinessOwnerItem, ContactItem, GarageClient, GarageSettings, IGarageSettings, LocationItem } from "../../../app/web-api-client";
 import GetGarageClient from "../../../app/garageClient";
 import { useAuth0 } from "@auth0/auth0-react";
+import LocationSection from "./components/LocationSection";
+import BusinessOwnerSection from "./components/BusinessOwnerSection";
+import BankingInfoSection from "./components/BankingInfoSection";
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
+import RoleBasedList from "../../../components/header/components/RoleBasedList";
 
 // own imports
 
@@ -67,131 +73,66 @@ export default ({ }: IProps) => {
     }, []);
 
     return (
-        <Box
-            style={{
-                position: "relative",
-                marginLeft: "10px",
-                marginRight: "10px"
-            }}
-        >
-            <Container
-                maxWidth="lg"
+        <>
+            <Box
                 style={{
-                    padding: "0",
-                    textAlign: "center"
+                    position: "relative",
+                    marginLeft: "10px",
+                    marginRight: "10px"
                 }}
             >
-                {isLoading ?
-                    <Typography>Loading...</Typography>
-                    :
-                    <>
-                        {garageSettings ? (
-                            <form>
-                                <TextField
-                                    label="Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={garageSettings.name}
-                                    onChange={(e) => {
-                                        const updatedSettings = new GarageSettings(garageSettings);
-                                        updatedSettings.name = e.target.value;
-                                        setGarageSettings(updatedSettings);
+                <Container
+                    maxWidth="lg"
+                    style={{
+                        padding: "0",
+                        textAlign: "center"
+                    }}
+                >
+                    <Paper variant="outlined" sx={{ top:"50px", padding: "25px" }} >
+                        {isLoading ?
+                            <Typography>Loading...</Typography>
+                            :
+                            <FormControl fullWidth >
+                                <BusinessOwnerSection
+                                    businessOwner={garageSettings.businessOwner}
+                                    onChange={(updatedBusinessOwner) => {
+                                        const newGarageSettings = garageSettings;
+                                        newGarageSettings.businessOwner = updatedBusinessOwner;
+
+                                        setGarageSettings(newGarageSettings);
                                     }}
-                                    style={{ marginBottom: '20px' }}
                                 />
-                                <TextField
-                                    label="Business Owner Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={garageSettings!.businessOwner!.fullName}
-                                    onChange = {(e) => {
-                                        var settings = garageSettings;
-                                        settings.businessOwner!.fullName = e.target.value;
+                                <LocationSection
+                                    location={garageSettings.location}
+                                    onChange={(updatedLocation) => {
+                                        const newGarageSettings = garageSettings;
+                                        newGarageSettings.location = updatedLocation;
 
-                                        setGarageSettings(settings);
+                                        setGarageSettings(newGarageSettings);
                                     }}
-                                    style={{ marginBottom: '20px' }}
                                 />
-                                <TextField
-                                    label="Account Number"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={garageSettings.bankingDetails!.accountNumber}
-                                    onChange={(e) => {
-                                        var settings = garageSettings;
-                                        settings.bankingDetails!.accountNumber = e.target.value;
+                                <BankingInfoSection
+                                    bankingInfo={garageSettings.bankingDetails}
+                                    onChange={(updatedBankingInfo) => {
+                                        const newGarageSettings = garageSettings;
+                                        newGarageSettings.bankingDetails = updatedBankingInfo;
 
-                                        setGarageSettings(settings);
+                                        setGarageSettings(newGarageSettings);
                                     }}
-                                    style={{ marginBottom: '20px' }}
                                 />
-                                <TextField
-                                    label="Bank Name"
-                                    variant="outlined"
-                                    fullWidth
-                                    value={garageSettings.bankingDetails!.bankName}
-                                    onChange={(e) => {
-                                        var settings = garageSettings;
-                                        settings.bankingDetails!.bankName = e.target.value;
-
-                                        setGarageSettings(settings);
-                                    }}
-                                    style={{ marginBottom: '20px' }}
-                                />
-                                { garageSettings.contacts!.map((contact, index) => (
-                                    <div key={index}>
-                                        <TextField
-                                            label={`Contact Name ${index + 1}`}
-                                            variant="outlined"
-                                            fullWidth
-                                            value={contact.fullName}
-                                            onChange={(e) => {
-                                                const updatedContacts = [...garageSettings.contacts!];
-                                                updatedContacts[index].fullName = e.target.value;
-
-                                                var settings = garageSettings;
-                                                settings.contacts = updatedContacts;
-                                                setGarageSettings(settings);
-                                            }}
-                                            style={{ marginBottom: '20px' }}
-                                        />
-                                        <TextField
-                                            label={`Contact Number ${index + 1}`}
-                                            variant="outlined"
-                                            fullWidth
-                                            value={contact.phoneNumber}
-                                            onChange={(e) => {
-                                                const updatedContacts = [...garageSettings.contacts!];
-                                                updatedContacts[index].phoneNumber = e.target.value;
-
-                                                const updatedSettingsData = { ...garageSettings, contacts: updatedContacts };
-                                                const newGarageSettings = new GarageSettings(updatedSettingsData);
-
-                                                setGarageSettings(newGarageSettings);
-                                            }}
-                                            style={{ marginBottom: '20px' }}
-                                        />
-                                    </div>
-                                ))}
-
-                                <Button variant="contained" color="primary">
-                                    Submit
-                                </Button>
-                            </form>
-                        ) : (
-                            <Typography>No data available.</Typography>
-                        )}
-                    </>
-                }
-            </Container>
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <DialogTitle>Welcome</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Welcome, you have no garage been defined yet. Let's create! :)
-                    </DialogContentText>
-                </DialogContent>
-            </Dialog>
-        </Box>
+                            </FormControl>
+                        }
+                    </Paper>
+                </Container>
+                <Dialog open={openDialog} onClose={handleCloseDialog}>
+                    <DialogTitle>Welcome</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Welcome, you have no garage been defined yet. Let's create! :)
+                        </DialogContentText>
+                    </DialogContent>
+                </Dialog>
+            </Box>
+        </>
     );
 }

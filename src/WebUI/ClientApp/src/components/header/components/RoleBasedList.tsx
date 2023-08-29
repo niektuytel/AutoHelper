@@ -20,7 +20,7 @@ import useUserClaims from '../../../hooks/useUserClaims';
 import { useAuth0 } from '@auth0/auth0-react';
 
 interface RoleBasedListProps {
-    setOnMenu: (value: boolean) => void;
+    setOnMenu?: (value: boolean) => void;
 }
 
 export default ({ setOnMenu }: RoleBasedListProps) => {
@@ -35,7 +35,7 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     const ListItemLink = ({ primary, icon, to }: { primary: string; icon: JSX.Element; to: string }) => (
         <ListItem
             button
-            onClick={() => { navigate(to); setOnMenu(false); }}
+            onClick={() => { navigate(to); setOnMenu && setOnMenu(false); }}
             style={location.pathname === to ? { backgroundColor: '#e0e0e0' } : {}}
         >
             <ListItemIcon style={location.pathname === to ? { color: 'black' } : {}}>

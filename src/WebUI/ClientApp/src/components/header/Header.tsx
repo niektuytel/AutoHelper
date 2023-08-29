@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Container, Grid, Hidden, IconButton } from "@mui/material";
+import { Container, Grid, Hidden, IconButton, Theme, useMediaQuery } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
@@ -14,12 +14,15 @@ import ImageLogo from "../logo/ImageLogo";
 // own imports
 import { StyledAppBar, StyledToolbar, StyledIconButton, StyledBadge } from "./HeaderStyle";
 import { ICookieProduct } from "../../interfaces/ICookieProduct";
+import LoginButton from "./components/LoginButton";
+import { BorderBottom } from "@mui/icons-material";
+import { COLORS } from "../../constants/colors";
 
 interface IProps {
-
+    showStaticDrawer: boolean;
 }
 
-const Header = ({ }: IProps) => {
+const Header = ({ showStaticDrawer }: IProps) => {
     const path = window.location.pathname;
     const [onMenu, setOnMenu] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
@@ -47,8 +50,10 @@ const Header = ({ }: IProps) => {
             <div style={{ margin: `${headerHeight}px 0` }} />
             <StyledAppBar
                 ref={headerRef}
+                sx={(showStaticDrawer && !onMenu) ? { zIndex: (theme) => theme.zIndex.drawer + 1 } : {}}
                 style={{
-                    boxShadow: "0px 2px 2px -1px rgb(0 0 0 / 20%), 0px 1px 2px 0px rgb(0 0 0 / 14%), 0px 1px 1px 0px rgb(0 0 0 / 12%)"
+                    boxShadow: "none",
+                    borderBottom: `1px solid ${COLORS.BORDER_GRAY}`
                 }}
             >
                 <StyledToolbar>
