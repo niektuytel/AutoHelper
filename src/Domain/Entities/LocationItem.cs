@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AutoHelper.Domain.Entities;
 
-public class LocationItem : BaseAuditableEntity
+public class LocationItem : BaseEntity
 {
     [Required]
     public double Longitude { get; set; }

@@ -30,11 +30,15 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    const queryParams = new URLSearchParams(location.search);
+    const notFound = queryParams.get('garage_notfound');
+
     const handleClick2 = () => setOpen(!open);
 
-    const ListItemLink = ({ primary, icon, to }: { primary: string; icon: JSX.Element; to: string }) => (
+    const ListItemLink = ({ primary, icon, to, disabled = false }: { primary: string; icon: JSX.Element; to: string, disabled?: boolean }) => (
         <ListItem
             button
+            disabled={disabled}
             onClick={() => { navigate(to); setOnMenu && setOnMenu(false); }}
             style={location.pathname === to ? { backgroundColor: '#e0e0e0' } : {}}
         >
@@ -48,10 +52,10 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     if (userRoles?.includes(ROLES.GARAGE)) {
         return (
             <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink primary={t('overview_camelcase')} icon={<DashboardIcon />} to={RoutesGarageOverview(garageGUID!)} />
-                <ListItemLink primary={t('agenda_camelcase')} icon={<CalendarTodayIcon />} to={RoutesGarageAgenda(garageGUID!)} />
-                <ListItemLink primary={t('services_camelcase')} icon={<BuildIcon />} to={RoutesGarageServices(garageGUID!)} />
-                <ListItemLink primary={t('colleagues_camelcase')} icon={<GroupIcon />} to={RoutesGarageColleagues(garageGUID!)} />
+                <ListItemLink disabled={notFound == "true"} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={RoutesGarageOverview(garageGUID!)} />
+                <ListItemLink disabled={notFound == "true"} primary={t('agenda_camelcase')} icon={<CalendarTodayIcon />} to={RoutesGarageAgenda(garageGUID!)} />
+                <ListItemLink disabled={notFound == "true"} primary={t('services_camelcase')} icon={<BuildIcon />} to={RoutesGarageServices(garageGUID!)} />
+                <ListItemLink disabled={notFound == "true"} primary={t('colleagues_camelcase')} icon={<GroupIcon />} to={RoutesGarageColleagues(garageGUID!)} />
                 <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={RoutesGarageSettings(garageGUID!)} />
             </List>
         );

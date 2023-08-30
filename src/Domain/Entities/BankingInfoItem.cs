@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AutoHelper.Domain.Entities;
 
-public class BankingInfoItem : BaseAuditableEntity
+public class BankingInfoItem : BaseEntity
 {
     [Required]
     public string BankName { get; set; }

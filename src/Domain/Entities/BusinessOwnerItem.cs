@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AutoHelper.Domain.Entities;
 
-public class BusinessOwnerItem : BaseAuditableEntity
+public class BusinessOwnerItem : BaseEntity
 {
     [Required]
     public string FullName { get; set; }

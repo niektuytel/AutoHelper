@@ -13,6 +13,10 @@ export interface IGarageClient {
     overview(id: string): Promise<GarageOverview>;
 
     settings(id: string): Promise<GarageSettings>;
+
+    create(command: CreateGarageItemCommand): Promise<string>;
+
+    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<string>;
 }
 
 export class GarageClient implements IGarageClient {
@@ -70,7 +74,7 @@ export class GarageClient implements IGarageClient {
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Accept": "application/json"
             }
@@ -97,6 +101,84 @@ export class GarageClient implements IGarageClient {
             });
         }
         return Promise.resolve<GarageSettings>(null as any);
+    }
+
+    create(command: CreateGarageItemCommand): Promise<string> {
+        let url_ = this.baseUrl + "/api/Garage/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<string> {
+        let url_ = this.baseUrl + "/api/Garage/UpdateSettings";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateSettings(_response);
+        });
+    }
+
+    protected processUpdateSettings(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
     }
 }
 
@@ -623,7 +705,7 @@ export interface IGarageSettings {
     contacts?: ContactItem[];
 }
 
-export class LocationItem extends BaseAuditableEntity implements ILocationItem {
+export class LocationItem extends BaseEntity implements ILocationItem {
     longitude!: number;
     latitude!: number;
     address?: string;
@@ -667,7 +749,7 @@ export class LocationItem extends BaseAuditableEntity implements ILocationItem {
     }
 }
 
-export interface ILocationItem extends IBaseAuditableEntity {
+export interface ILocationItem extends IBaseEntity {
     longitude: number;
     latitude: number;
     address?: string;
@@ -676,7 +758,7 @@ export interface ILocationItem extends IBaseAuditableEntity {
     country?: string;
 }
 
-export class BusinessOwnerItem extends BaseAuditableEntity implements IBusinessOwnerItem {
+export class BusinessOwnerItem extends BaseEntity implements IBusinessOwnerItem {
     fullName!: string;
     phoneNumber?: string;
     email?: string;
@@ -711,13 +793,13 @@ export class BusinessOwnerItem extends BaseAuditableEntity implements IBusinessO
     }
 }
 
-export interface IBusinessOwnerItem extends IBaseAuditableEntity {
+export interface IBusinessOwnerItem extends IBaseEntity {
     fullName: string;
     phoneNumber?: string;
     email?: string;
 }
 
-export class BankingInfoItem extends BaseAuditableEntity implements IBankingInfoItem {
+export class BankingInfoItem extends BaseEntity implements IBankingInfoItem {
     bankName!: string;
     accountNumber!: string;
     iban?: string;
@@ -755,7 +837,7 @@ export class BankingInfoItem extends BaseAuditableEntity implements IBankingInfo
     }
 }
 
-export interface IBankingInfoItem extends IBaseAuditableEntity {
+export interface IBankingInfoItem extends IBaseEntity {
     bankName: string;
     accountNumber: string;
     iban?: string;
@@ -805,6 +887,110 @@ export interface IContactItem extends IBaseAuditableEntity {
     phoneNumber?: string;
     email?: string;
     responsibility?: string;
+}
+
+export class CreateGarageItemCommand implements ICreateGarageItemCommand {
+    id?: string;
+    name?: string;
+    location?: LocationItem;
+    businessOwner?: BusinessOwnerItem;
+    bankingDetails?: BankingInfoItem;
+
+    constructor(data?: ICreateGarageItemCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.location = _data["location"] ? LocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.businessOwner = _data["businessOwner"] ? BusinessOwnerItem.fromJS(_data["businessOwner"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? BankingInfoItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateGarageItemCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGarageItemCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["businessOwner"] = this.businessOwner ? this.businessOwner.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICreateGarageItemCommand {
+    id?: string;
+    name?: string;
+    location?: LocationItem;
+    businessOwner?: BusinessOwnerItem;
+    bankingDetails?: BankingInfoItem;
+}
+
+export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSettingsCommand {
+    id?: string;
+    name?: string;
+    location?: LocationItem;
+    businessOwner?: BusinessOwnerItem;
+    bankingDetails?: BankingInfoItem;
+
+    constructor(data?: IUpdateGarageItemSettingsCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.location = _data["location"] ? LocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.businessOwner = _data["businessOwner"] ? BusinessOwnerItem.fromJS(_data["businessOwner"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? BankingInfoItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UpdateGarageItemSettingsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateGarageItemSettingsCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["businessOwner"] = this.businessOwner ? this.businessOwner.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUpdateGarageItemSettingsCommand {
+    id?: string;
+    name?: string;
+    location?: LocationItem;
+    businessOwner?: BusinessOwnerItem;
+    bankingDetails?: BankingInfoItem;
 }
 
 export class LicencePlateBriefResponse implements ILicencePlateBriefResponse {
