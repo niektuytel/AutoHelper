@@ -1,45 +1,26 @@
-import React from "react"
-import { Snackbar } from "@mui/material";
+import React from "react";
+import { Snackbar, SnackbarCloseReason } from "@mui/material";
 import { Alert } from "@mui/lab";
-import { useTranslation } from "react-i18next"
-import { useDispatch, useSelector } from "react-redux"
-// import { setErrorStatus, setSuccessStatus } from "../../store/status/StatusActions"
-//import StatusState from "../../store/status/StatusState"
+import { useDispatch, useSelector } from "react-redux";
+import { closeSnackbar } from "../../redux/slices/statusSnackbarSlice";
 
 export default () => {
-    const { t } = useTranslation();
-    // const dispatch = use// dispatch();
-    //const { error_message, success_message }:StatusState = useSelector((state:any) => state.status)
-    const error_message = "";
-    const success_message = "";
-    
-    const onCloseError = () => {
-        // dispatch(setErrorStatus(""))
-    }
-    
-    const onCloseSuccess = () => {
-        // dispatch(setSuccessStatus(""))
-    }
-    
-    return <>
-        <Snackbar 
-            open={success_message.length > 0} 
-            autoHideDuration={6000} 
-            onClose={onCloseSuccess}
-        >
-            <Alert onClose={onCloseSuccess} severity="success">
-                {t("successful_action")}
+    const dispatch = useDispatch();
+    const { message, type, open } = useSelector((state: any) => state.statusSnackbar);
+
+    const handleClose = (event: Event | React.SyntheticEvent, reason?: SnackbarCloseReason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        dispatch(closeSnackbar());
+    };
+
+    return (
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity={type}>
+                {message}
             </Alert>
         </Snackbar>
-        <Snackbar 
-            open={error_message.length > 0} 
-            autoHideDuration={6000} 
-            onClose={onCloseError}
-        >
-            <Alert onClose={onCloseError} severity="error">
-                {error_message}
-                {/* t("failed_action") */}
-            </Alert>
-        </Snackbar>
-    </>
+    );
 }

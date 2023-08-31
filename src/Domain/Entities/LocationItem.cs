@@ -5,12 +5,6 @@ namespace AutoHelper.Domain.Entities;
 
 public class LocationItem : BaseEntity
 {
-    [Required]
-    public double Longitude { get; set; }
-
-    [Required]
-    public double Latitude { get; set; }
-
     public string Address { get; set; }
 
     public string City { get; set; }
@@ -19,6 +13,8 @@ public class LocationItem : BaseEntity
 
     public string Country { get; set; }
 
-    //[InverseProperty("Location")]
-    //public GarageItem Garage { get; set; }
+    public double Longitude { get; set; }
+
+    public double Latitude { get; set; }
+
 }

@@ -15,7 +15,8 @@
   "settings_camelcase": "Settings",
   "account_camelcase": "Account",
   "vehicle_search_camelcase": "Vehicle search",
-
+  "GarageSettingsHeader.Title": "Garage Settings",
+  "GarageSettingsHeader.Description": "Here you can change your garage settings",
 
 
 

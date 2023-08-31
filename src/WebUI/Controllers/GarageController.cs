@@ -24,16 +24,15 @@ public class GarageController : ApiControllerBase
         return await Mediator.Send(new GetGarageSettingsQuery(id));
     }
 
-    [HttpPost($"{nameof(Create)}")]
-    public async Task<Guid> Create([FromBody]CreateGarageItemCommand command)
-    {
-        return await Mediator.Send(command);
-    }
-
     [HttpPut($"{nameof(UpdateSettings)}")]
     public async Task<Guid> UpdateSettings([FromBody] UpdateGarageItemSettingsCommand command)
     {
         return await Mediator.Send(command);
     }
 
+    [HttpPost($"{nameof(Create)}")]
+    public async Task<Guid> Create([FromBody]CreateGarageItemCommand command)
+    {
+        return await Mediator.Send(command);
+    }
 }

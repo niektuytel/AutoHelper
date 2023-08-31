@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Box, Theme, useMediaQuery } from '@mui/material';
+import { Box, Container, Theme, useMediaQuery } from '@mui/material';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 // own imports
@@ -39,7 +39,9 @@ export default () => {
                 </Box>
             )}
             <Box flexGrow={1}>
-                {children}
+                <Container maxWidth="lg" sx={{ minHeight: "100vh" }}>
+                    {children}
+                </Container>
             </Box>
         </Box>
     );

@@ -7,12 +7,15 @@ namespace AutoHelper.Domain.Entities;
 
 public class GarageItem : BaseAuditableEntity
 {
-    [Required]
-    public string Name { get; set; } 
+    public string Name { get; set; }
+
+    public string Email { get; set; }
+
+    public string PhoneNumber { get; set; }
+
+    public string WhatsAppNumber { get; set; } = "";
 
     public LocationItem Location { get; set; } = new LocationItem();
-
-    public BusinessOwnerItem BusinessOwner { get; set; } = new BusinessOwnerItem();
 
     public BankingInfoItem BankingDetails { get; set; } = new BankingInfoItem();
 

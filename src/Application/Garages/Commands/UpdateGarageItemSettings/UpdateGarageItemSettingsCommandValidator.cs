@@ -22,12 +22,6 @@ public class UpdateGarageItemSettingsCommandValidator : AbstractValidator<Update
                 .SetValidator(new LocationValidator());
         });
 
-        When(v => v.BusinessOwner != null, () =>
-        {
-            RuleFor(v => v.BusinessOwner)
-                .SetValidator(new BusinessOwnerValidator());
-        });
-
         When(v => v.BankingDetails != null, () =>
         {
             RuleFor(v => v.BankingDetails)

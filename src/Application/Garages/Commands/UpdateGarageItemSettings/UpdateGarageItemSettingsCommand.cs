@@ -36,7 +36,6 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
             Id = request.Id,
             Name = request.Name,
             Location = request.Location,
-            BusinessOwner = request.BusinessOwner,
             BankingDetails = request.BankingDetails
         };
 

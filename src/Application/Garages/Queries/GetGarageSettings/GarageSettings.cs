@@ -5,21 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageSettings;
 
 public class GarageSettings : IMapFrom<GarageItem>
 {
-    [Required]
     public string Name { get; set; }
 
-    public LocationItem Location { get; set; } = new LocationItem();
+    public string Email { get; set; }
 
-    public BusinessOwnerItem BusinessOwner { get; set; } = new BusinessOwnerItem();
+    public string PhoneNumber { get; set; }
+
+    public string WhatsAppNumber { get; set; } = "";
+
+
+    public LocationItem Location { get; set; } = new LocationItem();
 
     public BankingInfoItem BankingDetails { get; set; } = new BankingInfoItem();
 
     public ICollection<ContactItem> Contacts { get; set; } = new List<ContactItem>();
-
 }

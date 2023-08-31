@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Provider } from "react-redux";
 import { HistoryRouter } from "redux-first-history/rr6";
-import { store, history } from "./store/";
+import { store, history } from "./redux/store";
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { CookiesProvider } from 'react-cookie';
 import { createRoot } from 'react-dom/client';

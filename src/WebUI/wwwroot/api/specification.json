@@ -70,18 +70,18 @@
         }
       }
     },
-    "/api/Garage/Create": {
-      "post": {
+    "/api/Garage/UpdateSettings": {
+      "put": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_Create",
+        "operationId": "Garage_UpdateSettings",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateGarageItemCommand"
+                "$ref": "#/components/schemas/UpdateGarageItemSettingsCommand"
               }
             }
           },
@@ -103,18 +103,18 @@
         }
       }
     },
-    "/api/Garage/UpdateSettings": {
-      "put": {
+    "/api/Garage/Create": {
+      "post": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_UpdateSettings",
+        "operationId": "Garage_Create",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateGarageItemSettingsCommand"
+                "$ref": "#/components/schemas/CreateGarageItemCommand"
               }
             }
           },
@@ -392,19 +392,21 @@
       "GarageSettings": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "name"
-        ],
         "properties": {
           "name": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "type": "string"
           },
           "location": {
             "$ref": "#/components/schemas/LocationItem"
-          },
-          "businessOwner": {
-            "$ref": "#/components/schemas/BusinessOwnerItem"
           },
           "bankingDetails": {
             "$ref": "#/components/schemas/BankingInfoItem"
@@ -425,19 +427,7 @@
           {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "longitude",
-              "latitude"
-            ],
             "properties": {
-              "longitude": {
-                "type": "number",
-                "format": "double"
-              },
-              "latitude": {
-                "type": "number",
-                "format": "double"
-              },
               "address": {
                 "type": "string"
               },
@@ -449,32 +439,14 @@
               },
               "country": {
                 "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "BusinessOwnerItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "fullName"
-            ],
-            "properties": {
-              "fullName": {
-                "type": "string",
-                "minLength": 1
               },
-              "phoneNumber": {
-                "type": "string"
+              "longitude": {
+                "type": "number",
+                "format": "double"
               },
-              "email": {
-                "type": "string"
+              "latitude": {
+                "type": "number",
+                "format": "double"
               }
             }
           }
@@ -488,23 +460,17 @@
           {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "bankName",
-              "accountNumber"
-            ],
             "properties": {
               "bankName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "accountNumber": {
-                "type": "string",
-                "minLength": 1
-              },
-              "iban": {
                 "type": "string"
               },
-              "swiftCode": {
+              "kvKNumber": {
+                "type": "string"
+              },
+              "accountHolderName": {
+                "type": "string"
+              },
+              "iban": {
                 "type": "string"
               }
             }
@@ -541,7 +507,7 @@
           }
         ]
       },
-      "CreateGarageItemCommand": {
+      "UpdateGarageItemSettingsCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -563,25 +529,97 @@
           }
         }
       },
-      "UpdateGarageItemSettingsCommand": {
+      "BusinessOwnerItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fullName"
+            ],
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "CreateGarageItemCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
           "name": {
             "type": "string"
           },
-          "location": {
-            "$ref": "#/components/schemas/LocationItem"
+          "phoneNumber": {
+            "type": "string"
           },
-          "businessOwner": {
-            "$ref": "#/components/schemas/BusinessOwnerItem"
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/BriefLocationDto"
           },
           "bankingDetails": {
-            "$ref": "#/components/schemas/BankingInfoItem"
+            "$ref": "#/components/schemas/BriefBankingDetailsDto"
+          }
+        }
+      },
+      "BriefLocationDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "BriefBankingDetailsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bankName": {
+            "type": "string"
+          },
+          "kvKNumber": {
+            "type": "string"
+          },
+          "accountHolderName": {
+            "type": "string"
+          },
+          "iban": {
+            "type": "string"
           }
         }
       },

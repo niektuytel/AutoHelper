@@ -5,17 +5,14 @@ namespace AutoHelper.Domain.Entities;
 
 public class BankingInfoItem : BaseEntity
 {
-    [Required]
     public string BankName { get; set; }
 
-    [Required]
-    public string AccountNumber { get; set; }
+    // Chamber of Commerce number
+    public string KvKNumber { get; set; }
 
-    public string IBAN { get; set; } // International Bank Account Number
+    // Official business name
+    public string AccountHolderName { get; set; }
 
-    public string SWIFTCode { get; set; } // Also known as BIC
-
-    //public Guid GarageItemId { get; set; }
-    //[ForeignKey("GarageItemId")]
-    //public GarageItem Garage { get; set; }
+    // International Bank Account Number
+    public string IBAN { get; set; }
 }

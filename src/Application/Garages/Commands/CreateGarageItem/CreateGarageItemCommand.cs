@@ -9,15 +9,17 @@ namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
 public record CreateGarageItemCommand : IRequest<Guid>
 {
-    public Guid Id { get; set; }
-
     public string Name { get; set; }
 
-    public LocationItem Location { get; set; }
+    public string PhoneNumber { get; set; }
 
-    public BusinessOwnerItem BusinessOwner { get; set; }
+    public string WhatsAppNumber { get; set; } = "";
 
-    public BankingInfoItem BankingDetails { get; set; }
+    public string Email { get; set; }
+
+    public BriefLocationDto Location { get; set; }
+
+    public BriefBankingDetailsDto BankingDetails { get; set; }
 }
 
 public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageItemCommand, Guid>
@@ -33,11 +35,11 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageItemCo
     {
         var entity = new GarageItem
         {
-            Id = request.Id,
+            //Id = request.Id,
             Name = request.Name,
-            Location = request.Location,
-            BusinessOwner = request.BusinessOwner,
-            BankingDetails = request.BankingDetails
+            //Location = request.Location,
+            //BusinessOwner = request.BusinessOwner,
+            //BankingDetails = request.BankingDetails
         };
 
         // If you wish to use domain events, then you can add them here:

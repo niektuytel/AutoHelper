@@ -42,7 +42,8 @@ const Footer = () => {
     // TODO: There is an margin overflow on footer and body
     return (
         <footer>
-            <Container maxWidth="lg" style={{ padding: "0" }} sx={{ backgroundColor: "#f7f7f7" }}>
+            <Container maxWidth="lg" style={{ padding: "0" }}>
+                {/*sx={{ backgroundColor: "#f7f7f7" }}>*/}
                 {/*<Grid container style={{marginTop:"30px"}}>*/}
                 {/*    <Grid item xs={2} md={2} lg={1} sx={styles.center}>*/}
                 {/*        <img src={"/background/melon.svg"} style={styles.imageHeight} />*/}
