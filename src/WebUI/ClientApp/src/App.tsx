@@ -32,14 +32,14 @@ export default () => {
     }, [window.location.pathname]);
 
     const GarageRouteContent = ({ children }: { children: React.ReactNode }) => (
-        <Box display="flex">
+        <Box display="flex" sx={{ marginBottom:"75px", borderBottom: `1px solid ${COLORS.BORDER_GRAY}` }}>
             {showStaticDrawer && (
                 <Box borderRight={`1px solid ${COLORS.BORDER_GRAY}`}>
                     <RoleBasedList />
                 </Box>
             )}
             <Box flexGrow={1}>
-                <Container maxWidth="lg" sx={{ minHeight: "100vh" }}>
+                <Container maxWidth="lg" sx={{ minHeight: "100vh"}} >
                     {children}
                 </Container>
             </Box>

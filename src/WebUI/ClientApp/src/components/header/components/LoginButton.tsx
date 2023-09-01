@@ -17,7 +17,7 @@ interface IProps {
     asIcon?: boolean
 }
 
-const StyledButton = styled(Button)({
+export const StyledLoginButton = styled(Button)({
     backgroundColor: COLORS.BLUE,
     '&:hover': {
         backgroundColor: COLORS.HOVERED_BLUE,
@@ -91,9 +91,9 @@ export default ({ asIcon }:IProps) => {
 
         return (
             <>
-                <StyledButton ref={buttonRef} variant="contained" fullWidth onClick={handleClick}>
+                <StyledLoginButton ref={buttonRef} variant="contained" fullWidth onClick={handleClick}>
                     {t('login_camelcase')}
-                </StyledButton>
+                </StyledLoginButton>
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}

@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Box, Breadcrumbs, Button, CircularProgress, Container, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Drawer, FormControl, Grid, Hidden, IconButton, InputAdornment, InputLabel, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Paper, Select, TextField, Toolbar, Tooltip, Typography } from "@mui/material";
+import { Box, Breadcrumbs, Button, CircularProgress, Container, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Drawer, FormControl, Grid, Hidden, IconButton, InputAdornment, InputLabel, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Paper, Select, TextField, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BankingInfoItem, BusinessOwnerItem, ContactItem, CreateGarageItemCommand, GarageClient, GarageSettings, IGarageSettings, LocationItem, UpdateGarageItemSettingsCommand } from "../../../app/web-api-client";
@@ -10,6 +10,7 @@ import { setError, setSuccess } from "../../../redux/slices/statusSnackbarSlice"
 import { useDispatch } from "react-redux";
 import GeneralSection from "./components/GeneralSection";
 import { idealBanks, idealIcon } from "../../../constants/banking";
+import { blue } from '@mui/material/colors';
 import BankingSection from "./components/BankingSection";
 import ContactSection from "./components/ContactSection";
 import { COLORS } from "../../../constants/colors";
@@ -27,6 +28,8 @@ interface IProps {
 }
 
 export default ({ }: IProps) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const dispatch = useDispatch();
     const garageClient = new GarageClient(process.env.PUBLIC_URL);
     const { handleSubmit, control, formState: { errors } } = useForm();
@@ -139,14 +142,31 @@ export default ({ }: IProps) => {
                     <ContactSection state={state} control={control} errors={errors} />
                     <BankingSection state={state} control={control} errors={errors} />
                     <Grid item xs={12}>
-                        <Box display="flex" justifyContent="center" alignItems="center" height="75px">
+                        <Box display="flex" justifyContent="center" alignItems="center" height="90px">
                             {state.isLoading ? (
-                                <Button variant="contained" disabled style={{ backgroundColor: COLORS.BLUE, color: 'white' }}>
+                                <Button
+                                    fullWidth={isMobile}
+                                    variant="contained"
+                                    disabled
+                                    style={{ color: 'white', padding: '10px 30px' }}
+                                >
                                     <CircularProgress size={24} color="inherit" />
                                 </Button>
                             ) : (
-                                <Button type="submit" variant="contained" sx={{ backgroundColor: COLORS.BLUE, color: 'white', '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}>
-                                    {t("Save")}
+                                <Button
+                                    fullWidth={isMobile}
+                                    type="submit"
+                                    variant="contained"
+                                    sx={{
+                                        backgroundColor: COLORS.BLUE,
+                                        color: 'white',
+                                        padding: isMobile ? '10px 0' : '10px 30px',
+                                        textTransform: 'uppercase',
+                                        fontWeight: 'bold',
+                                        '&:hover': { backgroundColor: COLORS.HOVERED_BLUE }
+                                    }}
+                                >
+                                    {notFound ? t("Register") : t("Save")}
                                 </Button>
                             )}
                         </Box>
