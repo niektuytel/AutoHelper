@@ -5,6 +5,7 @@ using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.TodoItems.Commands.CreateTodoItem;
 using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+using AutoHelper.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace AutoHelper.WebUI.Controllers;
@@ -31,7 +32,7 @@ public class GarageController : ApiControllerBase
     }
 
     [HttpPost($"{nameof(Create)}")]
-    public async Task<Guid> Create([FromBody]CreateGarageItemCommand command)
+    public async Task<GarageSettings> Create([FromBody]CreateGarageItemCommand command)
     {
         return await Mediator.Send(command);
     }

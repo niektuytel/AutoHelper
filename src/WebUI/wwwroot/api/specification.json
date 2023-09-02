@@ -127,8 +127,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "guid"
+                  "$ref": "#/components/schemas/GarageSettings"
                 }
               }
             }
@@ -409,7 +408,7 @@
             "$ref": "#/components/schemas/LocationItem"
           },
           "bankingDetails": {
-            "$ref": "#/components/schemas/BankingInfoItem"
+            "$ref": "#/components/schemas/BankingDetailsItem"
           },
           "contacts": {
             "type": "array",
@@ -452,7 +451,7 @@
           }
         ]
       },
-      "BankingInfoItem": {
+      "BankingDetailsItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseEntity"
@@ -525,7 +524,7 @@
             "$ref": "#/components/schemas/BusinessOwnerItem"
           },
           "bankingDetails": {
-            "$ref": "#/components/schemas/BankingInfoItem"
+            "$ref": "#/components/schemas/BankingDetailsItem"
           }
         }
       },
@@ -559,6 +558,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "name": {
             "type": "string"
           },

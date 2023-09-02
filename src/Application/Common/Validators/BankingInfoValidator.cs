@@ -4,7 +4,7 @@ using FluentValidation;
 namespace AutoHelper.Application.Common.Validators;
 
 // Validator for BankingInfoItem
-public class BankingInfoValidator : AbstractValidator<BankingInfoItem>
+public class BankingInfoValidator : AbstractValidator<BankingDetailsItem>
 {
     public BankingInfoValidator()
     {

@@ -17,7 +17,7 @@ public record UpdateGarageItemSettingsCommand : IRequest<Guid>
 
     public BusinessOwnerItem BusinessOwner { get; set; }
 
-    public BankingInfoItem BankingDetails { get; set; }
+    public BankingDetailsItem BankingDetails { get; set; }
 }
 
 public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGarageItemSettingsCommand, Guid>

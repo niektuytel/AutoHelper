@@ -17,7 +17,7 @@ public class GarageItem : BaseAuditableEntity
 
     public LocationItem Location { get; set; } = new LocationItem();
 
-    public BankingInfoItem BankingDetails { get; set; } = new BankingInfoItem();
+    public BankingDetailsItem BankingDetails { get; set; } = new BankingDetailsItem();
 
     public ICollection<ContactItem> Contacts { get; set; } = new List<ContactItem>();
 

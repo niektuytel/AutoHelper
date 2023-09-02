@@ -1,14 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
+using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
-public record CreateGarageItemCommand : IRequest<Guid>
+public record CreateGarageItemCommand : IRequest<GarageSettings>
 {
+    public Guid Id { get; set; }
+
     public string Name { get; set; }
 
     public string PhoneNumber { get; set; }
@@ -22,33 +29,49 @@ public record CreateGarageItemCommand : IRequest<Guid>
     public BriefBankingDetailsDto BankingDetails { get; set; }
 }
 
-public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageItemCommand, Guid>
+public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageItemCommand, GarageSettings>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public CreateGarageItemCommandHandler(IApplicationDbContext context)
+    public CreateGarageItemCommandHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
-    public async Task<Guid> Handle(CreateGarageItemCommand request, CancellationToken cancellationToken)
+    public async Task<GarageSettings> Handle(CreateGarageItemCommand request, CancellationToken cancellationToken)
     {
         var entity = new GarageItem
         {
-            //Id = request.Id,
+            Id = request.Id,
             Name = request.Name,
-            //Location = request.Location,
-            //BusinessOwner = request.BusinessOwner,
-            //BankingDetails = request.BankingDetails
+            PhoneNumber = request.PhoneNumber,
+            WhatsAppNumber = request.WhatsAppNumber,
+            Email = request.Email,
+            Location = new LocationItem
+            {
+                Address = request.Location.Address,
+                PostalCode = request.Location.PostalCode,
+                City = request.Location.City,
+                Country = request.Location.Country,
+                Longitude = request.Location.Longitude,
+                Latitude = request.Location.Latitude
+            },
+            BankingDetails = new BankingDetailsItem
+            {
+                BankName = request.BankingDetails.BankName,
+                KvKNumber = request.BankingDetails.KvKNumber,
+                AccountHolderName = request.BankingDetails.AccountHolderName,
+                IBAN = request.BankingDetails.IBAN
+            }
         };
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         _context.Garages.Add(entity);
-
         await _context.SaveChangesAsync(cancellationToken);
-
-        return entity.Id;
+        return _mapper.Map<GarageSettings>(entity);
     }
 }

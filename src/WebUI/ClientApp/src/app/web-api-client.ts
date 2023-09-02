@@ -16,7 +16,7 @@ export interface IGarageClient {
 
     updateSettings(command: UpdateGarageItemSettingsCommand): Promise<string>;
 
-    create(command: CreateGarageItemCommand): Promise<string>;
+    create(command: CreateGarageItemCommand): Promise<GarageSettings>;
 }
 
 export class GarageClient implements IGarageClient {
@@ -142,7 +142,7 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<string>(null as any);
     }
 
-    create(command: CreateGarageItemCommand): Promise<string> {
+    create(command: CreateGarageItemCommand): Promise<GarageSettings> {
         let url_ = this.baseUrl + "/api/Garage/Create";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -162,15 +162,14 @@ export class GarageClient implements IGarageClient {
         });
     }
 
-    protected processCreate(response: Response): Promise<string> {
+    protected processCreate(response: Response): Promise<GarageSettings> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = GarageSettings.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -178,7 +177,7 @@ export class GarageClient implements IGarageClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(null as any);
+        return Promise.resolve<GarageSettings>(null as any);
     }
 }
 
@@ -651,7 +650,7 @@ export class GarageSettings implements IGarageSettings {
     phoneNumber?: string;
     whatsAppNumber?: string;
     location?: LocationItem;
-    bankingDetails?: BankingInfoItem;
+    bankingDetails?: BankingDetailsItem;
     contacts?: ContactItem[];
 
     constructor(data?: IGarageSettings) {
@@ -670,7 +669,7 @@ export class GarageSettings implements IGarageSettings {
             this.phoneNumber = _data["phoneNumber"];
             this.whatsAppNumber = _data["whatsAppNumber"];
             this.location = _data["location"] ? LocationItem.fromJS(_data["location"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? BankingInfoItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? BankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
             if (Array.isArray(_data["contacts"])) {
                 this.contacts = [] as any;
                 for (let item of _data["contacts"])
@@ -709,7 +708,7 @@ export interface IGarageSettings {
     phoneNumber?: string;
     whatsAppNumber?: string;
     location?: LocationItem;
-    bankingDetails?: BankingInfoItem;
+    bankingDetails?: BankingDetailsItem;
     contacts?: ContactItem[];
 }
 
@@ -766,13 +765,13 @@ export interface ILocationItem extends IBaseEntity {
     latitude?: number;
 }
 
-export class BankingInfoItem extends BaseEntity implements IBankingInfoItem {
+export class BankingDetailsItem extends BaseEntity implements IBankingDetailsItem {
     bankName?: string;
     kvKNumber?: string;
     accountHolderName?: string;
     iban?: string;
 
-    constructor(data?: IBankingInfoItem) {
+    constructor(data?: IBankingDetailsItem) {
         super(data);
     }
 
@@ -786,9 +785,9 @@ export class BankingInfoItem extends BaseEntity implements IBankingInfoItem {
         }
     }
 
-    static fromJS(data: any): BankingInfoItem {
+    static fromJS(data: any): BankingDetailsItem {
         data = typeof data === 'object' ? data : {};
-        let result = new BankingInfoItem();
+        let result = new BankingDetailsItem();
         result.init(data);
         return result;
     }
@@ -804,7 +803,7 @@ export class BankingInfoItem extends BaseEntity implements IBankingInfoItem {
     }
 }
 
-export interface IBankingInfoItem extends IBaseEntity {
+export interface IBankingDetailsItem extends IBaseEntity {
     bankName?: string;
     kvKNumber?: string;
     accountHolderName?: string;
@@ -861,7 +860,7 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
     name?: string;
     location?: LocationItem;
     businessOwner?: BusinessOwnerItem;
-    bankingDetails?: BankingInfoItem;
+    bankingDetails?: BankingDetailsItem;
 
     constructor(data?: IUpdateGarageItemSettingsCommand) {
         if (data) {
@@ -878,7 +877,7 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
             this.name = _data["name"];
             this.location = _data["location"] ? LocationItem.fromJS(_data["location"]) : <any>undefined;
             this.businessOwner = _data["businessOwner"] ? BusinessOwnerItem.fromJS(_data["businessOwner"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? BankingInfoItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? BankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
         }
     }
 
@@ -905,7 +904,7 @@ export interface IUpdateGarageItemSettingsCommand {
     name?: string;
     location?: LocationItem;
     businessOwner?: BusinessOwnerItem;
-    bankingDetails?: BankingInfoItem;
+    bankingDetails?: BankingDetailsItem;
 }
 
 export class BusinessOwnerItem extends BaseEntity implements IBusinessOwnerItem {
@@ -950,6 +949,7 @@ export interface IBusinessOwnerItem extends IBaseEntity {
 }
 
 export class CreateGarageItemCommand implements ICreateGarageItemCommand {
+    id?: string;
     name?: string;
     phoneNumber?: string;
     whatsAppNumber?: string;
@@ -968,6 +968,7 @@ export class CreateGarageItemCommand implements ICreateGarageItemCommand {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.name = _data["name"];
             this.phoneNumber = _data["phoneNumber"];
             this.whatsAppNumber = _data["whatsAppNumber"];
@@ -986,6 +987,7 @@ export class CreateGarageItemCommand implements ICreateGarageItemCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["name"] = this.name;
         data["phoneNumber"] = this.phoneNumber;
         data["whatsAppNumber"] = this.whatsAppNumber;
@@ -997,6 +999,7 @@ export class CreateGarageItemCommand implements ICreateGarageItemCommand {
 }
 
 export interface ICreateGarageItemCommand {
+    id?: string;
     name?: string;
     phoneNumber?: string;
     whatsAppNumber?: string;

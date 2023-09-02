@@ -10,12 +10,12 @@ const statusSnackbarSlice = createSlice({
     name: "statusSnackbar",
     initialState,
     reducers: {
-        setSuccess: (state, action) => {
+        showOnSuccess: (state, action) => {
             state.type = "success";
             state.message = action.payload;
             state.open = true;
         },
-        setError: (state, action) => {
+        showOnError: (state, action) => {
             state.type = "error";
             state.message = action.payload;
             state.open = true;
@@ -27,5 +27,5 @@ const statusSnackbarSlice = createSlice({
     },
 });
 
-export const { setSuccess, setError, closeSnackbar } = statusSnackbarSlice.actions;
+export const { showOnSuccess, showOnError, closeSnackbar } = statusSnackbarSlice.actions;
 export default statusSnackbarSlice.reducer;

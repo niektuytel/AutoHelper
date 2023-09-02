@@ -8,15 +8,11 @@ import { GarageSettings, LocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
 interface BankingSectionProps {
-    state: {
-        isLoading: boolean,
-        garageSettings: GarageSettings
-    };
     control: any;
     errors: FieldErrors<FieldValues>;
 }
 export default (
-    { state, control, errors }: BankingSectionProps
+    { control, errors }: BankingSectionProps
 ) => {
     const { t } = useTranslation();
 
@@ -31,7 +27,7 @@ export default (
                 <Controller
                     name="kvKNumber"
                     control={control}
-                    defaultValue={state.garageSettings.bankingDetails?.kvKNumber}
+                    defaultValue={""}
                     rules={{ required: t("KvK Number is required!") }}
                     render={({ field }) => (
                         <TextField
@@ -49,7 +45,7 @@ export default (
                 <Controller
                     name="bankName"
                     control={control}
-                    defaultValue={t("Select a bank...")}
+                    defaultValue={""}
                     rules={{ required: t("Selecting a bank is required!") }}
                     render={({ field }) => (
                         <FormControl fullWidth variant="outlined" error={Boolean(errors.bankName)}>
@@ -115,7 +111,7 @@ export default (
                 <Controller
                     name="accountHolderName"
                     control={control}
-                    defaultValue={state.garageSettings.bankingDetails?.accountHolderName}
+                    defaultValue={""}
                     rules={{ required: t("Account Holder Name is required!") }}
                     render={({ field }) => (
                         <TextField
@@ -133,7 +129,7 @@ export default (
                 <Controller
                     name="iban"
                     control={control}
-                    defaultValue={state.garageSettings.bankingDetails?.iban}
+                    defaultValue={""}
                     rules={{ required: t("IBAN is required!") }}
                     render={({ field }) => (
                         <TextField

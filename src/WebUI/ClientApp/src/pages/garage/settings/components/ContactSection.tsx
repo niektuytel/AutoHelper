@@ -8,15 +8,11 @@ import { GarageSettings, LocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
 interface BankingSectionProps {
-    state: {
-        isLoading: boolean,
-        garageSettings: GarageSettings
-    };
     control: any;
     errors: FieldErrors<FieldValues>;
 }
 export default (
-    { state, control, errors }: BankingSectionProps
+    { control, errors }: BankingSectionProps
 ) => {
     const { t } = useTranslation();
 
@@ -32,7 +28,7 @@ export default (
                     name="phoneNumber"  // Refactored name
                     control={control}
                     rules={{ required: t("Phone Number is required!") }}
-                    defaultValue={state.garageSettings.phoneNumber}
+                    defaultValue={""}
                     render={({ field }) => (
                         <TextField
                             {...field}
@@ -49,7 +45,7 @@ export default (
                 <Controller
                     name="whatsAppNumber"  // Refactored name
                     control={control}
-                    defaultValue={state.garageSettings.whatsAppNumber}
+                    defaultValue={""}
                     render={({ field }) => (
                         <TextField
                             {...field}
@@ -65,7 +61,7 @@ export default (
                     name="email"
                     control={control}
                     rules={{ required: t("Email is required!") }}
-                    defaultValue={state.garageSettings.email}
+                    defaultValue={""}
                     render={({ field }) => (
                         <TextField
                             {...field}

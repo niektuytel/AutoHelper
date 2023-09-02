@@ -3,37 +3,19 @@ import { TextField, Box, InputAdornment, IconButton, Typography, Paper, Grid, Li
 import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
-import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
+import { Controller, FieldErrors, FieldValues, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
 import { GarageSettings, LocationItem } from '../../../../app/web-api-client';
 
-
-function updateLocationItem(location: LocationItem, updates: Partial<LocationItem>): Partial<LocationItem> {
-    return {
-        ...location,
-        ...updates
-    };
-}
-
-
 interface LocationSectionProps {
-    state: {
-        isLoading: boolean,
-        garageSettings: GarageSettings
-    };
-    setState: Dispatch<SetStateAction<{
-        isLoading: boolean,
-        garageSettings: GarageSettings
-    }>>;
     control: any;
     errors: FieldErrors<FieldValues>;
+    setFormValue: UseFormSetValue<FieldValues>;
 }
 
-export default (
-    { state, setState, control, errors }: LocationSectionProps
-) => {
+export default ({ control, errors, setFormValue }: LocationSectionProps) => {
     const { t } = useTranslation();
-
+    
     const {
         ready,
         value,
@@ -55,13 +37,16 @@ export default (
         getGeocode({ placeId: place_id })
             .then(results => {
                 const { lat, lng } = getLatLng(results[0]);
-                handleSettingsLocationChange(({
-                    latitude: lat,
-                    longitude: lng,
-                    address: address,
-                    city: city,
-                    postalCode: postalCode.length == 0 ? state.garageSettings.location?.postalCode : postalCode
-                }));
+
+                // Set the values to useForm directly
+                setFormValue("address", `${address}, ${city}`);
+                setFormValue("city", city);
+                setFormValue("latitude", lat);
+                setFormValue("longitude", lng);
+
+                if (postalCode.length != 0) {
+                    setFormValue("postalCode", postalCode);
+                }
             })
             .catch(error => {
                 // TODO: trigger an snackbar on redux, dispatch state with this error message (get it from the useTranslation)
@@ -85,16 +70,6 @@ export default (
         clearSuggestions();
     };
 
-    const handleSettingsLocationChange = (updatedValues: Partial<LocationItem>) => {
-        const updatedLocation = updateLocationItem(state.garageSettings.location!, updatedValues);
-        const updatedGarageSettings = new GarageSettings({
-            ...state.garageSettings,
-            location: updatedLocation as LocationItem
-        });
-
-        setState(prev => ({ ...prev, garageSettings: updatedGarageSettings }));
-    };
-
     return (
         <>
             <Grid item xs={12}>
@@ -102,7 +77,7 @@ export default (
                     name="name"
                     control={control}
                     rules={{ required: t("Name is required!") }}
-                    defaultValue={state.garageSettings.name}
+                    defaultValue={""}
                     render={({ field }) => (
                         <TextField
                             {...field}
@@ -121,10 +96,11 @@ export default (
                         name="address"
                         control={control}
                         rules={{ required: "Address is required!" }}
+                        defaultValue={""}
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                value={value}
+                                //value={value || ''}
                                 onChange={(e) => {
                                     field.onChange(e);
                                     setValue(e.target.value)
@@ -155,9 +131,6 @@ export default (
                     {status === "OK" && ready &&
                         <Box position="absolute" top="60px" width="100%" zIndex={2} mt="5px">
                             <Paper elevation={3}>
-                                <Typography paddingLeft="20px" paddingTop="5px" variant="subtitle1" textAlign="left">
-                                    <b>{t("suggestions_camelcase")}</b>
-                                </Typography>
                                 <List dense disablePadding>
                                     {data.filter((x: any) => (x.terms.length > 2 && x.types.includes("premise") && x.types.includes("geocode"))).map((suggestion: any) => {
                                         const { place_id, terms } = suggestion;
@@ -197,14 +170,10 @@ export default (
                     name="postalCode"
                     control={control}
                     rules={{ required: "Postal Code is required!" }}
+                    defaultValue={""}
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            value={state.garageSettings.location?.postalCode || ''}
-                            onChange={e => {
-                                field.onChange(e);
-                                handleSettingsLocationChange({ postalCode: e.target.value })
-                            }}
                             fullWidth
                             label="Postal Code"
                             variant="outlined"
