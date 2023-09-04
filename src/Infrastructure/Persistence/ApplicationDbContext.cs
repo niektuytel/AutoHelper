@@ -30,6 +30,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     }
 
     public DbSet<GarageItem> Garages => Set<GarageItem>();
+    public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();
 
     //public DbSet<BankingInfoItem> BankingInfos => Set<BankingInfoItem>();
 

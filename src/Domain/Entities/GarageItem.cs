@@ -15,9 +15,11 @@ public class GarageItem : BaseAuditableEntity
 
     public string WhatsAppNumber { get; set; } = "";
 
-    public LocationItem Location { get; set; } = new LocationItem();
+    public GarageLocationItem Location { get; set; } = new GarageLocationItem();
 
-    public BankingDetailsItem BankingDetails { get; set; } = new BankingDetailsItem();
+    public GarageBankingDetailsItem BankingDetails { get; set; } = new GarageBankingDetailsItem();
+
+    public GarageServicesSettingsItem ServicesSettings { get; set; } = new GarageServicesSettingsItem();
 
     public ICollection<ContactItem> Contacts { get; set; } = new List<ContactItem>();
 

@@ -4,6 +4,7 @@ using AutoHelper.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230904173424_initial 4.4")]
+    partial class initial44
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,33 @@ namespace AutoHelper.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AutoHelper.Domain.Entities.BankingDetailsItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccountHolderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IBAN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("KvKNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankingDetailsItem");
+                });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.ContactItem", b =>
                 {
@@ -139,33 +169,6 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.ToTable("TodoList");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageBankingDetailsItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AccountHolderName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IBAN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("KvKNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GarageBankingDetailsItem");
-                });
-
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageEmployeeItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -267,39 +270,6 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.ToTable("Garages");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageLocationItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GarageLocationItem");
-                });
-
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageServiceItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -319,7 +289,7 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GarageId")
+                    b.Property<Guid>("GarageItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModified")
@@ -340,9 +310,9 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GarageId");
+                    b.HasIndex("GarageItemId");
 
-                    b.ToTable("GarageServices");
+                    b.ToTable("GarageServiceItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageServicesSettingsItem", b =>
@@ -375,6 +345,39 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GarageServicesSettingsItem");
+                });
+
+            modelBuilder.Entity("AutoHelper.Domain.Entities.LocationItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LocationItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.VehicleItem", b =>
@@ -853,13 +856,13 @@ namespace AutoHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageItem", b =>
                 {
-                    b.HasOne("AutoHelper.Domain.Entities.GarageBankingDetailsItem", "BankingDetails")
+                    b.HasOne("AutoHelper.Domain.Entities.BankingDetailsItem", "BankingDetails")
                         .WithMany()
                         .HasForeignKey("BankingDetailsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AutoHelper.Domain.Entities.GarageLocationItem", "Location")
+                    b.HasOne("AutoHelper.Domain.Entities.LocationItem", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -882,7 +885,7 @@ namespace AutoHelper.Infrastructure.Migrations
                 {
                     b.HasOne("AutoHelper.Domain.Entities.GarageItem", "Garage")
                         .WithMany("Services")
-                        .HasForeignKey("GarageId")
+                        .HasForeignKey("GarageItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

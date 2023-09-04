@@ -12,9 +12,11 @@ export interface IGarageClient {
 
     overview(id: string): Promise<GarageOverview>;
 
+    services(id: string): Promise<GarageServiceItem[]>;
+
     settings(id: string): Promise<GarageSettings>;
 
-    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<string>;
+    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<GarageSettings>;
 
     create(command: CreateGarageItemCommand): Promise<GarageSettings>;
 }
@@ -66,6 +68,50 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageOverview>(null as any);
     }
 
+    services(id: string): Promise<GarageServiceItem[]> {
+        let url_ = this.baseUrl + "/api/Garage/{id}/Services";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processServices(_response);
+        });
+    }
+
+    protected processServices(response: Response): Promise<GarageServiceItem[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(GarageServiceItem.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceItem[]>(null as any);
+    }
+
     settings(id: string): Promise<GarageSettings> {
         let url_ = this.baseUrl + "/api/Garage/{id}/Settings";
         if (id === undefined || id === null)
@@ -103,7 +149,7 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageSettings>(null as any);
     }
 
-    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<string> {
+    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<GarageSettings> {
         let url_ = this.baseUrl + "/api/Garage/UpdateSettings";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -123,15 +169,14 @@ export class GarageClient implements IGarageClient {
         });
     }
 
-    protected processUpdateSettings(response: Response): Promise<string> {
+    protected processUpdateSettings(response: Response): Promise<GarageSettings> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = GarageSettings.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -139,7 +184,7 @@ export class GarageClient implements IGarageClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<string>(null as any);
+        return Promise.resolve<GarageSettings>(null as any);
     }
 
     create(command: CreateGarageItemCommand): Promise<GarageSettings> {
@@ -644,43 +689,116 @@ export interface IGarageEmployeeItem extends IBaseAuditableEntity {
     phoneNumber?: string;
 }
 
-export class GarageSettings implements IGarageSettings {
+export class GarageServiceItem extends BaseAuditableEntity implements IGarageServiceItem {
+    title?: string;
+    description?: string;
+    duration?: number;
+    price?: number;
+    status?: number;
+    garageId?: string;
+    garage?: GarageItem;
+
+    constructor(data?: IGarageServiceItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.duration = _data["duration"];
+            this.price = _data["price"];
+            this.status = _data["status"];
+            this.garageId = _data["garageId"];
+            this.garage = _data["garage"] ? GarageItem.fromJS(_data["garage"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GarageServiceItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageServiceItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["duration"] = this.duration;
+        data["price"] = this.price;
+        data["status"] = this.status;
+        data["garageId"] = this.garageId;
+        data["garage"] = this.garage ? this.garage.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageServiceItem extends IBaseAuditableEntity {
+    title?: string;
+    description?: string;
+    duration?: number;
+    price?: number;
+    status?: number;
+    garageId?: string;
+    garage?: GarageItem;
+}
+
+export class GarageItem extends BaseAuditableEntity implements IGarageItem {
     name?: string;
     email?: string;
     phoneNumber?: string;
     whatsAppNumber?: string;
-    location?: LocationItem;
-    bankingDetails?: BankingDetailsItem;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
     contacts?: ContactItem[];
+    employees?: GarageEmployeeItem[];
+    services?: GarageServiceItem[];
+    vehicles?: VehicleItem[];
 
-    constructor(data?: IGarageSettings) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+    constructor(data?: IGarageItem) {
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
             this.name = _data["name"];
             this.email = _data["email"];
             this.phoneNumber = _data["phoneNumber"];
             this.whatsAppNumber = _data["whatsAppNumber"];
-            this.location = _data["location"] ? LocationItem.fromJS(_data["location"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? BankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
             if (Array.isArray(_data["contacts"])) {
                 this.contacts = [] as any;
                 for (let item of _data["contacts"])
                     this.contacts!.push(ContactItem.fromJS(item));
             }
+            if (Array.isArray(_data["employees"])) {
+                this.employees = [] as any;
+                for (let item of _data["employees"])
+                    this.employees!.push(GarageEmployeeItem.fromJS(item));
+            }
+            if (Array.isArray(_data["services"])) {
+                this.services = [] as any;
+                for (let item of _data["services"])
+                    this.services!.push(GarageServiceItem.fromJS(item));
+            }
+            if (Array.isArray(_data["vehicles"])) {
+                this.vehicles = [] as any;
+                for (let item of _data["vehicles"])
+                    this.vehicles!.push(VehicleItem.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): GarageSettings {
+    static fromJS(data: any): GarageItem {
         data = typeof data === 'object' ? data : {};
-        let result = new GarageSettings();
+        let result = new GarageItem();
         result.init(data);
         return result;
     }
@@ -693,26 +811,47 @@ export class GarageSettings implements IGarageSettings {
         data["whatsAppNumber"] = this.whatsAppNumber;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
         data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
         if (Array.isArray(this.contacts)) {
             data["contacts"] = [];
             for (let item of this.contacts)
                 data["contacts"].push(item.toJSON());
         }
+        if (Array.isArray(this.employees)) {
+            data["employees"] = [];
+            for (let item of this.employees)
+                data["employees"].push(item.toJSON());
+        }
+        if (Array.isArray(this.services)) {
+            data["services"] = [];
+            for (let item of this.services)
+                data["services"].push(item.toJSON());
+        }
+        if (Array.isArray(this.vehicles)) {
+            data["vehicles"] = [];
+            for (let item of this.vehicles)
+                data["vehicles"].push(item.toJSON());
+        }
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface IGarageSettings {
+export interface IGarageItem extends IBaseAuditableEntity {
     name?: string;
     email?: string;
     phoneNumber?: string;
     whatsAppNumber?: string;
-    location?: LocationItem;
-    bankingDetails?: BankingDetailsItem;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
     contacts?: ContactItem[];
+    employees?: GarageEmployeeItem[];
+    services?: GarageServiceItem[];
+    vehicles?: VehicleItem[];
 }
 
-export class LocationItem extends BaseEntity implements ILocationItem {
+export class GarageLocationItem extends BaseEntity implements IGarageLocationItem {
     address?: string;
     city?: string;
     postalCode?: string;
@@ -720,7 +859,7 @@ export class LocationItem extends BaseEntity implements ILocationItem {
     longitude?: number;
     latitude?: number;
 
-    constructor(data?: ILocationItem) {
+    constructor(data?: IGarageLocationItem) {
         super(data);
     }
 
@@ -736,9 +875,9 @@ export class LocationItem extends BaseEntity implements ILocationItem {
         }
     }
 
-    static fromJS(data: any): LocationItem {
+    static fromJS(data: any): GarageLocationItem {
         data = typeof data === 'object' ? data : {};
-        let result = new LocationItem();
+        let result = new GarageLocationItem();
         result.init(data);
         return result;
     }
@@ -756,7 +895,7 @@ export class LocationItem extends BaseEntity implements ILocationItem {
     }
 }
 
-export interface ILocationItem extends IBaseEntity {
+export interface IGarageLocationItem extends IBaseEntity {
     address?: string;
     city?: string;
     postalCode?: string;
@@ -765,13 +904,13 @@ export interface ILocationItem extends IBaseEntity {
     latitude?: number;
 }
 
-export class BankingDetailsItem extends BaseEntity implements IBankingDetailsItem {
+export class GarageBankingDetailsItem extends BaseEntity implements IGarageBankingDetailsItem {
     bankName?: string;
     kvKNumber?: string;
     accountHolderName?: string;
     iban?: string;
 
-    constructor(data?: IBankingDetailsItem) {
+    constructor(data?: IGarageBankingDetailsItem) {
         super(data);
     }
 
@@ -785,9 +924,9 @@ export class BankingDetailsItem extends BaseEntity implements IBankingDetailsIte
         }
     }
 
-    static fromJS(data: any): BankingDetailsItem {
+    static fromJS(data: any): GarageBankingDetailsItem {
         data = typeof data === 'object' ? data : {};
-        let result = new BankingDetailsItem();
+        let result = new GarageBankingDetailsItem();
         result.init(data);
         return result;
     }
@@ -803,11 +942,68 @@ export class BankingDetailsItem extends BaseEntity implements IBankingDetailsIte
     }
 }
 
-export interface IBankingDetailsItem extends IBaseEntity {
+export interface IGarageBankingDetailsItem extends IBaseEntity {
     bankName?: string;
     kvKNumber?: string;
     accountHolderName?: string;
     iban?: string;
+}
+
+export class GarageServicesSettingsItem extends BaseEntity implements IGarageServicesSettingsItem {
+    maxAutomaticPlannedOrders?: number;
+    trySendMailOnNewOrders?: boolean;
+    trySendWhatsappMessagOnNewOrders?: boolean;
+    isDeliveryEnabled?: boolean;
+    isAuthohelperDeliveryEnabled?: boolean;
+    deliveryPrice?: number;
+    maxAutomaticPlannedDeliveries?: number;
+
+    constructor(data?: IGarageServicesSettingsItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.maxAutomaticPlannedOrders = _data["maxAutomaticPlannedOrders"];
+            this.trySendMailOnNewOrders = _data["trySendMailOnNewOrders"];
+            this.trySendWhatsappMessagOnNewOrders = _data["trySendWhatsappMessagOnNewOrders"];
+            this.isDeliveryEnabled = _data["isDeliveryEnabled"];
+            this.isAuthohelperDeliveryEnabled = _data["isAuthohelperDeliveryEnabled"];
+            this.deliveryPrice = _data["deliveryPrice"];
+            this.maxAutomaticPlannedDeliveries = _data["maxAutomaticPlannedDeliveries"];
+        }
+    }
+
+    static fromJS(data: any): GarageServicesSettingsItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageServicesSettingsItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["maxAutomaticPlannedOrders"] = this.maxAutomaticPlannedOrders;
+        data["trySendMailOnNewOrders"] = this.trySendMailOnNewOrders;
+        data["trySendWhatsappMessagOnNewOrders"] = this.trySendWhatsappMessagOnNewOrders;
+        data["isDeliveryEnabled"] = this.isDeliveryEnabled;
+        data["isAuthohelperDeliveryEnabled"] = this.isAuthohelperDeliveryEnabled;
+        data["deliveryPrice"] = this.deliveryPrice;
+        data["maxAutomaticPlannedDeliveries"] = this.maxAutomaticPlannedDeliveries;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageServicesSettingsItem extends IBaseEntity {
+    maxAutomaticPlannedOrders?: number;
+    trySendMailOnNewOrders?: boolean;
+    trySendWhatsappMessagOnNewOrders?: boolean;
+    isDeliveryEnabled?: boolean;
+    isAuthohelperDeliveryEnabled?: boolean;
+    deliveryPrice?: number;
+    maxAutomaticPlannedDeliveries?: number;
 }
 
 export class ContactItem extends BaseAuditableEntity implements IContactItem {
@@ -855,12 +1051,87 @@ export interface IContactItem extends IBaseAuditableEntity {
     responsibility?: string;
 }
 
+export class GarageSettings implements IGarageSettings {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
+    contacts?: ContactItem[];
+
+    constructor(data?: IGarageSettings) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsAppNumber = _data["whatsAppNumber"];
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
+            if (Array.isArray(_data["contacts"])) {
+                this.contacts = [] as any;
+                for (let item of _data["contacts"])
+                    this.contacts!.push(ContactItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GarageSettings {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageSettings();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsAppNumber"] = this.whatsAppNumber;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
+        if (Array.isArray(this.contacts)) {
+            data["contacts"] = [];
+            for (let item of this.contacts)
+                data["contacts"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGarageSettings {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
+    contacts?: ContactItem[];
+}
+
 export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSettingsCommand {
     id?: string;
     name?: string;
-    location?: LocationItem;
-    businessOwner?: BusinessOwnerItem;
-    bankingDetails?: BankingDetailsItem;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    email?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
 
     constructor(data?: IUpdateGarageItemSettingsCommand) {
         if (data) {
@@ -875,9 +1146,12 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.location = _data["location"] ? LocationItem.fromJS(_data["location"]) : <any>undefined;
-            this.businessOwner = _data["businessOwner"] ? BusinessOwnerItem.fromJS(_data["businessOwner"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? BankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsAppNumber = _data["whatsAppNumber"];
+            this.email = _data["email"];
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
         }
     }
 
@@ -892,9 +1166,12 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsAppNumber"] = this.whatsAppNumber;
+        data["email"] = this.email;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["businessOwner"] = this.businessOwner ? this.businessOwner.toJSON() : <any>undefined;
         data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -902,50 +1179,12 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
 export interface IUpdateGarageItemSettingsCommand {
     id?: string;
     name?: string;
-    location?: LocationItem;
-    businessOwner?: BusinessOwnerItem;
-    bankingDetails?: BankingDetailsItem;
-}
-
-export class BusinessOwnerItem extends BaseEntity implements IBusinessOwnerItem {
-    fullName!: string;
     phoneNumber?: string;
+    whatsAppNumber?: string;
     email?: string;
-
-    constructor(data?: IBusinessOwnerItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.fullName = _data["fullName"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.email = _data["email"];
-        }
-    }
-
-    static fromJS(data: any): BusinessOwnerItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new BusinessOwnerItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fullName"] = this.fullName;
-        data["phoneNumber"] = this.phoneNumber;
-        data["email"] = this.email;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IBusinessOwnerItem extends IBaseEntity {
-    fullName: string;
-    phoneNumber?: string;
-    email?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
 }
 
 export class CreateGarageItemCommand implements ICreateGarageItemCommand {

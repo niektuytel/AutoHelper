@@ -4,6 +4,7 @@ using AutoHelper.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230904213754_initial 4.5")]
+    partial class initial45
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -319,7 +322,7 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("GarageId")
+                    b.Property<Guid>("GarageItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModified")
@@ -340,9 +343,9 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GarageId");
+                    b.HasIndex("GarageItemId");
 
-                    b.ToTable("GarageServices");
+                    b.ToTable("GarageServiceItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageServicesSettingsItem", b =>
@@ -882,7 +885,7 @@ namespace AutoHelper.Infrastructure.Migrations
                 {
                     b.HasOne("AutoHelper.Domain.Entities.GarageItem", "Garage")
                         .WithMany("Services")
-                        .HasForeignKey("GarageId")
+                        .HasForeignKey("GarageItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

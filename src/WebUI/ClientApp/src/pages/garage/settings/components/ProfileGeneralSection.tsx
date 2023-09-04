@@ -1,21 +1,22 @@
-﻿import React, { Dispatch, SetStateAction } from 'react';
+﻿import React, { Dispatch, SetStateAction, useState } from 'react';
 import { TextField, Box, InputAdornment, IconButton, Typography, Paper, Grid, List, ListItem } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
-import { GarageSettings, LocationItem } from '../../../../app/web-api-client';
+import { GarageSettings, GarageLocationItem } from '../../../../app/web-api-client';
 
 interface LocationSectionProps {
     control: any;
     errors: FieldErrors<FieldValues>;
     setFormValue: UseFormSetValue<FieldValues>;
+    defaultLocation: any;
 }
 
-export default ({ control, errors, setFormValue }: LocationSectionProps) => {
+export default ({ control, errors, setFormValue, defaultLocation }: LocationSectionProps) => {
+    const [previousValue, setPreviousValue] = useState<any | null>(null);
     const { t } = useTranslation();
-    
     const {
         ready,
         value,
@@ -39,14 +40,20 @@ export default ({ control, errors, setFormValue }: LocationSectionProps) => {
                 const { lat, lng } = getLatLng(results[0]);
 
                 // Set the values to useForm directly
-                setFormValue("address", `${address}, ${city}`);
+                var newAddress = `${address}, ${city}`;
+                setFormValue("address", newAddress);
                 setFormValue("city", city);
                 setFormValue("latitude", lat);
                 setFormValue("longitude", lng);
+                setFormValue("postalCode", postalCode);
 
-                if (postalCode.length != 0) {
-                    setFormValue("postalCode", postalCode);
-                }
+                setPreviousValue({
+                    address: address,
+                    city: city,
+                    latitude: lat,
+                    longitude: lng,
+                    postalCode: postalCode
+                });
             })
             .catch(error => {
                 // TODO: trigger an snackbar on redux, dispatch state with this error message (get it from the useTranslation)
@@ -70,6 +77,47 @@ export default ({ control, errors, setFormValue }: LocationSectionProps) => {
         clearSuggestions();
     };
 
+    const handleFocus = () => {
+        setFormValue("address", "");
+        setFormValue("city", "");
+        setFormValue("latitude", "");
+        setFormValue("longitude", "");
+        setFormValue("postalCode", "");
+
+        setValue("", false);
+    };
+
+    const handleBlur = () => {
+        if (!value) {
+            let address, city, latitude, longitude, postalCode;
+
+            if (previousValue && previousValue.address && previousValue.city) {
+                address = `${previousValue.address}, ${previousValue.city}`;
+                city = previousValue.city;
+                latitude = previousValue.latitude;
+                longitude = previousValue.longitude;
+                postalCode = previousValue.postalCode;
+            } else if (defaultLocation && defaultLocation.location && defaultLocation.location.address && defaultLocation.location.city) {
+                address = `${defaultLocation.location.address}, ${defaultLocation.location.city}`;
+                city = defaultLocation.location.city;
+                latitude = defaultLocation.location.latitude;
+                longitude = defaultLocation.location.longitude;
+                postalCode = defaultLocation.location.postalCode;
+            }
+
+            if (address && city) {
+                setFormValue("address", address);
+                setFormValue("city", city);
+                setFormValue("latitude", latitude);
+                setFormValue("longitude", longitude);
+                setFormValue("postalCode", postalCode);
+
+                setValue(address, false);
+            }
+        }
+    };
+
+
     return (
         <>
             <Grid item xs={12}>
@@ -90,7 +138,7 @@ export default ({ control, errors, setFormValue }: LocationSectionProps) => {
                     )}
                 />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
                 <Box position="relative">
                     <Controller
                         name="address"
@@ -100,11 +148,12 @@ export default ({ control, errors, setFormValue }: LocationSectionProps) => {
                         render={({ field }) => (
                             <TextField
                                 {...field}
-                                //value={value || ''}
                                 onChange={(e) => {
                                     field.onChange(e);
                                     setValue(e.target.value)
                                 }}
+                                onFocus={handleFocus}
+                                onBlur={handleBlur}
                                 fullWidth
                                 autoComplete="new-password"
                                 autoFocus={true}
@@ -124,7 +173,7 @@ export default ({ control, errors, setFormValue }: LocationSectionProps) => {
                                     ),
                                 }}
                                 error={Boolean(errors.address)}
-                                helperText={ errors.address ? (errors.address.message as string) : undefined }
+                                helperText={errors.address ? (errors.address.message as string) : undefined}
                             />
                         )}
                     />
@@ -164,24 +213,6 @@ export default ({ control, errors, setFormValue }: LocationSectionProps) => {
                         </Box>
                     }
                 </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-                <Controller
-                    name="postalCode"
-                    control={control}
-                    rules={{ required: "Postal Code is required!" }}
-                    defaultValue={""}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            fullWidth
-                            label="Postal Code"
-                            variant="outlined"
-                            error={Boolean(errors.postalCode)}
-                            helperText={errors.postalCode ? (errors.postalCode.message as string) : undefined}
-                        />
-                    )}
-                />
             </Grid>
         </>
     );

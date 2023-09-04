@@ -8,7 +8,7 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageSettings;
+namespace AutoHelper.Application.Garages.Models;
 
 public class GarageSettings : IMapFrom<GarageItem>
 {
@@ -20,10 +20,11 @@ public class GarageSettings : IMapFrom<GarageItem>
 
     public string WhatsAppNumber { get; set; } = "";
 
+    public GarageLocationItem Location { get; set; } = new GarageLocationItem();
 
-    public LocationItem Location { get; set; } = new LocationItem();
+    public GarageBankingDetailsItem BankingDetails { get; set; } = new GarageBankingDetailsItem();
 
-    public BankingDetailsItem BankingDetails { get; set; } = new BankingDetailsItem();
+    public GarageServicesSettingsItem ServicesSettings { get; set; } = new GarageServicesSettingsItem();
 
     public ICollection<ContactItem> Contacts { get; set; } = new List<ContactItem>();
 }

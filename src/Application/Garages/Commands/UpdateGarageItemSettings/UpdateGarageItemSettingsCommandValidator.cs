@@ -16,16 +16,16 @@ public class UpdateGarageItemSettingsCommandValidator : AbstractValidator<Update
             .MaximumLength(200).WithMessage("Name must not exceed 200 characters.");
         });
         
-        When(v => v.Location != null, () =>
-        {
-            RuleFor(v => v.Location)
-                .SetValidator(new LocationValidator());
-        });
+        //When(v => v.Location != null, () =>
+        //{
+        //    RuleFor(v => v.Location)
+        //        .SetValidator(new LocationValidator());
+        //});
 
-        When(v => v.BankingDetails != null, () =>
-        {
-            RuleFor(v => v.BankingDetails)
-                .SetValidator(new BankingInfoValidator());
-        });
+        //When(v => v.BankingDetails != null, () =>
+        //{
+        //    RuleFor(v => v.BankingDetails)
+        //        .SetValidator(new BankingInfoValidator());
+        //});
     }
 }

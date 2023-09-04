@@ -4,22 +4,29 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { Controller, FieldValues, UseFormSetError, useForm } from "react-hook-form";
-import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useDispatch } from "react-redux";
-import GeneralSection from "./components/GeneralSection";
-import BankingSection from "./components/BankingSection";
-import ContactSection from "./components/ContactSection";
-import { COLORS } from "../../../constants/colors";
-import useGarage from "./useGarage";
+
 // own imports
+import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
+import ProfileGeneralSection from "./components/ProfileGeneralSection";
+import ProfileBankingSection from "./components/ProfileBankingSection";
+import ProfileContactSection from "./components/ProfileContactSection";
+import { COLORS } from "../../../constants/colors";
+import useGarage from "./useGarageSettings";
+import ServicesGeneralSection from "./components/ServicesGeneralSection";
+import ServicesDeliverySection from "./components/ServicesDeliverySection";
+
+// TODO: set all translations for this page
 
 interface IProps {
 }
 
-export default ({ }: IProps) => {// TODO: want to use it in future? >> memo()
+export default ({ }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [activeSection, setActiveSection] = useState('profile');
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
     const { garage_guid } = useParams();
@@ -29,26 +36,40 @@ export default ({ }: IProps) => {// TODO: want to use it in future? >> memo()
     const { reset, handleSubmit, control, formState: { errors }, setError, setValue } = useForm();
     const { loading, isError, createGarage, updateGarageSettings, garageSettings } = useGarage(reset, setError, notFound == "true", garage_guid);
 
+
+    // Update hash when location changes
+    useEffect(() => {
+        if (location.hash === "#services") {
+            setActiveSection("services");
+        } else {
+            setActiveSection("profile");
+        }
+    }, [location.hash]);
+
+    const handleSectionChange = (section: string) => {
+        navigate(`#${section}`);
+    }
+
     const onSubmit = async (data: any) => {
+        if (t("Select a bank...").match(data.bankName)) {
+            setError("bankName", {
+                type: "manual",
+                message: t("Bank name is required.")
+            });
+
+            return;
+        }
+        else if (!data.longitude) {
+            dispatch(showOnError(t("Select a address, it's required.")));
+            setError("address", {
+                type: "manual",
+                message: t("Select a address, it's required.")
+            });
+
+            return;
+        }
+
         if (notFound) {
-            if (t("Select a bank...").match(data.bankName)) {
-                setError("bankName", {
-                    type: "manual",
-                    message: t("Bank name is required.")
-                });
-
-                return;
-            }
-            else if (!data.longitude) {
-                dispatch(showOnError(t("Select a address, it's required.")));
-                setError("address", {
-                    type: "manual",
-                    message: t("Select a address, it's required.")
-                });
-
-                return;
-            }
-
             createGarage(data);
         } else {
             updateGarageSettings(data);
@@ -57,7 +78,7 @@ export default ({ }: IProps) => {// TODO: want to use it in future? >> memo()
 
     return (
         <>
-            <Box py={4}>
+            <Box pt={4}>
                 <Typography variant="h4" gutterBottom>
                     {t("GarageSettingsHeader.Title")}
                     <Tooltip title={t("GarageSettingsHeader.Description")}>
@@ -67,12 +88,34 @@ export default ({ }: IProps) => {// TODO: want to use it in future? >> memo()
                     </Tooltip>
                 </Typography>
             </Box>
+            {!notFound ?
+                <Box pb={1}>
+                    <Button sx={{ marginRight: "5px" }} variant={activeSection === "profile" ? "contained" : "outlined"} onClick={() => handleSectionChange('profile')}>
+                        {t('Profile')}
+                    </Button>
+                    <Button variant={activeSection === "services" ? "contained" : "outlined"} onClick={() => handleSectionChange('services')}>
+                        {t('Services')}
+                    </Button>
+                </Box>
+                :
+                <Box py={3}></Box>
+            }
             <Divider style={{ marginBottom: "20px" }} />
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={2}>
-                    <GeneralSection errors={errors} control={control} setFormValue={setValue} />
-                    <ContactSection errors={errors} control={control} />
-                    <BankingSection errors={errors} control={control} />
+                    {
+                        activeSection === 'profile' ?
+                            <>
+                                <ProfileGeneralSection errors={errors} control={control} setFormValue={setValue} defaultLocation={garageSettings} />
+                                <ProfileContactSection errors={errors} control={control} />
+                                <ProfileBankingSection errors={errors} control={control} />
+                            </>
+                            :
+                            <>
+                                <ServicesGeneralSection errors={errors} control={control} />
+                                <ServicesDeliverySection errors={errors} control={control} />
+                            </>
+                    }
                     <Grid item xs={12}>
                         <Box display="flex" justifyContent="center" alignItems="center" height="90px">
                             {loading ?

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Models;
 using AutoHelper.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using AutoHelper.Domain.Entities;

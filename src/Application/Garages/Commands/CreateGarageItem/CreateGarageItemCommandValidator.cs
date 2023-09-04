@@ -32,9 +32,6 @@ public class CreateGarageItemCommandValidator : AbstractValidator<CreateGarageIt
             RuleFor(v => v.Address)
                 .NotEmpty().WithMessage("Address is required.");
 
-            RuleFor(v => v.PostalCode)
-                .NotEmpty().WithMessage("PostalCode is required.");
-
             RuleFor(v => v.City)
                 .MaximumLength(100).WithMessage("City must not exceed 100 characters.");
 

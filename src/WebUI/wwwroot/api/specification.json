@@ -38,6 +38,41 @@
         }
       }
     },
+    "/api/Garage/{id}/Services": {
+      "get": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_Services",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GarageServiceItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Garage/{id}/Settings": {
       "get": {
         "tags": [
@@ -94,8 +129,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "guid"
+                  "$ref": "#/components/schemas/GarageSettings"
                 }
               }
             }
@@ -388,37 +422,103 @@
           }
         ]
       },
-      "GarageSettings": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
+      "GarageServiceItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
           },
-          "email": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "whatsAppNumber": {
-            "type": "string"
-          },
-          "location": {
-            "$ref": "#/components/schemas/LocationItem"
-          },
-          "bankingDetails": {
-            "$ref": "#/components/schemas/BankingDetailsItem"
-          },
-          "contacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContactItem"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "price": {
+                "type": "number",
+                "format": "decimal"
+              },
+              "status": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "garageId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "garage": {
+                "$ref": "#/components/schemas/GarageItem"
+              }
             }
           }
-        }
+        ]
       },
-      "LocationItem": {
+      "GarageItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "whatsAppNumber": {
+                "type": "string"
+              },
+              "location": {
+                "$ref": "#/components/schemas/GarageLocationItem"
+              },
+              "bankingDetails": {
+                "$ref": "#/components/schemas/GarageBankingDetailsItem"
+              },
+              "servicesSettings": {
+                "$ref": "#/components/schemas/GarageServicesSettingsItem"
+              },
+              "contacts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContactItem"
+                }
+              },
+              "employees": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeItem"
+                }
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              },
+              "vehicles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/VehicleItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "GarageLocationItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseEntity"
@@ -451,7 +551,7 @@
           }
         ]
       },
-      "BankingDetailsItem": {
+      "GarageBankingDetailsItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseEntity"
@@ -471,6 +571,43 @@
               },
               "iban": {
                 "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "GarageServicesSettingsItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "maxAutomaticPlannedOrders": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "trySendMailOnNewOrders": {
+                "type": "boolean"
+              },
+              "trySendWhatsappMessagOnNewOrders": {
+                "type": "boolean"
+              },
+              "isDeliveryEnabled": {
+                "type": "boolean"
+              },
+              "isAuthohelperDeliveryEnabled": {
+                "type": "boolean"
+              },
+              "deliveryPrice": {
+                "type": "number",
+                "format": "decimal"
+              },
+              "maxAutomaticPlannedDeliveries": {
+                "type": "number",
+                "format": "decimal"
               }
             }
           }
@@ -506,6 +643,39 @@
           }
         ]
       },
+      "GarageSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GarageLocationItem"
+          },
+          "bankingDetails": {
+            "$ref": "#/components/schemas/GarageBankingDetailsItem"
+          },
+          "servicesSettings": {
+            "$ref": "#/components/schemas/GarageServicesSettingsItem"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactItem"
+            }
+          }
+        }
+      },
       "UpdateGarageItemSettingsCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -517,42 +687,25 @@
           "name": {
             "type": "string"
           },
-          "location": {
-            "$ref": "#/components/schemas/LocationItem"
+          "phoneNumber": {
+            "type": "string"
           },
-          "businessOwner": {
-            "$ref": "#/components/schemas/BusinessOwnerItem"
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GarageLocationItem"
           },
           "bankingDetails": {
-            "$ref": "#/components/schemas/BankingDetailsItem"
+            "$ref": "#/components/schemas/GarageBankingDetailsItem"
+          },
+          "servicesSettings": {
+            "$ref": "#/components/schemas/GarageServicesSettingsItem"
           }
         }
-      },
-      "BusinessOwnerItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "fullName"
-            ],
-            "properties": {
-              "fullName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "phoneNumber": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              }
-            }
-          }
-        ]
       },
       "CreateGarageItemCommand": {
         "type": "object",

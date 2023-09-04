@@ -2,7 +2,7 @@
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
+using AutoHelper.Application.Garages.Models;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
@@ -49,7 +49,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageItemCo
             PhoneNumber = request.PhoneNumber,
             WhatsAppNumber = request.WhatsAppNumber,
             Email = request.Email,
-            Location = new LocationItem
+            Location = new GarageLocationItem
             {
                 Address = request.Location.Address,
                 PostalCode = request.Location.PostalCode,
@@ -58,13 +58,14 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageItemCo
                 Longitude = request.Location.Longitude,
                 Latitude = request.Location.Latitude
             },
-            BankingDetails = new BankingDetailsItem
+            BankingDetails = new GarageBankingDetailsItem
             {
                 BankName = request.BankingDetails.BankName,
                 KvKNumber = request.BankingDetails.KvKNumber,
                 AccountHolderName = request.BankingDetails.AccountHolderName,
                 IBAN = request.BankingDetails.IBAN
-            }
+            },
+            ServicesSettings = new GarageServicesSettingsItem()
         };
 
         // If you wish to use domain events, then you can add them here:

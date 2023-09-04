@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { BankingDetailsItem, BriefBankingDetailsDto, BriefLocationDto, CreateGarageItemCommand, GarageClient, GarageSettings, LocationItem, UpdateGarageItemSettingsCommand } from "../../../app/web-api-client";
+import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageItemCommand, GarageBankingDetailsItem, GarageClient, GarageLocationItem, GarageSettings, UpdateGarageItemSettingsCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -12,8 +12,8 @@ import { RoutesGarageSettings } from "../../../constants/routes";
 
 //own imports
 
-function initialGarageLocation(): LocationItem {
-    const location = new LocationItem();
+function initialGarageLocation(): GarageLocationItem {
+    const location = new GarageLocationItem();
     location.country = "Netherlands";
     return location;
 }
@@ -53,7 +53,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         phoneNumber: "",
         whatsAppNumber: "",
         location: initialGarageLocation(),
-        bankingDetails: new BankingDetailsItem(),
+        bankingDetails: new GarageBankingDetailsItem(),
         contacts: []
     });
     const queryClient = useQueryClient();
@@ -81,7 +81,6 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         }
     }
 
-    //const cachedData = queryClient.getQueryData(['garageSettings', garage_guid]);
     const { data: garageSettings, isLoading, isError } = useQuery(
         ['garageSettings', garage_guid],
         fetchGarageData,
@@ -92,11 +91,10 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
             cacheTime: 30 * 60 * 1000,  // 30 minutes
             staleTime: 60 * 60 * 1000, // 1 hour
 
-            //initialData: cachedData,
             onSuccess: (data: any) => {
                 reset({
                     name: data.name,
-                    address: `${data.location?.address}, ${data.location?.city}`,
+                    address: data.location?.address ? `${data.location?.address}, ${data.location?.city}` : '',
                     country: data.location?.country,
                     city: data.location?.city,
                     latitude: data.location?.latitude,
@@ -114,13 +112,24 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         }
     );
 
-
-    const mutation = useMutation(garageClient.create.bind(garageClient), {
+    const createMutation = useMutation(garageClient.create.bind(garageClient), {
         onSuccess: (response) => {
             dispatch(showOnSuccess("Garage has been created!"));
 
-            // Step 3: Invalidate and refetch the garageSettings query
-            queryClient.invalidateQueries(['garageSettings', garage_guid]);
+            // Update the garageSettings in the cache after creating
+            queryClient.setQueryData(['garageSettings', garage_guid], response);
+        },
+        onError: (response) => {
+            guardHttpResponse(response, setError, t, dispatch);
+        }
+    });
+
+    const updateMutation = useMutation(garageClient.updateSettings.bind(garageClient), {
+        onSuccess: (response) => {
+            dispatch(showOnSuccess("Garage has been updated!"));
+
+            // Update the garageSettings in the cache after updating
+            queryClient.setQueryData(['garageSettings', garage_guid], response);
         },
         onError: (response) => {
             guardHttpResponse(response, setError, t, dispatch);
@@ -131,8 +140,13 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         var command = new CreateGarageItemCommand();
         command.id = garage_guid;
         command.name = data.name;
+        command.phoneNumber = data.phoneNumber;
+        command.whatsAppNumber = data.whatsAppNumber;
+        command.email = data.email;
+
+        const cleanAddress = data.address.replace(`, ${data.city}`, '');
         command.location = new BriefLocationDto({
-            address: data.address,
+            address: cleanAddress,
             postalCode: data.postalCode,
             city: data.city,
             country: data.country,
@@ -140,9 +154,6 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
             latitude: data.latitude
 
         });
-        command.phoneNumber = data.phoneNumber;
-        command.whatsAppNumber = data.whatsAppNumber;
-        command.email = data.email;
         command.bankingDetails = new BriefBankingDetailsDto({
             bankName: data.bankName,
             kvKNumber: data.kvKNumber,
@@ -151,45 +162,49 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         });
 
         console.log(command.toJSON());
-        mutation.mutate(command);
+        createMutation.mutate(command);
     }
 
     const updateGarageSettings = (data: any) => {
-        console.log(data);
 
         var command = new UpdateGarageItemSettingsCommand();
         command.id = garage_guid;
         command.name = data.name;
-        command.location = new BriefLocationDto({
-            address: data.address,
-            postalCode: data.postalCode,
-            city: data.city,
-            country: data.country,
-            longitude: data.longitude,
-            latitude: data.latitude
+        command.phoneNumber = data.phoneNumber;
+        command.whatsAppNumber = data.whatsAppNumber;
+        command.email = data.email;
 
-        });
-        //command.phoneNumber = data.phoneNumber;
-        //command.whatsAppNumber = data.whatsAppNumber;
-        //command.email = data.email;
-        command.bankingDetails = new BriefBankingDetailsDto({
-            bankName: data.bankName,
-            kvKNumber: data.kvKNumber,
-            accountHolderName: data.accountHolderName,
-            iban: data.iban
-        });
+        command.location = new GarageLocationItem();
+        command.location.id = garageSettings?.location?.id,
+        command.location.address = data.address.replace(`, ${data.city}`, ''),
+        command.location.postalCode = data.postalCode,
+        command.location.city = data.city,
+        command.location.country = data.country,
+        command.location.longitude = data.longitude,
+        command.location.latitude = data.latitude
 
-        //mutation.mutate(command);
+        command.bankingDetails = new GarageBankingDetailsItem();
+        command.bankingDetails.id = garageSettings?.bankingDetails?.id;
+        command.bankingDetails.bankName = data.bankName;
+        command.bankingDetails.kvKNumber = data.kvKNumber;
+        command.bankingDetails.accountHolderName = data.accountHolderName;
+        command.bankingDetails.iban = data.iban;
+
+        command.servicesSettings = garageSettings?.servicesSettings;
+
+        console.log(data, data.postalCode);
+        console.log(command.toJSON());
+        updateMutation.mutate(command);
     }
 
     // only reset the form when the data is loaded
-    const loading = isLoading || mutation.isLoading;
+    const loading = isLoading || createMutation.isLoading;
     useEffect(() => {
         if (garageSettings && !loading) {
             console.log("reset form with data garageSettings: ", garageSettings);
             reset({
                 name: garageSettings.name,
-                address: `${garageSettings.location?.address}, ${garageSettings.location?.city}`,
+                address: garageSettings.location?.address ? `${garageSettings.location?.address}, ${garageSettings.location?.city}` : '',
                 country: garageSettings.location?.country,
                 city: garageSettings.location?.city,
                 latitude: garageSettings.location?.latitude,

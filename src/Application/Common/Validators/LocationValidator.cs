@@ -4,7 +4,7 @@ using FluentValidation;
 namespace AutoHelper.Application.Common.Validators;
 
 // Validator for LocationItem
-public class LocationValidator : AbstractValidator<LocationItem>
+public class LocationValidator : AbstractValidator<GarageLocationItem>
 {
     public LocationValidator()
     {
