@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
@@ -184,6 +184,28 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
 
     // only reset the form when the data is loaded
     const loading = isLoading || mutation.isLoading;
+    useEffect(() => {
+        if (garageSettings && !loading) {
+            console.log("reset form with data garageSettings: ", garageSettings);
+            reset({
+                name: garageSettings.name,
+                address: `${garageSettings.location?.address}, ${garageSettings.location?.city}`,
+                country: garageSettings.location?.country,
+                city: garageSettings.location?.city,
+                latitude: garageSettings.location?.latitude,
+                longitude: garageSettings.location?.longitude,
+                postalCode: garageSettings.location?.postalCode,
+                phoneNumber: garageSettings.phoneNumber,
+                whatsAppNumber: garageSettings.whatsAppNumber,
+                email: garageSettings.email,
+                kvKNumber: garageSettings.bankingDetails?.kvKNumber,
+                bankName: garageSettings.bankingDetails?.bankName,
+                accountHolderName: garageSettings.bankingDetails?.accountHolderName,
+                iban: garageSettings.bankingDetails?.iban,
+            });
+        }
+    }, [garageSettings, loading, reset]);
+
     return {
         loading, isError, garageSettings, createGarage, updateGarageSettings
     }

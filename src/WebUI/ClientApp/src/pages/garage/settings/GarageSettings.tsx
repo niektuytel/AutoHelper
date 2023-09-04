@@ -29,30 +29,6 @@ export default ({ }: IProps) => {// TODO: want to use it in future? >> memo()
     const { reset, handleSubmit, control, formState: { errors }, setError, setValue } = useForm();
     const { loading, isError, createGarage, updateGarageSettings, garageSettings } = useGarage(reset, setError, notFound == "true", garage_guid);
 
-    // TODO: When come back to this page, it's not reseting the form with previous data/props
-    // This cause issues on any state change an call
-    useEffect(() => {
-        if (garageSettings && !loading) {
-            console.log("reset form with data garageSettings: ", garageSettings);
-            reset({
-                name: garageSettings.name,
-                address: `${garageSettings.location?.address}, ${garageSettings.location?.city}`,
-                country: garageSettings.location?.country,
-                city: garageSettings.location?.city,
-                latitude: garageSettings.location?.latitude,
-                longitude: garageSettings.location?.longitude,
-                postalCode: garageSettings.location?.postalCode,
-                phoneNumber: garageSettings.phoneNumber,
-                whatsAppNumber: garageSettings.whatsAppNumber,
-                email: garageSettings.email,
-                kvKNumber: garageSettings.bankingDetails?.kvKNumber,
-                bankName: garageSettings.bankingDetails?.bankName,
-                accountHolderName: garageSettings.bankingDetails?.accountHolderName,
-                iban: garageSettings.bankingDetails?.iban,
-            });
-        }
-    });
-
     const onSubmit = async (data: any) => {
         if (notFound) {
             if (t("Select a bank...").match(data.bankName)) {
