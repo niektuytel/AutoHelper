@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230828222843_Initial-Commit-2.4")]
-    partial class InitialCommit24
+    [Migration("20230905231925_060923")]
+    partial class _060923
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,80 +24,6 @@ namespace AutoHelper.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AutoHelper.Domain.Entities.BankingInfoItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BankName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IBAN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SWIFTCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BankingInfoItem");
-                });
-
-            modelBuilder.Entity("AutoHelper.Domain.Entities.BusinessOwnerItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BusinessOwnerItem");
-                });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.ContactItem", b =>
                 {
@@ -216,6 +142,33 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.ToTable("TodoList");
                 });
 
+            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageBankingDetailsItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AccountHolderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IBAN")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("KvKNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GarageBankingDetailsItem");
+                });
+
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageEmployeeItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -272,13 +225,14 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<Guid>("BankingDetailsId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BusinessOwnerId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModified")
@@ -294,15 +248,59 @@ namespace AutoHelper.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ServicesSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("WhatsAppNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BankingDetailsId");
 
-                    b.HasIndex("BusinessOwnerId");
-
                     b.HasIndex("LocationId");
 
+                    b.HasIndex("ServicesSettingsId");
+
                     b.ToTable("Garages");
+                });
+
+            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageLocationItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GarageLocationItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageServiceItem", b =>
@@ -321,7 +319,10 @@ namespace AutoHelper.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("GarageItemId")
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("GarageId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModified")
@@ -330,60 +331,53 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ServiceName")
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GarageItemId");
+                    b.HasIndex("GarageId");
 
-                    b.ToTable("GarageServiceItem");
+                    b.ToTable("GarageServices");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.LocationItem", b =>
+            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageServicesSettingsItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal>("DeliveryPrice")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsAuthohelperDeliveryEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsDeliveryEnabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("MaxAutomaticPlannedDeliveries")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("MaxAutomaticPlannedOrders")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("TrySendMailOnNewOrders")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("TrySendWhatsappMessagOnNewOrders")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.ToTable("LocationItem");
+                    b.ToTable("GarageServicesSettingsItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.VehicleItem", b =>
@@ -862,36 +856,40 @@ namespace AutoHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageItem", b =>
                 {
-                    b.HasOne("AutoHelper.Domain.Entities.BankingInfoItem", "BankingDetails")
+                    b.HasOne("AutoHelper.Domain.Entities.GarageBankingDetailsItem", "BankingDetails")
                         .WithMany()
                         .HasForeignKey("BankingDetailsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AutoHelper.Domain.Entities.BusinessOwnerItem", "BusinessOwner")
-                        .WithMany()
-                        .HasForeignKey("BusinessOwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AutoHelper.Domain.Entities.LocationItem", "Location")
+                    b.HasOne("AutoHelper.Domain.Entities.GarageLocationItem", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AutoHelper.Domain.Entities.GarageServicesSettingsItem", "ServicesSettings")
+                        .WithMany()
+                        .HasForeignKey("ServicesSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("BankingDetails");
 
-                    b.Navigation("BusinessOwner");
-
                     b.Navigation("Location");
+
+                    b.Navigation("ServicesSettings");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageServiceItem", b =>
                 {
-                    b.HasOne("AutoHelper.Domain.Entities.GarageItem", null)
+                    b.HasOne("AutoHelper.Domain.Entities.GarageItem", "Garage")
                         .WithMany("Services")
-                        .HasForeignKey("GarageItemId");
+                        .HasForeignKey("GarageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Garage");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.VehicleItem", b =>
