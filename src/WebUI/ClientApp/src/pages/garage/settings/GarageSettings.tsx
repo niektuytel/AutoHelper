@@ -1,5 +1,5 @@
 ﻿import React, { Dispatch, memo, useEffect, useState } from "react";
-import { Box, Breadcrumbs, Button, CircularProgress, Container, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Drawer, FormControl, Grid, Hidden, IconButton, InputAdornment, InputLabel, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Paper, Select, TextField, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Breadcrumbs, Button, ButtonGroup, CircularProgress, Container, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Drawer, FormControl, Grid, Hidden, IconButton, InputAdornment, InputLabel, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Paper, Select, TextField, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -89,14 +89,14 @@ export default ({ }: IProps) => {
                 </Typography>
             </Box>
             {!notFound ?
-                <Box pb={1}>
-                    <Button sx={{ marginRight: "5px" }} variant={activeSection === "profile" ? "contained" : "outlined"} onClick={() => handleSectionChange('profile')}>
+                <ButtonGroup sx={{paddingBottom: 1}}>
+                    <Button variant={activeSection === "profile" ? "contained" : "outlined"} onClick={() => handleSectionChange('profile')}>
                         {t('Profile')}
                     </Button>
                     <Button variant={activeSection === "services" ? "contained" : "outlined"} onClick={() => handleSectionChange('services')}>
                         {t('Services')}
                     </Button>
-                </Box>
+                </ButtonGroup>
                 :
                 <Box py={3}></Box>
             }

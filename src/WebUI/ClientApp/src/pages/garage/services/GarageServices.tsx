@@ -19,7 +19,8 @@ import {
     CircularProgress,
     useTheme,
     useMediaQuery,
-    Drawer
+    Drawer,
+    ButtonGroup
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -61,29 +62,44 @@ export default ({ }: IProps) => {
             <Box pt={4}>
                 <Typography variant="h4" gutterBottom display="flex" alignItems="center">
                     {t("Services")}
-                    {loading && <CircularProgress size={20} style={{ marginLeft: '10px' }} />}
-                    <Tooltip title={t("Services.Description")}>
-                        <IconButton size="small">
-                            <InfoOutlinedIcon fontSize="inherit" />
-                        </IconButton>
-                    </Tooltip>
+                    {loading ?
+                        <CircularProgress size={20} style={{ marginLeft: '10px' }} />
+                        :
+                        <Tooltip title={t("Services.Description")}>
+                            <IconButton size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>
+                    }
                 </Typography>
             </Box>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                <div>
-                    <IconButton onClick={() => setDrawerOpen(true)}>
-                        <AddIcon />
-                        {!isMobile && t("Create")}
-                    </IconButton>
-                    <IconButton disabled={!selectedItem} onClick={() => setEditDialogOpen(true)}>
-                        <EditIcon />
-                        {!isMobile && t("Edit")}
-                    </IconButton>
-                    <IconButton disabled={!selectedItem} onClick={() => setConfirmDeleteOpen(true)}>
-                        <DeleteIcon />
-                        {!isMobile && t("Delete")}
-                    </IconButton>
-                </div>
+                {isMobile ?
+                    <div>
+                        <IconButton onClick={() => setDrawerOpen(true)}>
+                            <AddIcon />
+                        </IconButton>
+                        <IconButton disabled={!selectedItem} onClick={() => setEditDialogOpen(true)}>
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton disabled={!selectedItem} onClick={() => setConfirmDeleteOpen(true)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </div>
+                    :
+                    <ButtonGroup aria-label="Buttons used for create, edit and delete">
+                        <Button onClick={() => setDrawerOpen(true)}>
+                            <AddIcon />{t("Create")}
+                        </Button>
+                        <Button onClick={() => setEditDialogOpen(true)} disabled={!selectedItem}>
+                            <EditIcon />{t("Edit")}
+                        </Button>
+                        <Button onClick={() => setEditDialogOpen(true)} disabled={!selectedItem}>
+                            <DeleteIcon />{t("Delete")}
+                        </Button>
+                    </ButtonGroup>
+
+                }
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
             <Box>
