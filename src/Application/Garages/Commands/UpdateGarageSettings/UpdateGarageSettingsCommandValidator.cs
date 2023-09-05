@@ -1,5 +1,4 @@
-﻿using AutoHelper.Application.Common.Validators;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 

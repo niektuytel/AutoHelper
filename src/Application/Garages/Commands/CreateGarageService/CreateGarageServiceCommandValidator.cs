@@ -1,5 +1,4 @@
-﻿using AutoHelper.Application.Common.Validators;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
+﻿using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities;
 using FluentValidation;
 
