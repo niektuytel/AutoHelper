@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 
-public class UpdateGarageItemSettingsCommandValidator : AbstractValidator<UpdateGarageItemSettingsCommand>
+public class UpdateGarageSettingsCommandValidator : AbstractValidator<UpdateGarageSettingsCommand>
 {
-    public UpdateGarageItemSettingsCommandValidator()
+    public UpdateGarageSettingsCommandValidator()
     {
         RuleFor(v => v.Id)
             .NotEmpty().WithMessage("Id is required.");

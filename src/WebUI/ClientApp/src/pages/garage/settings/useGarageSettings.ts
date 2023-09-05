@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageItemCommand, GarageBankingDetailsItem, GarageClient, GarageLocationItem, GarageSettings, UpdateGarageItemSettingsCommand } from "../../../app/web-api-client";
+import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageLocationItem, GarageSettings, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -68,7 +68,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
                 return initialGarageSettings;
             }
 
-            const response = await garageClient.settings(garage_guid!);
+            const response = await garageClient.getSettings(garage_guid!);
 
             return response;
         } catch (response: any) {
@@ -112,7 +112,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         }
     );
 
-    const createMutation = useMutation(garageClient.create.bind(garageClient), {
+    const createMutation = useMutation(garageClient.createGarage.bind(garageClient), {
         onSuccess: (response) => {
             dispatch(showOnSuccess("Garage has been created!"));
 
@@ -137,7 +137,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
     });
 
     const createGarage = (data: any) => {
-        var command = new CreateGarageItemCommand();
+        var command = new CreateGarageCommand();
         command.id = garage_guid;
         command.name = data.name;
         command.phoneNumber = data.phoneNumber;
@@ -167,7 +167,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
 
     const updateGarageSettings = (data: any) => {
 
-        var command = new UpdateGarageItemSettingsCommand();
+        var command = new UpdateGarageSettingsCommand();
         command.id = garage_guid;
         command.name = data.name;
         command.phoneNumber = data.phoneNumber;
@@ -198,7 +198,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
     }
 
     // only reset the form when the data is loaded
-    const loading = isLoading || createMutation.isLoading;
+    const loading = isLoading || createMutation.isLoading || updateMutation.isLoading;
     useEffect(() => {
         if (garageSettings && !loading) {
             console.log("reset form with data garageSettings: ", garageSettings);

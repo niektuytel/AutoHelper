@@ -6,12 +6,12 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Garage/{id}/Overview": {
+    "/api/Garage/{id}/GetOverview": {
       "get": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_Overview",
+        "operationId": "Garage_GetOverview",
         "parameters": [
           {
             "name": "id",
@@ -38,12 +38,12 @@
         }
       }
     },
-    "/api/Garage/{id}/Services": {
+    "/api/Garage/{id}/GetServices": {
       "get": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_Services",
+        "operationId": "Garage_GetServices",
         "parameters": [
           {
             "name": "id",
@@ -73,12 +73,12 @@
         }
       }
     },
-    "/api/Garage/{id}/Settings": {
+    "/api/Garage/{id}/GetSettings": {
       "get": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_Settings",
+        "operationId": "Garage_GetSettings",
         "parameters": [
           {
             "name": "id",
@@ -116,7 +116,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateGarageItemSettingsCommand"
+                "$ref": "#/components/schemas/UpdateGarageSettingsCommand"
               }
             }
           },
@@ -137,18 +137,50 @@
         }
       }
     },
-    "/api/Garage/Create": {
-      "post": {
+    "/api/Garage/UpdateService": {
+      "put": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_Create",
+        "operationId": "Garage_UpdateService",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateGarageItemCommand"
+                "$ref": "#/components/schemas/UpdateGarageServiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/CreateGarage": {
+      "post": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_CreateGarage",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageCommand"
               }
             }
           },
@@ -162,6 +194,38 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GarageSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/CreateService": {
+      "post": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_CreateService",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageServiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
                 }
               }
             }
@@ -676,7 +740,7 @@
           }
         }
       },
-      "UpdateGarageItemSettingsCommand": {
+      "UpdateGarageSettingsCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -707,7 +771,35 @@
           }
         }
       },
-      "CreateGarageItemCommand": {
+      "UpdateGarageServiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "garageId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "CreateGarageCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -776,6 +868,30 @@
           },
           "iban": {
             "type": "string"
+          }
+        }
+      },
+      "CreateGarageServiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "garageId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
           }
         }
       },

@@ -11,7 +11,7 @@ using MediatR;
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 
 
-public record UpdateGarageItemSettingsCommand : IRequest<GarageSettings>
+public record UpdateGarageSettingsCommand : IRequest<GarageSettings>
 {
     public Guid Id { get; set; }
 
@@ -31,7 +31,7 @@ public record UpdateGarageItemSettingsCommand : IRequest<GarageSettings>
 }
 
 
-public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGarageItemSettingsCommand, GarageSettings>
+public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGarageSettingsCommand, GarageSettings>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -42,7 +42,7 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
         _mapper = mapper;
     }
 
-    public async Task<GarageSettings> Handle(UpdateGarageItemSettingsCommand request, CancellationToken cancellationToken)
+    public async Task<GarageSettings> Handle(UpdateGarageSettingsCommand request, CancellationToken cancellationToken)
     {
         var entity = new GarageItem
         {

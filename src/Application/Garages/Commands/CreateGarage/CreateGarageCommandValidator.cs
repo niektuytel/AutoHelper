@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
-public class CreateGarageItemCommandValidator : AbstractValidator<CreateGarageItemCommand>
+public class CreateGarageCommandValidator : AbstractValidator<CreateGarageCommand>
 {
-    public CreateGarageItemCommandValidator()
+    public CreateGarageCommandValidator()
     {
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Name is required.")

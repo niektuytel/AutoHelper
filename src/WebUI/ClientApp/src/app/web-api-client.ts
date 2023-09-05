@@ -10,15 +10,19 @@
 
 export interface IGarageClient {
 
-    overview(id: string): Promise<GarageOverview>;
+    getOverview(id: string): Promise<GarageOverview>;
 
-    services(id: string): Promise<GarageServiceItem[]>;
+    getServices(id: string): Promise<GarageServiceItem[]>;
 
-    settings(id: string): Promise<GarageSettings>;
+    getSettings(id: string): Promise<GarageSettings>;
 
-    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<GarageSettings>;
+    updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettings>;
 
-    create(command: CreateGarageItemCommand): Promise<GarageSettings>;
+    updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceItem>;
+
+    createGarage(command: CreateGarageCommand): Promise<GarageSettings>;
+
+    createService(command: CreateGarageServiceCommand): Promise<GarageServiceItem>;
 }
 
 export class GarageClient implements IGarageClient {
@@ -31,8 +35,8 @@ export class GarageClient implements IGarageClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    overview(id: string): Promise<GarageOverview> {
-        let url_ = this.baseUrl + "/api/Garage/{id}/Overview";
+    getOverview(id: string): Promise<GarageOverview> {
+        let url_ = this.baseUrl + "/api/Garage/{id}/GetOverview";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -46,11 +50,11 @@ export class GarageClient implements IGarageClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processOverview(_response);
+            return this.processGetOverview(_response);
         });
     }
 
-    protected processOverview(response: Response): Promise<GarageOverview> {
+    protected processGetOverview(response: Response): Promise<GarageOverview> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -68,8 +72,8 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageOverview>(null as any);
     }
 
-    services(id: string): Promise<GarageServiceItem[]> {
-        let url_ = this.baseUrl + "/api/Garage/{id}/Services";
+    getServices(id: string): Promise<GarageServiceItem[]> {
+        let url_ = this.baseUrl + "/api/Garage/{id}/GetServices";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -83,11 +87,11 @@ export class GarageClient implements IGarageClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processServices(_response);
+            return this.processGetServices(_response);
         });
     }
 
-    protected processServices(response: Response): Promise<GarageServiceItem[]> {
+    protected processGetServices(response: Response): Promise<GarageServiceItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -112,8 +116,8 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageServiceItem[]>(null as any);
     }
 
-    settings(id: string): Promise<GarageSettings> {
-        let url_ = this.baseUrl + "/api/Garage/{id}/Settings";
+    getSettings(id: string): Promise<GarageSettings> {
+        let url_ = this.baseUrl + "/api/Garage/{id}/GetSettings";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -127,11 +131,11 @@ export class GarageClient implements IGarageClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSettings(_response);
+            return this.processGetSettings(_response);
         });
     }
 
-    protected processSettings(response: Response): Promise<GarageSettings> {
+    protected processGetSettings(response: Response): Promise<GarageSettings> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -149,7 +153,7 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageSettings>(null as any);
     }
 
-    updateSettings(command: UpdateGarageItemSettingsCommand): Promise<GarageSettings> {
+    updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettings> {
         let url_ = this.baseUrl + "/api/Garage/UpdateSettings";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -187,8 +191,46 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageSettings>(null as any);
     }
 
-    create(command: CreateGarageItemCommand): Promise<GarageSettings> {
-        let url_ = this.baseUrl + "/api/Garage/Create";
+    updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceItem> {
+        let url_ = this.baseUrl + "/api/Garage/UpdateService";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateService(_response);
+        });
+    }
+
+    protected processUpdateService(response: Response): Promise<GarageServiceItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GarageServiceItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceItem>(null as any);
+    }
+
+    createGarage(command: CreateGarageCommand): Promise<GarageSettings> {
+        let url_ = this.baseUrl + "/api/Garage/CreateGarage";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -203,11 +245,11 @@ export class GarageClient implements IGarageClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreate(_response);
+            return this.processCreateGarage(_response);
         });
     }
 
-    protected processCreate(response: Response): Promise<GarageSettings> {
+    protected processCreateGarage(response: Response): Promise<GarageSettings> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -223,6 +265,44 @@ export class GarageClient implements IGarageClient {
             });
         }
         return Promise.resolve<GarageSettings>(null as any);
+    }
+
+    createService(command: CreateGarageServiceCommand): Promise<GarageServiceItem> {
+        let url_ = this.baseUrl + "/api/Garage/CreateService";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateService(_response);
+        });
+    }
+
+    protected processCreateService(response: Response): Promise<GarageServiceItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GarageServiceItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceItem>(null as any);
     }
 }
 
@@ -1123,7 +1203,7 @@ export interface IGarageSettings {
     contacts?: ContactItem[];
 }
 
-export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSettingsCommand {
+export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand {
     id?: string;
     name?: string;
     phoneNumber?: string;
@@ -1133,7 +1213,7 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
     bankingDetails?: GarageBankingDetailsItem;
     servicesSettings?: GarageServicesSettingsItem;
 
-    constructor(data?: IUpdateGarageItemSettingsCommand) {
+    constructor(data?: IUpdateGarageSettingsCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1155,9 +1235,9 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
         }
     }
 
-    static fromJS(data: any): UpdateGarageItemSettingsCommand {
+    static fromJS(data: any): UpdateGarageSettingsCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateGarageItemSettingsCommand();
+        let result = new UpdateGarageSettingsCommand();
         result.init(data);
         return result;
     }
@@ -1176,7 +1256,7 @@ export class UpdateGarageItemSettingsCommand implements IUpdateGarageItemSetting
     }
 }
 
-export interface IUpdateGarageItemSettingsCommand {
+export interface IUpdateGarageSettingsCommand {
     id?: string;
     name?: string;
     phoneNumber?: string;
@@ -1187,7 +1267,63 @@ export interface IUpdateGarageItemSettingsCommand {
     servicesSettings?: GarageServicesSettingsItem;
 }
 
-export class CreateGarageItemCommand implements ICreateGarageItemCommand {
+export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
+    id?: string;
+    garageId?: string;
+    title?: string;
+    description?: string;
+    duration?: number;
+    price?: number;
+
+    constructor(data?: IUpdateGarageServiceCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.garageId = _data["garageId"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.duration = _data["duration"];
+            this.price = _data["price"];
+        }
+    }
+
+    static fromJS(data: any): UpdateGarageServiceCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateGarageServiceCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["garageId"] = this.garageId;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["duration"] = this.duration;
+        data["price"] = this.price;
+        return data;
+    }
+}
+
+export interface IUpdateGarageServiceCommand {
+    id?: string;
+    garageId?: string;
+    title?: string;
+    description?: string;
+    duration?: number;
+    price?: number;
+}
+
+export class CreateGarageCommand implements ICreateGarageCommand {
     id?: string;
     name?: string;
     phoneNumber?: string;
@@ -1196,7 +1332,7 @@ export class CreateGarageItemCommand implements ICreateGarageItemCommand {
     location?: BriefLocationDto;
     bankingDetails?: BriefBankingDetailsDto;
 
-    constructor(data?: ICreateGarageItemCommand) {
+    constructor(data?: ICreateGarageCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1217,9 +1353,9 @@ export class CreateGarageItemCommand implements ICreateGarageItemCommand {
         }
     }
 
-    static fromJS(data: any): CreateGarageItemCommand {
+    static fromJS(data: any): CreateGarageCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateGarageItemCommand();
+        let result = new CreateGarageCommand();
         result.init(data);
         return result;
     }
@@ -1237,7 +1373,7 @@ export class CreateGarageItemCommand implements ICreateGarageItemCommand {
     }
 }
 
-export interface ICreateGarageItemCommand {
+export interface ICreateGarageCommand {
     id?: string;
     name?: string;
     phoneNumber?: string;
@@ -1349,6 +1485,58 @@ export interface IBriefBankingDetailsDto {
     kvKNumber?: string;
     accountHolderName?: string;
     iban?: string;
+}
+
+export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
+    garageId?: string;
+    title?: string;
+    description?: string;
+    duration?: number;
+    price?: number;
+
+    constructor(data?: ICreateGarageServiceCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.garageId = _data["garageId"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.duration = _data["duration"];
+            this.price = _data["price"];
+        }
+    }
+
+    static fromJS(data: any): CreateGarageServiceCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGarageServiceCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["garageId"] = this.garageId;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["duration"] = this.duration;
+        data["price"] = this.price;
+        return data;
+    }
+}
+
+export interface ICreateGarageServiceCommand {
+    garageId?: string;
+    title?: string;
+    description?: string;
+    duration?: number;
+    price?: number;
 }
 
 export class LicencePlateBriefResponse implements ILicencePlateBriefResponse {

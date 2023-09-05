@@ -22,7 +22,7 @@ export default ({ }: IProps) => {
     const handleLoading = () => {
         setIsLoading(true);
 
-        garageClient.overview(garage_guid!)
+        garageClient.getOverview(garage_guid!)
             .then(response => {
                 if (response) {
                     console.log("Response received:", response);
