@@ -16,7 +16,7 @@ namespace AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 
 public record CreateGarageServiceCommand : IRequest<GarageServiceItem>
 {
-    public Guid GarageId { get; set; }
+    public Guid Id { get; set; }
 
     public string Title { get; set; }
 
@@ -43,7 +43,7 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
     {
         var entity = new GarageServiceItem
         {
-            Id = request.GarageId,
+            Id = request. Id,
             Title = request.Title,
             Description = request.Description,
             Duration = request.Duration,

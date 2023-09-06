@@ -89,7 +89,6 @@ function useGarageServices(garage_guid?: string) {
 
     const createService = (data: any) => {
         var command = new CreateGarageServiceCommand();
-        command.garageId = garage_guid;
         command.title = data.title;
         command.description = data.description;
         command.price = data.price;

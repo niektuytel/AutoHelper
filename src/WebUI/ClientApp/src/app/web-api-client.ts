@@ -1488,7 +1488,7 @@ export interface IBriefBankingDetailsDto {
 }
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
-    garageId?: string;
+    id?: string;
     title?: string;
     description?: string;
     duration?: number;
@@ -1505,7 +1505,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.garageId = _data["garageId"];
+            this.id = _data["id"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.duration = _data["duration"];
@@ -1522,7 +1522,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["garageId"] = this.garageId;
+        data["id"] = this.id;
         data["title"] = this.title;
         data["description"] = this.description;
         data["duration"] = this.duration;
@@ -1532,7 +1532,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 }
 
 export interface ICreateGarageServiceCommand {
-    garageId?: string;
+    id?: string;
     title?: string;
     description?: string;
     duration?: number;

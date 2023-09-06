@@ -21,7 +21,10 @@ import {
     useMediaQuery,
     Drawer,
     ButtonGroup,
-    Toolbar
+    Toolbar,
+    Select,
+    InputAdornment,
+    MenuItem
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -33,8 +36,20 @@ import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import useGarageServices from "./useGarageServices";
 import { useParams } from "react-router";
+import { Controller, useForm } from "react-hook-form";
+import { CreateGarageServiceCommand } from "../../../app/web-api-client";
 
 // own imports
+
+
+// Sample data
+const defaultAvailableServices: CreateGarageServiceCommand[] = [
+    new CreateGarageServiceCommand({ id: "22dd50db-45cc-455f-a8c8-866e4edf1b16", title: "Service 1", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+    new CreateGarageServiceCommand({ id: "014e41a1-3d1b-45f5-ba6c-de6013298b79", title: "Service 2", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+    new CreateGarageServiceCommand({ id: "60249a72-7d45-4f05-b0b1-0ca1f4548dca", title: "Service 3", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+    new CreateGarageServiceCommand({ id: "87a2bb5b-5362-4ee1-a421-8aa4d680fe57", title: "Service 4", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+    new CreateGarageServiceCommand({ id: "45f67b94-8562-4240-af1a-5b7ceedcb0e3", title: "Service 5", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+];
 
 interface IProps {
 }
@@ -50,9 +65,42 @@ export default ({ }: IProps) => {
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState<boolean>(false);
     const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
     const [cartItems, setCartItems] = useState<any[]>([]);
-    const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+    const [drawerOpen, setDialogOpen] = useState<boolean>(false);
+    const [timeUnit, setTimeUnit] = useState("minutes");
 
-    const drawerWidth = isMobile ? '100vw' : '50vw';
+
+    const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
+
+
+    // Sample data
+    const testData: CreateGarageServiceCommand[] = [
+        new CreateGarageServiceCommand({ id: "22dd50db-45cc-455f-a8c8-866e4edf1b16", title: "Service 1", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+    ];
+
+    //const [selectedService, setSelectedService] = useState<CreateGarageServiceCommand | null>(null);
+
+    const handleTitleChange = (event: any) => {
+
+        const service = defaultAvailableServices.find(item => item.id === event.target.value) as CreateGarageServiceCommand;
+        console.log(service, event);
+        if (!service) return;
+
+        //setSelectedService(service);
+
+        reset({
+            title: service.title,
+            description: service.description,
+            duration: service.duration,
+            price: service.price
+        });
+    };
+
+    const onSubmit = (data: any) => {
+        console.log(data);
+        // Handle the form submission logic here...
+    };
+
+    const drawerWidth = isMobile ? '100vw' : '400px';
 
     return (
         <>
@@ -73,7 +121,7 @@ export default ({ }: IProps) => {
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                 {isMobile ?
                     <div>
-                        <IconButton onClick={() => setDrawerOpen(true)}>
+                        <IconButton onClick={() => setDialogOpen(true)}>
                             <AddIcon />
                         </IconButton>
                         <IconButton disabled={!selectedItem} onClick={() => setEditDialogOpen(true)}>
@@ -85,8 +133,8 @@ export default ({ }: IProps) => {
                     </div>
                     :
                     <ButtonGroup aria-label="Buttons used for create, edit and delete">
-                        <Button onClick={() => setDrawerOpen(true)}>
-                            <AddIcon />{t("Create")}
+                        <Button onClick={() => setDialogOpen(true)}>
+                            <AddIcon />{t("Add")}
                         </Button>
                         <Button onClick={() => setEditDialogOpen(true)} disabled={!selectedItem}>
                             <EditIcon />{t("Edit")}
@@ -100,7 +148,7 @@ export default ({ }: IProps) => {
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
             <Box>
-                {garageServices?.map((item) => (
+                {testData?.map((item) => (
                     <Card key={item.id} style={{ marginBottom: "20px" }}>
                         <CardHeader
                             action={
@@ -125,48 +173,167 @@ export default ({ }: IProps) => {
                     </Card>
                 ))}
             </Box>
-            <Drawer
-                elevation={0}
-                variant="temporary"
-                anchor="right"
+
+            <Dialog
                 open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                ModalProps={{
-                    keepMounted: true, // Better open performance on mobile.
-                    BackdropProps: {
-                        invisible: false
-                    }
-                }}
+                onClose={() => setDialogOpen(false)}
+                fullWidth
+                maxWidth="sm"
+                fullScreen={isMobile}
             >
-                <Box
-                    sx={{
-                        width: drawerWidth,
-                        maxWidth: drawerWidth
-                    }}
-                    role="presentation"
-                >
-                    <Toolbar />
+                <DialogTitle>
+                    {t("Add new garage service")}
                     {isMobile && (
-                        <IconButton onClick={() => setDrawerOpen(false)}>
+                        <IconButton onClick={() => setDialogOpen(false)} style={{ position: 'absolute', right: '8px', top: '8px' }}>
                             <CloseIcon />
                         </IconButton>
                     )}
-                    <Box p={3} display="flex" flexDirection="column" gap={2}>
-                        <TextField label={t("Title")} fullWidth />
-                        <TextField label={t("Description")} fullWidth multiline />
-                        <TextField label={t("Duration")} type="number" inputProps={{ min: 0 }} fullWidth />
-                        <TextField label={t("Price")} type="number" fullWidth inputProps={{ step: '0.01' }} />
-                        <Box mt={2} display="flex" justifyContent="space-between">
-                            <Button onClick={() => setDrawerOpen(false)}>
-                                {t("Cancel")}
-                            </Button>
-                            <Button variant="contained" color="primary">
-                                {t("Create")}
-                            </Button>
-                        </Box>
-                    </Box>
-                </Box>
-            </Drawer>
+                </DialogTitle>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <DialogContent dividers>
+                        <Controller
+                            name="title"
+                            control={control}
+                            rules={{ required: t("Title is required!") }}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <Select
+                                    {...field}
+                                    fullWidth
+                                    variant="outlined"
+                                    onChange={(event) => {
+                                        field.onChange(event);
+                                        handleTitleChange(event);
+                                    }}
+                                    label={t("Title")}
+                                >
+                                    {defaultAvailableServices.map(service => (
+                                        <MenuItem key={service.id} value={service.id}>
+                                            {service.title}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            )}
+                        />
+                        <Controller
+                            name="description"
+                            control={control}
+                            rules={{ required: t("Description is required!") }}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label={t("Description")}
+                                    fullWidth
+                                    size="small"
+                                    multiline
+                                    rows={3}
+                                    variant="outlined"
+                                    error={Boolean(errors.description)}
+                                    helperText={errors.description ? t(errors.description.message as string) : ' '}
+                                    margin="normal"
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="duration"
+                            control={control}
+                            rules={{ required: t("Duration is required!") }}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label={t("Duration")}
+                                    fullWidth
+                                    size="small"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    variant="outlined"
+                                    error={Boolean(errors.duration)}
+                                    helperText={errors.duration ? t(errors.duration.message as string) : ' '}
+                                    margin="normal"
+                                     
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <AccessTimeIcon />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <Select
+                                                    value={timeUnit}
+                                                    onChange={(e) => setTimeUnit(e.target.value)}
+                                                    sx={{
+                                                        minWidth: "100%",
+                                                        fontSize: '0.8rem',
+                                                        border: 'none',
+                                                        boxShadow: 'none',
+                                                        '&:focus': {
+                                                            border: 'none',
+                                                            boxShadow: 'none',
+                                                            outline: 'none',   // Remove the outline when focused
+                                                        },
+                                                        '& .MuiOutlinedInput-notchedOutline': {   // Remove the outline for the outlined variant
+                                                            border: 'none',
+                                                        },
+                                                        '&:hover .MuiOutlinedInput-notchedOutline': {   // Remove the outline when hovered
+                                                            border: 'none',
+                                                        },
+                                                    }}
+                                                    size="small"
+                                                >
+                                                    <MenuItem value="minutes">{t("minutes")}</MenuItem>
+                                                    <MenuItem value="hours">{t("hours")}</MenuItem>
+                                                    <MenuItem value="days">{t("days")}</MenuItem>
+                                                </Select>
+                                            </InputAdornment>
+                                        ),
+                                        style: { paddingRight: '0' } // Reducing the padding to give more space
+                                    }}
+                                />
+                            )}
+                        />
+
+                        <Controller
+                            name="price"
+                            control={control}
+                            rules={{ required: t("Price is required!") }}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <TextField
+                                    {...field}
+                                    label={t("Price")}
+                                    fullWidth
+                                    size="small"
+                                    type="number"
+                                    inputProps={{ step: '0.01' }}
+                                    variant="outlined"
+                                    error={Boolean(errors.price)}
+                                    helperText={errors.price ? t(errors.price.message as string) : ' '}
+                                    margin="none"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                €
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            )}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialogOpen(false)}>
+                            {t("Cancel")}
+                        </Button>
+                        <Button type="submit" variant="contained" color="primary">
+                            {t("Create")}
+                        </Button>
+                    </DialogActions>
+                </form>
+            </Dialog>
 
         </>
     );

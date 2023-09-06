@@ -3,7 +3,7 @@ import { TextField, Box, InputAdornment, IconButton, Typography, Paper, Grid, Li
 import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
-import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
+import { Controller, FieldErrors, FieldValues, useForm } from 'react-hook-form';
 import { GarageSettings, GarageLocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
@@ -15,6 +15,7 @@ export default (
     { control, errors }: BankingSectionProps
 ) => {
     const { t } = useTranslation();
+
 
     return (
         <>
@@ -33,6 +34,7 @@ export default (
                         <TextField
                             {...field}
                             fullWidth
+                            size="medium"
                             label={t("Phone number")}
                             variant="outlined"
                             error={Boolean(errors.phoneNumber)}  // Refactored error check
@@ -50,6 +52,7 @@ export default (
                         <TextField
                             {...field}
                             fullWidth
+                            size="medium"
                             label={t("Whatsapp phone number")}
                             variant="outlined"
                         />

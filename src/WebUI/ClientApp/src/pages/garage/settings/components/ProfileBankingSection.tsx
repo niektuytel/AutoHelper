@@ -33,6 +33,7 @@ export default (
                         <TextField
                             {...field}
                             fullWidth
+                            size="medium"
                             label={t("KvK Number")}
                             variant="outlined"
                             error={Boolean(errors.kvKNumber)}
@@ -48,7 +49,12 @@ export default (
                     defaultValue={""}
                     rules={{ required: t("Selecting a bank is required!") }}
                     render={({ field }) => (
-                        <FormControl fullWidth variant="outlined" error={Boolean(errors.bankName)}>
+                        <FormControl
+                            fullWidth
+                            size="medium"
+                            variant="outlined"
+                            error={Boolean(errors.bankName)}
+                        >
                             <InputLabel id="bank-name-label">{t("Bank Name")}</InputLabel>
                             <Select
                                 {...field}
@@ -117,6 +123,7 @@ export default (
                         <TextField
                             {...field}
                             fullWidth
+                            size="medium"
                             label={t("Account Holder Name")}
                             variant="outlined"
                             error={Boolean(errors.accountHolderName)}
@@ -135,6 +142,7 @@ export default (
                         <TextField
                             {...field}
                             fullWidth
+                            size="medium"
                             label={t("IBAN")}
                             variant="outlined"
                             error={Boolean(errors.iban)}
