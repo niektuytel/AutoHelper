@@ -44,11 +44,11 @@ import { CreateGarageServiceCommand } from "../../../app/web-api-client";
 
 // Sample data
 const defaultAvailableServices: CreateGarageServiceCommand[] = [
-    new CreateGarageServiceCommand({ id: "22dd50db-45cc-455f-a8c8-866e4edf1b16", title: "Service 1", description: "This is service 1 description.", duration: 20, price: 100.01 }),
-    new CreateGarageServiceCommand({ id: "014e41a1-3d1b-45f5-ba6c-de6013298b79", title: "Service 2", description: "This is service 1 description.", duration: 20, price: 100.01 }),
-    new CreateGarageServiceCommand({ id: "60249a72-7d45-4f05-b0b1-0ca1f4548dca", title: "Service 3", description: "This is service 1 description.", duration: 20, price: 100.01 }),
-    new CreateGarageServiceCommand({ id: "87a2bb5b-5362-4ee1-a421-8aa4d680fe57", title: "Service 4", description: "This is service 1 description.", duration: 20, price: 100.01 }),
-    new CreateGarageServiceCommand({ id: "45f67b94-8562-4240-af1a-5b7ceedcb0e3", title: "Service 5", description: "This is service 1 description.", duration: 20, price: 100.01 }),
+    new CreateGarageServiceCommand({ id: "22dd50db-45cc-455f-a8c8-866e4edf1b16", title: "Service 1", description: "This is service 1 description.", duration: 25, price: 100.01 }),
+    new CreateGarageServiceCommand({ id: "014e41a1-3d1b-45f5-ba6c-de6013298b79", title: "Service 2", description: "This is service 2 description.", duration: 24, price: 90.01 }),
+    new CreateGarageServiceCommand({ id: "60249a72-7d45-4f05-b0b1-0ca1f4548dca", title: "Service 3", description: "This is service 3 description.", duration: 23, price: 80.01 }),
+    new CreateGarageServiceCommand({ id: "87a2bb5b-5362-4ee1-a421-8aa4d680fe57", title: "Service 4", description: "This is service 4 description.", duration: 22, price: 70.01 }),
+    new CreateGarageServiceCommand({ id: "45f67b94-8562-4240-af1a-5b7ceedcb0e3", title: "Service 5", description: "This is service 5 description.", duration: 21, price: 60.01 }),
 ];
 
 interface IProps {
@@ -77,23 +77,26 @@ export default ({ }: IProps) => {
         new CreateGarageServiceCommand({ id: "22dd50db-45cc-455f-a8c8-866e4edf1b16", title: "Service 1", description: "This is service 1 description.", duration: 20, price: 100.01 }),
     ];
 
-    //const [selectedService, setSelectedService] = useState<CreateGarageServiceCommand | null>(null);
+    const [selectedService, setSelectedService] = useState<CreateGarageServiceCommand | null>(null);
+    type ServiceProperty = 'description' | 'duration' | 'price';
 
     const handleTitleChange = (event: any) => {
-
         const service = defaultAvailableServices.find(item => item.id === event.target.value) as CreateGarageServiceCommand;
-        console.log(service, event);
         if (!service) return;
 
-        //setSelectedService(service);
+        const prevService = selectedService;
+        setSelectedService(service);
 
-        reset({
-            title: service.title,
-            description: service.description,
-            duration: service.duration,
-            price: service.price
+        const propertiesToUpdate: ServiceProperty[] = ['description', 'duration', 'price'];
+        const item = watch();
+
+        propertiesToUpdate.forEach(property => {
+            if (!item[property] || (prevService && item[property] == prevService[property])) {
+                setValue(property, service[property]);
+            }
         });
     };
+
 
     const onSubmit = (data: any) => {
         console.log(data);
