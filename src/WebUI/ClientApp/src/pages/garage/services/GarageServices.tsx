@@ -20,7 +20,8 @@ import {
     useTheme,
     useMediaQuery,
     Drawer,
-    ButtonGroup
+    ButtonGroup,
+    Toolbar
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -43,12 +44,6 @@ export default ({ }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    // Sample data
-    const testData = [
-        { id: 1, title: "Service 1", description: "This is service 1 description.", duration: "10 min" },
-        // ... add more sample data
-    ];
-
     const { garage_guid } = useParams();
     const { loading, isError, garageServices } = useGarageServices(garage_guid);
     const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -56,6 +51,8 @@ export default ({ }: IProps) => {
     const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
     const [cartItems, setCartItems] = useState<any[]>([]);
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+    const drawerWidth = isMobile ? '100vw' : '50vw';
 
     return (
         <>
@@ -103,12 +100,12 @@ export default ({ }: IProps) => {
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
             <Box>
-                {testData.map((item) => (
+                {garageServices?.map((item) => (
                     <Card key={item.id} style={{ marginBottom: "20px" }}>
                         <CardHeader
                             action={
                                 <IconButton onClick={() => setCartItems([...cartItems, item])}>
-                                    <ShoppingCartIcon />
+                                    <AddIcon />
                                 </IconButton>
                             }
                             title={item.title}
@@ -128,28 +125,49 @@ export default ({ }: IProps) => {
                     </Card>
                 ))}
             </Box>
-
-            <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-                {isMobile && (
-                    <IconButton onClick={() => setDrawerOpen(false)}>
-                        <CloseIcon />
-                    </IconButton>
-                )}
-                <Box p={3} display="flex" flexDirection="column" gap={2}>
-                    <TextField label={t("Title")} fullWidth />
-                    <TextField label={t("Description")} fullWidth multiline />
-                    <TextField label={t("Duration")} type="number" inputProps={{ min: 0 }} fullWidth />
-                    <TextField label={t("Price")} type="number" fullWidth inputProps={{ step: '0.01' }} />
-                    <Box mt={2} display="flex" justifyContent="space-between">
-                        <Button onClick={() => setDrawerOpen(false)}>
-                            {t("Cancel")}
-                        </Button>
-                        <Button variant="contained" color="primary">
-                            {t("Create")}
-                        </Button>
+            <Drawer
+                elevation={0}
+                variant="temporary"
+                anchor="right"
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                ModalProps={{
+                    keepMounted: true, // Better open performance on mobile.
+                    BackdropProps: {
+                        invisible: false
+                    }
+                }}
+            >
+                <Box
+                    sx={{
+                        width: drawerWidth,
+                        maxWidth: drawerWidth
+                    }}
+                    role="presentation"
+                >
+                    <Toolbar />
+                    {isMobile && (
+                        <IconButton onClick={() => setDrawerOpen(false)}>
+                            <CloseIcon />
+                        </IconButton>
+                    )}
+                    <Box p={3} display="flex" flexDirection="column" gap={2}>
+                        <TextField label={t("Title")} fullWidth />
+                        <TextField label={t("Description")} fullWidth multiline />
+                        <TextField label={t("Duration")} type="number" inputProps={{ min: 0 }} fullWidth />
+                        <TextField label={t("Price")} type="number" fullWidth inputProps={{ step: '0.01' }} />
+                        <Box mt={2} display="flex" justifyContent="space-between">
+                            <Button onClick={() => setDrawerOpen(false)}>
+                                {t("Cancel")}
+                            </Button>
+                            <Button variant="contained" color="primary">
+                                {t("Create")}
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
             </Drawer>
+
         </>
     );
 }
