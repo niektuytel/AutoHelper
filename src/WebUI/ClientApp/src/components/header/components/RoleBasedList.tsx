@@ -13,10 +13,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import { useLocation, useNavigate } from "react-router-dom";
 
 // custom imports
-import { ROUTES, RoutesGarageAgenda, RoutesGarageColleagues, RoutesGarageOverview, RoutesGarageServices, RoutesGarageSettings } from '../../../constants/routes';
+import { ROUTES } from '../../../constants/routes';
 import { ROLES } from '../../../constants/roles';
 import { useTranslation } from 'react-i18next';
-import useUserClaims from '../../../hooks/useUserClaims';
 import { useAuth0 } from '@auth0/auth0-react';
 
 interface RoleBasedListProps {
@@ -25,13 +24,13 @@ interface RoleBasedListProps {
 
 export default ({ setOnMenu }: RoleBasedListProps) => {
     const [open, setOpen] = useState(false);
-    const { userRoles, garageGUID } = useUserClaims();
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const queryParams = new URLSearchParams(location.search);
-    const notFound = queryParams.get('garage_notfound');
+    const userRole = localStorage.getItem('userRole');
+    const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
+
 
     const handleClick2 = () => setOpen(!open);
 
@@ -49,18 +48,18 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         </ListItem>
     );
 
-    if (userRoles?.includes(ROLES.GARAGE)) {
+    if (userRole == ROLES.GARAGE) {
         return (
             <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink disabled={notFound == "true"} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={RoutesGarageOverview(garageGUID!)} />
-                <ListItemLink disabled={notFound == "true"} primary={t('agenda_camelcase')} icon={<CalendarTodayIcon />} to={RoutesGarageAgenda(garageGUID!)} />
-                <ListItemLink disabled={notFound == "true"} primary={t('services_camelcase')} icon={<BuildIcon />} to={RoutesGarageServices(garageGUID!)} />
-                <ListItemLink disabled={notFound == "true"} primary={t('colleagues_camelcase')} icon={<GroupIcon />} to={RoutesGarageColleagues(garageGUID!)} />
-                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={RoutesGarageSettings(garageGUID!)} />
+                <ListItemLink disabled={confirmationStepIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE.OVERVIEW} />
+                <ListItemLink disabled={confirmationStepIndex < 4} primary={t('agenda_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE.AGENDA} />
+                <ListItemLink disabled={confirmationStepIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE.SERVICES} />
+                <ListItemLink disabled={confirmationStepIndex < 3} primary={t('colleagues_camelcase')} icon={<GroupIcon />} to={ROUTES.GARAGE.COLLEAGUES} />
+                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE.SETTINGS} />
             </List>
         );
     }
-    else if (userRoles) {
+    else if (userRole == ROLES.USER) {
         return (
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />

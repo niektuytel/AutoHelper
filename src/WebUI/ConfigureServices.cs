@@ -36,8 +36,8 @@ public static class ConfigureServices
 
     private static IServiceCollection AddControllerServices(this IServiceCollection services)
     {
-        services.AddHttpClient<IRDWService, RDWService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddHttpClient<IRDWService, RDWService>();
         services.AddScoped<IVehicleInformationService, VehicleInformationService>();
 
         services.AddControllersWithViews(options =>
@@ -81,6 +81,10 @@ public static class ConfigureServices
             {
                 policy.Requirements.Add(new RbacRequirement("read:admin-messages"));
             });
+
+            // Add a new policy for the Garage role
+            options.AddPolicy("AdminRole", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("GarageRole", policy => policy.RequireRole("Admin", "Garage"));
         });
 
         services.AddSingleton<IAuthorizationHandler, RbacHandler>();
@@ -175,7 +179,8 @@ public static class ConfigureServices
                 UsePkceWithAuthorizationCodeGrant = false,
                 AdditionalQueryStringParameters =
                 {
-                    { "audience", app.Configuration["OAuth0:Audience"] }
+                    { "audience", app.Configuration["OAuth0:Audience"] },
+                    { "scope", "openid profile email" }
                 }
             };
             settings.Path = "/swagger";

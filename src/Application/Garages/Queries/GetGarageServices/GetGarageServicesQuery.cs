@@ -17,12 +17,12 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
 
 public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceItem>>
 {
-    public GetGarageServicesQuery(Guid garageId)
+    public GetGarageServicesQuery(string accountId)
     {
-        GarageId = garageId;
+        AccountId = accountId;
     }
 
-    public Guid GarageId { get; set; }
+    public string AccountId { get; private set; }
 }
 
 public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQuery, IEnumerable<GarageServiceItem>>
@@ -39,7 +39,7 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
     public async Task<IEnumerable<GarageServiceItem>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
     {
         var entities = _context.GarageServices
-            .Where(x => x.GarageId == request.GarageId)
+            .Where(x => x.UserId == request.AccountId)
             .AsEnumerable();
 
         return entities ?? new List<GarageServiceItem>();

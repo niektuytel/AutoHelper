@@ -6,6 +6,16 @@ namespace AutoHelper.Domain.Entities;
 public class GarageServiceItem : BaseAuditableEntity
 {
     /// <summary>
+    /// UserId of the garage owner
+    /// </summary>
+    public string UserId { get; set; }
+
+    /// <summary>
+    /// GarageId of the garage
+    /// </summary>
+    public Guid GarageId { get; set; }
+
+    /// <summary>
     /// Like "Oil Change", "Wheel Alignment", etc.
     /// </summary>
     public string Title { get; set; }
@@ -30,8 +40,4 @@ public class GarageServiceItem : BaseAuditableEntity
     /// </summary>
     public int Status { get; set; } = -1;
 
-    public Guid GarageId { get; set; }
-
-    [ForeignKey("GarageId")]
-    public GarageItem Garage { get; set; }
 }

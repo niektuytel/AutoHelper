@@ -12,9 +12,11 @@ import ProfileGeneralSection from "./components/ProfileGeneralSection";
 import ProfileBankingSection from "./components/ProfileBankingSection";
 import ProfileContactSection from "./components/ProfileContactSection";
 import { COLORS } from "../../../constants/colors";
-import useGarage from "./useGarageSettings";
+import useGarageSettings from "./useGarageSettings";
 import ServicesGeneralSection from "./components/ServicesGeneralSection";
 import ServicesDeliverySection from "./components/ServicesDeliverySection";
+import { ROUTES } from "../../../constants/routes";
+import { ROLES } from "../../../constants/roles";
 
 // TODO: set all translations for this page
 
@@ -29,12 +31,14 @@ export default ({ }: IProps) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
-    const { garage_guid } = useParams();
-    const queryParams = new URLSearchParams(location.search);
-    const notFound = queryParams.get('garage_notfound');
+    
+    // redirect when user is on confirmation step 1
+    const userRole = localStorage.getItem('userRole');
+    const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
+    const notFound = (userRole == ROLES.GARAGE && confirmationStepIndex == 1)
 
     const { reset, handleSubmit, control, formState: { errors }, setError, setValue } = useForm();
-    const { loading, isError, createGarage, updateGarageSettings, garageSettings } = useGarage(reset, setError, notFound == "true", garage_guid);
+    const { loading, isError, createGarage, updateGarageSettings, garageSettings } = useGarageSettings(reset, setError, notFound);
 
 
     // Update hash when location changes

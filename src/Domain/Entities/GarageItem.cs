@@ -7,6 +7,11 @@ namespace AutoHelper.Domain.Entities;
 
 public class GarageItem : BaseAuditableEntity
 {
+    /// <summary>
+    /// UserId of the garage owner
+    /// </summary>
+    public string UserId { get; set; }
+
     public string Name { get; set; }
 
     public string Email { get; set; }
@@ -28,5 +33,4 @@ public class GarageItem : BaseAuditableEntity
     public ICollection<GarageServiceItem> Services { get; set; } = new List<GarageServiceItem>();
 
     public ICollection<VehicleItem> Vehicles { get; set; } = new List<VehicleItem>();
-
 }

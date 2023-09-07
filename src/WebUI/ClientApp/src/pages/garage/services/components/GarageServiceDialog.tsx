@@ -1,101 +1,80 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import {
-    Box,
     Button,
-    Container,
-    Divider,
     IconButton,
-    Tooltip,
-    Typography,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     TextField,
-    Card,
-    CardHeader,
-    CardContent,
-    CardActions,
-    CircularProgress,
     useTheme,
     useMediaQuery,
-    Drawer,
-    ButtonGroup,
-    Toolbar,
     Select,
     InputAdornment,
-    MenuItem
+    MenuItem,
+    FormControl,
+    InputLabel
 } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
-import { useParams } from "react-router";
 import { Controller, useForm } from "react-hook-form";
 import { CreateGarageServiceCommand } from "../../../../app/web-api-client";
+import useGarageServices from "../useGarageServices";
 
 // own imports
 
 
 // Sample data
 const defaultAvailableServices: CreateGarageServiceCommand[] = [
-    new CreateGarageServiceCommand({ id: "22dd50db-45cc-455f-a8c8-866e4edf1b16", title: "Service 1", description: "This is service 1 description.", duration: 25, price: 100.01 }),
-    new CreateGarageServiceCommand({ id: "014e41a1-3d1b-45f5-ba6c-de6013298b79", title: "Service 2", description: "This is service 2 description.", duration: 24, price: 90.01 }),
-    new CreateGarageServiceCommand({ id: "60249a72-7d45-4f05-b0b1-0ca1f4548dca", title: "Service 3", description: "This is service 3 description.", duration: 23, price: 80.01 }),
-    new CreateGarageServiceCommand({ id: "87a2bb5b-5362-4ee1-a421-8aa4d680fe57", title: "Service 4", description: "This is service 4 description.", duration: 22, price: 70.01 }),
-    new CreateGarageServiceCommand({ id: "45f67b94-8562-4240-af1a-5b7ceedcb0e3", title: "Service 5", description: "This is service 5 description.", duration: 21, price: 60.01 }),
+    new CreateGarageServiceCommand({ title: "Service 1", description: "This is service 1 description.", duration: 25, price: 100.01 }),
+    new CreateGarageServiceCommand({ title: "Service 2", description: "This is service 2 description.", duration: 24, price: 90.01 }),
+    new CreateGarageServiceCommand({ title: "Service 3", description: "This is service 3 description.", duration: 23, price: 80.01 }),
+    new CreateGarageServiceCommand({ title: "Service 4", description: "This is service 4 description.", duration: 22, price: 70.01 }),
+    new CreateGarageServiceCommand({ title: "Service 5", description: "This is service 5 description.", duration: 21, price: 60.01 }),
 ];
 
 interface IProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onResponse: (data: any) => void;
+    mode: 'create' | 'edit';
+    service?: CreateGarageServiceCommand;
 }
 
-export default ({ }: IProps) => {
+export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const { garage_guid } = useParams();
-    const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState<boolean>(false);
-    const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
-    const [cartItems, setCartItems] = useState<any[]>([]);
+    const [selectedService, setSelectedService] = useState<CreateGarageServiceCommand | undefined>(service);
+    const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
     const [drawerOpen, setDialogOpen] = useState<boolean>(false);
     const [timeUnit, setTimeUnit] = useState("minutes");
 
-
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
+    const { loading, isError, createService, updateService } = useGarageServices();
 
-    const [selectedService, setSelectedService] = useState<CreateGarageServiceCommand | null>(null);
     // Additional state variables
-    const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
-    const [currentService, setCurrentService] = useState<CreateGarageServiceCommand | null>(null);
 
-    // Open dialog for creation
-    const handleOpenCreateDialog = () => {
-        reset();  // Clear form
-        setCurrentService(null);
-        setDialogMode('create');
-        setDialogOpen(true);
-    };
-
-    // Open dialog for editing
-    const handleOpenEditDialog = (service: CreateGarageServiceCommand) => {
-        setDialogMode('edit');
-        setCurrentService(service);
-        setValue("title", service.title);
-        setValue("description", service.description);
-        setValue("duration", service.duration);
-        setValue("price", service.price);
-        setDialogOpen(true);
-    };
+    useEffect(() => {
+        if (mode === 'edit' && service) {
+            setDialogMode('edit');
+            setValue("title", service.title);
+            setValue("description", service.description);
+            setValue("duration", service.duration);
+            setValue("price", service.price);
+        }
+        else {
+            setDialogMode('create');
+            reset();
+        }
+    }, [service, mode, setValue]);
 
     type ServiceProperty = 'description' | 'duration' | 'price';
 
     const handleTitleChange = (event: any) => {
-        const service = defaultAvailableServices.find(item => item.id === event.target.value) as CreateGarageServiceCommand;
+        const service = defaultAvailableServices.find(item => item.title === event.target.value) as CreateGarageServiceCommand;
         if (!service) return;
 
         const prevService = selectedService;
@@ -114,14 +93,19 @@ export default ({ }: IProps) => {
 
     const onSubmit = (data: any) => {
         console.log(data);
-        // Handle the form submission logic here...
+
+        if (mode === 'edit') {
+            updateService(data);
+        } else {
+            createService(data);
+        }
     };
 
     return (
         <>
             <Dialog
-                open={drawerOpen}
-                onClose={() => setDialogOpen(false)}
+                open={isOpen}
+                onClose={onClose}
                 fullWidth
                 maxWidth="sm"
                 fullScreen={isMobile}
@@ -143,22 +127,23 @@ export default ({ }: IProps) => {
                             rules={{ required: t("Title is required!") }}
                             defaultValue=""
                             render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    fullWidth
-                                    variant="outlined"
-                                    onChange={(event) => {
-                                        field.onChange(event);
-                                        handleTitleChange(event);
-                                    }}
-                                    label={t("Title")}
-                                >
-                                    {defaultAvailableServices.map(service => (
-                                        <MenuItem key={service.id} value={service.id}>
-                                            {service.title}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                <FormControl fullWidth variant="outlined" error={Boolean(errors.title)}>
+                                    <InputLabel htmlFor="select-title">{t("Title")}</InputLabel>
+                                    <Select
+                                        {...field}
+                                        onChange={(event) => {
+                                            field.onChange(event);
+                                            handleTitleChange(event);
+                                        }}
+                                        label={t("Title")}
+                                    >
+                                        {defaultAvailableServices.map(service => (
+                                            <MenuItem key={service.title} value={service.title}>
+                                                {service.title}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             )}
                         />
                         <Controller

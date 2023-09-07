@@ -1,18 +1,14 @@
-﻿import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
-import { Dispatch } from "react";
-import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
-import { TFunction } from "i18next";
-import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageServiceCommand, GarageBankingDetailsItem, GarageClient, GarageLocationItem, GarageSettings, UpdateGarageServiceCommand } from "../../../app/web-api-client";
-import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
+﻿import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { RoutesGarageSettings } from "../../../constants/routes";
 
 //own imports
+import { CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
+import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
+import { ROUTES } from "../../../constants/routes";
 
-function useGarageServices(garage_guid?: string) {
+function useGarageServices() {
     const garageClient = new GarageClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
@@ -21,19 +17,13 @@ function useGarageServices(garage_guid?: string) {
 
     const fetchGarageServicesData = async () => {
         try {
-            if (!garage_guid) {
-                dispatch(showOnError(t("Garage not found!")));
-                navigate(`${RoutesGarageSettings(garage_guid!)}?garage_notfound=true`);
-                return [];
-            }
-
-            const response = await garageClient.getServices(garage_guid!);
+            const response = await garageClient.getServices();
 
             return response;
         } catch (response: any) {
             if (response && response.status === 404) {
                 dispatch(showOnError(t("Garage not found!")));
-                navigate(`${RoutesGarageSettings(garage_guid!)}?garage_notfound=true`);
+                navigate(`${ROUTES.GARAGE.SETTINGS}?garage_notfound=true`);
                 return [];
             } else {
                 throw response;
@@ -42,10 +32,9 @@ function useGarageServices(garage_guid?: string) {
     }
 
     const { data: garageServices, isLoading, isError } = useQuery(
-        ['garageServices', garage_guid],
+        ['garageServices'],
         fetchGarageServicesData,
         {
-            enabled: garage_guid != undefined,
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000,  // 30 minutes
@@ -58,7 +47,7 @@ function useGarageServices(garage_guid?: string) {
             dispatch(showOnSuccess("Garage service has been created!"));
 
             // Update the garageSettings in the cache after creating
-            queryClient.setQueryData(['garageServices', garage_guid], [...garageServices!, response]);
+            queryClient.setQueryData(['garageServices'], [...garageServices!, response]);
         },
         onError: (response) => {
             console.error(response)
@@ -79,7 +68,7 @@ function useGarageServices(garage_guid?: string) {
                 }
             });
 
-            queryClient.setQueryData(['garageServices', garage_guid], updatedGarageServices);
+            queryClient.setQueryData(['garageServices'], updatedGarageServices);
         },
         onError: (response) => {
             console.error(response)
@@ -101,7 +90,6 @@ function useGarageServices(garage_guid?: string) {
     const updateService = (data: any) => {
         var command = new UpdateGarageServiceCommand();
         command.id = data.id;
-        command.garageId = garage_guid;
         command.title = data.title;
         command.description = data.description;
         command.price = data.price;

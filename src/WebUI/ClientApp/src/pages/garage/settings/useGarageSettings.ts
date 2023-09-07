@@ -8,7 +8,7 @@ import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbar
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { RoutesGarageSettings } from "../../../constants/routes";
+import { ROUTES } from "../../../constants/routes";
 
 //own imports
 
@@ -45,7 +45,7 @@ function guardHttpResponse(response: any, setError: UseFormSetError<FieldValues>
     return response;
 }
 
-function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean, garage_guid?: string) {
+function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
     const garageClient = new GarageClient(process.env.PUBLIC_URL);
     const initialGarageSettings = new GarageSettings({
         name: "",
@@ -63,29 +63,23 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
 
     const fetchGarageData = async () => {
         try {
-            if (!garage_guid || notFound) {
-                dispatch(showOnError(t("Garage not found!")));
+            if (notFound) {
+                console.log(`garage is not been found`)
                 return initialGarageSettings;
             }
 
-            const response = await garageClient.getSettings(garage_guid!);
-
+            const response = await garageClient.getSettings();
             return response;
         } catch (response: any) {
-            if (response && response.status === 404) {
-                navigate(`${RoutesGarageSettings(garage_guid!)}?garage_notfound=true`);
-                return initialGarageSettings;
-            } else {
-                throw response;
-            }
+            throw response;
         }
     }
 
     const { data: garageSettings, isLoading, isError } = useQuery(
-        ['garageSettings', garage_guid],
+        ['garageSettings'],
         fetchGarageData,
         {
-            enabled: garage_guid != undefined,
+            enabled: false,
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000,  // 30 minutes
@@ -117,7 +111,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
             dispatch(showOnSuccess("Garage has been created!"));
 
             // Update the garageSettings in the cache after creating
-            queryClient.setQueryData(['garageSettings', garage_guid], response);
+            queryClient.setQueryData(['garageSettings'], response);
         },
         onError: (response) => {
             guardHttpResponse(response, setError, t, dispatch);
@@ -129,7 +123,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
             dispatch(showOnSuccess("Garage has been updated!"));
 
             // Update the garageSettings in the cache after updating
-            queryClient.setQueryData(['garageSettings', garage_guid], response);
+            queryClient.setQueryData(['garageSettings'], response);
         },
         onError: (response) => {
             guardHttpResponse(response, setError, t, dispatch);
@@ -138,7 +132,6 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
 
     const createGarage = (data: any) => {
         var command = new CreateGarageCommand();
-        command.id = garage_guid;
         command.name = data.name;
         command.phoneNumber = data.phoneNumber;
         command.whatsAppNumber = data.whatsAppNumber;
@@ -149,7 +142,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
             address: cleanAddress,
             postalCode: data.postalCode,
             city: data.city,
-            country: data.country,
+            country: "Netherlands",
             longitude: data.longitude,
             latitude: data.latitude
 
@@ -168,7 +161,6 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
     const updateGarageSettings = (data: any) => {
 
         var command = new UpdateGarageSettingsCommand();
-        command.id = garage_guid;
         command.name = data.name;
         command.phoneNumber = data.phoneNumber;
         command.whatsAppNumber = data.whatsAppNumber;

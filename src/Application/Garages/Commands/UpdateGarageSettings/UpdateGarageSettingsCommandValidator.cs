@@ -6,9 +6,6 @@ public class UpdateGarageSettingsCommandValidator : AbstractValidator<UpdateGara
 {
     public UpdateGarageSettingsCommandValidator()
     {
-        RuleFor(v => v.Id)
-            .NotEmpty().WithMessage("Id is required.");
-
         When(v => string.IsNullOrEmpty(v.Name) == false, () =>
         {
             RuleFor(v => v.Name)

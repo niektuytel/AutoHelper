@@ -17,12 +17,12 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageSettings;
 
 public record GetGarageSettingsQuery : IRequest<GarageSettings>
 {
-    public GetGarageSettingsQuery(Guid garageId)
+    public GetGarageSettingsQuery(string userId)
     {
-        GarageId = garageId;
+        UserId = userId;
     }
 
-    public Guid GarageId { get; set; }
+    public string UserId { get; set; }
 }
 
 public class GetGarageSettingsQueryHandler : IRequestHandler<GetGarageSettingsQuery, GarageSettings>
@@ -38,18 +38,18 @@ public class GetGarageSettingsQueryHandler : IRequestHandler<GetGarageSettingsQu
 
     public async Task<GarageSettings> Handle(GetGarageSettingsQuery request, CancellationToken cancellationToken)
     {
-        var garageEntity = await _context.Garages
+        var entity = await _context.Garages
             .Include(g => g.Location)
             .Include(g => g.BankingDetails)
             .Include(g => g.Contacts)
-            .FirstOrDefaultAsync(x => x.Id == request.GarageId);
+            .FirstOrDefaultAsync(x => x.UserId == request.UserId);
 
-        if (garageEntity == null)
+        if (entity == null)
         {
-            throw new NotFoundException(nameof(GarageItem), request.GarageId);
+            throw new NotFoundException(nameof(GarageItem), request.UserId);
         }
 
-        return _mapper.Map<GarageSettings>(garageEntity);
+        return _mapper.Map<GarageSettings>(entity);
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,4 +12,5 @@ public abstract class ApiControllerBase : ControllerBase
     private ISender? _mediator;
 
     protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
+
 }

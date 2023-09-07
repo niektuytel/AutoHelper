@@ -30,6 +30,11 @@ public class VehicleController : ApiControllerBase
     {
         try
         {
+            if(string.IsNullOrEmpty(licensePlate))
+            {
+                return BadRequest("License plate is required");
+            }
+
             licensePlate = licensePlate.Replace("-", "").ToUpper();
 
             var isValid = await _vehicleInformationService.ValidVehicle(licensePlate);

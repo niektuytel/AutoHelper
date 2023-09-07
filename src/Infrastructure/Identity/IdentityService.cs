@@ -1,5 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
+using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +64,43 @@ public class IdentityService : IIdentityService
         var result = await _authorizationService.AuthorizeAsync(principal, policyName);
 
         return result.Succeeded;
+    }
+
+    public async Task SetUserWithRoleAsync(string userId, string userName, string userEmail, string roleName)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            user = new ApplicationUser
+            {
+                Id = userId,
+                UserName = userName.Replace(" ", "_"),
+                Email = userEmail,
+                EmailConfirmed = false,
+                LockoutEnabled = false,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Could not create the new user in the system.");
+            }
+        }
+
+        try
+        {
+            var resultAddRole = await _userManager.AddToRoleAsync(user, roleName);
+            if (!resultAddRole.Succeeded)
+            {
+                throw new InvalidOperationException("Could not add the new user to the 'Garage' role.");
+            }
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
 
     public async Task<Result> DeleteUserAsync(string userId)

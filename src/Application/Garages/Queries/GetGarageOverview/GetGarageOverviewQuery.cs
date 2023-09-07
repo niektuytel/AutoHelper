@@ -16,12 +16,12 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageOverview;
 
 public record GetGarageOverviewQuery : IRequest<GarageOverview>
 {
-    public GetGarageOverviewQuery(Guid garageId)
+    public GetGarageOverviewQuery(string accountId)
     {
-        GarageId = garageId;
+        AccountId = accountId;
     }
 
-    public Guid GarageId { get; set; }
+    public string AccountId { get; private set; }
 }
 
 public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQuery, GarageOverview>
@@ -37,17 +37,17 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
 
     public async Task<GarageOverview> Handle(GetGarageOverviewQuery request, CancellationToken cancellationToken)
     {
-        var garageEntity = await _context.Garages
+        var entity = await _context.Garages
             .Include(g => g.Vehicles)
             .Include(g => g.Employees)
-            .FirstOrDefaultAsync(x => x.Id == request.GarageId);
+            .FirstOrDefaultAsync(x => x.UserId == request.AccountId);
 
-        if (garageEntity == null)
+        if (entity == null)
         {
-            throw new NotFoundException(nameof(GarageItem), request.GarageId);
+            throw new NotFoundException(nameof(GarageItem), request.AccountId);
         }
 
-        return _mapper.Map<GarageOverview>(garageEntity);
+        return _mapper.Map<GarageOverview>(entity);
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
@@ -17,7 +18,8 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
 {
     public Guid Id { get; set; }
 
-    public Guid GarageId { get; set; }
+    [JsonIgnore]
+    public string UserId { get; set; }
 
     public string Title { get; set; }
 

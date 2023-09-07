@@ -9,9 +9,6 @@ public class UpdateGarageServiceCommandValidator : AbstractValidator<UpdateGarag
         RuleFor(v => v.Id)
             .NotEmpty().WithMessage("Id is required.");
 
-        RuleFor(v => v.GarageId)
-            .NotEmpty().WithMessage("GarageId is required.");
-
         RuleFor(v => v.Title)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(200).WithMessage("Title must not exceed 200 characters.");

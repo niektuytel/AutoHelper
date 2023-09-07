@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Models;
@@ -7,13 +8,15 @@ using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 
 
 public record UpdateGarageSettingsCommand : IRequest<GarageSettings>
 {
-    public Guid Id { get; set; }
+    [JsonIgnore]
+    public string UserId { get; set; }
 
     public string Name { get; set; }
 
@@ -44,9 +47,17 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
 
     public async Task<GarageSettings> Handle(UpdateGarageSettingsCommand request, CancellationToken cancellationToken)
     {
-        var entity = new GarageItem
+        var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId, cancellationToken);
+        if (entity == null)
         {
-            Id = request.Id,
+
+
+        }
+
+        entity = new GarageItem
+        {
+            Id = entity.Id,
+            UserId = request.UserId,
             Name = request.Name,
             PhoneNumber = request.PhoneNumber,
             WhatsAppNumber = request.WhatsAppNumber,

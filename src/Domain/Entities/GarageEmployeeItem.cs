@@ -8,7 +8,7 @@ public class GarageEmployeeItem : BaseAuditableEntity
     [Required]
     public string FullName { get; set; }
 
-    public string Position { get; set; } // Like "Mechanic", "Manager", etc.
+    public string Position { get; set; }
 
     public DateTime DateOfHire { get; set; }
 
@@ -18,7 +18,4 @@ public class GarageEmployeeItem : BaseAuditableEntity
 
     public string PhoneNumber { get; set; }
 
-    //public Guid GarageItemId { get; set; }
-    //[ForeignKey("GarageItemId")]
-    //public GarageItem Garage { get; set; }
 }
