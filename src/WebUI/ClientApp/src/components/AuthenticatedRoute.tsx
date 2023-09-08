@@ -11,7 +11,6 @@ const AuthenticatedRoute = ({ children, requiredRole }: { children: any, require
     const location = useLocation();
     const navigate = useNavigate();
 
-
     if (isLoading) {
         return (
             <Box

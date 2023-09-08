@@ -8,60 +8,6 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export interface IGarageConfigurationClient {
-
-    create(command: CreateGarageCommand): Promise<GarageSettings>;
-}
-
-export class GarageConfigurationClient implements IGarageConfigurationClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    create(command: CreateGarageCommand): Promise<GarageSettings> {
-        let url_ = this.baseUrl + "/api/GarageConfiguration/Create";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreate(_response);
-        });
-    }
-
-    protected processCreate(response: Response): Promise<GarageSettings> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GarageSettings.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<GarageSettings>(null as any);
-    }
-}
-
 export interface IGarageClient {
 
     getOverview(): Promise<GarageOverview>;
@@ -311,6 +257,60 @@ export class GarageClient implements IGarageClient {
     }
 }
 
+export interface IGarageRegisterClient {
+
+    create(command: CreateGarageCommand): Promise<GarageSettings>;
+}
+
+export class GarageRegisterClient implements IGarageRegisterClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    create(command: CreateGarageCommand): Promise<GarageSettings> {
+        let url_ = this.baseUrl + "/api/GarageRegister/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<GarageSettings> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GarageSettings.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageSettings>(null as any);
+    }
+}
+
 export interface IVehicleClient {
 
     searchVehicle(licensePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
@@ -458,555 +458,6 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
-export class GarageSettings implements IGarageSettings {
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    location?: GarageLocationItem;
-    bankingDetails?: GarageBankingDetailsItem;
-    servicesSettings?: GarageServicesSettingsItem;
-    contacts?: ContactItem[];
-
-    constructor(data?: IGarageSettings) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.email = _data["email"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsAppNumber = _data["whatsAppNumber"];
-            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
-            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
-            if (Array.isArray(_data["contacts"])) {
-                this.contacts = [] as any;
-                for (let item of _data["contacts"])
-                    this.contacts!.push(ContactItem.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): GarageSettings {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageSettings();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["email"] = this.email;
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsAppNumber"] = this.whatsAppNumber;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
-        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
-        if (Array.isArray(this.contacts)) {
-            data["contacts"] = [];
-            for (let item of this.contacts)
-                data["contacts"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IGarageSettings {
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    location?: GarageLocationItem;
-    bankingDetails?: GarageBankingDetailsItem;
-    servicesSettings?: GarageServicesSettingsItem;
-    contacts?: ContactItem[];
-}
-
-export abstract class BaseEntity implements IBaseEntity {
-    id?: string;
-    domainEvents?: BaseEvent[];
-
-    constructor(data?: IBaseEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            if (Array.isArray(_data["domainEvents"])) {
-                this.domainEvents = [] as any;
-                for (let item of _data["domainEvents"])
-                    this.domainEvents!.push(BaseEvent.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): BaseEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        if (Array.isArray(this.domainEvents)) {
-            data["domainEvents"] = [];
-            for (let item of this.domainEvents)
-                data["domainEvents"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IBaseEntity {
-    id?: string;
-    domainEvents?: BaseEvent[];
-}
-
-export class GarageLocationItem extends BaseEntity implements IGarageLocationItem {
-    address?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-    longitude?: number;
-    latitude?: number;
-
-    constructor(data?: IGarageLocationItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.address = _data["address"];
-            this.city = _data["city"];
-            this.postalCode = _data["postalCode"];
-            this.country = _data["country"];
-            this.longitude = _data["longitude"];
-            this.latitude = _data["latitude"];
-        }
-    }
-
-    static fromJS(data: any): GarageLocationItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageLocationItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["address"] = this.address;
-        data["city"] = this.city;
-        data["postalCode"] = this.postalCode;
-        data["country"] = this.country;
-        data["longitude"] = this.longitude;
-        data["latitude"] = this.latitude;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageLocationItem extends IBaseEntity {
-    address?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-    longitude?: number;
-    latitude?: number;
-}
-
-export abstract class BaseEvent implements IBaseEvent {
-
-    constructor(data?: IBaseEvent) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): BaseEvent {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface IBaseEvent {
-}
-
-export class GarageBankingDetailsItem extends BaseEntity implements IGarageBankingDetailsItem {
-    bankName?: string;
-    kvKNumber?: string;
-    accountHolderName?: string;
-    iban?: string;
-
-    constructor(data?: IGarageBankingDetailsItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.bankName = _data["bankName"];
-            this.kvKNumber = _data["kvKNumber"];
-            this.accountHolderName = _data["accountHolderName"];
-            this.iban = _data["iban"];
-        }
-    }
-
-    static fromJS(data: any): GarageBankingDetailsItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageBankingDetailsItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["bankName"] = this.bankName;
-        data["kvKNumber"] = this.kvKNumber;
-        data["accountHolderName"] = this.accountHolderName;
-        data["iban"] = this.iban;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageBankingDetailsItem extends IBaseEntity {
-    bankName?: string;
-    kvKNumber?: string;
-    accountHolderName?: string;
-    iban?: string;
-}
-
-export class GarageServicesSettingsItem extends BaseEntity implements IGarageServicesSettingsItem {
-    maxAutomaticPlannedOrders?: number;
-    trySendMailOnNewOrders?: boolean;
-    trySendWhatsappMessagOnNewOrders?: boolean;
-    isDeliveryEnabled?: boolean;
-    isAuthohelperDeliveryEnabled?: boolean;
-    deliveryPrice?: number;
-    maxAutomaticPlannedDeliveries?: number;
-
-    constructor(data?: IGarageServicesSettingsItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.maxAutomaticPlannedOrders = _data["maxAutomaticPlannedOrders"];
-            this.trySendMailOnNewOrders = _data["trySendMailOnNewOrders"];
-            this.trySendWhatsappMessagOnNewOrders = _data["trySendWhatsappMessagOnNewOrders"];
-            this.isDeliveryEnabled = _data["isDeliveryEnabled"];
-            this.isAuthohelperDeliveryEnabled = _data["isAuthohelperDeliveryEnabled"];
-            this.deliveryPrice = _data["deliveryPrice"];
-            this.maxAutomaticPlannedDeliveries = _data["maxAutomaticPlannedDeliveries"];
-        }
-    }
-
-    static fromJS(data: any): GarageServicesSettingsItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageServicesSettingsItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["maxAutomaticPlannedOrders"] = this.maxAutomaticPlannedOrders;
-        data["trySendMailOnNewOrders"] = this.trySendMailOnNewOrders;
-        data["trySendWhatsappMessagOnNewOrders"] = this.trySendWhatsappMessagOnNewOrders;
-        data["isDeliveryEnabled"] = this.isDeliveryEnabled;
-        data["isAuthohelperDeliveryEnabled"] = this.isAuthohelperDeliveryEnabled;
-        data["deliveryPrice"] = this.deliveryPrice;
-        data["maxAutomaticPlannedDeliveries"] = this.maxAutomaticPlannedDeliveries;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageServicesSettingsItem extends IBaseEntity {
-    maxAutomaticPlannedOrders?: number;
-    trySendMailOnNewOrders?: boolean;
-    trySendWhatsappMessagOnNewOrders?: boolean;
-    isDeliveryEnabled?: boolean;
-    isAuthohelperDeliveryEnabled?: boolean;
-    deliveryPrice?: number;
-    maxAutomaticPlannedDeliveries?: number;
-}
-
-export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
-    created?: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-
-    constructor(data?: IBaseAuditableEntity) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.createdBy = _data["createdBy"];
-            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
-            this.lastModifiedBy = _data["lastModifiedBy"];
-        }
-    }
-
-    static fromJS(data: any): BaseAuditableEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["createdBy"] = this.createdBy;
-        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
-        data["lastModifiedBy"] = this.lastModifiedBy;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IBaseAuditableEntity extends IBaseEntity {
-    created?: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-}
-
-export class ContactItem extends BaseAuditableEntity implements IContactItem {
-    fullName!: string;
-    phoneNumber?: string;
-    email?: string;
-    responsibility?: string;
-
-    constructor(data?: IContactItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.fullName = _data["fullName"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.email = _data["email"];
-            this.responsibility = _data["responsibility"];
-        }
-    }
-
-    static fromJS(data: any): ContactItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new ContactItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fullName"] = this.fullName;
-        data["phoneNumber"] = this.phoneNumber;
-        data["email"] = this.email;
-        data["responsibility"] = this.responsibility;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IContactItem extends IBaseAuditableEntity {
-    fullName: string;
-    phoneNumber?: string;
-    email?: string;
-    responsibility?: string;
-}
-
-export class CreateGarageCommand implements ICreateGarageCommand {
-    name?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    email?: string;
-    location?: BriefLocationDto;
-    bankingDetails?: BriefBankingDetailsDto;
-
-    constructor(data?: ICreateGarageCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsAppNumber = _data["whatsAppNumber"];
-            this.email = _data["email"];
-            this.location = _data["location"] ? BriefLocationDto.fromJS(_data["location"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? BriefBankingDetailsDto.fromJS(_data["bankingDetails"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): CreateGarageCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateGarageCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsAppNumber"] = this.whatsAppNumber;
-        data["email"] = this.email;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ICreateGarageCommand {
-    name?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    email?: string;
-    location?: BriefLocationDto;
-    bankingDetails?: BriefBankingDetailsDto;
-}
-
-export class BriefLocationDto implements IBriefLocationDto {
-    address?: string;
-    postalCode?: string;
-    city?: string;
-    country?: string;
-    longitude?: number;
-    latitude?: number;
-
-    constructor(data?: IBriefLocationDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.address = _data["address"];
-            this.postalCode = _data["postalCode"];
-            this.city = _data["city"];
-            this.country = _data["country"];
-            this.longitude = _data["longitude"];
-            this.latitude = _data["latitude"];
-        }
-    }
-
-    static fromJS(data: any): BriefLocationDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new BriefLocationDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["address"] = this.address;
-        data["postalCode"] = this.postalCode;
-        data["city"] = this.city;
-        data["country"] = this.country;
-        data["longitude"] = this.longitude;
-        data["latitude"] = this.latitude;
-        return data;
-    }
-}
-
-export interface IBriefLocationDto {
-    address?: string;
-    postalCode?: string;
-    city?: string;
-    country?: string;
-    longitude?: number;
-    latitude?: number;
-}
-
-export class BriefBankingDetailsDto implements IBriefBankingDetailsDto {
-    bankName?: string;
-    kvKNumber?: string;
-    accountHolderName?: string;
-    iban?: string;
-
-    constructor(data?: IBriefBankingDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.bankName = _data["bankName"];
-            this.kvKNumber = _data["kvKNumber"];
-            this.accountHolderName = _data["accountHolderName"];
-            this.iban = _data["iban"];
-        }
-    }
-
-    static fromJS(data: any): BriefBankingDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new BriefBankingDetailsDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["bankName"] = this.bankName;
-        data["kvKNumber"] = this.kvKNumber;
-        data["accountHolderName"] = this.accountHolderName;
-        data["iban"] = this.iban;
-        return data;
-    }
-}
-
-export interface IBriefBankingDetailsDto {
-    bankName?: string;
-    kvKNumber?: string;
-    accountHolderName?: string;
-    iban?: string;
-}
-
 export class GarageOverview implements IGarageOverview {
     name?: string;
     vehicles?: VehicleItem[];
@@ -1065,6 +516,95 @@ export interface IGarageOverview {
     name?: string;
     vehicles?: VehicleItem[];
     employees?: GarageEmployeeItem[];
+}
+
+export abstract class BaseEntity implements IBaseEntity {
+    id?: string;
+    domainEvents?: BaseEvent[];
+
+    constructor(data?: IBaseEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["domainEvents"])) {
+                this.domainEvents = [] as any;
+                for (let item of _data["domainEvents"])
+                    this.domainEvents!.push(BaseEvent.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BaseEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.domainEvents)) {
+            data["domainEvents"] = [];
+            for (let item of this.domainEvents)
+                data["domainEvents"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBaseEntity {
+    id?: string;
+    domainEvents?: BaseEvent[];
+}
+
+export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+
+    constructor(data?: IBaseAuditableEntity) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+        }
+    }
+
+    static fromJS(data: any): BaseAuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBaseAuditableEntity extends IBaseEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
 }
 
 export class VehicleItem extends BaseAuditableEntity implements IVehicleItem {
@@ -1155,6 +695,34 @@ export interface IVehicleOwnerItem extends IBaseAuditableEntity {
     fullName: string;
     phoneNumber?: string;
     email?: string;
+}
+
+export abstract class BaseEvent implements IBaseEvent {
+
+    constructor(data?: IBaseEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): BaseEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IBaseEvent {
 }
 
 export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEmployeeItem {
@@ -1260,6 +828,278 @@ export interface IGarageServiceItemDto {
     duration?: number;
     price?: number;
     status?: number;
+}
+
+export class GarageSettings implements IGarageSettings {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
+    contacts?: ContactItem[];
+
+    constructor(data?: IGarageSettings) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsAppNumber = _data["whatsAppNumber"];
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
+            if (Array.isArray(_data["contacts"])) {
+                this.contacts = [] as any;
+                for (let item of _data["contacts"])
+                    this.contacts!.push(ContactItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GarageSettings {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageSettings();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsAppNumber"] = this.whatsAppNumber;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
+        if (Array.isArray(this.contacts)) {
+            data["contacts"] = [];
+            for (let item of this.contacts)
+                data["contacts"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGarageSettings {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
+    contacts?: ContactItem[];
+}
+
+export class GarageLocationItem extends BaseEntity implements IGarageLocationItem {
+    address?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    longitude?: number;
+    latitude?: number;
+
+    constructor(data?: IGarageLocationItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.postalCode = _data["postalCode"];
+            this.country = _data["country"];
+            this.longitude = _data["longitude"];
+            this.latitude = _data["latitude"];
+        }
+    }
+
+    static fromJS(data: any): GarageLocationItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageLocationItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["postalCode"] = this.postalCode;
+        data["country"] = this.country;
+        data["longitude"] = this.longitude;
+        data["latitude"] = this.latitude;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageLocationItem extends IBaseEntity {
+    address?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    longitude?: number;
+    latitude?: number;
+}
+
+export class GarageBankingDetailsItem extends BaseEntity implements IGarageBankingDetailsItem {
+    bankName?: string;
+    kvKNumber?: string;
+    accountHolderName?: string;
+    iban?: string;
+
+    constructor(data?: IGarageBankingDetailsItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.bankName = _data["bankName"];
+            this.kvKNumber = _data["kvKNumber"];
+            this.accountHolderName = _data["accountHolderName"];
+            this.iban = _data["iban"];
+        }
+    }
+
+    static fromJS(data: any): GarageBankingDetailsItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageBankingDetailsItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bankName"] = this.bankName;
+        data["kvKNumber"] = this.kvKNumber;
+        data["accountHolderName"] = this.accountHolderName;
+        data["iban"] = this.iban;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageBankingDetailsItem extends IBaseEntity {
+    bankName?: string;
+    kvKNumber?: string;
+    accountHolderName?: string;
+    iban?: string;
+}
+
+export class GarageServicesSettingsItem extends BaseEntity implements IGarageServicesSettingsItem {
+    maxAutomaticPlannedOrders?: number;
+    trySendMailOnNewOrders?: boolean;
+    trySendWhatsappMessagOnNewOrders?: boolean;
+    isDeliveryEnabled?: boolean;
+    isAuthohelperDeliveryEnabled?: boolean;
+    deliveryPrice?: number;
+    maxAutomaticPlannedDeliveries?: number;
+
+    constructor(data?: IGarageServicesSettingsItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.maxAutomaticPlannedOrders = _data["maxAutomaticPlannedOrders"];
+            this.trySendMailOnNewOrders = _data["trySendMailOnNewOrders"];
+            this.trySendWhatsappMessagOnNewOrders = _data["trySendWhatsappMessagOnNewOrders"];
+            this.isDeliveryEnabled = _data["isDeliveryEnabled"];
+            this.isAuthohelperDeliveryEnabled = _data["isAuthohelperDeliveryEnabled"];
+            this.deliveryPrice = _data["deliveryPrice"];
+            this.maxAutomaticPlannedDeliveries = _data["maxAutomaticPlannedDeliveries"];
+        }
+    }
+
+    static fromJS(data: any): GarageServicesSettingsItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageServicesSettingsItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["maxAutomaticPlannedOrders"] = this.maxAutomaticPlannedOrders;
+        data["trySendMailOnNewOrders"] = this.trySendMailOnNewOrders;
+        data["trySendWhatsappMessagOnNewOrders"] = this.trySendWhatsappMessagOnNewOrders;
+        data["isDeliveryEnabled"] = this.isDeliveryEnabled;
+        data["isAuthohelperDeliveryEnabled"] = this.isAuthohelperDeliveryEnabled;
+        data["deliveryPrice"] = this.deliveryPrice;
+        data["maxAutomaticPlannedDeliveries"] = this.maxAutomaticPlannedDeliveries;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageServicesSettingsItem extends IBaseEntity {
+    maxAutomaticPlannedOrders?: number;
+    trySendMailOnNewOrders?: boolean;
+    trySendWhatsappMessagOnNewOrders?: boolean;
+    isDeliveryEnabled?: boolean;
+    isAuthohelperDeliveryEnabled?: boolean;
+    deliveryPrice?: number;
+    maxAutomaticPlannedDeliveries?: number;
+}
+
+export class ContactItem extends BaseAuditableEntity implements IContactItem {
+    fullName!: string;
+    phoneNumber?: string;
+    email?: string;
+    responsibility?: string;
+
+    constructor(data?: IContactItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.fullName = _data["fullName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.email = _data["email"];
+            this.responsibility = _data["responsibility"];
+        }
+    }
+
+    static fromJS(data: any): ContactItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ContactItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fullName"] = this.fullName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["email"] = this.email;
+        data["responsibility"] = this.responsibility;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IContactItem extends IBaseAuditableEntity {
+    fullName: string;
+    phoneNumber?: string;
+    email?: string;
+    responsibility?: string;
 }
 
 export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand {
@@ -1477,6 +1317,166 @@ export interface ICreateGarageServiceCommand {
     description?: string;
     duration?: number;
     price?: number;
+}
+
+export class CreateGarageCommand implements ICreateGarageCommand {
+    name?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    email?: string;
+    location?: BriefLocationDto;
+    bankingDetails?: BriefBankingDetailsDto;
+
+    constructor(data?: ICreateGarageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsAppNumber = _data["whatsAppNumber"];
+            this.email = _data["email"];
+            this.location = _data["location"] ? BriefLocationDto.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? BriefBankingDetailsDto.fromJS(_data["bankingDetails"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CreateGarageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGarageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsAppNumber"] = this.whatsAppNumber;
+        data["email"] = this.email;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICreateGarageCommand {
+    name?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    email?: string;
+    location?: BriefLocationDto;
+    bankingDetails?: BriefBankingDetailsDto;
+}
+
+export class BriefLocationDto implements IBriefLocationDto {
+    address?: string;
+    postalCode?: string;
+    city?: string;
+    country?: string;
+    longitude?: number;
+    latitude?: number;
+
+    constructor(data?: IBriefLocationDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.address = _data["address"];
+            this.postalCode = _data["postalCode"];
+            this.city = _data["city"];
+            this.country = _data["country"];
+            this.longitude = _data["longitude"];
+            this.latitude = _data["latitude"];
+        }
+    }
+
+    static fromJS(data: any): BriefLocationDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BriefLocationDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["address"] = this.address;
+        data["postalCode"] = this.postalCode;
+        data["city"] = this.city;
+        data["country"] = this.country;
+        data["longitude"] = this.longitude;
+        data["latitude"] = this.latitude;
+        return data;
+    }
+}
+
+export interface IBriefLocationDto {
+    address?: string;
+    postalCode?: string;
+    city?: string;
+    country?: string;
+    longitude?: number;
+    latitude?: number;
+}
+
+export class BriefBankingDetailsDto implements IBriefBankingDetailsDto {
+    bankName?: string;
+    kvKNumber?: string;
+    accountHolderName?: string;
+    iban?: string;
+
+    constructor(data?: IBriefBankingDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.bankName = _data["bankName"];
+            this.kvKNumber = _data["kvKNumber"];
+            this.accountHolderName = _data["accountHolderName"];
+            this.iban = _data["iban"];
+        }
+    }
+
+    static fromJS(data: any): BriefBankingDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BriefBankingDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bankName"] = this.bankName;
+        data["kvKNumber"] = this.kvKNumber;
+        data["accountHolderName"] = this.accountHolderName;
+        data["iban"] = this.iban;
+        return data;
+    }
+}
+
+export interface IBriefBankingDetailsDto {
+    bankName?: string;
+    kvKNumber?: string;
+    accountHolderName?: string;
+    iban?: string;
 }
 
 export class LicencePlateBriefResponse implements ILicencePlateBriefResponse {

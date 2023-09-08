@@ -15,6 +15,7 @@ using AutoHelper.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using WebUI.Models.Response;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.WebUI.Controllers;
@@ -32,6 +33,8 @@ public class GarageRegisterController : ApiControllerBase
     }
 
     [HttpPost($"{nameof(Create)}")]
+    [ProducesResponseType(typeof(GarageSettings), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<GarageSettings>> Create([FromBody] CreateGarageCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");

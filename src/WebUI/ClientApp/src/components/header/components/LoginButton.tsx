@@ -9,6 +9,8 @@ import { useLocation } from 'react-router';
 import { ROUTES } from '../../../constants/routes';
 import { ROLES } from '../../../constants/roles';
 import { COLORS } from '../../../constants/colors';
+import useUserRole from '../../../hooks/useUserRole';
+import useConfirmationStep from '../../../hooks/useConfirmationStep';
 
 interface IProps {
     asIcon?: boolean;
@@ -57,8 +59,10 @@ const LoginMenu = ({ onLogin }: { onLogin: (role: string) => void }) => {
 const LoginButton: React.FC<IProps> = ({ asIcon }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
     const location = useLocation();
+    const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+    const { userRole, setUserRole } = useUserRole()
+    const { setConfigurationIndex } = useConfirmationStep();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -80,7 +84,8 @@ const LoginButton: React.FC<IProps> = ({ asIcon }) => {
             appState: redirectSettings
         });
 
-        localStorage.setItem('userRole', role);
+        setUserRole(role);
+        setConfigurationIndex(0, userRole);
 
         // define confirmation step index for garage
         const confirmationStepIndex = localStorage.getItem('confirmationStepIndex');

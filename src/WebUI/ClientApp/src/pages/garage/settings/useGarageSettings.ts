@@ -3,12 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageConfigurationClient, GarageLocationItem, GarageSettings, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
+import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageRegisterClient, GarageLocationItem, GarageSettings, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { ROUTES } from "../../../constants/routes";
+import { useAuth0 } from "@auth0/auth0-react";
+import { GetGarageClient, GetGarageRegisterClient } from "../../../app/GarageClient";
+import useUserRole from "../../../hooks/useUserRole";
+import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 //own imports
 
@@ -49,9 +53,15 @@ function guardHttpResponse(response: any, setError: UseFormSetError<FieldValues>
     return response;
 }
 
-function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
-    const garageClient = new GarageClient(process.env.PUBLIC_URL);
-    const garageConfigurationClient = new GarageConfigurationClient(process.env.PUBLIC_URL);
+function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
+    const { userRole } = useUserRole()
+    const { setConfigurationIndex } = useConfirmationStep();
+    const { getAccessTokenSilently } = useAuth0();
+    const accessToken = getAccessTokenSilently();
+    const garageClient = GetGarageClient(accessToken);
+    const garageRegisterClient = GetGarageRegisterClient(accessToken);
+
+
     const initialGarageSettings = new GarageSettings({
         name: "",
         email: "",
@@ -111,8 +121,9 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         }
     );
 
-    const createMutation = useMutation(garageConfigurationClient.create.bind(garageClient), {
+    const createMutation = useMutation(garageRegisterClient.create.bind(garageRegisterClient), {
         onSuccess: (response) => {
+            setConfigurationIndex(2, userRole)
             dispatch(showOnSuccess("Garage has been created!"));
 
             // Update the garageSettings in the cache after creating
@@ -125,6 +136,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
 
     const updateMutation = useMutation(garageClient.updateSettings.bind(garageClient), {
         onSuccess: (response) => {
+            setConfigurationIndex(2, userRole)
             dispatch(showOnSuccess("Garage has been updated!"));
 
             // Update the garageSettings in the cache after updating
@@ -223,4 +235,4 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
     }
 }
 
-export default useGarage;
+export default useGarageSettings;

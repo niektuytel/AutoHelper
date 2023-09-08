@@ -18,7 +18,6 @@ import useOnclickOutside from "react-cool-onclickoutside";
 // own imports
 import { HashValues } from "../../../i18n/HashValues";
 import { useAuth0 } from "@auth0/auth0-react";
-import GetVehicleClient from "../../../app/vehicleClient";
 import { VehicleClient } from "../../../app/web-api-client";
 
 

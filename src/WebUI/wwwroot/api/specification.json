@@ -6,38 +6,6 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/GarageConfiguration/Create": {
-      "post": {
-        "tags": [
-          "GarageConfiguration"
-        ],
-        "operationId": "GarageConfiguration_Create",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateGarageCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageSettings"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Garage/GetOverview": {
       "get": {
         "tags": [
@@ -197,6 +165,38 @@
         }
       }
     },
+    "/api/GarageRegister/Create": {
+      "post": {
+        "tags": [
+          "GarageRegister"
+        ],
+        "operationId": "GarageRegister_Create",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/search": {
       "get": {
         "tags": [
@@ -285,6 +285,199 @@
   },
   "components": {
     "schemas": {
+      "GarageOverview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleItem"
+            }
+          },
+          "employees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeItem"
+            }
+          }
+        }
+      },
+      "VehicleItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "licensePlate": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "brand": {
+                "type": "string"
+              },
+              "registrationDate": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "vehicleOwner": {
+                "$ref": "#/components/schemas/VehicleOwnerItem"
+              }
+            }
+          }
+        ]
+      },
+      "VehicleOwnerItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fullName"
+            ],
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "BaseAuditableEntity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "lastModified": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "domainEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseEvent"
+            }
+          }
+        }
+      },
+      "BaseEvent": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "GarageEmployeeItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fullName",
+              "email"
+            ],
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "position": {
+                "type": "string"
+              },
+              "dateOfHire": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "minLength": 1
+              },
+              "phoneNumber": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "GarageServiceItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "GarageSettings": {
         "type": "object",
         "additionalProperties": false,
@@ -350,28 +543,6 @@
             }
           }
         ]
-      },
-      "BaseEntity": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "domainEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BaseEvent"
-            }
-          }
-        }
-      },
-      "BaseEvent": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
       },
       "GarageBankingDetailsItem": {
         "allOf": [
@@ -464,245 +635,6 @@
             }
           }
         ]
-      },
-      "BaseAuditableEntity": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "x-abstract": true,
-            "additionalProperties": false,
-            "properties": {
-              "created": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "createdBy": {
-                "type": "string",
-                "nullable": true
-              },
-              "lastModified": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "lastModifiedBy": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "CreateGarageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "whatsAppNumber": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "location": {
-            "$ref": "#/components/schemas/BriefLocationDto"
-          },
-          "bankingDetails": {
-            "$ref": "#/components/schemas/BriefBankingDetailsDto"
-          }
-        }
-      },
-      "BriefLocationDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "address": {
-            "type": "string"
-          },
-          "postalCode": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "country": {
-            "type": "string"
-          },
-          "longitude": {
-            "type": "number",
-            "format": "double"
-          },
-          "latitude": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "BriefBankingDetailsDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "bankName": {
-            "type": "string"
-          },
-          "kvKNumber": {
-            "type": "string"
-          },
-          "accountHolderName": {
-            "type": "string"
-          },
-          "iban": {
-            "type": "string"
-          }
-        }
-      },
-      "GarageOverview": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "vehicles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VehicleItem"
-            }
-          },
-          "employees": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageEmployeeItem"
-            }
-          }
-        }
-      },
-      "VehicleItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "licensePlate": {
-                "type": "string"
-              },
-              "model": {
-                "type": "string"
-              },
-              "brand": {
-                "type": "string"
-              },
-              "registrationDate": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "vehicleOwner": {
-                "$ref": "#/components/schemas/VehicleOwnerItem"
-              }
-            }
-          }
-        ]
-      },
-      "VehicleOwnerItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "fullName"
-            ],
-            "properties": {
-              "fullName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "phoneNumber": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "GarageEmployeeItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "fullName",
-              "email"
-            ],
-            "properties": {
-              "fullName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "position": {
-                "type": "string"
-              },
-              "dateOfHire": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "minLength": 1
-              },
-              "phoneNumber": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "GarageServiceItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "duration": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
       },
       "UpdateGarageSettingsCommand": {
         "type": "object",
@@ -810,6 +742,74 @@
           "price": {
             "type": "number",
             "format": "decimal"
+          }
+        }
+      },
+      "CreateGarageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/BriefLocationDto"
+          },
+          "bankingDetails": {
+            "$ref": "#/components/schemas/BriefBankingDetailsDto"
+          }
+        }
+      },
+      "BriefLocationDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "BriefBankingDetailsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bankName": {
+            "type": "string"
+          },
+          "kvKNumber": {
+            "type": "string"
+          },
+          "accountHolderName": {
+            "type": "string"
+          },
+          "iban": {
+            "type": "string"
           }
         }
       },

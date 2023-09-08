@@ -17,19 +17,20 @@ import { ROUTES } from '../../../constants/routes';
 import { ROLES } from '../../../constants/roles';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
+import useConfirmationStep from '../../../hooks/useConfirmationStep';
+import useUserRole from '../../../hooks/useUserRole';
 
 interface RoleBasedListProps {
     setOnMenu?: (value: boolean) => void;
 }
 
 export default ({ setOnMenu }: RoleBasedListProps) => {
+    const { userRole } = useUserRole()
+    const { configurationIndex } = useConfirmationStep();
     const [open, setOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
-
-    const userRole = localStorage.getItem('userRole');
-    const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
 
 
     const handleClick2 = () => setOpen(!open);
@@ -51,10 +52,10 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     if (userRole == ROLES.GARAGE) {
         return (
             <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink disabled={confirmationStepIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE.OVERVIEW} />
-                <ListItemLink disabled={confirmationStepIndex < 4} primary={t('agenda_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE.AGENDA} />
-                <ListItemLink disabled={confirmationStepIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE.SERVICES} />
-                <ListItemLink disabled={confirmationStepIndex < 3} primary={t('colleagues_camelcase')} icon={<GroupIcon />} to={ROUTES.GARAGE.COLLEAGUES} />
+                <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE.OVERVIEW} />
+                <ListItemLink disabled={configurationIndex < 4} primary={t('agenda_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE.AGENDA} />
+                <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE.SERVICES} />
+                <ListItemLink disabled={configurationIndex < 3} primary={t('colleagues_camelcase')} icon={<GroupIcon />} to={ROUTES.GARAGE.COLLEAGUES} />
                 <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE.SETTINGS} />
             </List>
         );
