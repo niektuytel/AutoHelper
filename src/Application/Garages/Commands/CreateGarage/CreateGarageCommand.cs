@@ -16,7 +16,7 @@ namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 public record CreateGarageCommand : IRequest<GarageSettings>
 {
     [JsonIgnore]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     public string Name { get; set; }
 

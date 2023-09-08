@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageLocationItem, GarageSettings, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
+import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageConfigurationClient, GarageLocationItem, GarageSettings, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -19,7 +19,11 @@ function initialGarageLocation(): GarageLocationItem {
 }
 
 function guardHttpResponse(response: any, setError: UseFormSetError<FieldValues>, t: TFunction, dispatch: Dispatch<any>): any | null {
+    console.log(response.errors)
+
     if (response.status === 400 && response.errors) {
+        console.log(response.errors)
+
         // Iterate over all the error keys
         Object.keys(response.errors).forEach((errorKey: string) => {
             // Split the key by '.' and convert to lowercase
@@ -47,6 +51,7 @@ function guardHttpResponse(response: any, setError: UseFormSetError<FieldValues>
 
 function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
     const garageClient = new GarageClient(process.env.PUBLIC_URL);
+    const garageConfigurationClient = new GarageConfigurationClient(process.env.PUBLIC_URL);
     const initialGarageSettings = new GarageSettings({
         name: "",
         email: "",
@@ -106,7 +111,7 @@ function useGarage(reset: UseFormReset<FieldValues>, setError: UseFormSetError<F
         }
     );
 
-    const createMutation = useMutation(garageClient.createGarage.bind(garageClient), {
+    const createMutation = useMutation(garageConfigurationClient.create.bind(garageClient), {
         onSuccess: (response) => {
             dispatch(showOnSuccess("Garage has been created!"));
 

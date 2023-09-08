@@ -36,7 +36,7 @@ public static class ConfigureServices
 
     private static IServiceCollection AddControllerServices(this IServiceCollection services)
     {
-        services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();// IHttpContextAccessor is singleton
         services.AddHttpClient<IRDWService, RDWService>();
         services.AddScoped<IVehicleInformationService, VehicleInformationService>();
 
@@ -180,7 +180,6 @@ public static class ConfigureServices
                 AdditionalQueryStringParameters =
                 {
                     { "audience", app.Configuration["OAuth0:Audience"] },
-                    { "scope", "openid profile email" }
                 }
             };
             settings.Path = "/swagger";

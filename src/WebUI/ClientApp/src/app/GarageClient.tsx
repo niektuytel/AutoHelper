@@ -1,7 +1,7 @@
 ﻿import { VehicleClient } from "./web-api-client";
 
 
-function GetVehicleClient(accessToken: string): VehicleClient {
+function GetGarageRegisterClient(accessToken: string): VehicleClient {
 
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL, { fetch: fetchWithToken });
     async function fetchWithToken(url: RequestInfo, init?: RequestInit): Promise<Response> {
@@ -18,4 +18,4 @@ function GetVehicleClient(accessToken: string): VehicleClient {
     return vehicleClient;
 }
 
-export default GetVehicleClient;
+export default GetGarageRegisterClient;

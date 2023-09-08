@@ -25,9 +25,15 @@ public class IdentityService : IIdentityService
 
     public async Task<string?> GetUserNameAsync(string userId)
     {
-        var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
-
-        return user.UserName;
+        try
+        {
+            var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+            return user?.UserName;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
@@ -90,10 +96,14 @@ public class IdentityService : IIdentityService
 
         try
         {
-            var resultAddRole = await _userManager.AddToRoleAsync(user, roleName);
-            if (!resultAddRole.Succeeded)
+            var isInRole = await _userManager.IsInRoleAsync(user, roleName);
+            if(!isInRole)
             {
-                throw new InvalidOperationException("Could not add the new user to the 'Garage' role.");
+                var resultAddRole = await _userManager.AddToRoleAsync(user, roleName);
+                if (!resultAddRole.Succeeded)
+                {
+                    throw new InvalidOperationException("Could not add the new user to the 'Garage' role.");
+                }
             }
         }
         catch (Exception ex)

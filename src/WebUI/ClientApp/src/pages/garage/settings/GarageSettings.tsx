@@ -85,11 +85,15 @@ export default ({ }: IProps) => {
             <Box pt={4}>
                 <Typography variant="h4" gutterBottom>
                     {t("GarageSettingsHeader.Title")}
-                    <Tooltip title={t("GarageSettingsHeader.Description")}>
-                        <IconButton size="small">
-                            <InfoOutlinedIcon fontSize="inherit" />
-                        </IconButton>
-                    </Tooltip>
+                    {loading ?
+                        <CircularProgress size={20} style={{ marginLeft: '10px' }} />
+                        :
+                        <Tooltip title={t("GarageSettingsHeader.Description")}>
+                            <IconButton size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>
+                    }
                 </Typography>
             </Box>
             {!notFound ?

@@ -19,6 +19,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.WebUI.Controllers;
 
+[Authorize(Policy = "GarageRole")]
 public class GarageController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
@@ -30,68 +31,45 @@ public class GarageController : ApiControllerBase
         _identityService = identityService;
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpGet($"{nameof(GetOverview)}")]
     public async Task<GarageOverview> GetOverview()
     {
-        var userId = _currentUser.UserId ?? throw new Exception("Missing userId");
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new GetGarageOverviewQuery(userId));
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpGet($"{nameof(GetServices)}")]
-    public async Task<IEnumerable<GarageServiceItem>> GetServices()
+    public async Task<IEnumerable<GarageServiceItemDto>> GetServices()
     {
-        var userId = _currentUser.UserId ?? throw new Exception("Missing userId");
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new GetGarageServicesQuery(userId));
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpGet($"{nameof(GetSettings)}")]
     public async Task<GarageSettings> GetSettings()
     {
-        var userId = _currentUser.UserId ?? throw new Exception("Missing userId");
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new GetGarageSettingsQuery(userId));
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(UpdateSettings)}")]
     public async Task<GarageSettings> UpdateSettings([FromBody] UpdateGarageSettingsCommand command)
     {
-        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId");
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(UpdateService)}")]
     public async Task<GarageServiceItem> UpdateService([FromBody] UpdateGarageServiceCommand command)
     {
-        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId");
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);
     }
 
-    [Authorize]
-    [HttpPost($"{nameof(CreateGarage)}")]
-    public async Task<ActionResult<GarageSettings>> CreateGarage([FromBody] CreateGarageCommand command)
-    {
-        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId");
-        var result = await Mediator.Send(command);
-        if (result != null)
-        {
-            // Register user with an garage Role
-            await _identityService.SetUserWithRoleAsync(command.UserId, command.Name, command.Email, "Garage");
-
-            return result;
-        }
-
-        return BadRequest("Could not create garage");
-    }
-
-    [Authorize(Policy = "GarageRole")]
     [HttpPost($"{nameof(CreateService)}")]
     public async Task<GarageServiceItem> CreateService([FromBody] CreateGarageServiceCommand command)
     {
-        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId");
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);
     }
 

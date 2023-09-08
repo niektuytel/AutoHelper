@@ -15,17 +15,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
 
-public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceItem>>
+public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceItemDto>>
 {
-    public GetGarageServicesQuery(string accountId)
+    public GetGarageServicesQuery(string userId)
     {
-        AccountId = accountId;
+        UserId = userId;
     }
 
-    public string AccountId { get; private set; }
+    public string UserId { get; private set; }
 }
 
-public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQuery, IEnumerable<GarageServiceItem>>
+public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQuery, IEnumerable<GarageServiceItemDto>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -36,13 +36,13 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<GarageServiceItem>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GarageServiceItemDto>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
     {
         var entities = _context.GarageServices
-            .Where(x => x.UserId == request.AccountId)
+            .Where(x => x.UserId == request.UserId)
             .AsEnumerable();
 
-        return entities ?? new List<GarageServiceItem>();
+        return _mapper.Map<IEnumerable<GarageServiceItemDto>>(entities) ?? new List<GarageServiceItemDto>();
     }
 
 }
