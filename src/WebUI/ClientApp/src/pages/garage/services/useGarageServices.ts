@@ -7,9 +7,17 @@ import { useNavigate } from "react-router";
 import { CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
+import { useAuth0 } from "@auth0/auth0-react";
+import { GetGarageClient } from "../../../app/GarageClient";
+import useUserRole from "../../../hooks/useUserRole";
+import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 function useGarageServices() {
-    const garageClient = new GarageClient(process.env.PUBLIC_URL);
+    const { userRole } = useUserRole()
+    const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
+    const { getAccessTokenSilently } = useAuth0();
+    const accessToken = getAccessTokenSilently();
+    const garageClient = GetGarageClient(accessToken);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -21,13 +29,14 @@ function useGarageServices() {
 
             return response;
         } catch (response: any) {
-            if (response && response.status === 404) {
-                dispatch(showOnError(t("Garage not found!")));
-                navigate(`${ROUTES.GARAGE.SETTINGS}?garage_notfound=true`);
-                return [];
-            } else {
-                throw response;
+            // redirect + enable garage register page
+            if (response.status === 404) {
+                setConfigurationIndex(1, userRole);
+                navigate(ROUTES.GARAGE.SETTINGS);
+                return;
             }
+
+            throw response;
         }
     }
 
@@ -35,6 +44,7 @@ function useGarageServices() {
         ['garageServices'],
         fetchGarageServicesData,
         {
+            enabled: true,
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000,  // 30 minutes
@@ -44,6 +54,8 @@ function useGarageServices() {
 
     const createMutation = useMutation(garageClient.createService.bind(garageClient), {
         onSuccess: (response) => {
+            // Enable garage colleagues page
+            setConfigurationIndex(3, userRole)
             dispatch(showOnSuccess("Garage service has been created!"));
 
             // Update the garageSettings in the cache after creating

@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
 import useConfirmationStep from '../../../hooks/useConfirmationStep';
 import useUserRole from '../../../hooks/useUserRole';
+import { use } from 'i18next';
 
 interface RoleBasedListProps {
     setOnMenu?: (value: boolean) => void;
@@ -27,10 +28,18 @@ interface RoleBasedListProps {
 export default ({ setOnMenu }: RoleBasedListProps) => {
     const { userRole } = useUserRole()
     const { configurationIndex } = useConfirmationStep();
+    const [prevIndex, setPrevIndex] = useState(configurationIndex || 0);
     const [open, setOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
+
+    // update design when index changed
+    useEffect(() => {
+        if (prevIndex != configurationIndex) {
+            setPrevIndex(configurationIndex);
+        }
+    }, [configurationIndex]);
 
 
     const handleClick2 = () => setOpen(!open);

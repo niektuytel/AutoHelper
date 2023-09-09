@@ -17,9 +17,6 @@ namespace AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 
 public record CreateGarageServiceCommand : IRequest<GarageServiceItem>
 {
-    [JsonIgnore]
-    public string UserId { get; set; }
-
     public string Title { get; set; }
 
     public string Description { get; set; }
@@ -28,6 +25,11 @@ public record CreateGarageServiceCommand : IRequest<GarageServiceItem>
 
     public decimal Price { get; set; }
 
+    [JsonIgnore]
+    public string UserId { get; set; }
+
+    [JsonIgnore]
+    public GarageItem UserGarage { get; set; }
 }
 
 public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarageServiceCommand, GarageServiceItem>
@@ -40,12 +42,12 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
         _context = context;
         _mapper = mapper;
     }
-
     public async Task<GarageServiceItem> Handle(CreateGarageServiceCommand request, CancellationToken cancellationToken)
     {
         var entity = new GarageServiceItem
         {
             UserId = request.UserId,
+            GarageId = request.UserGarage.Id,
             Title = request.Title,
             Description = request.Description,
             Duration = request.Duration,
@@ -60,4 +62,5 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
         await _context.SaveChangesAsync(cancellationToken);
         return entity;
     }
+
 }

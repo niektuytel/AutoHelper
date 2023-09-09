@@ -85,13 +85,7 @@ const LoginButton: React.FC<IProps> = ({ asIcon }) => {
         });
 
         setUserRole(role);
-        setConfigurationIndex(0, userRole);
-
-        // define confirmation step index for garage
-        const confirmationStepIndex = localStorage.getItem('confirmationStepIndex');
-        if (!confirmationStepIndex && role === ROLES.GARAGE) {
-            localStorage.setItem('confirmationStepIndex', '1');
-        }
+        setConfigurationIndex(100, userRole);
 
         handleClose();
     }, [loginWithRedirect, handleClose, location]);

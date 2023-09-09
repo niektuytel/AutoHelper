@@ -55,7 +55,7 @@ function guardHttpResponse(response: any, setError: UseFormSetError<FieldValues>
 
 function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
     const { userRole } = useUserRole()
-    const { setConfigurationIndex } = useConfirmationStep();
+    const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageClient(accessToken);
@@ -78,14 +78,21 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
 
     const fetchGarageData = async () => {
         try {
-            if (notFound) {
-                console.log(`garage is not been found`)
+            if (configurationIndex == 0) {
+                dispatch(showOnError(t("Garage is not been found")));
                 return initialGarageSettings;
             }
 
             const response = await garageClient.getSettings();
             return response;
         } catch (response: any) {
+            if (response.status === 404) {
+                // Enable garage register page
+                setConfigurationIndex(1, userRole);
+                dispatch(showOnError(t("Garage is not been found")));
+                return initialGarageSettings;
+            }
+
             throw response;
         }
     }
@@ -94,7 +101,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         ['garageSettings'],
         fetchGarageData,
         {
-            enabled: false,
+            enabled: true,
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000,  // 30 minutes
@@ -123,6 +130,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
 
     const createMutation = useMutation(garageRegisterClient.create.bind(garageRegisterClient), {
         onSuccess: (response) => {
+            // Enable garage overview + services pages
             setConfigurationIndex(2, userRole)
             dispatch(showOnSuccess("Garage has been created!"));
 
@@ -136,7 +144,6 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
 
     const updateMutation = useMutation(garageClient.updateSettings.bind(garageClient), {
         onSuccess: (response) => {
-            setConfigurationIndex(2, userRole)
             dispatch(showOnSuccess("Garage has been updated!"));
 
             // Update the garageSettings in the cache after updating
@@ -201,7 +208,6 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
 
         command.servicesSettings = garageSettings?.servicesSettings;
 
-        console.log(data, data.postalCode);
         console.log(command.toJSON());
         updateMutation.mutate(command);
     }

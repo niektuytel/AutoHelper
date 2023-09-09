@@ -122,7 +122,7 @@ export default ({ }: IProps) => {
     //    // Handle the form submission logic here...
     //};
     const handleFormSubmit = (data: any) => {
-        console.log(data);
+        setDialogOpen(false);
         // Handle the form submission logic here...
     };
 

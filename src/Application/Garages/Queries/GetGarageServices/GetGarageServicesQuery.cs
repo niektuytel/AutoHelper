@@ -38,8 +38,17 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
 
     public async Task<IEnumerable<GarageServiceItemDto>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
     {
+        var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(GarageItem), request.UserId);
+        }
+
         var entities = _context.GarageServices
-            .Where(x => x.UserId == request.UserId)
+            .Where(x => 
+                x.UserId == request.UserId && 
+                x.GarageId == entity.Id
+            )
             .AsEnumerable();
 
         return _mapper.Map<IEnumerable<GarageServiceItemDto>>(entities) ?? new List<GarageServiceItemDto>();
