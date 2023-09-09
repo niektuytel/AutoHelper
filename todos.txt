@@ -1,0 +1,10 @@
+<h1>AutoHelper: BUGS</h1>
+- Login does all automatic choose previous logged in account, we need to decide which account we want to use
+- Make register more clear on address that user need to select an address 
+- In register page the select bank has as default value also his label.... (when input is empty on first time opened)
+- create service dialog contains an scroll overflow when to small in vertical size 
+
+<h1>AutoHelper: THINKS ABOUT</h1>
+- Hamburger on the left as the menu also opened on the left.
+- (when want to use multiple garages on 1 account)
+- 
