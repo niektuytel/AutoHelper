@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
@@ -56,6 +57,18 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(builder);
+
+        builder.Entity<GarageServiceItem>()
+               .Property(p => p.Price)
+               .HasColumnType("decimal(18,2)");
+
+        builder.Entity<GarageServicesSettingsItem>()
+               .Property(p => p.DeliveryPrice)
+               .HasColumnType("decimal(18,2)");
+
+        builder.Entity<GarageServicesSettingsItem>()
+               .Property(p => p.MaxAutomaticPlannedDeliveries)
+               .HasColumnType("decimal(18,2)");
     }
 
 

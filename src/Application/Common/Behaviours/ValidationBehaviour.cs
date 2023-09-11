@@ -26,8 +26,7 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
 
             var failures = validationResults
                 .Where(r => r.Errors.Any())
-                .SelectMany(r => r.Errors)
-                .ToList();
+                .SelectMany(r => r.Errors);
 
             if (failures.Any())
                 throw new ValidationException(failures);

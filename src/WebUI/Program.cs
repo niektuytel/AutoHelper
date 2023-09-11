@@ -1,8 +1,12 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using AutoHelper.Infrastructure.Common;
 using AutoHelper.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Localization;
+
+CultureConfig.SetGlobalCultureToNL();
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add service
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebUIServices(builder.Configuration);
