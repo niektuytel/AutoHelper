@@ -30,7 +30,8 @@ import { CreateGarageServiceCommand, GarageServiceType } from "../../../app/web-
 import GarageServiceDialog from "./components/GarageServiceDialog";
 import { getTitleForServiceType } from "./defaultGarageService";
 import { COLORS } from "../../../constants/colors";
-import OtherGarageServiceCard from "./components/GarageServiceCard";
+import GarageServiceCardOther from "./components/GarageServiceCardOther";
+import GarageServiceCard from "./components/GarageServiceCard";
 
 // own imports
 
@@ -43,11 +44,6 @@ export default ({ }: IProps) => {
     const theme = useTheme();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-
-    const [otherServiceDescription, setOtherServiceDescription] = useState("");
-    const [otherServiceDuration, setOtherServiceDuration] = useState(0);
-    const [otherServicePrice, setOtherServicePrice] = useState(0);
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [cartItems, setCartItems] = useState<any[]>([]);
@@ -133,54 +129,15 @@ export default ({ }: IProps) => {
                 }
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
-            <OtherGarageServiceCard addCartItem={(item) => setCartItems([...cartItems, item ])} />
-        
-            {garageServices?.map((item, index) => {
-                const title = getTitleForServiceType(t, item.type!, item.description);
-                return <Card
-                    key={`service-card-${title}-${index}`}
-                    style={{
-                        marginBottom: "10px",
-                        padding: "8px",
-                        cursor: "pointer",
-                        border: selectedItem === item ? `1px solid black` : `1px solid ${COLORS.BORDER_GRAY}`
-                    }}
-                    title={item.description}
-                    onClick={() => setSelectedItem(item)}
-                >
-                    <CardHeader
-                        action={
-                            <IconButton
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setCartItems([...cartItems, item])
-                                }}
-                            >
-                                <AddIcon />
-                            </IconButton>
-                        }
-                        title={title}
-                        titleTypographyProps={{ variant: "body1" }}
-                        style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
-                    />
-                    <CardActions style={{ padding: "0", justifyContent: "space-between" }}>
-                        <Box display="flex" alignItems="center">
-                            <AccessTimeIcon color="action" fontSize="small" />
-                            <Typography variant="caption" color="textSecondary" style={{ marginLeft: "8px" }}>
-                                {item.durationInMinutes}
-                            </Typography>
-                        </Box>
-                        <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >
-                            <EuroIcon color="action" fontSize="small" style={{ marginRight: "5px" }} />
-                            <Typography variant="body2" align="right">
-                                {item.price}
-                            </Typography>
-                        </Box>
-                    </CardActions>
-                </Card>
-                
-            })}
-
+            <GarageServiceCardOther addCartItem={(item) => setCartItems([...cartItems, item])} />
+            {garageServices?.map((item) =>
+                <GarageServiceCard
+                    service={item}
+                    selectedItem={selectedItem}
+                    setSelectedItem={setSelectedItem}
+                    addCartItem={(item) => setCartItems([...cartItems, item])}
+                />
+            )}
             <GarageServiceDialog
                 isOpen={drawerOpen}
                 onClose={() => setDialogOpen(false)}
@@ -190,9 +147,6 @@ export default ({ }: IProps) => {
                 mode={dialogMode}
                 service={currentService}
             />
-
-            
-
         </>
     );
 }
