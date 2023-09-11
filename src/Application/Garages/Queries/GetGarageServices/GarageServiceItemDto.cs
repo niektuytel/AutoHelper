@@ -12,9 +12,9 @@ public class GarageServiceItemDto : IMapFrom<GarageServiceItem>
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Like "Oil Change", "Wheel Alignment", etc.
+    /// Type of the service
     /// </summary>
-    public string Title { get; set; }
+    public GarageServiceType Type { get; set; }
 
     /// <summary>
     /// Like: "Change the oil in the engine", "Align the wheels", etc.
@@ -24,7 +24,7 @@ public class GarageServiceItemDto : IMapFrom<GarageServiceItem>
     /// <summary>
     /// Duration of the service in minutes
     /// </summary>
-    public int Duration { get; set; }
+    public int DurationInMinutes { get; set; }
 
     /// <summary>
     /// Price of the service

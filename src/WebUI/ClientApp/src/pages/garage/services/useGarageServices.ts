@@ -12,7 +12,7 @@ import { GetGarageClient } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
-function useGarageServices() {
+function useGarageServices(onResponse: (data: any) => void) {
     const { userRole } = useUserRole()
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
@@ -60,6 +60,7 @@ function useGarageServices() {
 
             // Update the garageSettings in the cache after creating
             queryClient.setQueryData(['garageServices'], [...garageServices!, response]);
+            onResponse(response);
         },
         onError: (response) => {
             console.error(response)
@@ -81,6 +82,7 @@ function useGarageServices() {
             });
 
             queryClient.setQueryData(['garageServices'], updatedGarageServices);
+            onResponse(response);
         },
         onError: (response) => {
             console.error(response)
@@ -90,10 +92,10 @@ function useGarageServices() {
 
     const createService = (data: any) => {
         var command = new CreateGarageServiceCommand();
-        command.title = data.title;
+        command.type = data.type;
         command.description = data.description;
         command.price = data.price;
-        command.duration = data.duration;
+        command.durationInMinutes = data.durationInMinutes;
 
         console.log(command.toJSON());
         createMutation.mutate(command);
@@ -102,10 +104,10 @@ function useGarageServices() {
     const updateService = (data: any) => {
         var command = new UpdateGarageServiceCommand();
         command.id = data.id;
-        command.title = data.title;
+        command.type = data.type;
         command.description = data.description;
         command.price = data.price;
-        command.duration = data.duration;
+        command.durationInMinutes = data.durationInMinutes;
 
         console.log(command.toJSON());
         updateMutation.mutate(command);

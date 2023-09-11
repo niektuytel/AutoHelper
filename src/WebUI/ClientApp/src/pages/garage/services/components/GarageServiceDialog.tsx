@@ -13,36 +13,32 @@ import {
     InputAdornment,
     MenuItem,
     FormControl,
-    InputLabel
+    InputLabel,
+    CircularProgress
 } from "@mui/material";
 import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
-import { CreateGarageServiceCommand } from "../../../../app/web-api-client";
+import { CreateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServices";
+import { getDefaultCreateGarageServices, getTitleForServiceType } from "../defaultGarageService";
 
 // own imports
 
 
-// Sample data
-const defaultAvailableServices: CreateGarageServiceCommand[] = [
-    new CreateGarageServiceCommand({ title: "Service 1", description: "This is service 1 description.", duration: 25, price: 100.01 }),
-    new CreateGarageServiceCommand({ title: "Service 2", description: "This is service 2 description.", duration: 24, price: 90.01 }),
-    new CreateGarageServiceCommand({ title: "Service 3", description: "This is service 3 description.", duration: 23, price: 80.01 }),
-    new CreateGarageServiceCommand({ title: "Service 4", description: "This is service 4 description.", duration: 22, price: 70.01 }),
-    new CreateGarageServiceCommand({ title: "Service 5", description: "This is service 5 description.", duration: 21, price: 60.01 }),
-];
 
 interface IProps {
     isOpen: boolean;
     onClose: () => void;
-    onResponse: (data: any) => void;
+    createService: (data: any) => void;
+    updateService: (data: any) => void;
+    loading: boolean;
     mode: 'create' | 'edit';
     service?: CreateGarageServiceCommand;
 }
 
-export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
+export default ({ isOpen, onClose, mode, service, createService, updateService, loading }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -52,17 +48,17 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
     const [drawerOpen, setDialogOpen] = useState<boolean>(false);
     const [timeUnit, setTimeUnit] = useState("minutes");
 
-    const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
-    const { loading, isError, createService, updateService } = useGarageServices();
 
-    // Additional state variables
+    const defaultAvailableServices = getDefaultCreateGarageServices(t);
+    const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
 
     useEffect(() => {
         if (mode === 'edit' && service) {
             setDialogMode('edit');
-            setValue("title", service.title);
+            setValue("title", getTitleForServiceType(t, service.type!));
+            setValue("type", service.type);
             setValue("description", service.description);
-            setValue("duration", service.duration);
+            setValue("durationInMinutes", service.durationInMinutes);
             setValue("price", service.price);
         }
         else {
@@ -71,18 +67,17 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
         }
     }, [service, mode, setValue]);
 
-    type ServiceProperty = 'description' | 'duration' | 'price';
+    type ServiceProperty = 'type' | 'description' | 'durationInMinutes' | 'price';
 
     const handleTitleChange = (event: any) => {
-        const service = defaultAvailableServices.find(item => item.title === event.target.value) as CreateGarageServiceCommand;
+        const service = defaultAvailableServices.find(item => item.type === event.target.value) as CreateGarageServiceCommand;
         if (!service) return;
 
         const prevService = selectedService;
         setSelectedService(service);
 
-        const propertiesToUpdate: ServiceProperty[] = ['description', 'duration', 'price'];
         const item = watch();
-
+        const propertiesToUpdate: ServiceProperty[] = ['type', 'description', 'durationInMinutes', 'price'];
         propertiesToUpdate.forEach(property => {
             if (!item[property] || (prevService && item[property] == prevService[property])) {
                 setValue(property, service[property]);
@@ -92,8 +87,6 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
 
 
     const onSubmit = (data: any) => {
-        console.log(data);
-
         if (mode === 'edit') {
             updateService(data);
         } else {
@@ -122,12 +115,12 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogContent dividers>
                         <Controller
-                            name="title"
+                            name="type"
                             control={control}
                             rules={{ required: t("Title is required!") }}
                             defaultValue=""
                             render={({ field }) => (
-                                <FormControl fullWidth variant="outlined" error={Boolean(errors.title)}>
+                                <FormControl fullWidth variant="outlined" error={Boolean(errors.type)}>
                                     <InputLabel htmlFor="select-title">{t("Title")}</InputLabel>
                                     <Select
                                         {...field}
@@ -137,9 +130,9 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
                                         }}
                                         label={t("Title")}
                                     >
-                                        {defaultAvailableServices.map(service => (
-                                            <MenuItem key={service.title} value={service.title}>
-                                                {service.title}
+                                        {defaultAvailableServices.map(item => (
+                                            <MenuItem key={item.type} value={item.type}>
+                                                {getTitleForServiceType(t, item.type!)}
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -167,7 +160,7 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
                             )}
                         />
                         <Controller
-                            name="duration"
+                            name="durationInMinutes"
                             control={control}
                             rules={{ required: t("Duration is required!") }}
                             defaultValue=""
@@ -180,8 +173,8 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
                                     type="number"
                                     inputProps={{ min: 0 }}
                                     variant="outlined"
-                                    error={Boolean(errors.duration)}
-                                    helperText={errors.duration ? t(errors.duration.message as string) : ' '}
+                                    error={Boolean(errors.durationInMinutes)}
+                                    helperText={errors.durationInMinutes ? t(errors.durationInMinutes.message as string) : ' '}
                                     margin="normal"
                                      
                                     InputProps={{
@@ -258,9 +251,15 @@ export default ({ isOpen, onClose, onResponse, mode, service }: IProps) => {
                         <Button onClick={() => setDialogOpen(false)}>
                             {t("Cancel")}
                         </Button>
-                        <Button type="submit" variant="contained" color="primary">
-                            {t(dialogMode === 'create' ? "Create" : "Update")}
-                        </Button>
+                        {loading ?
+                            <Button variant="contained" disabled style={{ color: 'white' }}>
+                                <CircularProgress size={24} color="inherit" />
+                            </Button>
+                            :
+                            <Button type="submit" variant="contained" color="primary">
+                                {t(dialogMode === 'create' ? "Create" : "Update")}
+                            </Button>
+                        }
                     </DialogActions>
                 </form>
             </Dialog>

@@ -783,9 +783,9 @@ export interface IGarageEmployeeItem extends IBaseAuditableEntity {
 
 export class GarageServiceItemDto implements IGarageServiceItemDto {
     id?: string;
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
     status?: number;
 
@@ -801,9 +801,9 @@ export class GarageServiceItemDto implements IGarageServiceItemDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.title = _data["title"];
+            this.type = _data["type"];
             this.description = _data["description"];
-            this.duration = _data["duration"];
+            this.durationInMinutes = _data["durationInMinutes"];
             this.price = _data["price"];
             this.status = _data["status"];
         }
@@ -819,9 +819,9 @@ export class GarageServiceItemDto implements IGarageServiceItemDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["title"] = this.title;
+        data["type"] = this.type;
         data["description"] = this.description;
-        data["duration"] = this.duration;
+        data["durationInMinutes"] = this.durationInMinutes;
         data["price"] = this.price;
         data["status"] = this.status;
         return data;
@@ -830,11 +830,20 @@ export class GarageServiceItemDto implements IGarageServiceItemDto {
 
 export interface IGarageServiceItemDto {
     id?: string;
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
     status?: number;
+}
+
+export enum GarageServiceType {
+    Other = 0,
+    Inspection = 1,
+    SmallMaintenance = 2,
+    GreatMaintenance = 3,
+    AirConditioningService = 4,
+    SeasonalTireChange = 5,
 }
 
 export class GarageSettings implements IGarageSettings {
@@ -1172,9 +1181,9 @@ export interface IUpdateGarageSettingsCommand {
 export class GarageServiceItem extends BaseAuditableEntity implements IGarageServiceItem {
     userId?: string;
     garageId?: string;
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
     status?: number;
 
@@ -1187,9 +1196,9 @@ export class GarageServiceItem extends BaseAuditableEntity implements IGarageSer
         if (_data) {
             this.userId = _data["userId"];
             this.garageId = _data["garageId"];
-            this.title = _data["title"];
+            this.type = _data["type"];
             this.description = _data["description"];
-            this.duration = _data["duration"];
+            this.durationInMinutes = _data["durationInMinutes"];
             this.price = _data["price"];
             this.status = _data["status"];
         }
@@ -1206,9 +1215,9 @@ export class GarageServiceItem extends BaseAuditableEntity implements IGarageSer
         data = typeof data === 'object' ? data : {};
         data["userId"] = this.userId;
         data["garageId"] = this.garageId;
-        data["title"] = this.title;
+        data["type"] = this.type;
         data["description"] = this.description;
-        data["duration"] = this.duration;
+        data["durationInMinutes"] = this.durationInMinutes;
         data["price"] = this.price;
         data["status"] = this.status;
         super.toJSON(data);
@@ -1219,18 +1228,18 @@ export class GarageServiceItem extends BaseAuditableEntity implements IGarageSer
 export interface IGarageServiceItem extends IBaseAuditableEntity {
     userId?: string;
     garageId?: string;
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
     status?: number;
 }
 
 export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     id?: string;
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
 
     constructor(data?: IUpdateGarageServiceCommand) {
@@ -1245,9 +1254,9 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.title = _data["title"];
+            this.type = _data["type"];
             this.description = _data["description"];
-            this.duration = _data["duration"];
+            this.durationInMinutes = _data["durationInMinutes"];
             this.price = _data["price"];
         }
     }
@@ -1262,9 +1271,9 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["title"] = this.title;
+        data["type"] = this.type;
         data["description"] = this.description;
-        data["duration"] = this.duration;
+        data["durationInMinutes"] = this.durationInMinutes;
         data["price"] = this.price;
         return data;
     }
@@ -1272,16 +1281,16 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
 
 export interface IUpdateGarageServiceCommand {
     id?: string;
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
 }
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
 
     constructor(data?: ICreateGarageServiceCommand) {
@@ -1295,9 +1304,9 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.title = _data["title"];
+            this.type = _data["type"];
             this.description = _data["description"];
-            this.duration = _data["duration"];
+            this.durationInMinutes = _data["durationInMinutes"];
             this.price = _data["price"];
         }
     }
@@ -1311,18 +1320,18 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
+        data["type"] = this.type;
         data["description"] = this.description;
-        data["duration"] = this.duration;
+        data["durationInMinutes"] = this.durationInMinutes;
         data["price"] = this.price;
         return data;
     }
 }
 
 export interface ICreateGarageServiceCommand {
-    title?: string;
+    type?: GarageServiceType;
     description?: string;
-    duration?: number;
+    durationInMinutes?: number;
     price?: number;
 }
 

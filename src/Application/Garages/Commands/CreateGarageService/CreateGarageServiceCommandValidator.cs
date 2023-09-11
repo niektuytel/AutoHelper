@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Domain.Entities;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,16 +13,15 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
     {
         _context = context;
 
-        RuleFor(v => v.Title)
-            .NotEmpty().WithMessage("Title is required.")
-            .MaximumLength(200).WithMessage("Title must not exceed 200 characters.")
-            .MustAsync(TitleNotAlreadyExist).WithMessage(c => $"A service with title {c.Title} already exists for this user.");
+        RuleFor(v => v.Type)
+            .NotEmpty().WithMessage("Type is required.")
+            .MustAsync(TitleNotAlreadyExist).WithMessage(c => $"A service with title {c.Type} already exists for this garage.");
 
         RuleFor(v => v.Description)
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(200).WithMessage("Description must not exceed 200 characters.");
 
-        RuleFor(v => v.Duration)
+        RuleFor(v => v.DurationInMinutes)
             .NotEmpty().WithMessage("Duration is required.");
 
         RuleFor(v => v.Price)
@@ -42,7 +42,7 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             });
     }
 
-    private async Task<bool> TitleNotAlreadyExist(CreateGarageServiceCommand request, string title, CancellationToken cancellationToken)
+    private async Task<bool> TitleNotAlreadyExist(CreateGarageServiceCommand request, GarageServiceType type, CancellationToken cancellationToken)
     {
         var garage = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
         if (garage == null) return true; // This check is redundant but keeping for clarity
@@ -50,7 +50,7 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
         var entity = await _context.GarageServices.FirstOrDefaultAsync(x =>
             x.GarageId == garage.Id &&
             x.UserId == request.UserId &&
-            x.Title == title
+            x.Type == type
         );
 
         return entity == null;

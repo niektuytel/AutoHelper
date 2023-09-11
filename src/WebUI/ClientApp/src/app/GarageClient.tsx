@@ -1,6 +1,6 @@
 ﻿// INFO:
 // Used to get user id to pass the api, nswag does not integrate this functionality
-// to pass the bearer token to the api
+// to pass the bearer token(IDToken) to the api with user specific data 
 
 import { GarageClient, GarageRegisterClient } from "./web-api-client";
 

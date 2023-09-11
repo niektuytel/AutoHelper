@@ -468,13 +468,13 @@
             "type": "string",
             "format": "guid"
           },
-          "title": {
-            "type": "string"
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
           },
           "description": {
             "type": "string"
           },
-          "duration": {
+          "durationInMinutes": {
             "type": "integer",
             "format": "int32"
           },
@@ -487,6 +487,26 @@
             "format": "int32"
           }
         }
+      },
+      "GarageServiceType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Inspection",
+          "SmallMaintenance",
+          "GreatMaintenance",
+          "AirConditioningService",
+          "SeasonalTireChange"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
       },
       "GarageSettings": {
         "type": "object",
@@ -689,13 +709,13 @@
                 "type": "string",
                 "format": "guid"
               },
-              "title": {
-                "type": "string"
+              "type": {
+                "$ref": "#/components/schemas/GarageServiceType"
               },
               "description": {
                 "type": "string"
               },
-              "duration": {
+              "durationInMinutes": {
                 "type": "integer",
                 "format": "int32"
               },
@@ -719,13 +739,13 @@
             "type": "string",
             "format": "guid"
           },
-          "title": {
-            "type": "string"
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
           },
           "description": {
             "type": "string"
           },
-          "duration": {
+          "durationInMinutes": {
             "type": "integer",
             "format": "int32"
           },
@@ -739,13 +759,13 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "title": {
-            "type": "string"
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
           },
           "description": {
             "type": "string"
           },
-          "duration": {
+          "durationInMinutes": {
             "type": "integer",
             "format": "int32"
           },

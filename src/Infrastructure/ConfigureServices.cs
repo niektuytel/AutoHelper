@@ -1,4 +1,6 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.Globalization;
+using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Infrastructure.Common;
 using AutoHelper.Infrastructure.Files;
 using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence;
@@ -15,6 +17,7 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        CultureConfig.SetGlobalCultureToNL();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))

@@ -16,9 +16,9 @@ public class GarageServiceItem : BaseAuditableEntity
     public Guid GarageId { get; set; }
 
     /// <summary>
-    /// Like "Oil Change", "Wheel Alignment", etc.
+    /// Like: Inspection, Repair, Maintenance, etc.
     /// </summary>
-    public string Title { get; set; }
+    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
 
     /// <summary>
     /// Like: "Change the oil in the engine", "Align the wheels", etc.
@@ -28,7 +28,7 @@ public class GarageServiceItem : BaseAuditableEntity
     /// <summary>
     /// Duration of the service in minutes
     /// </summary>
-    public int Duration { get; set; }
+    public int DurationInMinutes { get; set; }
 
     /// <summary>
     /// Price of the service

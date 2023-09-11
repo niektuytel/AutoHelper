@@ -40,12 +40,12 @@ export default ({ }: IProps) => {
 
     return (
         <>
-            {(showOnMaintanance || showOnInfo) && <VehicleHeaderBar licence_plate={licence_plate} />}
+            {(showOnMaintanance || showOnInfo) && <VehicleHeaderBar licence_plate={licence_plate || ""} />}
             {!showOnInfo && 
                 <GradientBox>
                     <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center" }}>
                         {showOnMaintanance ?
-                            <PlacesHeadView licence_plate={licence_plate}/>
+                            <PlacesHeadView licence_plate={licence_plate || ""}/>
                             :
                             <LicensePlateHeadView/>
                         }
@@ -54,7 +54,7 @@ export default ({ }: IProps) => {
             }
             <Container maxWidth="lg">
                 {showOnInfo ?
-                    <VehicleInfoView licence_plate={licence_plate}/>
+                    <VehicleInfoView licence_plate={licence_plate || ""}/>
                     :
                     <AutoHelperAboutView/>
                 }

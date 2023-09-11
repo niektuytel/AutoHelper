@@ -21,11 +21,11 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
     [JsonIgnore]
     public string UserId { get; set; }
 
-    public string Title { get; set; }
+    public GarageServiceType Type { get; set; }
 
     public string Description { get; set; }
 
-    public int Duration { get; set; }
+    public int DurationInMinutes { get; set; }
 
     public decimal Price { get; set; }
 
@@ -50,9 +50,9 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
             throw new NotFoundException(nameof(GarageServiceItem), request.Id);
         }
 
-        entity.Title = request.Title;
+        entity.Type = request.Type;
         entity.Description = request.Description;
-        entity.Duration = request.Duration;
+        entity.DurationInMinutes = request.DurationInMinutes;
         entity.Price = request.Price;
 
         // If you wish to use domain events, then you can add them here:
