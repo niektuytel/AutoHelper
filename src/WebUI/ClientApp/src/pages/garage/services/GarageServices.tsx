@@ -26,13 +26,13 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
 import useGarageServices from "./useGarageServices";
 import { useNavigate, useParams } from "react-router";
-import { CreateGarageServiceCommand, GarageServiceType } from "../../../app/web-api-client";
+import { GarageServiceItemDto , GarageServiceType } from "../../../app/web-api-client";
 import GarageServiceDialog from "./components/GarageServiceDialog";
 import { getTitleForServiceType } from "./defaultGarageService";
 import { COLORS } from "../../../constants/colors";
 import GarageServiceCardOther from "./components/GarageServiceCardOther";
 import GarageServiceCard from "./components/GarageServiceCard";
-import ConfirmDeleteDialog from "./components/ConfirmDeleteDialog";
+import GarageServiceDeleteDialog from "./components/GarageServiceDeleteDialog";
 import GarageServicesCartItemsBar from "./components/GarageServicesCartItemsBar";
 
 // own imports
@@ -48,33 +48,40 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [cartItems, setCartItems] = useState<CreateGarageServiceCommand[]>([]);
-    const [drawerOpen, setDialogOpen] = useState<boolean>(false);
-    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+    const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
 
 
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-    const [currentService, setCurrentService] = useState<CreateGarageServiceCommand | undefined>(undefined);
+    const [currentService, setCurrentService] = useState<GarageServiceItemDto  | undefined>(undefined);
 
 
     const handleFormSubmit = (data: any) => {
-        setDialogOpen(false);
-        // Handle the form submission logic here...
+        if (dialogMode == "create" || dialogMode == "edit") {
+            setDialogOpen(false);
+        }
+
+        if (selectedItem) {
+            setDialogDeleteOpen(false);
+        }
+
+        setSelectedItem(undefined);
     };
 
-    const { loading, createService, updateService, isError, garageServices } = useGarageServices(handleFormSubmit);
+    const { loading, createService, updateService, deleteService, isError, garageServices } = useGarageServices(handleFormSubmit);
 
     // Sample data
     const handleAddClick = () => {
-        setCurrentService(undefined);
+        setSelectedItem(undefined);
         setDialogMode("create");
         setDialogOpen(true);
     }
 
     const handleEditClick = () => {
-        if (selectedItem) return;
+        if (!selectedItem) return;
 
-        setCurrentService(selectedItem);
+        setSelectedItem(selectedItem);
         setDialogMode("edit");
         setDialogOpen(true);
     }
@@ -82,7 +89,7 @@ export default ({ }: IProps) => {
     const handleDeleteClick = () => {
         if (!selectedItem) return;
 
-        setConfirmDeleteOpen(true);
+        setDialogDeleteOpen(true);
     }
 
     return (
@@ -131,27 +138,30 @@ export default ({ }: IProps) => {
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
             <GarageServiceCardOther addCartItem={(item) => setCartItems([...cartItems, item])} />
-            {garageServices?.map((item) =>
+            {garageServices?.map((item) => item &&
                 <GarageServiceCard
+                    key={`service-card-${item.id}`}
                     service={item}
                     selectedItem={selectedItem}
                     setSelectedItem={setSelectedItem}
                     addCartItem={(item) => setCartItems([...cartItems, item])}
                 />
             )}
-            <GarageServicesCartItemsBar items={cartItems} />
-            <ConfirmDeleteDialog
-                confirmDeleteOpen={confirmDeleteOpen}
-                setConfirmDeleteOpen={setConfirmDeleteOpen}
+            <GarageServiceDeleteDialog
+                service={selectedItem}
+                confirmDeleteOpen={dialogDeleteOpen}
+                setConfirmDeleteOpen={setDialogDeleteOpen}
+                deleteService={deleteService}
+                loading={loading}
             />
             <GarageServiceDialog
-                isOpen={drawerOpen}
-                onClose={() => setDialogOpen(false)}
+                mode={dialogMode}
+                service={selectedItem}
+                dialogOpen={dialogOpen}
+                setDialogOpen={setDialogOpen}
                 createService={createService}
                 updateService={updateService}
                 loading={loading}
-                mode={dialogMode}
-                service={currentService}
             />
         </>
     );

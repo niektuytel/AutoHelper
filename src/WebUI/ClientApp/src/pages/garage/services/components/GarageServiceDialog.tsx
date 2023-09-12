@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
-import { CreateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
+import { UpdateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServices";
 import { getDefaultCreateGarageServices, getTitleForServiceType } from "../defaultGarageService";
 
@@ -29,23 +29,22 @@ import { getDefaultCreateGarageServices, getTitleForServiceType } from "../defau
 
 
 interface IProps {
-    isOpen: boolean;
-    onClose: () => void;
+    mode: 'create' | 'edit';
+    service?: UpdateGarageServiceCommand;
+    dialogOpen: boolean;
+    setDialogOpen: (dialogOpen: boolean) => void;
     createService: (data: any) => void;
     updateService: (data: any) => void;
     loading: boolean;
-    mode: 'create' | 'edit';
-    service?: CreateGarageServiceCommand;
 }
 
-export default ({ isOpen, onClose, mode, service, createService, updateService, loading }: IProps) => {
+export default ({ dialogOpen, setDialogOpen, mode, service, createService, updateService, loading }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [selectedService, setSelectedService] = useState<CreateGarageServiceCommand | undefined>(service);
+    const [selectedService, setSelectedService] = useState<UpdateGarageServiceCommand | undefined>(service);
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
-    const [drawerOpen, setDialogOpen] = useState<boolean>(false);
     const [timeUnit, setTimeUnit] = useState("minutes");
 
 
@@ -55,6 +54,7 @@ export default ({ isOpen, onClose, mode, service, createService, updateService, 
     useEffect(() => {
         if (mode === 'edit' && service) {
             setDialogMode('edit');
+            setValue("id", service.id);
             setValue("title", getTitleForServiceType(t, service.type!));
             setValue("type", service.type);
             setValue("description", service.description);
@@ -70,7 +70,7 @@ export default ({ isOpen, onClose, mode, service, createService, updateService, 
     type ServiceProperty = 'type' | 'description' | 'durationInMinutes' | 'price';
 
     const handleTitleChange = (event: any) => {
-        const service = defaultAvailableServices.find(item => item.type === event.target.value) as CreateGarageServiceCommand;
+        const service = defaultAvailableServices.find(item => item.type === event.target.value) as UpdateGarageServiceCommand;
         if (!service) return;
 
         const prevService = selectedService;
@@ -97,8 +97,8 @@ export default ({ isOpen, onClose, mode, service, createService, updateService, 
     return (
         <>
             <Dialog
-                open={isOpen}
-                onClose={onClose}
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
                 fullWidth
                 maxWidth="sm"
                 fullScreen={isMobile}

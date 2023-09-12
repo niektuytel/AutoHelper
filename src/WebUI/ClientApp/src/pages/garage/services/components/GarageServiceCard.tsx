@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { CreateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
+import { GarageServiceType, GarageServiceItemDto } from "../../../../app/web-api-client";
 import { COLORS } from "../../../../constants/colors";
 import { getTitleForServiceType } from "../defaultGarageService";
 
@@ -32,45 +32,24 @@ import { getTitleForServiceType } from "../defaultGarageService";
 
 
 interface IProps {
-    service: CreateGarageServiceCommand;
-    selectedItem: CreateGarageServiceCommand;
-    setSelectedItem: (service: CreateGarageServiceCommand) => void;
-    addCartItem: (service: CreateGarageServiceCommand) => void;
+    service: GarageServiceItemDto;
+    selectedItem: GarageServiceItemDto;
+    setSelectedItem: (service: GarageServiceItemDto) => void;
+    addCartItem: (service: GarageServiceItemDto) => void;
 }
 
 export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
-    //const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    //const [timeUnit, setTimeUnit] = useState("minutes");
 
-
-    //const [otherServiceDescription, setOtherServiceDescription] = useState("");
-    //const [otherServiceDuration, setOtherServiceDuration] = useState(0);
-    //const [otherServicePrice, setOtherServicePrice] = useState(0);
-
-    //const convertDurationToMinutes = () => {
-    //    switch (timeUnit) {
-    //        case 'hours': return service.durationInMinutes / 60;
-    //        case 'days': return service.durationInMinutes / (24 * 60);
-    //        default: return service.durationInMinutes;
-    //    }
-    //};
-
-    //const handleAddItem = () => {
-    //    addCartItem(new CreateGarageServiceCommand({
-    //        type: GarageServiceType.Other,
-    //        description: otherServiceDescription,
-    //        durationInMinutes: convertDurationToMinutes(),
-    //        price: otherServicePrice
-    //    }));
-    //};
-
-    const title = getTitleForServiceType(t, service.type!, service.description);
+    const title = getTitleForServiceType(
+        t,
+        service.type ? service.type : GarageServiceType.Other,
+        service.description
+    );
 
     return (
         <Card
-            key={`service-card-${title}`}
             style={{
                 marginBottom: "10px",
                 padding: "8px",

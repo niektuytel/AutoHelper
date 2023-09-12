@@ -3,6 +3,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Security;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
+using AutoHelper.Application.Garages.Commands.DeleteGarageService;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
 using AutoHelper.Application.Garages.Models;
@@ -72,5 +73,13 @@ public class GarageController : ApiControllerBase
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);
     }
+
+    [HttpPut($"{nameof(DeleteService)}/{{id}}")]
+    public async Task<GarageServiceItem> DeleteService([FromRoute] Guid id)
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(new DeleteGarageServiceCommand(id, userId));
+    }
+
 
 }

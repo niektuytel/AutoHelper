@@ -165,6 +165,38 @@
         }
       }
     },
+    "/api/Garage/DeleteService/{id}": {
+      "put": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_DeleteService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GarageRegister/Create": {
       "post": {
         "tags": [

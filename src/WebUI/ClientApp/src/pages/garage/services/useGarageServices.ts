@@ -90,6 +90,23 @@ function useGarageServices(onResponse: (data: any) => void) {
         }
     });
 
+    const deleteMutation = useMutation(garageClient.deleteService.bind(garageClient), {
+        onSuccess: (response) => {
+            dispatch(showOnSuccess("Garage service has been deleted!"));
+
+            // Delete the garageSettings in the cache after updating
+            const updatedGarageServices = garageServices?.filter((service) => service.id !== response.id);
+
+            console.log(updatedGarageServices);
+            queryClient.setQueryData(['garageServices'], updatedGarageServices);
+            onResponse(response);
+        },
+        onError: (response) => {
+            console.error(response)
+            //guardHttpResponse(response, setError, t, dispatch);
+        }
+    });
+
     const createService = (data: any) => {
         var command = new CreateGarageServiceCommand();
         command.type = data.type;
@@ -113,10 +130,15 @@ function useGarageServices(onResponse: (data: any) => void) {
         updateMutation.mutate(command);
     }
 
+    const deleteService = (data: any) => {
+        console.log(data);
+        deleteMutation.mutate(data.id);
+    }
+
     // only reset the form when the data is loaded
-    const loading = isLoading || createMutation.isLoading || updateMutation.isLoading;
+    const loading = isLoading || createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading;
     return {
-        loading, isError, garageServices, createService, updateService
+        loading, isError, garageServices, createService, updateService, deleteService
     }
 }
 
