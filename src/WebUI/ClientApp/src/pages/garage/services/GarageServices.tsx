@@ -32,6 +32,8 @@ import { getTitleForServiceType } from "./defaultGarageService";
 import { COLORS } from "../../../constants/colors";
 import GarageServiceCardOther from "./components/GarageServiceCardOther";
 import GarageServiceCard from "./components/GarageServiceCard";
+import ConfirmDeleteDialog from "./components/ConfirmDeleteDialog";
+import GarageServicesCartItemsBar from "./components/GarageServicesCartItemsBar";
 
 // own imports
 
@@ -46,8 +48,9 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [cartItems, setCartItems] = useState<any[]>([]);
+    const [cartItems, setCartItems] = useState<CreateGarageServiceCommand[]>([]);
     const [drawerOpen, setDialogOpen] = useState<boolean>(false);
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
 
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -69,19 +72,17 @@ export default ({ }: IProps) => {
     }
 
     const handleEditClick = () => {
-        if (selectedItem) {
-            setCurrentService(selectedItem);
-            setDialogMode("edit");
-            setDialogOpen(true);
-        }
+        if (selectedItem) return;
+
+        setCurrentService(selectedItem);
+        setDialogMode("edit");
+        setDialogOpen(true);
     }
 
     const handleDeleteClick = () => {
-        if (selectedItem) {
-            //setDialogMode("delete");
-            //setCurrentService(selectedItem); // Assuming `selectedItem` is the service you want to delete.
-            //setConfirmDeleteOpen(true);
-        }
+        if (!selectedItem) return;
+
+        setConfirmDeleteOpen(true);
     }
 
     return (
@@ -138,6 +139,11 @@ export default ({ }: IProps) => {
                     addCartItem={(item) => setCartItems([...cartItems, item])}
                 />
             )}
+            <GarageServicesCartItemsBar items={cartItems} />
+            <ConfirmDeleteDialog
+                confirmDeleteOpen={confirmDeleteOpen}
+                setConfirmDeleteOpen={setConfirmDeleteOpen}
+            />
             <GarageServiceDialog
                 isOpen={drawerOpen}
                 onClose={() => setDialogOpen(false)}
