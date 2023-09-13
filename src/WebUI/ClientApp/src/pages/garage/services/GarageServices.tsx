@@ -34,6 +34,8 @@ import GarageServiceCardOther from "./components/GarageServiceCardOther";
 import GarageServiceCard from "./components/GarageServiceCard";
 import GarageServiceDeleteDialog from "./components/GarageServiceDeleteDialog";
 import GarageServicesCartItemsBar from "./components/GarageServicesCartItemsBar";
+import { useDispatch } from "react-redux";
+import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 
 // own imports
 
@@ -44,6 +46,7 @@ interface IProps {
 export default ({ }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -91,6 +94,17 @@ export default ({ }: IProps) => {
 
         setDialogDeleteOpen(true);
     }
+
+    const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
+        if (cartItems.some(cartItem => cartItem.id === itemToAdd.id))
+        {
+            dispatch(showOnError(t("Cart item already exist")));
+            return;
+        } 
+
+        setCartItems([...cartItems, itemToAdd]);
+    }
+
 
     return (
         <>
@@ -144,9 +158,15 @@ export default ({ }: IProps) => {
                     service={item}
                     selectedItem={selectedItem}
                     setSelectedItem={setSelectedItem}
-                    addCartItem={(item) => setCartItems([...cartItems, item])}
+                    addCartItem={tryAddCartItem}
                 />
             )}
+            {cartItems.length > 0 && 
+                <GarageServicesCartItemsBar
+                    items={cartItems}
+                    setItems={setCartItems}
+                />
+            }
             <GarageServiceDeleteDialog
                 service={selectedItem}
                 confirmDeleteOpen={dialogDeleteOpen}
