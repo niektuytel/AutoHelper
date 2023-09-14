@@ -22,7 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
 import { UpdateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServices";
-import { getDefaultCreateGarageServices, getTitleForServiceType } from "../defaultGarageService";
+import { getDefaultCreateGarageServices, getTitleForServiceType } from "../../defaultGarageService";
 
 // own imports
 

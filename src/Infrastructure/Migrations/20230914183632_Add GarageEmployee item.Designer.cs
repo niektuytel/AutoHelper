@@ -4,6 +4,7 @@ using AutoHelper.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230914183632_Add GarageEmployee item")]
+    partial class AddGarageEmployeeitem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -211,14 +214,11 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.ToTable("GarageEmployeeWorkExperienceItem");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageEmployeeWorkSchemaItem", b =>
+            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageEmployeeWorkScheduleItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
@@ -229,22 +229,30 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<Guid?>("GarageEmployeeItemId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsAllDayEvent")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("StartDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("WeekOfYear")
-                        .HasColumnType("int");
+                    b.Property<string>("TaskDescription")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GarageEmployeeItemId");
 
-                    b.ToTable("GarageEmployeeWorkSchemaItem");
+                    b.ToTable("GarageEmployeeWorkScheduleItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.GarageItem", b =>
@@ -901,7 +909,7 @@ namespace AutoHelper.Infrastructure.Migrations
                         .HasForeignKey("GarageEmployeeItemId");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageEmployeeWorkSchemaItem", b =>
+            modelBuilder.Entity("AutoHelper.Domain.Entities.GarageEmployeeWorkScheduleItem", b =>
                 {
                     b.HasOne("AutoHelper.Domain.Entities.GarageEmployeeItem", null)
                         .WithMany("WorkSchema")

@@ -5,7 +5,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import { COLORS } from '../../../../constants/colors';
 import { GarageServiceItemDto } from '../../../../app/web-api-client';
-import { getTitleForServiceType } from '../defaultGarageService';
+import { getTitleForServiceType } from '../../defaultGarageService';
 
 interface IProps {
     items: GarageServiceItemDto[];

@@ -1,5 +1,5 @@
 ﻿import { TFunction, useTranslation } from "react-i18next";
-import { CreateGarageServiceCommand, GarageServiceType } from "../../../app/web-api-client";
+import { CreateGarageServiceCommand, GarageServiceType } from "../../app/web-api-client";
 
 
 export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceType, altValue: string = "")

@@ -38,6 +38,6 @@ public class GarageServicesSettingsItem : BaseEntity
     /// <summary>
     /// The maximum amount of deliveries that can be planned automaticly.
     /// </summary>
-    public decimal MaxAutomaticPlannedDeliveries { get; set; } = 5;
+    public int MaxAutomaticPlannedDeliveries { get; set; } = 5;
 
 }

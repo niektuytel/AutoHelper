@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AutoHelper.Domain.Entities;
 
-public class ContactItem : BaseAuditableEntity
+public class ContactItem : BaseEntity
 {
     [Required]
     public string FullName { get; set; }
@@ -13,9 +13,4 @@ public class ContactItem : BaseAuditableEntity
     [EmailAddress]
     public string Email { get; set; }
 
-    public string Responsibility { get; set; }
-
-    //public Guid GarageItemId { get; set; }
-    //[ForeignKey("GarageItemId")]
-    //public GarageItem Garage { get; set; }
 }

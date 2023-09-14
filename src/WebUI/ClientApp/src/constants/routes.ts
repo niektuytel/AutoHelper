@@ -5,7 +5,7 @@ export const ROUTES = {
         OVERVIEW: "/garage/overview",
         AGENDA: "/garage/agenda",
         SERVICES: "/garage/services",
-        COLLEAGUES: "/garage/colleagues",
+        EMPLOYEES: "/garage/employees",
         SETTINGS: "/garage/settings"
     },
     USER: {

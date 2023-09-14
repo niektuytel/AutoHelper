@@ -28,9 +28,5 @@ public class GarageItem : BaseAuditableEntity
 
     public ICollection<ContactItem> Contacts { get; set; } = new List<ContactItem>();
 
-    public ICollection<GarageEmployeeItem> Employees { get; set; } = new List<GarageEmployeeItem>();
-
-    public ICollection<GarageServiceItem> Services { get; set; } = new List<GarageServiceItem>();
-
     public ICollection<VehicleItem> Vehicles { get; set; } = new List<VehicleItem>();
 }

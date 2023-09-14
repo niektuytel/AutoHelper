@@ -8,22 +8,8 @@ public interface IApplicationDbContext
 {
     DbSet<GarageItem> Garages { get; }
     DbSet<GarageServiceItem> GarageServices { get; }
-    //DbSet<BankingInfoItem> BankingInfos { get; }
-    //DbSet<GarageEmployeeItem> GarageEmployees { get; }
-    //DbSet<GarageServiceItem> GarageServices { get; }
-    //DbSet<LocationItem> Locations { get; }
-    //DbSet<BusinessOwnerItem> BusinessOwners { get; }
-    //DbSet<VehicleItem> Vehicles { get; }
-    //DbSet<MaintenanceItem> Maintenances { get; }
-    //DbSet<ContactItem> Contacts { get; }
-    //DbSet<VehicleOwnerItem> VehicleOwners { get; }
-    //DbSet<OrderItem> Orders { get; }
+    DbSet<GarageEmployeeItem> GarageEmployees { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-
-    //// Deprecated, samples
-    //DbSet<TodoList> TodoLists { get; }
-
-    //DbSet<TodoItem> TodoItems { get; }
 
 }

@@ -71,6 +71,7 @@ export default ({ addCartItem }: IProps) => {
                 <CardHeader
                     action={
                         <IconButton
+                            disabled={otherServiceDescription === "" || otherServiceDuration === 0 || otherServicePrice === 0}
                             onClick={handleAddItem}
                             style={{ marginTop: "5px", marginLeft: "5px", marginRight: "5px" }}
                         >

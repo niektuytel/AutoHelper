@@ -15,6 +15,6 @@ public class GarageOverview : IMapFrom<GarageItem>
 
     public IEnumerable<VehicleItem> Vehicles { get; set; }
 
-    public IEnumerable<GarageEmployeeItem> Employees { get; set; }
+    //public IEnumerable<CreateGarageEmployeeDto> Employees { get; set; }
 
 }

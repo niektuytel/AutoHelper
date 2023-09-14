@@ -32,26 +32,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<GarageItem> Garages => Set<GarageItem>();
     public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();
-
-    //public DbSet<BankingInfoItem> BankingInfos => Set<BankingInfoItem>();
-
-    //public DbSet<GarageEmployeeItem> GarageEmployees => Set<GarageEmployeeItem>();
-
-    //public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();
-
-    //public DbSet<LocationItem> Locations => Set<LocationItem>();
-
-    //public DbSet<BusinessOwnerItem> BusinessOwners => Set<BusinessOwnerItem>();
-
-    //public DbSet<VehicleItem> Vehicles => Set<VehicleItem>();
-
-    //public DbSet<MaintenanceItem> Maintenances => Set<MaintenanceItem>();
-
-    //public DbSet<ContactItem> Contacts => Set<ContactItem>();
-
-    //public DbSet<VehicleOwnerItem> VehicleOwners => Set<VehicleOwnerItem>();
-
-    //public DbSet<OrderItem> Orders => Set<OrderItem>();
+    public DbSet<GarageEmployeeItem> GarageEmployees => Set<GarageEmployeeItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -64,10 +45,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
         builder.Entity<GarageServicesSettingsItem>()
                .Property(p => p.DeliveryPrice)
-               .HasColumnType("decimal(18,2)");
-
-        builder.Entity<GarageServicesSettingsItem>()
-               .Property(p => p.MaxAutomaticPlannedDeliveries)
                .HasColumnType("decimal(18,2)");
     }
 
@@ -83,9 +60,5 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
         return await base.SaveChangesAsync(cancellationToken);
     }
-
-    //// Deprecated
-    //public DbSet<TodoList> TodoLists => Set<TodoList>();
-
-    //public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+    
 }

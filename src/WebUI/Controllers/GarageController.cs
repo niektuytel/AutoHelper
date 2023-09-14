@@ -1,12 +1,16 @@
 ﻿using System.Security.Claims;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Security;
+using AutoHelper.Application.Garages.Commands.CreateGarageEmployee;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
+using AutoHelper.Application.Garages.Commands.DeleteGarageEmployee;
 using AutoHelper.Application.Garages.Commands.DeleteGarageService;
+using AutoHelper.Application.Garages.Commands.UpdateGarageEmployee;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
 using AutoHelper.Application.Garages.Models;
+using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
@@ -32,6 +36,13 @@ public class GarageController : ApiControllerBase
         _identityService = identityService;
     }
 
+    [HttpGet($"{nameof(GetSettings)}")]
+    public async Task<GarageSettings> GetSettings()
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(new GetGarageSettingsQuery(userId));
+    }
+
     [HttpGet($"{nameof(GetOverview)}")]
     public async Task<GarageOverview> GetOverview()
     {
@@ -46,11 +57,25 @@ public class GarageController : ApiControllerBase
         return await Mediator.Send(new GetGarageServicesQuery(userId));
     }
 
-    [HttpGet($"{nameof(GetSettings)}")]
-    public async Task<GarageSettings> GetSettings()
+    [HttpGet($"{nameof(GetEmployees)}")]
+    public async Task<IEnumerable<GarageEmployeeItemDto>> GetEmployees()
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
-        return await Mediator.Send(new GetGarageSettingsQuery(userId));
+        return await Mediator.Send(new GetGarageEmployeesQuery(userId));
+    }
+
+    [HttpPost($"{nameof(CreateService)}")]
+    public async Task<GarageServiceItem> CreateService([FromBody] CreateGarageServiceCommand command)
+    {
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(command);
+    }
+
+    [HttpPost($"{nameof(CreateEmployee)}")]
+    public async Task<GarageEmployeeItem> CreateEmployee([FromBody] CreateGarageEmployeeCommand command)
+    {
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(command);
     }
 
     [HttpPut($"{nameof(UpdateSettings)}")]
@@ -67,8 +92,8 @@ public class GarageController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [HttpPost($"{nameof(CreateService)}")]
-    public async Task<GarageServiceItem> CreateService([FromBody] CreateGarageServiceCommand command)
+    [HttpPut($"{nameof(UpdateEmployee)}")]
+    public async Task<GarageEmployeeItem> UpdateEmployee([FromBody] UpdateGarageEmployeeCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);
@@ -81,5 +106,11 @@ public class GarageController : ApiControllerBase
         return await Mediator.Send(new DeleteGarageServiceCommand(id, userId));
     }
 
+    [HttpPut($"{nameof(DeleteEmployee)}/{{id}}")]
+    public async Task<GarageEmployeeItem> DeleteEmployee([FromRoute] Guid id)
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(new DeleteGarageEmployeeCommand(id, userId));
+    }
 
 }

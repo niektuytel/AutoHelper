@@ -13,7 +13,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { ROUTES } from './constants/routes';
 import GarageOverview from './pages/garage/overview/GarageOverview';
 import GarageSettings from './pages/garage/settings/GarageSettings';
-import GarageColleagues from './pages/garage/colleagues/GarageColleagues';
+import GarageEmployees from './pages/garage/employees/GarageEmployees';
 import GarageServices from './pages/garage/services/GarageServices';
 import GarageAgenda from './pages/garage/agenda/GarageAgenda';
 import { ROLES } from './constants/roles';
@@ -87,10 +87,10 @@ export default () => {
                     </GarageRouteContent>
                 </AuthenticatedRoute>
             } />
-            <Route path={`${ROUTES.GARAGE.COLLEAGUES}`} element={
+            <Route path={`${ROUTES.GARAGE.EMPLOYEES}`} element={
                 <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                     <GarageRouteContent>
-                        <GarageColleagues />
+                        <GarageEmployees />
                     </GarageRouteContent>
                 </AuthenticatedRoute>
             } />

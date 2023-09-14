@@ -1,21 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace AutoHelper.Domain.Entities;
+﻿namespace AutoHelper.Domain.Entities;
 
 public class GarageEmployeeItem : BaseAuditableEntity
 {
-    [Required]
-    public string FullName { get; set; }
+    /// <summary>
+    /// UserId of the garage account
+    /// </summary>
+    public string UserId { get; set; }
 
-    public string Position { get; set; }
+    /// <summary>
+    /// GarageId of the garage (currently working for)
+    /// </summary>
+    public Guid GarageId { get; set; }
 
-    public DateTime DateOfHire { get; set; }
+    /// <summary>
+    /// Man power contact information
+    /// </summary>
+    public ContactItem Contact { get; set; }
 
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; }
+    /// <summary>
+    /// Working schema for this user
+    /// </summary>
+    public IEnumerable<GarageEmployeeWorkSchemaItem> WorkSchema { get; set; }
 
-    public string PhoneNumber { get; set; }
+    /// <summary>
+    /// All the experiences of this user
+    /// </summary>
+    public IEnumerable<GarageEmployeeWorkExperienceItem> WorkExperiences { get; set; }
 
 }

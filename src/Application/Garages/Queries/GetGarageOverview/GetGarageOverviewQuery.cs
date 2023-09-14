@@ -39,7 +39,6 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
     {
         var entity = await _context.Garages
             .Include(g => g.Vehicles)
-            .Include(g => g.Employees)
             .FirstOrDefaultAsync(x => x.UserId == request.UserId);
 
         if (entity == null)
