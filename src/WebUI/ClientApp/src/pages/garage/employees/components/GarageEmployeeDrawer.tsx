@@ -18,7 +18,9 @@ import {
     ListItemText,
     List,
     ListItem,
-    Drawer
+    Drawer,
+    Grid,
+    Divider
 } from "@mui/material";
 import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -151,91 +153,101 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
 
     return (
         <>
-            <Drawer anchor={'right'} open={dialogOpen} onClose={() => setDialogOpen(false)}>
+            <Drawer anchor={'right'} open={dialogOpen} onClose={() => setDialogOpen(false)} sx={{zIndex:"1"}}>
                 <DialogTitle>{t(dialogMode === 'create' ? 'Create Employee' : 'Edit Employee')}</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <List>
-                            <ListItem>
-                                <ListItemText>
-                                    <Controller
-                                        name="Contact.FullName"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Full Name"
-                                                fullWidth
-                                                required
-                                            />
-                                        )}
-                                    />
-                                </ListItemText>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText>
-                                    <Controller
-                                        name="Contact.PhoneNumber"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Phone Number"
-                                                fullWidth
-                                            />
-                                        )}
-                                    />
-                                </ListItemText>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText>
-                                    <Controller
-                                        name="Contact.Email"
-                                        control={control}
-                                        defaultValue=""
-                                        render={({ field }) => (
-                                            <TextField
-                                                {...field}
-                                                label="Email"
-                                                fullWidth
-                                                type="email"
-                                            />
-                                        )}
-                                    />
-                                </ListItemText>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText>
-                                    {selectedExperiences.map((experience, index) => (
-                                        <div key={index} style={{ marginBottom: '10px' }}>
-                                            {experience.description}
-                                            {/* Add any other fields you'd like to display */}
-                                        </div>
-                                    ))}
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() => setExperienceDialogOpen(true)}
-                                    >
-                                        {t('Add Experience')}
-                                    </Button>
-                                </ListItemText>
-                            </ListItem>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <Controller
+                                    name="Contact.FirstName"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="First Name"
+                                            size="small"
+                                            fullWidth
+                                            required
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Controller
+                                    name="Contact.Surname"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Surname"
+                                            size="small"
+                                            fullWidth
+                                            required
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Controller
+                                    name="Contact.Email"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Email"
+                                            size="small"
+                                            fullWidth
+                                            required
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Controller
+                                    name="Contact.PhoneNumber"
+                                    control={control}
+                                    defaultValue=""
+                                    render={({ field }) => (
+                                        <TextField
+                                            {...field}
+                                            label="Phone Number"
+                                            size="small"
+                                            fullWidth
+                                            required
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Divider sx={{ my: 2 }} />
+
+                        {selectedExperiences.map((experience, index) => (
+                            <div key={index} style={{ marginBottom: '10px' }}>
+                                {experience.description}
+                                {/* Add any other fields you'd like to display */}
+                            </div>
+                        ))}
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setExperienceDialogOpen(true)}
+                        >
+                            {t('Add Experience')}
+                        </Button>
+
+                        <Divider sx={{ my: 2 }} />
 
 
-                            {/* Placeholder for WorkSchema. You'd probably use a dynamic form or list input here */}
-                            <ListItem>
-                                <ListItemText>
-                                    {/* ... WorkSchema Controls ... */}
-                                    <span>Work Schedule will go here.</span>
-                                </ListItemText>
-                            </ListItem>
+                        {/* Placeholder for WorkSchema. You'd probably use a dynamic form or list input here */}
+                        {/* ... WorkSchema Controls ... */}
+                        <span>Work Schedule will go here.</span>
 
-                            {/* Placeholder for WorkExperiences. Again, you'd likely use a dynamic form or list input */}
+                        {/* Placeholder for WorkExperiences. Again, you'd likely use a dynamic form or list input */}
 
-                        </List>
                         <DialogActions>
                             <Button onClick={() => setDialogOpen(false)}>
                                 {t("Cancel")}

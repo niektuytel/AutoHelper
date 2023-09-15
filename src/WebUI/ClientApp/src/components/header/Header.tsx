@@ -53,7 +53,8 @@ const Header = ({ showStaticDrawer }: IProps) => {
                 sx={(showStaticDrawer && !onMenu) ? { zIndex: (theme) => theme.zIndex.drawer + 1 } : {}}
                 style={{
                     boxShadow: "none",
-                    borderBottom: `1px solid ${COLORS.BORDER_GRAY}`
+                    borderBottom: `1px solid ${COLORS.BORDER_GRAY}`,
+                    zIndex: 1
                 }}
             >
                 <StyledToolbar>
