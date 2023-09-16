@@ -20,10 +20,12 @@ import {
     ListItem,
     Drawer,
     Grid,
-    Divider
+    Divider,
+    Box
 } from "@mui/material";
 import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
 import { GarageEmployeeWorkExperienceItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
@@ -37,6 +39,7 @@ import useUserRole from "../../../../hooks/useUserRole";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { GetGarageClient } from "../../../../app/GarageClient";
+import GarageEmployeeServiceDialog from "./GarageEmployeeWorkExperienceDialog";
 
 // own imports
 
@@ -69,8 +72,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
     const [timeUnit, setTimeUnit] = useState("minutes");
 
-    const [companyServices, setCompanyServices] = useState<GarageServiceItemDto[]>([]);
-    const [selectedExperiences, setSelectedExperiences] = useState<GarageEmployeeWorkExperienceItemDto[]>([]);
+    const [selectedExperiences, setSelectedExperiences] = useState<any[]>([]);
     const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
 
     //workSchema ?: GarageEmployeeWorkSchemaItem[];
@@ -142,6 +144,19 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
         }
     );
 
+    const addExperience = (data: any) => {
+        console.log(data)
+
+        setExperienceDialogOpen(false);
+        setSelectedExperiences([...selectedExperiences, data]);
+    };
+
+    const removeExperience = (index: number) => {
+        const newExperiences = [...selectedExperiences];
+        newExperiences.splice(index, 1);
+        setSelectedExperiences(newExperiences);
+    };
+
 
     const onSubmit = (data: any) => {
         if (mode === 'edit') {
@@ -158,31 +173,15 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                 <DialogContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Grid container spacing={2}>
-                            <Grid item xs={6}>
+                            <Grid item xs={12}>
                                 <Controller
-                                    name="Contact.FirstName"
+                                    name="Contact.FullName"
                                     control={control}
                                     defaultValue=""
                                     render={({ field }) => (
                                         <TextField
                                             {...field}
-                                            label="First Name"
-                                            size="small"
-                                            fullWidth
-                                            required
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Controller
-                                    name="Contact.Surname"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Surname"
+                                            label="Name"
                                             size="small"
                                             fullWidth
                                             required
@@ -224,30 +223,40 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                             </Grid>
                         </Grid>
                         <Divider sx={{ my: 2 }} />
-
-                        {selectedExperiences.map((experience, index) => (
-                            <div key={index} style={{ marginBottom: '10px' }}>
-                                {experience.description}
-                                {/* Add any other fields you'd like to display */}
-                            </div>
+                        {selectedExperiences.map((service, index) => (
+                            <Box key={index} title={service.description} sx={{
+                                marginBottom: '10px',
+                                border: '1px solid',
+                                padding: '10px',
+                                position: 'relative',
+                                borderRadius: "4px"
+                            }}>
+                                {getTitleForServiceType(t, service.type!, service.description)}
+                                <IconButton
+                                    size="small"
+                                    sx={{
+                                        position: 'absolute', top: '5px', right: '5px'
+                                    }}
+                                    onClick={() => removeExperience(index)}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </Box>
                         ))}
                         <Button
-                            variant="contained"
+                            variant="outlined"
                             color="primary"
+                            startIcon={<AddIcon />}
                             onClick={() => setExperienceDialogOpen(true)}
                         >
-                            {t('Add Experience')}
+                            {t("work experience")}
                         </Button>
-
                         <Divider sx={{ my: 2 }} />
 
 
                         {/* Placeholder for WorkSchema. You'd probably use a dynamic form or list input here */}
                         {/* ... WorkSchema Controls ... */}
                         <span>Work Schedule will go here.</span>
-
-                        {/* Placeholder for WorkExperiences. Again, you'd likely use a dynamic form or list input */}
-
                         <DialogActions>
                             <Button onClick={() => setDialogOpen(false)}>
                                 {t("Cancel")}
@@ -265,64 +274,11 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                     </form>
                 </DialogContent>
             </Drawer>
-            <Dialog open={experienceDialogOpen} onClose={() => setExperienceDialogOpen(false)}>
-                <DialogTitle>{t('Add Experience')}</DialogTitle>
-                <DialogContent>
-                    <FormControl fullWidth>
-                        <InputLabel>{t('Select Experience')}</InputLabel>
-                        <Controller
-                            name="experience"
-                            control={control}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <Select {...field}>
-                                    {!isLoading && garageServices!.map((service, index) => (
-                                        <MenuItem key={index} value={service.id} title={service.description}>
-                                            {getTitleForServiceType(t, service.type!, service.description)}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            )}
-                        />
-                    </FormControl>
-                    <Controller
-                        name="experienceDescription"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                            <TextField
-                                {...field}
-                                label={t('Experience Description')}
-                                fullWidth
-                                margin="normal"
-                            />
-                        )}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setExperienceDialogOpen(false)}>
-                        {t("Cancel")}
-                    </Button>
-                    <Button 
-                        onClick={() => {
-                            // Logic to add selected experience to the `workExperiences` array
-                            const experienceValue = watch("experience");
-                            const experienceDescription = watch("experienceDescription");
-                            setSelectedExperiences([...selectedExperiences,
-                                new GarageEmployeeWorkExperienceItemDto({
-                                    serviceId: experienceValue,
-                                    description: experienceDescription
-                                })
-                            ]);
-                            setExperienceDialogOpen(false);
-                        }}
-                        variant="contained" 
-                        color="primary"
-                    >
-                        {t("Create")}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <GarageEmployeeServiceDialog
+                dialogOpen={experienceDialogOpen}
+                setDialogOpen={setExperienceDialogOpen}
+                addService={addExperience}
+            />
         </>
     );
 }
