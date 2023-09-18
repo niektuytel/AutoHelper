@@ -171,29 +171,6 @@ export default ({  }: IProps) => {
         const handleMouseUp = () => {
             setIsMouseDown(false);
             setDraggingDay(null);
-
-            //// First, sort the ranges by day, start, and end.
-            //const sortedRanges = [...selectedRanges].sort((a, b) => {
-            //    return a.day - b.day;
-            //});
-
-            //// Now, iterate through the sorted ranges to merge them
-            //const mergedRanges = [];
-            //let currentRange = sortedRanges[0];
-
-            //for (let i = 1; i < sortedRanges.length; i++) {
-            //    if (currentRange.end === sortedRanges[i].start && currentRange.day === sortedRanges[i].day) {
-            //        // If the end of current range matches the start of next range and they are on the same day, merge them.
-            //        currentRange = { start: currentRange.start, end: sortedRanges[i].end, day: currentRange.day };
-            //    } else {
-            //        // Otherwise, add the current range to the result and set the next range as current.
-            //        mergedRanges.push(currentRange);
-            //        currentRange = sortedRanges[i];
-            //    }
-            //}
-            //mergedRanges.push(currentRange);
-
-            //setSelectedRanges(mergedRanges);
         };
 
         window.addEventListener('mouseup', handleMouseUp);
