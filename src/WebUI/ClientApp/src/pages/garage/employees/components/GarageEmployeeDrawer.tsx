@@ -40,6 +40,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { GetGarageClient } from "../../../../app/GarageClient";
 import GarageEmployeeServiceDialog from "./GarageEmployeeWorkExperienceDialog";
+import GarageEmployeeWorkSchema from "./GarageEmployeeWorkSchema";
 
 // own imports
 
@@ -252,11 +253,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                             {t("work experience")}
                         </Button>
                         <Divider sx={{ my: 2 }} />
-
-
-                        {/* Placeholder for WorkSchema. You'd probably use a dynamic form or list input here */}
-                        {/* ... WorkSchema Controls ... */}
-                        <span>Work Schedule will go here.</span>
+                        <GarageEmployeeWorkSchema/>
                         <DialogActions>
                             <Button onClick={() => setDialogOpen(false)}>
                                 {t("Cancel")}
