@@ -101,6 +101,9 @@ export default ({ }: IProps) => {
                             <AddIcon />{t("Add")}
                         </Button>
                         <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
+                            <EditIcon />{t("Afmelden")}
+                        </Button>
+                        <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
                             <EditIcon />{t("Edit")}
                         </Button>
                         <Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>
