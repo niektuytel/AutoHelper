@@ -35,18 +35,6 @@ const daysOfWeek = [
     "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
 ];
 
-const createRange = (value1: number, value2: number, day: number) => {
-    return {
-        start: Math.min(value1, value2),
-        end: Math.max(value1, value2),
-        day
-    };
-};
-
-const timeInRange = (time: number, day: number, ranges: Array<{ start: number, end: number, day: number }>) => {
-    return ranges.some(range => range.day === day && time >= range.start && time <= range.end);
-};
-
 
 const DroppableDay: React.FC<DroppableDayProps> = ({ day, children }) => {
     const [{ isOver }, ref] = useDrop({
@@ -72,7 +60,7 @@ interface DraggableHalfHourProps {
     isSelected: boolean;
     onMouseDown: (hour: number, minute: number, day: number) => void;
     onMouseEnter: (hour: number, minute: number) => void;
-    selectedRanges: Array<{ start: number, end: number, day: number }>;
+    selectedRanges: Array<{ time: number, day: number }>;
 }
 
 const DraggableHalfHour: React.FC<DraggableHalfHourProps> = (props) => {
@@ -119,7 +107,7 @@ export default ({  }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
 
-    const [selectedRanges, setSelectedRanges] = useState<Array<{ start: number, end: number, day: number }>>([]);
+    const [selectedRanges, setSelectedRanges] = useState<Array<{ time: number, day: number }>>([]);
     const [selectedHours, setSelectedHours] = useState<string[]>([]);
     const [isMouseDown, setIsMouseDown] = useState(false);
     const [draggingDay, setDraggingDay] = useState<number | null>(null);
@@ -139,7 +127,7 @@ export default ({  }: IProps) => {
                 const lastRange = prevRanges[prevRanges.length - 1];
                 if (lastRange && lastRange.day === draggingDay) {
 
-                    const range = createRange(lastRange.start, (hour * 60 + minute), draggingDay);
+                    const range = { time: (hour * 60 + minute), day: draggingDay };
                     return [...prevRanges.slice(0, -1), range];
                 }
                 return prevRanges;
@@ -147,14 +135,10 @@ export default ({  }: IProps) => {
         }
     };
 
-
     const handleHourClick = (hour: number, minute: number, day: number) => {
-        const inMinutes = hour * 60 + minute;
-        const nextInMinutes = inMinutes + 30;
-
-        const range = createRange(inMinutes, nextInMinutes, day);
-        if (timeInRange(inMinutes, day, selectedRanges)) {
-            setSelectedRanges(selectedRanges.filter(r => !(r.day === range.day && r.start === range.start && r.end === range.end)));
+        const range = { time: (hour * 60 + minute), day: day };
+        if (selectedRanges.find(item => item.day === range.day && item.time === range.time)) {
+            setSelectedRanges(selectedRanges.filter(r => !(r.day === range.day && r.time === range.time)));
         } else {
             setSelectedRanges([...selectedRanges, range]);
         }
