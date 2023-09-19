@@ -39,8 +39,8 @@ import useUserRole from "../../../../hooks/useUserRole";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { GetGarageClient } from "../../../../app/GarageClient";
-import GarageEmployeeServiceDialog from "./GarageEmployeeWorkExperienceDialog";
-import GarageEmployeeWorkSchema from "./GarageEmployeeWorkSchema";
+import GarageEmployeeWorkExperienceDialog from "./GarageEmployeeWorkExperienceDialog";
+import GarageEmployeeWorkSchemaDialog from "./GarageEmployeeWorkSchemaDialog";
 
 // own imports
 
@@ -75,6 +75,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
 
     const [selectedExperiences, setSelectedExperiences] = useState<any[]>([]);
     const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
+    const [workSchemaDialogOpen, setWorkSchemaDialogOpen] = useState(false);
 
     //workSchema ?: GarageEmployeeWorkSchemaItem[];
     //workExperiences ?: GarageEmployeeWorkExperienceItemDto[];
@@ -150,6 +151,12 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
 
         setExperienceDialogOpen(false);
         setSelectedExperiences([...selectedExperiences, data]);
+    };
+
+    const setWorkSchema = (data: any) => {
+        console.log(data)
+
+        setWorkSchemaDialogOpen(false);
     };
 
     const removeExperience = (index: number) => {
@@ -253,7 +260,15 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                             {t("work experience")}
                         </Button>
                         <Divider sx={{ my: 2 }} />
-                        <GarageEmployeeWorkSchema/>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<AddIcon />}
+                            onClick={() => setWorkSchemaDialogOpen(true)}
+                        >
+                            {t("work schema")}
+                        </Button>
+                        {/*<GarageEmployeeWorkSchema/>*/}
                         <DialogActions>
                             <Button onClick={() => setDialogOpen(false)}>
                                 {t("Cancel")}
@@ -271,10 +286,15 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                     </form>
                 </DialogContent>
             </Drawer>
-            <GarageEmployeeServiceDialog
+            <GarageEmployeeWorkExperienceDialog
                 dialogOpen={experienceDialogOpen}
                 setDialogOpen={setExperienceDialogOpen}
                 addService={addExperience}
+            />
+            <GarageEmployeeWorkSchemaDialog
+                dialogOpen={workSchemaDialogOpen}
+                setDialogOpen={setWorkSchemaDialogOpen}
+                setWorkSchema={setWorkSchema}
             />
         </>
     );
