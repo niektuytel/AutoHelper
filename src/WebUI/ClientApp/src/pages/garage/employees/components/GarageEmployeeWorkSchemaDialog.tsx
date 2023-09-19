@@ -248,7 +248,7 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
                             </Grid>
                         ))}
                     </Grid>
-                    <Grid container style={{ width: '100%', maxHeight: isMobile ? undefined : '60vh', overflowY: 'scroll', border: '1px solid gray' }}>
+                    <Grid container style={{ width: '100%', maxHeight: isMobile ? "100%" : '60vh', overflowY: 'scroll', border: '1px solid gray' }}>
                         {daysOfWeek.map((day, dayIndex) => (
                             <Grid item xs={12} md={1} key={day} style={dayStyles}>
                                 <DroppableDay day={dayIndex}>
