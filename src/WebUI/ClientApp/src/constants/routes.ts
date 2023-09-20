@@ -3,7 +3,7 @@
 export const ROUTES = {
     GARAGE: {
         OVERVIEW: "/garage/overview",
-        AGENDA: "/garage/agenda",
+        PLANNING: "/garage/planning",
         SERVICES: "/garage/services",
         EMPLOYEES: "/garage/employees",
         SETTINGS: "/garage/settings"

@@ -108,6 +108,52 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     });
 
     const createEmployee = (data: any) => {
+        //{
+        //    "Contact": {
+        //        "FullName": "niek",
+        //            "Email": "tuytelniek@gmail.com",
+        //                "PhoneNumber": "0618395668"
+        //    },
+        //    "WorkSchema": [
+        //        {
+        //            "dayOfWeek": 0,
+        //            "startTime": "2023-09-21T10:00:00.000Z",
+        //            "endTime": "2023-09-21T12:00:00.000Z"
+        //        },
+        //        {
+        //            "dayOfWeek": 1,
+        //            "startTime": "2023-09-21T06:30:00.000Z",
+        //            "endTime": "2023-09-21T09:30:00.000Z"
+        //        },
+        //        {
+        //            "dayOfWeek": 3,
+        //            "startTime": "2023-09-21T00:30:00.000Z",
+        //            "endTime": "2023-09-21T01:30:00.000Z"
+        //        },
+        //        {
+        //            "dayOfWeek": 3,
+        //            "startTime": "2023-09-21T02:30:00.000Z",
+        //            "endTime": "2023-09-21T03:30:00.000Z"
+        //        },
+        //        {
+        //            "dayOfWeek": 3,
+        //            "startTime": "2023-09-21T11:00:00.000Z",
+        //            "endTime": "2023-09-21T12:30:00.000Z"
+        //        }
+        //    ],
+        //        "WorkExperiences": [
+        //            {
+        //                "id": "e274af34-5033-444a-0a6c-08dbb4a21d3b",
+        //                "type": 5,
+        //                "description": "test",
+        //                "durationInMinutes": 60,
+        //                "price": 115,
+        //                "status": 0
+        //            }
+        //        ]
+        //}
+        console.log(data);
+
         var command = new CreateGarageEmployeeCommand();
         //command.type = data.type;
         //command.description = data.description;
@@ -119,6 +165,8 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     }
 
     const updateEmployee = (data: any) => {
+        console.log(data);
+
         var command = new UpdateGarageEmployeeCommand();
         command.id = data.id;
         //command.type = data.type;

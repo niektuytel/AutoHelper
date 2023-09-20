@@ -73,7 +73,7 @@ export default () => {
                     </GarageRouteContent>
                 </AuthenticatedRoute>
             } />
-            <Route path={`${ROUTES.GARAGE.AGENDA}`} element={
+            <Route path={`${ROUTES.GARAGE.PLANNING}`} element={
                 <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                     <GarageRouteContent>
                         <GarageAgenda />

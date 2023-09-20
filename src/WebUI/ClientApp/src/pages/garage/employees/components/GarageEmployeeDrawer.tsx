@@ -28,7 +28,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
-import { GarageEmployeeWorkExperienceItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
+import { GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
 import useGarageEmployees from "../useGarageEmployees";
 import { getTitleForServiceType } from "../../defaultGarageService";
 import { useQuery, useQueryClient } from "react-query";
@@ -74,6 +74,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
     const [timeUnit, setTimeUnit] = useState("minutes");
 
     const [selectedExperiences, setSelectedExperiences] = useState<any[]>([]);
+    const [selectedWorkSchema, setSelectedWorkSchema] = useState<Array<GarageEmployeeWorkSchemaItemDto>>([]);
     const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
     const [workSchemaDialogOpen, setWorkSchemaDialogOpen] = useState(false);
 
@@ -146,18 +147,35 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
         }
     );
 
-    const addExperience = (data: any) => {
-        console.log(data)
+    //const addExperience = (data: any) => {
+    //    console.log(data)
 
+    //    setExperienceDialogOpen(false);
+    //    setSelectedExperiences([...selectedExperiences, data]);
+    //};
+
+    //const setWorkSchema = (data: Array<GarageEmployeeWorkSchemaItemDto>) => {
+    //    console.log(data)
+
+    //    setWorkSchemaDialogOpen(false);
+    //    setSelectedWorkSchema(data);
+    //};
+
+    const addExperience = (data: any) => {
+        console.log(data);
+        const updatedExperiences = [...selectedExperiences, data];
+        setSelectedExperiences(updatedExperiences);
+        setValue("WorkExperiences", updatedExperiences);
         setExperienceDialogOpen(false);
-        setSelectedExperiences([...selectedExperiences, data]);
     };
 
-    const setWorkSchema = (data: any) => {
-        console.log(data)
-
+    const setWorkSchema = (data: Array<GarageEmployeeWorkSchemaItemDto>) => {
+        console.log(data);
+        setSelectedWorkSchema(data);
+        setValue("WorkSchema", data);
         setWorkSchemaDialogOpen(false);
     };
+
 
     const removeExperience = (index: number) => {
         const newExperiences = [...selectedExperiences];

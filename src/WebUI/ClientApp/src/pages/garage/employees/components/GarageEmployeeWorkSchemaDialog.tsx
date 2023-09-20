@@ -15,7 +15,7 @@ import {
 } from "react-hook-form";
 
 import {
-    GarageEmployeeWorkExperienceItemDto, GarageServiceItemDto,
+    GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, GarageServiceItemDto,
     UpdateGarageEmployeeCommand
 } from "../../../../app/web-api-client";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -140,7 +140,7 @@ const DraggableHalfHour = forwardRef<HTMLDivElement, DraggableHalfHourProps>((pr
 interface IProps {
     dialogOpen: boolean;
     setDialogOpen: (dialogOpen: boolean) => void;
-    setWorkSchema: (data: any) => void;
+    setWorkSchema: (data: Array<GarageEmployeeWorkSchemaItemDto>) => void;
 }
 
 export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSchema }: IProps) {
@@ -219,9 +219,53 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
         }
     }, []);
 
-    // Handle adding the selected experience
-    const handleAddExperience = () => {
-        setWorkSchema({});
+    const handleSetWorkSchema = () => {
+        const workSchemaItems: GarageEmployeeWorkSchemaItemDto[] = [];
+
+        selectedRanges.sort((a, b) => a.day - b.day || a.time - b.time);
+
+        let i = 0;
+        while (i < selectedRanges.length) {
+            const currentRange = selectedRanges[i];
+
+            const startTime = new Date();
+            startTime.setHours(Math.floor(currentRange.time / 60));
+            startTime.setMinutes(currentRange.time % 60);
+            startTime.setSeconds(0);
+            startTime.setMilliseconds(0);
+
+            let endTime = new Date(startTime);
+
+            // Check for consecutive blocks
+            while (i < selectedRanges.length - 1 && selectedRanges[i + 1].day === currentRange.day && selectedRanges[i + 1].time === selectedRanges[i].time + 30) {
+                i++; // move to the next block in the array since it's connected
+            }
+
+            // Set the endTime based on the last block in the sequence
+            endTime.setHours(Math.floor((selectedRanges[i].time + 30) / 60));
+            endTime.setMinutes((selectedRanges[i].time + 30) % 60);
+
+            const schemaItem = new GarageEmployeeWorkSchemaItemDto({
+                weekOfYear: undefined,
+                dayOfWeek: currentRange.day, // Rotate based on today
+                startTime: startTime,
+                endTime: endTime,
+            });
+
+            workSchemaItems.push(schemaItem);
+            i++; // move to the next distinct block or sequence
+        }
+
+        setWorkSchema(workSchemaItems);
+    }
+
+
+    // Utility function to get the current week number
+    function getWeekNumber(d: Date) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        const yearStart = new Date(Date.UTC(d.getFullYear(), 0, 1));
+        const weekNo = Math.ceil((((d.valueOf() - yearStart.valueOf()) / 86400000) + 1) / 7);
+        return weekNo;
     }
 
     return (
@@ -235,20 +279,21 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
             <DialogContent
                 style={{
                     minWidth: isMobile ? undefined : '600px',
-                    flex: 1, // Flex value ensures content fills the available space
-                    display: 'flex', // Nested flexbox for the content
-                    flexDirection: 'column' // Column direction for the flex items
+                    flex: 1, // Ensures content fills the available space
+                    display: 'flex', // Flexbox for the content
+                    flexDirection: 'column', // Column direction for the flex items
+                    overflow: 'hidden' // To ensure overflow from children does not break the layout
                 }}
             >
+                <Grid container style={isMobile ? { width: '100%' } : { width: '100%', paddingRight: "16px" }}>
+                    {(isMobile ? daysOfWeekMobile : daysOfWeek).map((day) => (
+                        <Grid item xs={12} md={1} key={day} style={dayStyles}>
+                            <Box mb={2} textAlign="center">{day}</Box>
+                        </Grid>
+                    ))}
+                </Grid>
                 <DndProvider backend={HTML5Backend}>
-                    <Grid container style={isMobile ? { width: '100%' } : { width: '100%', paddingRight: "16px" }}>
-                        {(isMobile ? daysOfWeekMobile : daysOfWeek).map((day) => (
-                            <Grid item xs={12} md={1} key={day} style={dayStyles}>
-                                <Box mb={2} textAlign="center">{day}</Box>
-                            </Grid>
-                        ))}
-                    </Grid>
-                    <Grid container style={{ width: '100%', maxHeight: isMobile ? "100%" : '60vh', overflowY: 'scroll', border: '1px solid gray' }}>
+                    <Grid container style={{ flex: 1, display: 'flex', width: '100%', overflowY: 'auto', border: '1px solid gray'}}>
                         {daysOfWeek.map((day, dayIndex) => (
                             <Grid item xs={12} md={1} key={day} style={dayStyles}>
                                 <DroppableDay day={dayIndex}>
@@ -278,7 +323,7 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
                 <Button onClick={() => setDialogOpen(false)}>
                     {t("Cancel")}
                 </Button>
-                <Button onClick={handleAddExperience} variant="contained" color="primary">
+                <Button onClick={handleSetWorkSchema} variant="contained" color="primary">
                     {t("Confirm")}
                 </Button>
             </DialogActions>
