@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages.DTOs;
 using AutoHelper.Application.Garages.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Domain.Entities;
@@ -17,18 +18,19 @@ namespace AutoHelper.Application.Garages.Commands.CreateGarageEmployee;
 
 public record CreateGarageEmployeeCommand : IRequest<GarageEmployeeItem>
 {
-
-    [JsonIgnore]
-    public string UserId { get; set; }
-
-    [JsonIgnore]
-    public GarageItem UserGarage { get; set; }
+    public bool IsActive { get; set; } = false;
 
     public ContactItem Contact { get; set; }
 
     public IEnumerable<GarageEmployeeWorkSchemaItemDto> WorkSchema { get; set; }
 
     public IEnumerable<GarageEmployeeWorkExperienceItemDto> WorkExperiences { get; set; }
+
+    [JsonIgnore]
+    public string? UserId { get; set; }
+
+    [JsonIgnore]
+    public GarageItem? UserGarage { get; set; }
 }
 
 public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGarageEmployeeCommand, GarageEmployeeItem>
@@ -41,26 +43,24 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
         _context = context;
         _mapper = mapper;
     }
+
     public async Task<GarageEmployeeItem> Handle(CreateGarageEmployeeCommand request, CancellationToken cancellationToken)
     {
-
         var entity = new GarageEmployeeItem
         {
             UserId = request.UserId,
             GarageId = request.UserGarage.Id,
+            IsActive = request.IsActive,
             Contact = request.Contact,
             WorkSchema = new List<GarageEmployeeWorkSchemaItem>(),
             WorkExperiences = new List<GarageEmployeeWorkExperienceItem>()
         };
 
-        // If you wish to use domain events, then you can add them here:
-        // entity.AddDomainEvent(new SomeDomainEvent(entity));
-
-        // INFO: set employee id, will been used in work schema and work experience
+        // Guid will been used in work schema and work experience
         _context.GarageEmployees.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var workSchema = request.WorkSchema.Select(item =>
+        entity.WorkSchema = request.WorkSchema.Select(item =>
         {
             return new GarageEmployeeWorkSchemaItem
             {
@@ -72,7 +72,7 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
                 Notes = item.Notes
             };
         });
-        var workExperiences = request.WorkExperiences.Select(item =>
+        entity.WorkExperiences = request.WorkExperiences.Select(item =>
         {
             return new GarageEmployeeWorkExperienceItem
             {
@@ -85,10 +85,8 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
         
-        // INFO: Update garage employee with work schema and work experience
-        _context.GarageEmployees.Update(entity);
+        // update employee
         await _context.SaveChangesAsync(cancellationToken);
-
         return entity;
     }
 

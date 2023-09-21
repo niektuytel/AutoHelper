@@ -19,6 +19,6 @@ public class GarageEmployeeWorkSchemaItem: BaseEntity
     public DateTime EndTime { get; set; }
 
     [StringLength(500)]
-    public string Notes { get; set; }
+    public string Notes { get; set; } = "";
 
 }

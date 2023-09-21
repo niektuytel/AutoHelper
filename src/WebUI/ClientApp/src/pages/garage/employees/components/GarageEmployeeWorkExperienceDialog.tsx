@@ -36,10 +36,13 @@ import { GetGarageClient } from "../../../../app/GarageClient";
 interface IProps {
     dialogOpen: boolean;
     setDialogOpen: (dialogOpen: boolean) => void;
-    addService: (data: any) => void;
+    selectedExperience: GarageEmployeeWorkExperienceItemDto | undefined;
+    editExperience: (data: GarageEmployeeWorkExperienceItemDto) => void;
+    addExperience: (data: GarageEmployeeWorkExperienceItemDto) => void;
+    services: GarageServiceItemDto[];
 }
 
-export default function ExperienceDialog({ dialogOpen, setDialogOpen, addService }: IProps) {
+export default function ExperienceDialog({ dialogOpen, setDialogOpen, selectedExperience, addExperience, editExperience, services}: IProps) {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -49,31 +52,20 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, addService
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageClient(accessToken);
     const navigate = useNavigate();
+    const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
 
-    // Fetch data for garage services
-    const fetchGarageServicesData = async () => {
-        try {
-            return await garageClient.getServices();
-        } catch (response: any) {
-            if (response.status === 404) {
-                setConfigurationIndex(1, userRole);
-                navigate(ROUTES.GARAGE.SETTINGS);
-                return;
-            }
-            throw response;
+    useEffect(() => {
+        if (selectedExperience) {
+            setDialogMode('edit');
+            setValue("serviceId", selectedExperience.serviceId);
+            setValue("description", selectedExperience.description);
         }
-    }
-
-    const { data: garageServices, isLoading, isError } = useQuery(
-        ['garageServices'], fetchGarageServicesData, {
-        enabled: true,
-        retry: 1,
-        refetchOnWindowFocus: false,
-        cacheTime: 30 * 60 * 1000,  // 30 minutes
-        staleTime: 60 * 60 * 1000, // 1 hour
-    }
-    );
+        else {
+            setDialogMode('create');
+            reset();
+        }
+    }, [selectedExperience, setValue]);
 
     // Handle adding the selected experience
     const handleAddExperience = () => {
@@ -82,13 +74,28 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, addService
 
         if (!serviceId || !description) return;
 
-        const service = garageServices?.find(item => item.id === serviceId);
-        addService({
-            ...service,
-            description: description
-        });
+        addExperience(
+            new GarageEmployeeWorkExperienceItemDto({
+                serviceId: serviceId,
+                description: description
+            })
+        );
     }
 
+    const handleEditExperience = () => {
+        const serviceId = watch("serviceId");
+        const description = watch("description");
+
+        if (!serviceId || !description) return;
+
+        editExperience(
+            new GarageEmployeeWorkExperienceItemDto({
+                serviceId: serviceId,
+                description: description
+            })
+        );
+    }
+    
     return (
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
             <DialogTitle>{t('Add Experience')}</DialogTitle>
@@ -105,7 +112,7 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, addService
                                 {...field}
                                 label={t("Select Service")}
                             >
-                                {!isLoading && garageServices!.map((service, index) => (
+                                {services.map((service, index) => (
                                     <MenuItem key={index} value={service.id} title={service.description}>
                                         {getTitleForServiceType(t, service.type!, service.description)}
                                     </MenuItem>
@@ -135,8 +142,8 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, addService
                 <Button onClick={() => setDialogOpen(false)}>
                     {t("Cancel")}
                 </Button>
-                <Button onClick={handleAddExperience} variant="contained" color="primary">
-                    {t("Create")}
+                <Button onClick={dialogMode == 'edit' ? handleEditExperience : handleAddExperience} variant="contained" color="primary">
+                    {dialogMode == 'edit' ? t("Edit") : t("Create")}
                 </Button>
             </DialogActions>
         </Dialog>

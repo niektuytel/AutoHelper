@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { CSSProperties, useEffect, useState } from "react";
 import {
     Button,
     IconButton,
@@ -21,7 +21,9 @@ import {
     Drawer,
     Grid,
     Divider,
-    Box
+    Box,
+    Switch,
+    FormControlLabel
 } from "@mui/material";
 import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -31,6 +33,8 @@ import { Controller, useForm } from "react-hook-form";
 import { GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
 import useGarageEmployees from "../useGarageEmployees";
 import { getTitleForServiceType } from "../../defaultGarageService";
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import PersonIcon from '@mui/icons-material/Person';
 import { useQuery, useQueryClient } from "react-query";
 import { ROUTES } from "../../../../constants/routes";
 import useConfirmationStep from "../../../../hooks/useConfirmationStep";
@@ -41,6 +45,7 @@ import { useNavigate } from "react-router";
 import { GetGarageClient } from "../../../../app/GarageClient";
 import GarageEmployeeWorkExperienceDialog from "./GarageEmployeeWorkExperienceDialog";
 import GarageEmployeeWorkSchemaDialog from "./GarageEmployeeWorkSchemaDialog";
+import { green, red } from "@mui/material/colors";
 
 // own imports
 
@@ -48,7 +53,7 @@ import GarageEmployeeWorkSchemaDialog from "./GarageEmployeeWorkSchemaDialog";
 
 interface IProps {
     mode: 'create' | 'edit';
-    service?: UpdateGarageEmployeeCommand;
+    employee?: UpdateGarageEmployeeCommand;
     dialogOpen: boolean;
     setDialogOpen: (dialogOpen: boolean) => void;
     createEmployee: (data: any) => void;
@@ -56,7 +61,7 @@ interface IProps {
     loading: boolean;
 }
 
-export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, updateEmployee, loading }: IProps) => {
+export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, updateEmployee, loading }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -69,13 +74,14 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [selectedEmployee, setSelectedEmployee] = useState<UpdateGarageEmployeeCommand | undefined>(service);
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
     const [timeUnit, setTimeUnit] = useState("minutes");
 
-    const [selectedExperiences, setSelectedExperiences] = useState<any[]>([]);
-    const [selectedWorkSchema, setSelectedWorkSchema] = useState<Array<GarageEmployeeWorkSchemaItemDto>>([]);
+    const [selectedExperience, setSelectedExperience] = useState<GarageEmployeeWorkExperienceItemDto | undefined>(undefined);
+    const [selectedExperiences, setSelectedExperiences] = useState<GarageEmployeeWorkExperienceItemDto[]>([]);
     const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
+
+    const [selectedWorkSchema, setSelectedWorkSchema] = useState<Array<GarageEmployeeWorkSchemaItemDto>>([]);
     const [workSchemaDialogOpen, setWorkSchemaDialogOpen] = useState(false);
 
     //workSchema ?: GarageEmployeeWorkSchemaItem[];
@@ -85,60 +91,42 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
 
     useEffect(() => {
-        if (mode === 'edit' && service) {
+        if (mode === 'edit' && employee) {
             setDialogMode('edit');
-            setValue("id", service.id);
-            //setValue("title", getTitleForEmployeeType(t, service.type!));
-            //setValue("type", service.type);
-            //setValue("description", service.description);
-            //setValue("durationInMinutes", service.durationInMinutes);
-            //setValue("price", service.price);
+
+            setValue("id", employee.id);
+            setValue("isActive", employee.isActive);
+            setValue("fullName", employee.contact?.fullName);
+            setValue("email", employee.contact?.email);
+            setValue("phoneNumber", employee.contact?.phoneNumber);
+            setValue("WorkExperiences", employee.workExperiences);
+            setValue("WorkSchema", employee.workSchema);
+
+            setSelectedExperiences(employee.workExperiences as any[]);
+            setSelectedWorkSchema(employee.workSchema || []);
         }
         else {
             setDialogMode('create');
             reset();
         }
-    }, [service, mode, setValue]);
+    }, [employee, mode, setValue]);
 
-    type EmployeeProperty = 'type' | 'description' | 'durationInMinutes' | 'price';
-
-    //const handleTitleChange = (event: any) => {
-    //    const service = defaultAvailableEmployees.find(item => item.type === event.target.value) as UpdateGarageEmployeeCommand;
-    //    if (!service) return;
-
-    //    const prevEmployee = selectedEmployee;
-    //    setSelectedEmployee(service);
-
-    //    const item = watch();
-    //    const propertiesToUpdate: EmployeeProperty[] = ['type', 'description', 'durationInMinutes', 'price'];
-    //    propertiesToUpdate.forEach(property => {
-    //        if (!item[property] || (prevEmployee && item[property] == prevEmployee[property])) {
-    //            setValue(property, service[property]);
-    //        }
-    //    });
-    //};
-
+    // Fetch data for garage services
     const fetchGarageServicesData = async () => {
         try {
-            const response = await garageClient.getServices();
-
-            return response;
+            return await garageClient.getServices();
         } catch (response: any) {
-            // redirect + enable garage register page
             if (response.status === 404) {
                 setConfigurationIndex(1, userRole);
                 navigate(ROUTES.GARAGE.SETTINGS);
                 return;
             }
-
             throw response;
         }
     }
 
     const { data: garageServices, isLoading, isError } = useQuery(
-        ['garageServices'],
-        fetchGarageServicesData,
-        {
+        ['garageServices'], fetchGarageServicesData, {
             enabled: true,
             retry: 1,
             refetchOnWindowFocus: false,
@@ -147,23 +135,28 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
         }
     );
 
-    //const addExperience = (data: any) => {
-    //    console.log(data)
-
-    //    setExperienceDialogOpen(false);
-    //    setSelectedExperiences([...selectedExperiences, data]);
-    //};
-
-    //const setWorkSchema = (data: Array<GarageEmployeeWorkSchemaItemDto>) => {
-    //    console.log(data)
-
-    //    setWorkSchemaDialogOpen(false);
-    //    setSelectedWorkSchema(data);
-    //};
-
-    const addExperience = (data: any) => {
+    const addExperience = (data: GarageEmployeeWorkExperienceItemDto) => {
         console.log(data);
         const updatedExperiences = [...selectedExperiences, data];
+        setSelectedExperiences(updatedExperiences);
+        setValue("WorkExperiences", updatedExperiences);
+        setExperienceDialogOpen(false);
+    };
+
+    const editExperience = (data: GarageEmployeeWorkExperienceItemDto) => {
+        if (!selectedExperience) return;
+        console.log(data);
+
+        const updatedExperiences = selectedExperiences.map((item) => {
+            if (item.serviceId === selectedExperience.serviceId)
+            {
+                return data;
+            }
+
+            return item;
+        });
+
+        setSelectedExperience(undefined);
         setSelectedExperiences(updatedExperiences);
         setValue("WorkExperiences", updatedExperiences);
         setExperienceDialogOpen(false);
@@ -176,13 +169,11 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
         setWorkSchemaDialogOpen(false);
     };
 
-
     const removeExperience = (index: number) => {
         const newExperiences = [...selectedExperiences];
         newExperiences.splice(index, 1);
         setSelectedExperiences(newExperiences);
     };
-
 
     const onSubmit = (data: any) => {
         if (mode === 'edit') {
@@ -200,8 +191,35 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
+                                <FormControlLabel
+                                    control={
+                                        <Controller
+                                            name="isActive"
+                                            control={control}
+                                            defaultValue={false}
+                                            render={({ field }) => (
+                                                <Switch
+                                                    checked={field.value}
+                                                    onChange={(e) => field.onChange(e.target.checked)}
+                                                    color="default"
+                                                    sx={{
+                                                        '.MuiSwitch-thumb': {
+                                                            backgroundColor: field.value ? green[500] : red[500], // Adjusting the thumb color
+                                                        },
+                                                        '.MuiSwitch-track': {
+                                                            backgroundColor: field.value ? green[300] : red[300], // Adjusting the track color
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    }
+                                    label={t(watch("isActive") ? 'Online' : 'Offline')}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
                                 <Controller
-                                    name="Contact.FullName"
+                                    name="fullName"
                                     control={control}
                                     defaultValue=""
                                     render={({ field }) => (
@@ -217,7 +235,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                             </Grid>
                             <Grid item xs={6}>
                                 <Controller
-                                    name="Contact.Email"
+                                    name="email"
                                     control={control}
                                     defaultValue=""
                                     render={({ field }) => (
@@ -233,7 +251,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                             </Grid>
                             <Grid item xs={6}>
                                 <Controller
-                                    name="Contact.PhoneNumber"
+                                    name="phoneNumber"
                                     control={control}
                                     defaultValue=""
                                     render={({ field }) => (
@@ -249,31 +267,54 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                             </Grid>
                         </Grid>
                         <Divider sx={{ my: 2 }} />
-                        {selectedExperiences.map((service, index) => (
-                            <Box key={index} title={service.description} sx={{
-                                marginBottom: '10px',
-                                border: '1px solid',
-                                padding: '10px',
-                                position: 'relative',
-                                borderRadius: "4px"
-                            }}>
-                                {getTitleForServiceType(t, service.type!, service.description)}
-                                <IconButton
-                                    size="small"
+                        {isLoading ? (
+                            <CircularProgress size={24} />
+                        ) : (
+                            selectedExperiences.map((experience, index) => {
+                                const service = garageServices!.find(item => item.id === experience.serviceId);
+                                console.log(garageServices, experience);
+
+                                if (!service)
+                                {
+                                    return <></>;
+                                }
+
+                                return <Box
+                                    key={index}
+                                    title={experience.description}
                                     sx={{
-                                        position: 'absolute', top: '5px', right: '5px'
+                                        marginBottom: '10px',
+                                        border: '1px solid',
+                                        padding: '10px',
+                                        position: 'relative',
+                                        borderRadius: "4px"
                                     }}
-                                    onClick={() => removeExperience(index)}
+                                    onClick={() => {
+                                        setSelectedExperience(experience);
+                                        setExperienceDialogOpen(true);
+                                    }}
                                 >
-                                    <CloseIcon />
-                                </IconButton>
-                            </Box>
-                        ))}
+                                    {getTitleForServiceType(t, service.type!, experience.description)}
+                                    <IconButton
+                                        size="small"
+                                        sx={{
+                                            position: 'absolute', top: '5px', right: '5px'
+                                        }}
+                                        onClick={() => removeExperience(index)}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
+                            })
+                        )}
                         <Button
                             variant="outlined"
                             color="primary"
                             startIcon={<AddIcon />}
-                            onClick={() => setExperienceDialogOpen(true)}
+                            onClick={() => {
+                                setSelectedExperience(undefined);
+                                setExperienceDialogOpen(true);
+                            }}
                         >
                             {t("work experience")}
                         </Button>
@@ -286,7 +327,6 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                         >
                             {t("work schema")}
                         </Button>
-                        {/*<GarageEmployeeWorkSchema/>*/}
                         <DialogActions>
                             <Button onClick={() => setDialogOpen(false)}>
                                 {t("Cancel")}
@@ -301,17 +341,25 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createEmployee, upda
                                 </Button>
                             }
                         </DialogActions>
+
                     </form>
                 </DialogContent>
             </Drawer>
-            <GarageEmployeeWorkExperienceDialog
-                dialogOpen={experienceDialogOpen}
-                setDialogOpen={setExperienceDialogOpen}
-                addService={addExperience}
-            />
+            {!isLoading &&
+                <GarageEmployeeWorkExperienceDialog
+                    dialogOpen={experienceDialogOpen}
+                    setDialogOpen={setExperienceDialogOpen}
+                    selectedExperience={selectedExperience}
+                    editExperience={editExperience}
+                    addExperience={addExperience}
+                    services={garageServices!}
+                />
+            }
             <GarageEmployeeWorkSchemaDialog
+                mode={dialogMode}
                 dialogOpen={workSchemaDialogOpen}
                 setDialogOpen={setWorkSchemaDialogOpen}
+                workSchema={selectedWorkSchema}
                 setWorkSchema={setWorkSchema}
             />
         </>

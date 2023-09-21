@@ -32,6 +32,13 @@ function useConfirmationStep() {
             setConfigurationIndex(index);
             return;
         }
+
+        // Enable planning page
+        if (index == 4 && configurationIndex < 4 && role === ROLES.GARAGE) {
+            localStorage.setItem('confirmationStepIndex', index.toString());
+            setConfigurationIndex(index);
+            return;
+        }
     }
 
     return {

@@ -1256,6 +1256,10 @@ export enum GarageServiceType {
 
 export class GarageEmployeeItemDto implements IGarageEmployeeItemDto {
     id?: string;
+    isActive?: boolean;
+    contact?: ContactItem;
+    workSchema?: GarageEmployeeWorkSchemaItem[];
+    workExperiences?: GarageEmployeeWorkExperienceItem[];
 
     constructor(data?: IGarageEmployeeItemDto) {
         if (data) {
@@ -1269,6 +1273,18 @@ export class GarageEmployeeItemDto implements IGarageEmployeeItemDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.isActive = _data["isActive"];
+            this.contact = _data["contact"] ? ContactItem.fromJS(_data["contact"]) : <any>undefined;
+            if (Array.isArray(_data["workSchema"])) {
+                this.workSchema = [] as any;
+                for (let item of _data["workSchema"])
+                    this.workSchema!.push(GarageEmployeeWorkSchemaItem.fromJS(item));
+            }
+            if (Array.isArray(_data["workExperiences"])) {
+                this.workExperiences = [] as any;
+                for (let item of _data["workExperiences"])
+                    this.workExperiences!.push(GarageEmployeeWorkExperienceItem.fromJS(item));
+            }
         }
     }
 
@@ -1282,12 +1298,122 @@ export class GarageEmployeeItemDto implements IGarageEmployeeItemDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["isActive"] = this.isActive;
+        data["contact"] = this.contact ? this.contact.toJSON() : <any>undefined;
+        if (Array.isArray(this.workSchema)) {
+            data["workSchema"] = [];
+            for (let item of this.workSchema)
+                data["workSchema"].push(item.toJSON());
+        }
+        if (Array.isArray(this.workExperiences)) {
+            data["workExperiences"] = [];
+            for (let item of this.workExperiences)
+                data["workExperiences"].push(item.toJSON());
+        }
         return data;
     }
 }
 
 export interface IGarageEmployeeItemDto {
     id?: string;
+    isActive?: boolean;
+    contact?: ContactItem;
+    workSchema?: GarageEmployeeWorkSchemaItem[];
+    workExperiences?: GarageEmployeeWorkExperienceItem[];
+}
+
+export class GarageEmployeeWorkSchemaItem extends BaseEntity implements IGarageEmployeeWorkSchemaItem {
+    employeeId!: string;
+    weekOfYear?: number;
+    dayOfWeek!: number;
+    startTime!: Date;
+    endTime!: Date;
+    notes?: string;
+
+    constructor(data?: IGarageEmployeeWorkSchemaItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.employeeId = _data["employeeId"];
+            this.weekOfYear = _data["weekOfYear"];
+            this.dayOfWeek = _data["dayOfWeek"];
+            this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
+            this.endTime = _data["endTime"] ? new Date(_data["endTime"].toString()) : <any>undefined;
+            this.notes = _data["notes"];
+        }
+    }
+
+    static fromJS(data: any): GarageEmployeeWorkSchemaItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageEmployeeWorkSchemaItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["employeeId"] = this.employeeId;
+        data["weekOfYear"] = this.weekOfYear;
+        data["dayOfWeek"] = this.dayOfWeek;
+        data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
+        data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
+        data["notes"] = this.notes;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageEmployeeWorkSchemaItem extends IBaseEntity {
+    employeeId: string;
+    weekOfYear?: number;
+    dayOfWeek: number;
+    startTime: Date;
+    endTime: Date;
+    notes?: string;
+}
+
+export class GarageEmployeeWorkExperienceItem extends BaseEntity implements IGarageEmployeeWorkExperienceItem {
+    employeeId!: string;
+    serviceId!: string;
+    description!: string;
+
+    constructor(data?: IGarageEmployeeWorkExperienceItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.employeeId = _data["employeeId"];
+            this.serviceId = _data["serviceId"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): GarageEmployeeWorkExperienceItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageEmployeeWorkExperienceItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["employeeId"] = this.employeeId;
+        data["serviceId"] = this.serviceId;
+        data["description"] = this.description;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageEmployeeWorkExperienceItem extends IBaseEntity {
+    employeeId: string;
+    serviceId: string;
+    description: string;
 }
 
 export class GarageServiceItem extends BaseAuditableEntity implements IGarageServiceItem {
@@ -1398,6 +1524,7 @@ export interface ICreateGarageServiceCommand {
 export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEmployeeItem {
     userId?: string;
     garageId?: string;
+    isActive?: boolean;
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItem[];
     workExperiences?: GarageEmployeeWorkExperienceItem[];
@@ -1411,6 +1538,7 @@ export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEm
         if (_data) {
             this.userId = _data["userId"];
             this.garageId = _data["garageId"];
+            this.isActive = _data["isActive"];
             this.contact = _data["contact"] ? ContactItem.fromJS(_data["contact"]) : <any>undefined;
             if (Array.isArray(_data["workSchema"])) {
                 this.workSchema = [] as any;
@@ -1436,6 +1564,7 @@ export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEm
         data = typeof data === 'object' ? data : {};
         data["userId"] = this.userId;
         data["garageId"] = this.garageId;
+        data["isActive"] = this.isActive;
         data["contact"] = this.contact ? this.contact.toJSON() : <any>undefined;
         if (Array.isArray(this.workSchema)) {
             data["workSchema"] = [];
@@ -1455,106 +1584,14 @@ export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEm
 export interface IGarageEmployeeItem extends IBaseAuditableEntity {
     userId?: string;
     garageId?: string;
+    isActive?: boolean;
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItem[];
     workExperiences?: GarageEmployeeWorkExperienceItem[];
 }
 
-export class GarageEmployeeWorkSchemaItem extends BaseEntity implements IGarageEmployeeWorkSchemaItem {
-    employeeId!: string;
-    weekOfYear?: number;
-    dayOfWeek!: number;
-    startTime!: Date;
-    endTime!: Date;
-    notes?: string;
-
-    constructor(data?: IGarageEmployeeWorkSchemaItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.employeeId = _data["employeeId"];
-            this.weekOfYear = _data["weekOfYear"];
-            this.dayOfWeek = _data["dayOfWeek"];
-            this.startTime = _data["startTime"] ? new Date(_data["startTime"].toString()) : <any>undefined;
-            this.endTime = _data["endTime"] ? new Date(_data["endTime"].toString()) : <any>undefined;
-            this.notes = _data["notes"];
-        }
-    }
-
-    static fromJS(data: any): GarageEmployeeWorkSchemaItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageEmployeeWorkSchemaItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["employeeId"] = this.employeeId;
-        data["weekOfYear"] = this.weekOfYear;
-        data["dayOfWeek"] = this.dayOfWeek;
-        data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
-        data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
-        data["notes"] = this.notes;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageEmployeeWorkSchemaItem extends IBaseEntity {
-    employeeId: string;
-    weekOfYear?: number;
-    dayOfWeek: number;
-    startTime: Date;
-    endTime: Date;
-    notes?: string;
-}
-
-export class GarageEmployeeWorkExperienceItem extends BaseEntity implements IGarageEmployeeWorkExperienceItem {
-    employeeId!: string;
-    serviceId!: string;
-    description!: string;
-
-    constructor(data?: IGarageEmployeeWorkExperienceItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.employeeId = _data["employeeId"];
-            this.serviceId = _data["serviceId"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): GarageEmployeeWorkExperienceItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageEmployeeWorkExperienceItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["employeeId"] = this.employeeId;
-        data["serviceId"] = this.serviceId;
-        data["description"] = this.description;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageEmployeeWorkExperienceItem extends IBaseEntity {
-    employeeId: string;
-    serviceId: string;
-    description: string;
-}
-
 export class CreateGarageEmployeeCommand implements ICreateGarageEmployeeCommand {
+    isActive?: boolean;
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItemDto[];
     workExperiences?: GarageEmployeeWorkExperienceItemDto[];
@@ -1570,6 +1607,7 @@ export class CreateGarageEmployeeCommand implements ICreateGarageEmployeeCommand
 
     init(_data?: any) {
         if (_data) {
+            this.isActive = _data["isActive"];
             this.contact = _data["contact"] ? ContactItem.fromJS(_data["contact"]) : <any>undefined;
             if (Array.isArray(_data["workSchema"])) {
                 this.workSchema = [] as any;
@@ -1593,6 +1631,7 @@ export class CreateGarageEmployeeCommand implements ICreateGarageEmployeeCommand
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["isActive"] = this.isActive;
         data["contact"] = this.contact ? this.contact.toJSON() : <any>undefined;
         if (Array.isArray(this.workSchema)) {
             data["workSchema"] = [];
@@ -1609,6 +1648,7 @@ export class CreateGarageEmployeeCommand implements ICreateGarageEmployeeCommand
 }
 
 export interface ICreateGarageEmployeeCommand {
+    isActive?: boolean;
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItemDto[];
     workExperiences?: GarageEmployeeWorkExperienceItemDto[];
@@ -1820,6 +1860,10 @@ export interface IUpdateGarageServiceCommand {
 
 export class UpdateGarageEmployeeCommand implements IUpdateGarageEmployeeCommand {
     id?: string;
+    isActive?: boolean;
+    contact?: ContactItem;
+    workSchema?: GarageEmployeeWorkSchemaItemDto[];
+    workExperiences?: GarageEmployeeWorkExperienceItemDto[];
 
     constructor(data?: IUpdateGarageEmployeeCommand) {
         if (data) {
@@ -1833,6 +1877,18 @@ export class UpdateGarageEmployeeCommand implements IUpdateGarageEmployeeCommand
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.isActive = _data["isActive"];
+            this.contact = _data["contact"] ? ContactItem.fromJS(_data["contact"]) : <any>undefined;
+            if (Array.isArray(_data["workSchema"])) {
+                this.workSchema = [] as any;
+                for (let item of _data["workSchema"])
+                    this.workSchema!.push(GarageEmployeeWorkSchemaItemDto.fromJS(item));
+            }
+            if (Array.isArray(_data["workExperiences"])) {
+                this.workExperiences = [] as any;
+                for (let item of _data["workExperiences"])
+                    this.workExperiences!.push(GarageEmployeeWorkExperienceItemDto.fromJS(item));
+            }
         }
     }
 
@@ -1846,12 +1902,28 @@ export class UpdateGarageEmployeeCommand implements IUpdateGarageEmployeeCommand
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["isActive"] = this.isActive;
+        data["contact"] = this.contact ? this.contact.toJSON() : <any>undefined;
+        if (Array.isArray(this.workSchema)) {
+            data["workSchema"] = [];
+            for (let item of this.workSchema)
+                data["workSchema"].push(item.toJSON());
+        }
+        if (Array.isArray(this.workExperiences)) {
+            data["workExperiences"] = [];
+            for (let item of this.workExperiences)
+                data["workExperiences"].push(item.toJSON());
+        }
         return data;
     }
 }
 
 export interface IUpdateGarageEmployeeCommand {
     id?: string;
+    isActive?: boolean;
+    contact?: ContactItem;
+    workSchema?: GarageEmployeeWorkSchemaItemDto[];
+    workExperiences?: GarageEmployeeWorkExperienceItemDto[];
 }
 
 export class BadRequestResponse implements IBadRequestResponse {

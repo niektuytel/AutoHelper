@@ -28,6 +28,7 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             .NotEmpty().WithMessage("Price is required.");
 
         RuleFor(v => v.UserId)
+            .NotEmpty().WithMessage("UserId cannot be empty.")
             .CustomAsync(async (userId, context, cancellationToken) => {
                 var garage = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
                 if (garage == null)

@@ -13,9 +13,6 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
     {
         _context = context;
 
-        RuleFor(v => v.UserId)
-            .NotEmpty().WithMessage("UserId cannot be empty.");
-
         RuleFor(v => v.Contact)
             .NotNull().WithMessage("Contact information cannot be null.")
             .ChildRules(contactRules =>
@@ -27,7 +24,6 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
 
         RuleFor(v => v.WorkSchema)
             .NotNull().WithMessage("Work Schema cannot be null.")
-            .NotEmpty().WithMessage("Work Schema cannot be empty.")
             .ForEach(workSchemaItemRule =>
             {
                 workSchemaItemRule.ChildRules(item =>
@@ -40,7 +36,6 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
 
         RuleFor(v => v.WorkExperiences)
             .NotNull().WithMessage("Work Experiences cannot be null.")
-            .NotEmpty().WithMessage("Work Experiences cannot be empty.")
             .ForEach(workExperienceItemRule =>
             {
                 workExperienceItemRule.ChildRules(item =>
@@ -58,6 +53,10 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
                     item.RuleFor(we => we.Description).NotEmpty().WithMessage("Description cannot be empty.");
                 });
             });
+
+        RuleFor(v => v.UserId)
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.");
 
         RuleFor(v => v.UserId)
             .CustomAsync(async (userId, context, cancellationToken) => {

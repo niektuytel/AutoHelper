@@ -32,6 +32,7 @@ import { GetGarageClient } from "../../../../app/GarageClient";
 import { useTranslation } from "react-i18next";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { DAYSINWEEKSHORT, DAYSINWEEK } from "../../../../constants/days";
 
 // own imports
 
@@ -55,13 +56,6 @@ interface DroppableDayProps {
     children?: React.ReactNode;
 }
 
-const daysOfWeek = [
-    "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
-];
-
-const daysOfWeekMobile = [
-    "sun", "mon", "tue", "wed", "thu", "fri", "sat"
-];
 
 function findLastConnectedRange(time: number, day: number, selectedRanges: Array<{ time: number, day: number }>): { time: number, day: number } {
     const nextItem = selectedRanges.find(item => item.day === day && item.time === time + 30);
@@ -138,12 +132,14 @@ const DraggableHalfHour = forwardRef<HTMLDivElement, DraggableHalfHourProps>((pr
 });
 
 interface IProps {
+    mode: 'create' | 'edit';
     dialogOpen: boolean;
     setDialogOpen: (dialogOpen: boolean) => void;
+    workSchema: Array<GarageEmployeeWorkSchemaItemDto> | undefined;
     setWorkSchema: (data: Array<GarageEmployeeWorkSchemaItemDto>) => void;
 }
 
-export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSchema }: IProps) {
+export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, workSchema, setWorkSchema }: IProps) {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -159,11 +155,31 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
         });
     });
 
-
     const [selectedRanges, setSelectedRanges] = useState<Array<{ time: number, day: number }>>([]);
     const [selectedHours, setSelectedHours] = useState<string[]>([]);
     const [isMouseDown, setIsMouseDown] = useState(false);
     const [draggingDay, setDraggingDay] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (mode === "edit" && workSchema) {
+            const ranges = workSchema.map(item => {
+                const startMinutes = item.startTime.getHours() * 60 + item.startTime.getMinutes();
+                const endMinutes = item.endTime.getHours() * 60 + item.endTime.getMinutes();
+                const intervals = [];
+
+                for (let i = startMinutes; i < endMinutes; i += 30) {
+                    intervals.push({ time: i, day: item.dayOfWeek });
+                }
+
+                return intervals;
+            }).flat(); // Flatten the array since the map will return a 2D array
+
+            setSelectedRanges(ranges);
+        } else {
+            setSelectedRanges([]);
+        }
+    }, [mode, workSchema]);
+
 
     const handleMouseDown = (hour: number, minute: number, day: number) => {
         setIsMouseDown(true);
@@ -259,15 +275,6 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
         setWorkSchema(workSchemaItems);
     }
 
-
-    // Utility function to get the current week number
-    function getWeekNumber(d: Date) {
-        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        const yearStart = new Date(Date.UTC(d.getFullYear(), 0, 1));
-        const weekNo = Math.ceil((((d.valueOf() - yearStart.valueOf()) / 86400000) + 1) / 7);
-        return weekNo;
-    }
-
     return (
         <Dialog
             open={dialogOpen}
@@ -286,15 +293,15 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, setWorkSch
                 }}
             >
                 <Grid container style={isMobile ? { width: '100%' } : { width: '100%', paddingRight: "16px" }}>
-                    {(isMobile ? daysOfWeekMobile : daysOfWeek).map((day) => (
+                    {(isMobile ? DAYSINWEEKSHORT : DAYSINWEEK).map((day) => (
                         <Grid item xs={12} md={1} key={day} style={dayStyles}>
                             <Box mb={2} textAlign="center">{day}</Box>
                         </Grid>
                     ))}
                 </Grid>
                 <DndProvider backend={HTML5Backend}>
-                    <Grid container style={{ flex: 1, display: 'flex', width: '100%', overflowY: 'auto', border: '1px solid gray'}}>
-                        {daysOfWeek.map((day, dayIndex) => (
+                    <Grid container style={{ flex: 1, display: 'flex', width: '100%', overflowY: 'auto', border: '1px solid gray' }}>
+                        {DAYSINWEEK.map((day, dayIndex) => (
                             <Grid item xs={12} md={1} key={day} style={dayStyles}>
                                 <DroppableDay day={dayIndex}>
                                     {hours.map(hour => (

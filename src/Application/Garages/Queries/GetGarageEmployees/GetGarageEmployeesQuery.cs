@@ -41,6 +41,9 @@ public class GetGarageEmployeesQueryHandler : IRequestHandler<GetGarageEmployees
     {
         var entities = _context.GarageEmployees
             .Where(x => x.UserId == request.UserId)
+            .Include(x => x.Contact)
+            .Include(x => x.WorkSchema)
+            .Include(x => x.WorkExperiences)
             .AsEnumerable();
 
         return _mapper.Map<IEnumerable<GarageEmployeeItemDto>>(entities) ?? new List<GarageEmployeeItemDto>();

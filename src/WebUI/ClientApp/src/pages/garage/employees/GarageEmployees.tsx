@@ -11,6 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GarageEmployeeDrawer from "./components/GarageEmployeeDrawer";
 import GarageEmployeeDeleteDialog from "./components/GarageEmployeeDeleteDialog";
+import GarageEmployeeCard from "./components/GarageEmployeeCard";
 
 // own imports
 
@@ -114,6 +115,14 @@ export default ({ }: IProps) => {
                 }
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
+            {garageEmployees?.map((item) => item &&
+                <GarageEmployeeCard
+                    key={`employee-card-${item.id}`}
+                    employee={item}
+                    selectedItem={selectedItem}
+                    setSelectedItem={setSelectedItem}
+                />
+            )}
             <GarageEmployeeDeleteDialog
                 service={selectedItem}
                 confirmDeleteOpen={dialogDeleteOpen}
@@ -123,7 +132,7 @@ export default ({ }: IProps) => {
             />
             <GarageEmployeeDrawer
                 mode={dialogMode}
-                service={selectedItem}
+                employee={selectedItem}
                 dialogOpen={dialogOpen}
                 setDialogOpen={setDialogOpen}
                 createEmployee={createEmployee}

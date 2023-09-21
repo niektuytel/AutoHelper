@@ -10,6 +10,7 @@ using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.DeleteGarageEmployee;
 
@@ -17,15 +18,15 @@ namespace AutoHelper.Application.Garages.Commands.DeleteGarageEmployee;
 public record DeleteGarageEmployeeCommand : IRequest<GarageEmployeeItem>
 {
 
-    public DeleteGarageEmployeeCommand(Guid id, string userId)
+    public DeleteGarageEmployeeCommand(Guid employeeId, string userId)
     {
-        Id = id;
+        EmployeeId = employeeId;
         UserId = userId;
     }
-    public Guid Id { get; set; }
+    public Guid EmployeeId { get; set; }
 
     [JsonIgnore]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 }
 
 public class DeleteGarageEmployeeCommandHandler : IRequestHandler<DeleteGarageEmployeeCommand, GarageEmployeeItem>
@@ -41,14 +42,11 @@ public class DeleteGarageEmployeeCommandHandler : IRequestHandler<DeleteGarageEm
 
     public async Task<GarageEmployeeItem> Handle(DeleteGarageEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageEmployees.FindAsync(request.Id);
-        if (entity == null)
-        {
-            throw new NotFoundException(nameof(GarageEmployeeItem), request.Id);
-        }
-
-
-        throw new NotImplementedException();
+        var entity = await _context.GarageEmployees
+            .Include(item => item.Contact)
+            .Include(item => item.WorkSchema)
+            .Include(item => item.WorkExperiences)
+            .FirstAsync(item => item.Id == request.EmployeeId, cancellationToken: cancellationToken);
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));

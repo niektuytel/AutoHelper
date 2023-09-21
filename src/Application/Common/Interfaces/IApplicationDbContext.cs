@@ -9,6 +9,8 @@ public interface IApplicationDbContext
     DbSet<GarageItem> Garages { get; }
     DbSet<GarageServiceItem> GarageServices { get; }
     DbSet<GarageEmployeeItem> GarageEmployees { get; }
+    DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems { get; }
+    DbSet<GarageEmployeeWorkExperienceItem> GarageEmployeeWorkExperienceItems { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 

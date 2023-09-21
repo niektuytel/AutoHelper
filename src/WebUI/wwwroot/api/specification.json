@@ -779,101 +779,26 @@
           "id": {
             "type": "string",
             "format": "guid"
-          }
-        }
-      },
-      "GarageServiceItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "garageId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "type": {
-                "$ref": "#/components/schemas/GarageServiceType"
-              },
-              "description": {
-                "type": "string"
-              },
-              "durationInMinutes": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "price": {
-                "type": "number",
-                "format": "decimal"
-              },
-              "status": {
-                "type": "integer",
-                "format": "int32"
-              }
+          "isActive": {
+            "type": "boolean"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/ContactItem"
+          },
+          "workSchema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+            }
+          },
+          "workExperiences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
             }
           }
-        ]
-      },
-      "CreateGarageServiceCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "description": {
-            "type": "string"
-          },
-          "durationInMinutes": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          }
         }
-      },
-      "GarageEmployeeItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "garageId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "contact": {
-                "$ref": "#/components/schemas/ContactItem"
-              },
-              "workSchema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
-                }
-              },
-              "workExperiences": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
-                }
-              }
-            }
-          }
-        ]
       },
       "GarageEmployeeWorkSchemaItem": {
         "allOf": [
@@ -954,10 +879,109 @@
           }
         ]
       },
+      "GarageServiceItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "garageId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "type": {
+                "$ref": "#/components/schemas/GarageServiceType"
+              },
+              "description": {
+                "type": "string"
+              },
+              "durationInMinutes": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "price": {
+                "type": "number",
+                "format": "decimal"
+              },
+              "status": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "CreateGarageServiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "description": {
+            "type": "string"
+          },
+          "durationInMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
+      },
+      "GarageEmployeeItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "garageId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "isActive": {
+                "type": "boolean"
+              },
+              "contact": {
+                "$ref": "#/components/schemas/ContactItem"
+              },
+              "workSchema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+                }
+              },
+              "workExperiences": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                }
+              }
+            }
+          }
+        ]
+      },
       "CreateGarageEmployeeCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "isActive": {
+            "type": "boolean"
+          },
           "contact": {
             "$ref": "#/components/schemas/ContactItem"
           },
@@ -1086,6 +1110,24 @@
           "id": {
             "type": "string",
             "format": "guid"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/ContactItem"
+          },
+          "workSchema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItemDto"
+            }
+          },
+          "workExperiences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItemDto"
+            }
           }
         }
       },

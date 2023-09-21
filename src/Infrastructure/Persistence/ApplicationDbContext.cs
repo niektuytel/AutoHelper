@@ -33,6 +33,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<GarageItem> Garages => Set<GarageItem>();
     public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();
     public DbSet<GarageEmployeeItem> GarageEmployees => Set<GarageEmployeeItem>();
+    public DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems => Set<GarageEmployeeWorkSchemaItem>();
+    public DbSet<GarageEmployeeWorkExperienceItem> GarageEmployeeWorkExperienceItems => Set<GarageEmployeeWorkExperienceItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

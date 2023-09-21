@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { CreateGarageEmployeeCommand, GarageClient, UpdateGarageEmployeeCommand } from "../../../app/web-api-client";
+import { ContactItem, CreateGarageEmployeeCommand, GarageClient, GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, UpdateGarageEmployeeCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -54,9 +54,9 @@ function useGarageEmployees(onResponse: (data: any) => void) {
 
     const createMutation = useMutation(garageClient.createEmployee.bind(garageClient), {
         onSuccess: (response) => {
-            // Enable garage colleagues page
-            setConfigurationIndex(3, userRole)
-            dispatch(showOnSuccess("Garage service has been created!"));
+            // Enable garage Planning page
+            setConfigurationIndex(4, userRole)
+            dispatch(showOnSuccess("Garage employee has been created!"));
 
             // Update the garageSettings in the cache after creating
             queryClient.setQueryData(['garageEmployees'], [...garageEmployees!, response]);
@@ -70,7 +70,7 @@ function useGarageEmployees(onResponse: (data: any) => void) {
 
     const updateMutation = useMutation(garageClient.updateEmployee.bind(garageClient), {
         onSuccess: (response) => {
-            dispatch(showOnSuccess("Garage service has been updated!"));
+            dispatch(showOnSuccess("Garage employee has been updated!"));
 
             // Update the garageSettings in the cache after updating
             const updatedGarageEmployees = garageEmployees?.map((service) => {
@@ -108,57 +108,28 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     });
 
     const createEmployee = (data: any) => {
-        //{
-        //    "Contact": {
-        //        "FullName": "niek",
-        //            "Email": "tuytelniek@gmail.com",
-        //                "PhoneNumber": "0618395668"
-        //    },
-        //    "WorkSchema": [
-        //        {
-        //            "dayOfWeek": 0,
-        //            "startTime": "2023-09-21T10:00:00.000Z",
-        //            "endTime": "2023-09-21T12:00:00.000Z"
-        //        },
-        //        {
-        //            "dayOfWeek": 1,
-        //            "startTime": "2023-09-21T06:30:00.000Z",
-        //            "endTime": "2023-09-21T09:30:00.000Z"
-        //        },
-        //        {
-        //            "dayOfWeek": 3,
-        //            "startTime": "2023-09-21T00:30:00.000Z",
-        //            "endTime": "2023-09-21T01:30:00.000Z"
-        //        },
-        //        {
-        //            "dayOfWeek": 3,
-        //            "startTime": "2023-09-21T02:30:00.000Z",
-        //            "endTime": "2023-09-21T03:30:00.000Z"
-        //        },
-        //        {
-        //            "dayOfWeek": 3,
-        //            "startTime": "2023-09-21T11:00:00.000Z",
-        //            "endTime": "2023-09-21T12:30:00.000Z"
-        //        }
-        //    ],
-        //        "WorkExperiences": [
-        //            {
-        //                "id": "e274af34-5033-444a-0a6c-08dbb4a21d3b",
-        //                "type": 5,
-        //                "description": "test",
-        //                "durationInMinutes": 60,
-        //                "price": 115,
-        //                "status": 0
-        //            }
-        //        ]
-        //}
         console.log(data);
 
-        var command = new CreateGarageEmployeeCommand();
-        //command.type = data.type;
-        //command.description = data.description;
-        //command.price = data.price;
-        //command.durationInMinutes = data.durationInMinutes;
+        var command = new CreateGarageEmployeeCommand({
+            isActive: data.isActive,
+            contact: new ContactItem(),
+            workSchema: data.WorkSchema ? data.WorkSchema.map((item: any) => {
+                return new GarageEmployeeWorkSchemaItemDto({
+                    dayOfWeek: item.dayOfWeek,
+                    startTime: item.startTime,
+                    endTime: item.endTime
+                });
+            }) : [],
+            workExperiences: data.WorkExperiences ? data.WorkExperiences.map((item: any) => {
+                return new GarageEmployeeWorkExperienceItemDto({
+                    serviceId: item.serviceId,
+                    description: item.description,
+                });
+            }) : []
+        });
+        command.contact!.fullName = data.fullName;
+        command.contact!.email = data.email;
+        command.contact!.phoneNumber = data.phoneNumber;
 
         console.log(command.toJSON());
         createMutation.mutate(command);
@@ -167,12 +138,27 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     const updateEmployee = (data: any) => {
         console.log(data);
 
-        var command = new UpdateGarageEmployeeCommand();
-        command.id = data.id;
-        //command.type = data.type;
-        //command.description = data.description;
-        //command.price = data.price;
-        //command.durationInMinutes = data.durationInMinutes;
+        var command = new UpdateGarageEmployeeCommand({
+            id: data.id,
+            isActive: data.isActive,
+            contact: new ContactItem(),
+            workSchema: data.WorkSchema ? data.WorkSchema.map((item: any) => {
+                return new GarageEmployeeWorkSchemaItemDto({
+                    dayOfWeek: item.dayOfWeek,
+                    startTime: item.startTime,
+                    endTime: item.endTime
+                });
+            }) : [],
+            workExperiences: data.WorkExperiences ? data.WorkExperiences.map((item: any) => {
+                return new GarageEmployeeWorkExperienceItemDto({
+                    serviceId: item.serviceId,
+                    description: item.description,
+                });
+            }) : []
+        });
+        command.contact!.fullName = data.fullName;
+        command.contact!.email = data.email;
+        command.contact!.phoneNumber = data.phoneNumber;
 
         console.log(command.toJSON());
         updateMutation.mutate(command);
