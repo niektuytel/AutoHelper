@@ -8,9 +8,9 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Garages.Models;
+namespace AutoHelper.Application.Garages.Queries.GetGarageSettings;
 
-public class GarageSettings : IMapFrom<GarageItem>
+public class GarageItemDto : IMapFrom<GarageItem>
 {
     public string Name { get; set; }
 

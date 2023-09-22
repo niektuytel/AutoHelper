@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Garages.DTOs;
+using AutoHelper.Application.Garages.Commands.DTOs;
 using AutoHelper.Application.Garages.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Domain.Entities;

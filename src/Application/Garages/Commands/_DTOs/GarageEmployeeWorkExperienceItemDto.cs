@@ -2,7 +2,7 @@
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Garages.DTOs;
+namespace AutoHelper.Application.Garages.Commands.DTOs;
 
 public class GarageEmployeeWorkExperienceItemDto
 {

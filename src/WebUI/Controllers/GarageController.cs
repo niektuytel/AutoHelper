@@ -9,7 +9,6 @@ using AutoHelper.Application.Garages.Commands.DeleteGarageService;
 using AutoHelper.Application.Garages.Commands.UpdateGarageEmployee;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
-using AutoHelper.Application.Garages.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
@@ -37,7 +36,7 @@ public class GarageController : ApiControllerBase
     }
 
     [HttpGet($"{nameof(GetSettings)}")]
-    public async Task<GarageSettings> GetSettings()
+    public async Task<GarageItemDto> GetSettings()
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new GetGarageSettingsQuery(userId));
@@ -79,7 +78,7 @@ public class GarageController : ApiControllerBase
     }
 
     [HttpPut($"{nameof(UpdateSettings)}")]
-    public async Task<GarageSettings> UpdateSettings([FromBody] UpdateGarageSettingsCommand command)
+    public async Task<GarageItemDto> UpdateSettings([FromBody] UpdateGarageSettingsCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);

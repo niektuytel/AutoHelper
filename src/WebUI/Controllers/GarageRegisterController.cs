@@ -5,7 +5,6 @@ using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
-using AutoHelper.Application.Garages.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
@@ -33,9 +32,9 @@ public class GarageRegisterController : ApiControllerBase
     }
 
     [HttpPost($"{nameof(Create)}")]
-    [ProducesResponseType(typeof(GarageSettings), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GarageItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GarageSettings>> Create([FromBody] CreateGarageCommand command)
+    public async Task<ActionResult<GarageItemDto>> Create([FromBody] CreateGarageCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         var userName = _currentUser.UserName ?? command.Name;

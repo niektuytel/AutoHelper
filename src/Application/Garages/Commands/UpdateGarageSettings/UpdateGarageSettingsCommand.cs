@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Models;
+using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 
 
-public record UpdateGarageSettingsCommand : IRequest<GarageSettings>
+public record UpdateGarageSettingsCommand : IRequest<GarageItemDto>
 {
     [JsonIgnore]
     public string UserId { get; set; }
@@ -34,7 +34,7 @@ public record UpdateGarageSettingsCommand : IRequest<GarageSettings>
 }
 
 
-public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGarageSettingsCommand, GarageSettings>
+public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGarageSettingsCommand, GarageItemDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -45,7 +45,7 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
         _mapper = mapper;
     }
 
-    public async Task<GarageSettings> Handle(UpdateGarageSettingsCommand request, CancellationToken cancellationToken)
+    public async Task<GarageItemDto> Handle(UpdateGarageSettingsCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId, cancellationToken);
         if (entity == null)
@@ -73,6 +73,6 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
         _context.Garages.Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<GarageSettings>(entity);
+        return _mapper.Map<GarageItemDto>(entity);
     }
 }

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Garages.Models;
+using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
-public record CreateGarageCommand : IRequest<GarageSettings>
+public record CreateGarageCommand : IRequest<GarageItemDto>
 {
     [JsonIgnore]
     public string? UserId { get; set; }
@@ -31,7 +31,7 @@ public record CreateGarageCommand : IRequest<GarageSettings>
     public BriefBankingDetailsDto BankingDetails { get; set; }
 }
 
-public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageCommand, GarageSettings>
+public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageCommand, GarageItemDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -42,7 +42,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
         _mapper = mapper;
     }
 
-    public async Task<GarageSettings> Handle(CreateGarageCommand request, CancellationToken cancellationToken)
+    public async Task<GarageItemDto> Handle(CreateGarageCommand request, CancellationToken cancellationToken)
     {
         var entity = new GarageItem
         {
@@ -75,6 +75,6 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
 
         _context.Garages.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<GarageSettings>(entity);
+        return _mapper.Map<GarageItemDto>(entity);
     }
 }
