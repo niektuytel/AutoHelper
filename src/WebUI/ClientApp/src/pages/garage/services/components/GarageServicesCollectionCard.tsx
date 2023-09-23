@@ -72,15 +72,14 @@ export default ({ items, setItems }: IProps) => {
 
                 </Box>
 
-                {/* Confirm Button */}
                 <Button
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                        
+
                     }}
                 >
-                    {t("Confirm")}
+                    {t("Finish")}
                 </Button>
             </Paper>
         </Box>

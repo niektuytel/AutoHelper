@@ -12,10 +12,12 @@ export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceT
             return t("SmallMaintenance");
         case GarageServiceType.GreatMaintenance:
             return t("GreatMaintenance");
-        case GarageServiceType.AirConditioningService:
-            return t("AirConditioningService");
+        case GarageServiceType.AirConditioningMaintenance:
+            return t("AirConditioningMaintenance");
         case GarageServiceType.SeasonalTireChange:
             return t("SeasonalTireChange");
+        case GarageServiceType.MOTService:
+            return t("MOTService");
     }
 
     if (altValue == "" && serviceType == GarageServiceType.Other) {
@@ -27,6 +29,12 @@ export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceT
 
 export function getDefaultCreateGarageServices(t: TFunction) {
     const defaultServices: CreateGarageServiceCommand[] = [
+        new CreateGarageServiceCommand({
+            type: GarageServiceType.MOTService,
+            description: t("MOTService.Description"),
+            durationInMinutes: 180,
+            price: 30.00
+        }),
         new CreateGarageServiceCommand({
             type: GarageServiceType.Inspection,
             description: t("Inspection.Description"),
@@ -46,8 +54,8 @@ export function getDefaultCreateGarageServices(t: TFunction) {
             price: 300.00
         }),
         new CreateGarageServiceCommand({
-            type: GarageServiceType.AirConditioningService,
-            description: t("AirConditioningService.Description"),
+            type: GarageServiceType.AirConditioningMaintenance,
+            description: t("AirConditioningMaintenance.Description"),
             durationInMinutes: 90,
             price: 200.00
         }),
@@ -56,7 +64,7 @@ export function getDefaultCreateGarageServices(t: TFunction) {
             description: t("SeasonalTireChange.Description"), 
             durationInMinutes: 60, 
             price: 115.00
-        }),
+        })
     ];
 
     return defaultServices;

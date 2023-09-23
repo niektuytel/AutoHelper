@@ -6,6 +6,7 @@ public enum GarageServiceType
     Inspection = 1,                     // Probleem inspectie
     SmallMaintenance = 2,               // Kleine beurt
     GreatMaintenance = 3,               // Grote beurt
-    AirConditioningService = 4,         // Airco service
+    AirConditioningMaintenance = 4,     // Airco onderhoud
     SeasonalTireChange = 5,             // Seizoens bandenwissel
+    MOTService = 6,                     // APK beurt
 }

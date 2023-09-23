@@ -104,31 +104,30 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                 fullScreen={isMobile}
             >
                 <DialogTitle>
-                    {t(dialogMode === 'create' ? "Add new garage service" : "Edit garage service")}
+                    {t(dialogMode === 'create' ? "service_add_title" : "service_edit_title")}
                     {isMobile && (
                         <IconButton onClick={() => setDialogOpen(false)} style={{ position: 'absolute', right: '8px', top: '8px' }}>
                             <CloseIcon />
                         </IconButton>
                     )}
                 </DialogTitle>
-
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogContent dividers>
                         <Controller
                             name="type"
                             control={control}
-                            rules={{ required: t("Title is required!") }}
+                            rules={{ required: t("What type of service do you need?") }}
                             defaultValue=""
                             render={({ field }) => (
                                 <FormControl fullWidth variant="outlined" error={Boolean(errors.type)}>
-                                    <InputLabel htmlFor="select-title">{t("Title")}</InputLabel>
+                                    <InputLabel htmlFor="select-title">{t("Service type")}</InputLabel>
                                     <Select
                                         {...field}
                                         onChange={(event) => {
                                             field.onChange(event);
                                             handleTitleChange(event);
                                         }}
-                                        label={t("Title")}
+                                        label={t("Service type")}
                                     >
                                         {defaultAvailableServices.map(item => (
                                             <MenuItem key={item.type} value={item.type}>
@@ -162,7 +161,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                         <Controller
                             name="durationInMinutes"
                             control={control}
-                            rules={{ required: t("Duration is required!") }}
+                            rules={{ required: t("How much time does it take?") }}
                             defaultValue=""
                             render={({ field }) => (
                                 <TextField
@@ -209,7 +208,6 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                                 >
                                                     <MenuItem value="minutes">{t("minutes")}</MenuItem>
                                                     <MenuItem value="hours">{t("hours")}</MenuItem>
-                                                    <MenuItem value="days">{t("days")}</MenuItem>
                                                 </Select>
                                             </InputAdornment>
                                         ),
@@ -222,7 +220,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                         <Controller
                             name="price"
                             control={control}
-                            rules={{ required: t("Price is required!") }}
+                            rules={{ required: t("How much is it?") }}
                             defaultValue=""
                             render={({ field }) => (
                                 <TextField
@@ -257,7 +255,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                             </Button>
                             :
                             <Button type="submit" variant="contained" color="primary">
-                                {t(dialogMode === 'create' ? "Create" : "Update")}
+                                {t(dialogMode === 'create' ? "Create" : "edit")}
                             </Button>
                         }
                     </DialogActions>

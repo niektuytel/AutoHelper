@@ -39,6 +39,59 @@
   "What is the name of the account holder?": "What is the name of the account holder?",
   "Account holder name": "Account holder name",
   "IBAN": "IBAN",
+  "hours": "hours",
+  "minutes": "minutes",
+  "Services": "Services",
+  "Services.Description": "All services you provide to your customer.",
+  "add": "add",
+  "edit": "edit",
+  "delete": "delete",
+  "Cart item already exist": "Cart item already exist",
+  "Other": "Other",
+  "Other.Description": "Still want to handle a service that is not described",
+  "Inspection": "Inspection",
+  "Inspection.Description": "We check essential parts of your vehicle, such as brakes, tires and fluids, to ensure your journey is safe and uninterrupted.",
+  "SmallMaintenance": "Small maintenance",
+  "SmallMaintenance.Description": "Your car will be checked on the most important points. We change the engine oil, replace the oil filter and top up the windshield washer fluid.",
+  "GreatMaintenance": "Great maintenance",
+  "GreatMaintenance.Description": "During the biennial major service, we check your car on a large number of important points. We change the engine oil, replace the oil and cabin filter, perform an alignment check, clean and check your brakes. All parts of the car are checked for function, wear and possible damage.",
+  "AirConditioningMaintenance": "AirConditioning maintenance",
+  "AirConditioningMaintenance.Description": "Checking and topping up your air conditioning",
+  "SeasonalTireChange": "Seasonal tire change",
+  "SeasonalTireChange.Description": "A service that rotates your tires according to the season, to ensure optimal safety and performance of your vehicle all year round.",
+  "MOTService": "MOT service",
+  "MOTService.Description": "A legally required inspection to check and guarantee the road safety, environmental aspects and registration of your vehicle.",
+  "Service_description": "Description, e.g. Repairing the gearbox",
+  "Duration_explained": "Time duration (How much time does it take?)",
+  "Price_explained": "Price (How much is it?)",
+  "Service_delete_confirm_title": "Delete service",
+  "Service_delete_confirm": "Are you sure you want to delete this service?",
+  "Confirm": "Bevestigen",
+  "service_add_title": "Add service",
+  "service_edit_title": "Edit service",
+  "What type of service do you need?": "What type of service do you need?",
+  "Service type": "Service type",
+  "Description": "Description",
+  "Duration": "Duration",
+  "Price": "Price",
+  "How much time does it take?": "How much time does it take?",
+  "How much is it?": "How much is it?",
+  "Create": "Create",
+  "Description is required!": "Description is required!",
+  "Finish": "Finish",
+  "Selected Services": "Selected Services",
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -73,8 +126,6 @@
   "yes": "Yes",
   "no": "No",
   "are_you_sure": "Are you sure?",
-
-  "create": "Create",
   "edit": "Edit",
   "successful_action": "Successful action",
   "failed_action": "Failed action",

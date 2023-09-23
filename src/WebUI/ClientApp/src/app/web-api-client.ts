@@ -674,7 +674,6 @@ export class GarageItemDto implements IGarageItemDto {
     location?: GarageLocationItem;
     bankingDetails?: GarageBankingDetailsItem;
     servicesSettings?: GarageServicesSettingsItem;
-    contacts?: ContactItem[];
 
     constructor(data?: IGarageItemDto) {
         if (data) {
@@ -694,11 +693,6 @@ export class GarageItemDto implements IGarageItemDto {
             this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
             this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
             this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
-            if (Array.isArray(_data["contacts"])) {
-                this.contacts = [] as any;
-                for (let item of _data["contacts"])
-                    this.contacts!.push(ContactItem.fromJS(item));
-            }
         }
     }
 
@@ -718,11 +712,6 @@ export class GarageItemDto implements IGarageItemDto {
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
         data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
         data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
-        if (Array.isArray(this.contacts)) {
-            data["contacts"] = [];
-            for (let item of this.contacts)
-                data["contacts"].push(item.toJSON());
-        }
         return data;
     }
 }
@@ -735,7 +724,6 @@ export interface IGarageItemDto {
     location?: GarageLocationItem;
     bankingDetails?: GarageBankingDetailsItem;
     servicesSettings?: GarageServicesSettingsItem;
-    contacts?: ContactItem[];
 }
 
 export abstract class BaseEntity implements IBaseEntity {
@@ -965,47 +953,6 @@ export interface IGarageServicesSettingsItem extends IBaseEntity {
     isAuthohelperDeliveryEnabled?: boolean;
     deliveryPrice?: number;
     maxAutomaticPlannedDeliveries?: number;
-}
-
-export class ContactItem extends BaseEntity implements IContactItem {
-    fullName!: string;
-    phoneNumber?: string;
-    email?: string;
-
-    constructor(data?: IContactItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.fullName = _data["fullName"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.email = _data["email"];
-        }
-    }
-
-    static fromJS(data: any): ContactItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new ContactItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fullName"] = this.fullName;
-        data["phoneNumber"] = this.phoneNumber;
-        data["email"] = this.email;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IContactItem extends IBaseEntity {
-    fullName: string;
-    phoneNumber?: string;
-    email?: string;
 }
 
 export class GarageOverview implements IGarageOverview {
@@ -1250,8 +1197,9 @@ export enum GarageServiceType {
     Inspection = 1,
     SmallMaintenance = 2,
     GreatMaintenance = 3,
-    AirConditioningService = 4,
+    AirConditioningMaintenance = 4,
     SeasonalTireChange = 5,
+    MOTService = 6,
 }
 
 export class GarageEmployeeItemDto implements IGarageEmployeeItemDto {
@@ -1320,6 +1268,47 @@ export interface IGarageEmployeeItemDto {
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItem[];
     workExperiences?: GarageEmployeeWorkExperienceItem[];
+}
+
+export class ContactItem extends BaseEntity implements IContactItem {
+    fullName!: string;
+    phoneNumber?: string;
+    email?: string;
+
+    constructor(data?: IContactItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.fullName = _data["fullName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.email = _data["email"];
+        }
+    }
+
+    static fromJS(data: any): ContactItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ContactItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fullName"] = this.fullName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["email"] = this.email;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IContactItem extends IBaseEntity {
+    fullName: string;
+    phoneNumber?: string;
+    email?: string;
 }
 
 export class GarageEmployeeWorkSchemaItem extends BaseEntity implements IGarageEmployeeWorkSchemaItem {

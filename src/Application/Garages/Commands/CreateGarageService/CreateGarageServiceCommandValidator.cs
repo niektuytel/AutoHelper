@@ -20,7 +20,7 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
 
         RuleFor(v => v.Description)
             .NotEmpty().WithMessage("Description is required.")
-            .MaximumLength(200).WithMessage("Description must not exceed 200 characters.");
+            .MaximumLength(800).WithMessage("Description must not exceed 200 characters.");
 
         RuleFor(v => v.DurationInMinutes)
             .NotEmpty().WithMessage("Duration is required.");
@@ -40,6 +40,7 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
 
     private async Task<bool> TitleNotAlreadyExist(CreateGarageServiceCommand request, GarageServiceType type, CancellationToken cancellationToken)
     {
-        return await _context.GarageServices.AnyAsync(x => x.UserId == request.UserId && x.Type == type, cancellationToken);
+        var foundSome = await _context.GarageServices.AnyAsync(x => x.UserId == request.UserId && x.Type == type, cancellationToken);
+        return foundSome == false;
     }
 }

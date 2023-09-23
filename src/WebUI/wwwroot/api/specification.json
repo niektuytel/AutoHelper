@@ -470,12 +470,6 @@
           },
           "servicesSettings": {
             "$ref": "#/components/schemas/GarageServicesSettingsItem"
-          },
-          "contacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContactItem"
-            }
           }
         }
       },
@@ -591,33 +585,6 @@
               "maxAutomaticPlannedDeliveries": {
                 "type": "integer",
                 "format": "int32"
-              }
-            }
-          }
-        ]
-      },
-      "ContactItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "fullName"
-            ],
-            "properties": {
-              "fullName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "phoneNumber": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string",
-                "format": "email"
               }
             }
           }
@@ -760,8 +727,9 @@
           "Inspection",
           "SmallMaintenance",
           "GreatMaintenance",
-          "AirConditioningService",
-          "SeasonalTireChange"
+          "AirConditioningMaintenance",
+          "SeasonalTireChange",
+          "MOTService"
         ],
         "enum": [
           0,
@@ -769,7 +737,8 @@
           2,
           3,
           4,
-          5
+          5,
+          6
         ]
       },
       "GarageEmployeeItemDto": {
@@ -799,6 +768,33 @@
             }
           }
         }
+      },
+      "ContactItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fullName"
+            ],
+            "properties": {
+              "fullName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        ]
       },
       "GarageEmployeeWorkSchemaItem": {
         "allOf": [

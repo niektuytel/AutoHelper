@@ -30,6 +30,22 @@ import { getTitleForServiceType } from "../../defaultGarageService";
 
 // own imports
 
+type ServiceProps = {
+    durationInMinutes?: number;
+};
+
+const DurationDisplay: React.FC<ServiceProps> = ({ durationInMinutes = 0 }) => {
+    const { t } = useTranslation();
+    const hours = Math.floor(durationInMinutes / 60);
+    const minutes = durationInMinutes % 60;
+
+    return (
+        <Typography variant="caption" color="textSecondary" style={{ marginLeft: "8px" }}>
+            {hours > 0 && `${hours} ${t('hours')}${minutes > 0 ? ',' : ''} `}
+            {minutes > 0 && `${minutes} ${t('minutes')}`}
+        </Typography>
+    );
+};
 
 interface IProps {
     service: GarageServiceItemDto;
@@ -77,14 +93,11 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
             <CardActions style={{ padding: "0", justifyContent: "space-between" }}>
                 <Box display="flex" alignItems="center">
                     <AccessTimeIcon color="action" fontSize="small" />
-                    <Typography variant="caption" color="textSecondary" style={{ marginLeft: "8px" }}>
-                        {service.durationInMinutes}
-                    </Typography>
+                    <DurationDisplay durationInMinutes={service.durationInMinutes} />
                 </Box>
                 <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >
-                    <EuroIcon color="action" fontSize="small" style={{ marginRight: "5px" }} />
                     <Typography variant="body2" align="right">
-                        {service.price}
+                        €{Number(service.price).toFixed(2)}
                     </Typography>
                 </Box>
             </CardActions>

@@ -48,7 +48,6 @@ export default ({ addCartItem }: IProps) => {
     const convertDurationToMinutes = () => {
         switch (timeUnit) {
             case 'hours': return otherServiceDuration * 60;
-            case 'days': return otherServiceDuration * 24 * 60;
             default: return otherServiceDuration;
         }
     };
@@ -81,6 +80,7 @@ export default ({ addCartItem }: IProps) => {
                     title={
                         <TextField
                             fullWidth
+                            label={t("Service_description")}
                             size="small"
                             value={otherServiceDescription}
                             onChange={(e) => setOtherServiceDescription(e.target.value)}
@@ -91,7 +91,7 @@ export default ({ addCartItem }: IProps) => {
                     {isMobile ?
                         <Box width="100%">
                             <TextField
-                                label={t("Duration")}
+                                label={t("Duration_explained")}
                                 fullWidth
                                 size="small"
                                 type="number"
@@ -131,7 +131,6 @@ export default ({ addCartItem }: IProps) => {
                                             >
                                                 <MenuItem value="minutes">{t("minutes")}</MenuItem>
                                                 <MenuItem value="hours">{t("hours")}</MenuItem>
-                                                <MenuItem value="days">{t("days")}</MenuItem>
                                             </Select>
                                         </InputAdornment>
                                     ),
@@ -139,7 +138,7 @@ export default ({ addCartItem }: IProps) => {
                                 }}
                             />
                             <TextField
-                                label={t("Price")}
+                                label={t("Price_explained")}
                                 onChange={(e) => setOtherServicePrice(Number(e.target.value))}
                                 fullWidth
                                 size="small"
@@ -161,7 +160,7 @@ export default ({ addCartItem }: IProps) => {
                             {/* Duration Input */}
                             <Box display="flex" alignItems="center" flexGrow={1} marginRight={2}>
                                 <TextField
-                                    label={t("Duration")}
+                                    label={t("Duration_explained")}
                                     fullWidth
                                     size="small"
                                     type="number"
@@ -201,7 +200,6 @@ export default ({ addCartItem }: IProps) => {
                                                 >
                                                     <MenuItem value="minutes">{t("minutes")}</MenuItem>
                                                     <MenuItem value="hours">{t("hours")}</MenuItem>
-                                                    <MenuItem value="days">{t("days")}</MenuItem>
                                                 </Select>
                                             </InputAdornment>
                                         ),
@@ -213,7 +211,7 @@ export default ({ addCartItem }: IProps) => {
                             {/* Price Input */}
                             <Box display="flex" alignItems="center" flexGrow={1}>
                                 <TextField
-                                    label={t("Price")}
+                                    label={t("Price_explained")}
                                     onChange={(e) => setOtherServicePrice(Number(e.target.value))}
                                     fullWidth
                                     size="small"

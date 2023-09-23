@@ -47,18 +47,13 @@ export default ({ }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
-
-
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-    const [currentService, setCurrentService] = useState<GarageServiceItemDto  | undefined>(undefined);
-
 
     const handleFormSubmit = (data: any) => {
         if (dialogMode == "create" || dialogMode == "edit") {
@@ -138,13 +133,13 @@ export default ({ }: IProps) => {
                     :
                     <ButtonGroup aria-label="Buttons used for create, edit and delete">
                         <Button onClick={() => handleAddClick()}>
-                            <AddIcon />{t("Add")}
+                            <AddIcon />{t("add")}
                         </Button>
                         <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
-                            <EditIcon />{t("Edit")}
+                            <EditIcon />{t("edit")}
                         </Button>
                         <Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>
-                            <DeleteIcon />{t("Delete")}
+                            <DeleteIcon />{t("delete")}
                         </Button>
                     </ButtonGroup>
 
