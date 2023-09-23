@@ -11,7 +11,7 @@
   "overview_camelcase": "Overzicht",
   "planning_camelcase": "Planning",
   "services_camelcase": "Diensten",
-  "colleagues_camelcase": "Collega's",
+  "colleagues_camelcase": "Werknemers",
   "settings_camelcase": "Instellingen",
   "account_camelcase": "Account",
   "vehicle_search_camelcase": "Auto zoeken",
@@ -19,7 +19,7 @@
   "settings_description": "Hier kunt u uw garage instellingen aanpassen",
   "profile": "profiel",
   "services": "diensten",
-  "employees": "collega's",
+  "employees": "werknemers",
   "planning": "planning",
   "Name": "Naam",
   "Select a bank...": "Selecteer een bank...",
@@ -67,7 +67,7 @@
   "Service_delete_confirm_title": "Dienst verwijderen",
   "Service_delete_confirm": "Weet u zeker dat u deze service wilt verwijderen?",
   "Confirm": "Bevestigen",
-  "service_add_title": "Dienst aanmaken",
+  "service_add_title": "Dienst toevoegen",
   "service_edit_title": "Dienst aanpassen",
   "What type of service do you need?": "Welk type dienst heeft u nodig?",
   "Service type": "Type dienst",
@@ -80,6 +80,49 @@
   "Description is required!": "Beschrijving is vereist!",
   "Finish": "Afhandelen",
   "Selected Services": "Geselecteerde diensten",
+  "Employees": "Werknemers",
+  "Employees.Description": "Hier kun je je werknemers beheren om ingepland te worden voor online aanvragen",
+  "has no work schema": "heeft geen werk schema",
+  "Employee_delete_confirm_title": "Collega verwijderen",
+  "Employee_delete_confirm": "Weet u zeker dat u deze collega wilt verwijderen?",
+  "Employee need an workschema": "Werknemer heeft een werkschema nodig",
+  "Employee need a work experience": "Werknemer heeft werkervaring nodig",
+  "employee_add_title": "Werknemer toevoegen",
+  "employee_edit_title": "Werknemer aanpassen",
+  "work schema": "werk schema",
+  "work experience": "werk ervaring",
+  "experience_add_title": "Werk ervaring toevoegen",
+  "experience_edit_title": "Werk ervaring aanpassen",
+  "schema_add_title": "Werk schema",
+  "schema_edit_title": "Werk schema",
+  "sunday": "Zondag",
+  "monday": "Maandag",
+  "tuesday": "Dinsdag",
+  "wednesday": "Woensdag",
+  "thursday": "Donderdag",
+  "friday": "Vrijdag",
+  "saturday": "Zaterdag",
+  "sun": "Zo",
+  "mon": "Ma",
+  "tue": "Di",
+  "wed": "Wo",
+  "thu": "Do",
+  "fri": "Vr",
+  "sat": "Za",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

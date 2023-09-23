@@ -10,6 +10,6 @@ public class GarageEmployeeWorkExperienceItemDto
     public Guid ServiceId { get; set; }
 
     [Required]
-    public string Description { get; set; }
+    public string Description { get; set; } = "";
 
 }

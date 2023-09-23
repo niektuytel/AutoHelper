@@ -1,49 +1,63 @@
 ﻿import React, { useState } from "react";
 import {
     Box,
-    Button,
-    Divider,
     IconButton,
-    Tooltip,
     Typography,
-    TextField,
     Card,
     CardHeader,
-    CardContent,
     CardActions,
-    CircularProgress,
     useTheme,
-    useMediaQuery,
-    Drawer,
-    ButtonGroup,
-    InputAdornment,
-    Select,
-    MenuItem,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import AddIcon from '@mui/icons-material/Add';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import PersonIcon from '@mui/icons-material/Person';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceType, GarageEmployeeItemDto } from "../../../../app/web-api-client";
-import { COLORS } from "../../../../constants/colors";
-import { getTitleForServiceType } from "../../defaultGarageService";
-import { DAYSINWEEKSHORT } from "../../../../constants/days";
+import { useDispatch } from "react-redux";
 
 // own imports
-
-const DAYS = [ '' ]
+import { GarageServiceType, GarageEmployeeItemDto } from "../../../../app/web-api-client";
+import { COLORS } from "../../../../constants/colors";
+import { DAYSINWEEKSHORT } from "../../../../constants/days";
+import { showOnError } from "../../../../redux/slices/statusSnackbarSlice";
 
 interface IProps {
     employee: GarageEmployeeItemDto;
     selectedItem: GarageEmployeeItemDto;
-    setSelectedItem: (service: GarageEmployeeItemDto) => void;
+    setSelectedItem: (employee: GarageEmployeeItemDto) => void;
+    updateEmployee: (employee: any) => void;
 }
 
-export default ({ employee, selectedItem, setSelectedItem }: IProps) => {
+export default ({ employee, selectedItem, setSelectedItem, updateEmployee }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
+    const dispatch = useDispatch();
+
+    const toggleActiveStatus = () => {
+        const updatedEmployee = new GarageEmployeeItemDto({ ...employee, isActive: !employee.isActive });
+
+        // check if the employee has a work schema and work experience, otherwise can not been activated
+        if (updatedEmployee.isActive) {
+            if (!updatedEmployee.workSchema || updatedEmployee.workSchema.length == 0) {
+                dispatch(showOnError(t("Employee need an workschema")));
+                return;
+            }
+            else if (!updatedEmployee.workExperiences || updatedEmployee.workExperiences.length == 0) {
+                dispatch(showOnError(t("Employee need a work experience")));
+                return;
+            }
+        }
+
+        updateEmployee({
+            id: updatedEmployee.id,
+            isActive: updatedEmployee.isActive,
+            fullName: updatedEmployee.contact?.fullName,
+            email: updatedEmployee.contact?.email,
+            phoneNumber: updatedEmployee.contact?.phoneNumber,
+            WorkSchema: updatedEmployee.workSchema,
+            WorkExperiences: updatedEmployee.workExperiences,
+        });
+    };
+
 
     return (
         <Card
@@ -61,21 +75,26 @@ export default ({ employee, selectedItem, setSelectedItem }: IProps) => {
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
             <CardActions style={{ padding: "0", justifyContent: "space-between" }}>
-                <Box display="flex" alignItems="center">
+                <Box display="flex" sx={{ "align-self": "self-end"}}>
                     <AccessTimeIcon color="action" fontSize="small" />
                     <Typography variant="caption" color="textSecondary" style={{ marginLeft: "8px" }}>
                         {(employee.workSchema && employee.workSchema.length != 0) ?
-                            employee.workSchema.map(item => DAYSINWEEKSHORT[item.dayOfWeek]).join(', ')
+                            employee.workSchema
+                                .map(item => t(DAYSINWEEKSHORT[item.dayOfWeek]))
+                                .filter((value, index, self) => self.indexOf(value) === index)
+                                .join(', ')
                             :
                             `${t('has no work schema')}`
                         }
                     </Typography>
                 </Box>
-                <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >
-                    {employee.isActive
-                        ? <PersonIcon style={{ color: 'green' }} fontSize="small" />
-                        : <PersonOffIcon style={{ color: 'red' }} fontSize="small" />
-                    }
+                <Box display="flex">
+                    <IconButton onClick={toggleActiveStatus}>
+                        {employee.isActive
+                            ? <PersonIcon style={{ color: 'green' }} fontSize="small" />
+                            : <PersonOffIcon style={{ color: 'red' }} fontSize="small" />
+                        }
+                    </IconButton>
                 </Box>
             </CardActions>
         </Card>

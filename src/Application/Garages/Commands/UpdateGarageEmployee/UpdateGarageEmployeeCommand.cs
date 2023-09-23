@@ -44,51 +44,67 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
     }
     public async Task<GarageEmployeeItem> Handle(UpdateGarageEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageEmployees.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
+        var entity = await _context.GarageEmployees
+            .Include(item => item.WorkSchema)
+            .Include(item => item.WorkExperiences)
+            .FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
+
         if (entity == null)
         {
             throw new NotFoundException(nameof(GarageEmployeeItem), request.Id);
         }
 
         // Update fields
-        entity.IsActive = request.IsActive;
         entity.Contact = request.Contact;
 
-        // Update work schema
-        var existingWorkSchemas = await _context.GarageEmployeeWorkSchemaItems
-            .Where(w => w.EmployeeId == entity.Id)
-            .ToListAsync(cancellationToken);
-
-        _context.GarageEmployeeWorkSchemaItems.RemoveRange(existingWorkSchemas);
-        entity.WorkSchema = request.WorkSchema.Select(item => new GarageEmployeeWorkSchemaItem
+        // when has schema + experience, employee is active
+        if (request.WorkSchema?.Any() == true && request.WorkExperiences?.Any() == true)
         {
-            EmployeeId = entity.Id,
-            WeekOfYear = item.WeekOfYear,
-            DayOfWeek = item.DayOfWeek,
-            StartTime = item.StartTime,
-            EndTime = item.EndTime,
-            Notes = item.Notes
-        }).ToList();
-
-        // Update work experiences
-        var existingWorkExperiences = await _context.GarageEmployeeWorkExperienceItems
-            .Where(w => w.EmployeeId == entity.Id)
-            .ToListAsync(cancellationToken);
-
-        _context.GarageEmployeeWorkExperienceItems.RemoveRange(existingWorkExperiences);
-        entity.WorkExperiences = request.WorkExperiences.Select(item => new GarageEmployeeWorkExperienceItem
+            entity.IsActive = true;
+        }
+        else
         {
-            EmployeeId = entity.Id,
-            ServiceId = item.ServiceId,
-            Description = item.Description
-        }).ToList();
+            entity.IsActive = false;
+        }
+
+        _context.GarageEmployeeWorkSchemaItems.RemoveRange(entity.WorkSchema);
+        if (request.WorkSchema.Any())
+        {
+            entity.WorkSchema = request.WorkSchema.Select(item => new GarageEmployeeWorkSchemaItem
+            {
+                EmployeeId = entity.Id,
+                WeekOfYear = item.WeekOfYear,
+                DayOfWeek = item.DayOfWeek,
+                StartTime = item.StartTime,
+                EndTime = item.EndTime,
+                Notes = item.Notes
+            }).ToList();
+        }
+        else
+        {
+            entity.WorkSchema = new List<GarageEmployeeWorkSchemaItem>();
+        }
+
+        _context.GarageEmployeeWorkExperienceItems.RemoveRange(entity.WorkExperiences);
+        if(request.WorkExperiences.Any())
+        {
+            entity.WorkExperiences = request.WorkExperiences.Select(item => new GarageEmployeeWorkExperienceItem
+            {
+                EmployeeId = entity.Id,
+                ServiceId = item.ServiceId,
+                Description = item.Description
+            }).ToList();
+        }
+        else
+        {
+            entity.WorkExperiences = new List<GarageEmployeeWorkExperienceItem>();
+        }
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         // Since we fetched the entity directly from the DbContext, it's already tracked. 
         await _context.SaveChangesAsync(cancellationToken);
-
         return entity;
     }
 

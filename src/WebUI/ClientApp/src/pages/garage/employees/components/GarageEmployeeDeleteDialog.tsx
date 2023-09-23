@@ -25,11 +25,11 @@ export default ({ service, confirmDeleteOpen, setConfirmDeleteOpen, deleteServic
             onClose={() => setConfirmDeleteOpen(false)}
         >
             <DialogTitle>
-                {t("Confirm Deletion")}
+                {t("Employee_delete_confirm_title")}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    {t("Are you sure you want to delete this service?")}
+                    {t("Employee_delete_confirm")}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>

@@ -80,6 +80,54 @@
   "Description is required!": "Description is required!",
   "Finish": "Finish",
   "Selected Services": "Selected Services",
+  "Employees": "Employees",
+  "Employees.Description": "Here you can manage your colleagues to be scheduled for online requests",
+  "has no work schema": "has no work schema",
+  "Employee_delete_confirm_title": "Delete employee",
+  "Employee_delete_confirm": "Are you sure you want to delete this employee?",
+  "Employee need an workschema": "Employee need an workschema",
+  "Employee need a work experience": "Employee need a work experience",
+  "employee_add_title": "Add employee",
+  "employee_edit_title": "Edit employee",
+  "work schema": "work schema",
+  "work experience": "work experience",
+  "experience_add_title": "Add work experience",
+  "experience_edit_title": "Edit work experience",
+  "schema_add_title": "Work schema",
+  "schema_edit_title": "Work schema",
+  "sunday": "Sunday",
+  "monday": "Monday",
+  "tuesday": "Suesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sun": "Sun",
+  "mon": "Mon",
+  "tue": "Tue",
+  "wed": "Wed",
+  "thu": "Thu",
+  "fri": "Fri",
+  "sat": "Sat",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

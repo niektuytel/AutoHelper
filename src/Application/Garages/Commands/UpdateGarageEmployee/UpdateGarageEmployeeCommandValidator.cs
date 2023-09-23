@@ -47,8 +47,6 @@ public class UpdateGarageEmployeeCommandValidator : AbstractValidator<UpdateGara
                         return await _context.GarageServices.AnyAsync(x => x.Id == serviceId, cancellationToken);
                     })
                     .WithMessage("No found defined service for this user.");
-
-                    item.RuleFor(we => we.Description).NotEmpty().WithMessage("Description cannot be empty.");
                 });
             });
 
@@ -59,5 +57,6 @@ public class UpdateGarageEmployeeCommandValidator : AbstractValidator<UpdateGara
         RuleFor(v => v.UserId)
             .NotEmpty()
             .WithMessage("UserId cannot be empty.");
+
     }
 }

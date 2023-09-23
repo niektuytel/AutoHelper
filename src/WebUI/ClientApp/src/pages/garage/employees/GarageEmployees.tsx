@@ -1,19 +1,16 @@
-﻿import React, { useState } from "react";
-import { Box, Button, ButtonGroup, CircularProgress, Container, Divider, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+﻿import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { GarageServiceItemDto } from "../../../app/web-api-client";
-import useGarageEmployees from "./useGarageEmployees";
+import { Box, Button, ButtonGroup, CircularProgress, Divider, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+// own imports
+import useGarageEmployees from "./useGarageEmployees";
 import GarageEmployeeDrawer from "./components/GarageEmployeeDrawer";
 import GarageEmployeeDeleteDialog from "./components/GarageEmployeeDeleteDialog";
 import GarageEmployeeCard from "./components/GarageEmployeeCard";
-
-// own imports
 
 interface IProps {
 }
@@ -21,13 +18,9 @@ interface IProps {
 export default ({ }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-
     const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -99,16 +92,13 @@ export default ({ }: IProps) => {
                     :
                     <ButtonGroup aria-label="Buttons used for create, edit and delete">
                         <Button onClick={() => handleAddClick()}>
-                            <AddIcon />{t("Add")}
+                            <AddIcon />{t("add")}
                         </Button>
                         <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
-                            <EditIcon />{t("Afmelden")}
-                        </Button>
-                        <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
-                            <EditIcon />{t("Edit")}
+                            <EditIcon />{t("edit")}
                         </Button>
                         <Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>
-                            <DeleteIcon />{t("Delete")}
+                            <DeleteIcon />{t("delete")}
                         </Button>
                     </ButtonGroup>
 
@@ -121,6 +111,7 @@ export default ({ }: IProps) => {
                     employee={item}
                     selectedItem={selectedItem}
                     setSelectedItem={setSelectedItem}
+                    updateEmployee={updateEmployee}
                 />
             )}
             <GarageEmployeeDeleteDialog

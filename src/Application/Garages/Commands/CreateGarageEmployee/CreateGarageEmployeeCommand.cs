@@ -53,11 +53,16 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
         {
             UserId = request.UserId,
             GarageId = garageEntity.Id,
-            IsActive = request.IsActive,
             Contact = request.Contact,
             WorkSchema = new List<GarageEmployeeWorkSchemaItem>(),
             WorkExperiences = new List<GarageEmployeeWorkExperienceItem>()
         };
+
+        // when has schema + experience, employee is active (in intial state)
+        if (request.WorkSchema?.Any() == true && request.WorkExperiences?.Any() == true)
+        {
+            entity.IsActive = true;
+        }
 
         // Guid will been used in work schema and work experience
         _context.GarageEmployees.Add(entity);
@@ -84,6 +89,7 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
                 Description = item.Description
             };
         });
+
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));

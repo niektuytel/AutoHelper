@@ -25,7 +25,7 @@ public record DeleteGarageEmployeeCommand : IRequest<GarageEmployeeItem>
     public Guid EmployeeId { get; set; }
 
     [JsonIgnore]
-    public string? UserId { get; set; }
+    public string UserId { get; set; }
 }
 
 public class DeleteGarageEmployeeCommandHandler : IRequestHandler<DeleteGarageEmployeeCommand, GarageEmployeeItem>

@@ -2,54 +2,36 @@
 import {
     Button,
     IconButton,
-    Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     TextField,
     useTheme,
     useMediaQuery,
-    Select,
-    InputAdornment,
-    MenuItem,
-    FormControl,
-    InputLabel,
     CircularProgress,
-    ListItemText,
-    List,
-    ListItem,
     Drawer,
     Grid,
     Divider,
-    Box,
-    Switch,
-    FormControlLabel
+    Box
 } from "@mui/material";
 import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
-import { GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
-import useGarageEmployees from "../useGarageEmployees";
-import { getTitleForServiceType } from "../../defaultGarageService";
-import PersonOffIcon from '@mui/icons-material/PersonOff';
-import PersonIcon from '@mui/icons-material/Person';
 import { useQuery, useQueryClient } from "react-query";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router";
+
+// own imports
+import { GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
+import { getTitleForServiceType } from "../../defaultGarageService";
 import { ROUTES } from "../../../../constants/routes";
 import useConfirmationStep from "../../../../hooks/useConfirmationStep";
-import { useAuth0 } from "@auth0/auth0-react";
 import useUserRole from "../../../../hooks/useUserRole";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
 import { GetGarageClient } from "../../../../app/GarageClient";
 import GarageEmployeeWorkExperienceDialog from "./GarageEmployeeWorkExperienceDialog";
 import GarageEmployeeWorkSchemaDialog from "./GarageEmployeeWorkSchemaDialog";
-import { green, red } from "@mui/material/colors";
-
-// own imports
-
-
 
 interface IProps {
     mode: 'create' | 'edit';
@@ -64,19 +46,14 @@ interface IProps {
 export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, updateEmployee, loading }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { userRole } = useUserRole()
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageClient(accessToken);
-    const queryClient = useQueryClient();
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
-    const [timeUnit, setTimeUnit] = useState("minutes");
-
     const [selectedExperience, setSelectedExperience] = useState<GarageEmployeeWorkExperienceItemDto | undefined>(undefined);
     const [selectedExperiences, setSelectedExperiences] = useState<GarageEmployeeWorkExperienceItemDto[]>([]);
     const [experienceDialogOpen, setExperienceDialogOpen] = useState(false);
@@ -84,10 +61,6 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
     const [selectedWorkSchema, setSelectedWorkSchema] = useState<Array<GarageEmployeeWorkSchemaItemDto>>([]);
     const [workSchemaDialogOpen, setWorkSchemaDialogOpen] = useState(false);
 
-    //workSchema ?: GarageEmployeeWorkSchemaItem[];
-    //workExperiences ?: GarageEmployeeWorkExperienceItemDto[];
-
-    //const defaultAvailableEmployees = getDefaultCreateGarageEmployees(t);
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
 
     useEffect(() => {
@@ -136,7 +109,6 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
     );
 
     const addExperience = (data: GarageEmployeeWorkExperienceItemDto) => {
-        console.log(data);
         const updatedExperiences = [...selectedExperiences, data];
         setSelectedExperiences(updatedExperiences);
         setValue("WorkExperiences", updatedExperiences);
@@ -145,7 +117,6 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
 
     const editExperience = (data: GarageEmployeeWorkExperienceItemDto) => {
         if (!selectedExperience) return;
-        console.log(data);
 
         const updatedExperiences = selectedExperiences.map((item) => {
             if (item.serviceId === selectedExperience.serviceId)
@@ -169,10 +140,11 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
         setWorkSchemaDialogOpen(false);
     };
 
-    const removeExperience = (index: number) => {
-        const newExperiences = [...selectedExperiences];
-        newExperiences.splice(index, 1);
+    const removeExperience = (experience: GarageEmployeeWorkExperienceItemDto) => {
+        const newExperiences = selectedExperiences.filter((item) => item.serviceId !== experience.serviceId);
+
         setSelectedExperiences(newExperiences);
+        setValue("WorkExperiences", newExperiences);
     };
 
     const onSubmit = (data: any) => {
@@ -186,162 +158,147 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
     return (
         <>
             <Drawer anchor={'right'} open={dialogOpen} onClose={() => setDialogOpen(false)} sx={{zIndex:"1"}}>
-                <DialogTitle>{t(dialogMode === 'create' ? 'Create Employee' : 'Edit Employee')}</DialogTitle>
+                <DialogTitle>{t(dialogMode === 'create' ? 'employee_add_title' : 'employee_edit_title')}</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <FormControlLabel
-                                    control={
-                                        <Controller
-                                            name="isActive"
-                                            control={control}
-                                            defaultValue={false}
-                                            render={({ field }) => (
-                                                <Switch
-                                                    checked={field.value}
-                                                    onChange={(e) => field.onChange(e.target.checked)}
-                                                    color="default"
+                        <Box display="flex" flexDirection="column" height="calc(100vh - 84px)">
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}></Grid>
+                                <Grid item xs={12}>
+                                    <Controller
+                                        name="fullName"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label={t("Name")}
+                                                size="small"
+                                                fullWidth
+                                                required
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Controller
+                                        name="email"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Email"
+                                                size="small"
+                                                fullWidth
+                                                required
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Controller
+                                        name="phoneNumber"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label={t("Telephone number")}
+                                                size="small"
+                                                fullWidth
+                                                required
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Button
+                                        fullWidth
+                                        variant="outlined"
+                                        color="primary"
+                                        startIcon={<AccessTimeIcon />}
+                                        onClick={() => setWorkSchemaDialogOpen(true)}
+                                    >
+                                        {t("work schema")}
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <Box flexGrow={1}>
+                                <Divider sx={{ my: 2 }} />
+                                {isLoading ? (
+                                    <CircularProgress size={24} />
+                                ) : (
+                                    selectedExperiences.map((experience, index) => {
+                                        const service = garageServices!.find(item => item.id === experience.serviceId)!;
+                                        return (
+                                            <Box
+                                                key={index}
+                                                title={experience.description}
+                                                sx={{
+                                                    marginBottom: '10px',
+                                                    border: '1px solid',
+                                                    padding: '10px',
+                                                    position: 'relative',
+                                                    borderRadius: "4px",
+                                                    transition: 'background-color 0.3s', // smooth transition for the hover effect
+                                                    cursor: 'pointer', // change the cursor to a hand when hovering
+                                                    '&:hover': {
+                                                        backgroundColor: 'rgba(0, 0, 0, 0.05)', // slightly grey background on hover
+                                                    },
+                                                }}
+                                                onClick={() => {
+                                                    setSelectedExperience(experience);
+                                                    setExperienceDialogOpen(true);
+                                                }}
+                                            >
+                                                {getTitleForServiceType(t, service.type!, experience.description)}
+                                                <IconButton
+                                                    size="small"
                                                     sx={{
-                                                        '.MuiSwitch-thumb': {
-                                                            backgroundColor: field.value ? green[500] : red[500], // Adjusting the thumb color
-                                                        },
-                                                        '.MuiSwitch-track': {
-                                                            backgroundColor: field.value ? green[300] : red[300], // Adjusting the track color
-                                                        }
+                                                        position: 'absolute', top: '5px', right: '5px'
                                                     }}
-                                                />
-                                            )}
-                                        />
-                                    }
-                                    label={t(watch("isActive") ? 'Online' : 'Offline')}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Controller
-                                    name="fullName"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Name"
-                                            size="small"
-                                            fullWidth
-                                            required
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Controller
-                                    name="email"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Email"
-                                            size="small"
-                                            fullWidth
-                                            required
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Controller
-                                    name="phoneNumber"
-                                    control={control}
-                                    defaultValue=""
-                                    render={({ field }) => (
-                                        <TextField
-                                            {...field}
-                                            label="Phone Number"
-                                            size="small"
-                                            fullWidth
-                                            required
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Divider sx={{ my: 2 }} />
-                        {isLoading ? (
-                            <CircularProgress size={24} />
-                        ) : (
-                            selectedExperiences.map((experience, index) => {
-                                const service = garageServices!.find(item => item.id === experience.serviceId);
-                                console.log(garageServices, experience);
-
-                                if (!service)
-                                {
-                                    return <></>;
-                                }
-
-                                return <Box
-                                    key={index}
-                                    title={experience.description}
-                                    sx={{
-                                        marginBottom: '10px',
-                                        border: '1px solid',
-                                        padding: '10px',
-                                        position: 'relative',
-                                        borderRadius: "4px"
-                                    }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        removeExperience(experience);
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </Box>
+                                        );
+                                    })
+                                )}
+                                <Button
+                                    fullWidth
+                                    variant="outlined"
+                                    color="primary"
+                                    startIcon={<AddIcon />}
+                                    sx={{ marginRight: theme.spacing(2) }}
                                     onClick={() => {
-                                        setSelectedExperience(experience);
+                                        setSelectedExperience(undefined);
                                         setExperienceDialogOpen(true);
                                     }}
                                 >
-                                    {getTitleForServiceType(t, service.type!, experience.description)}
-                                    <IconButton
-                                        size="small"
-                                        sx={{
-                                            position: 'absolute', top: '5px', right: '5px'
-                                        }}
-                                        onClick={() => removeExperience(index)}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </Box>
-                            })
-                        )}
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<AddIcon />}
-                            onClick={() => {
-                                setSelectedExperience(undefined);
-                                setExperienceDialogOpen(true);
-                            }}
-                        >
-                            {t("work experience")}
-                        </Button>
-                        <Divider sx={{ my: 2 }} />
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            startIcon={<AddIcon />}
-                            onClick={() => setWorkSchemaDialogOpen(true)}
-                        >
-                            {t("work schema")}
-                        </Button>
-                        <DialogActions>
-                            <Button onClick={() => setDialogOpen(false)}>
-                                {t("Cancel")}
-                            </Button>
-                            {loading ?
-                                <Button variant="contained" disabled style={{ color: 'white' }}>
-                                    <CircularProgress size={24} color="inherit" />
+                                    {t("work experience")}
                                 </Button>
-                                :
-                                <Button type="submit" variant="contained" color="primary">
-                                    {t(dialogMode === 'create' ? "Create" : "Update")}
+                            </Box>
+                            <Divider sx={{ my: 2 }} />
+                            <DialogActions>
+                                <Button onClick={() => setDialogOpen(false)}>
+                                    {t("Cancel")}
                                 </Button>
-                            }
-                        </DialogActions>
-
+                                {loading ?
+                                    <Button variant="contained" disabled style={{ color: 'white' }}>
+                                        <CircularProgress size={24} color="inherit" />
+                                    </Button>
+                                    :
+                                    <Button type="submit" variant="contained" color="primary">
+                                        {t(dialogMode === 'create' ? "Create" : "edit")}
+                                    </Button>
+                                }
+                            </DialogActions>
+                        </Box>
                     </form>
                 </DialogContent>
             </Drawer>

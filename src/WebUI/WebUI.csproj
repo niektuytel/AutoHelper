@@ -44,8 +44,20 @@
 
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
+        <Compile Remove="ClientApp\src\pages\garage\agenda\**" />
+        <Compile Remove="ClientApp\src\pages\garage\car-service-book\**" />
+        <Compile Remove="ClientApp\src\pages\garage\overview\**" />
         <Content Remove="$(SpaRoot)**" />
+        <Content Remove="ClientApp\src\pages\garage\agenda\**" />
+        <Content Remove="ClientApp\src\pages\garage\car-service-book\**" />
+        <Content Remove="ClientApp\src\pages\garage\overview\**" />
+        <EmbeddedResource Remove="ClientApp\src\pages\garage\agenda\**" />
+        <EmbeddedResource Remove="ClientApp\src\pages\garage\car-service-book\**" />
+        <EmbeddedResource Remove="ClientApp\src\pages\garage\overview\**" />
         <None Remove="$(SpaRoot)**" />
+        <None Remove="ClientApp\src\pages\garage\agenda\**" />
+        <None Remove="ClientApp\src\pages\garage\car-service-book\**" />
+        <None Remove="ClientApp\src\pages\garage\overview\**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     </ItemGroup>
 
@@ -56,6 +68,9 @@
 
     <ItemGroup>
       <None Remove="ClientApp\src\components\ProtectedRoute.tsx" />
+      <None Remove="ClientApp\src\pages\garage\agenda\GarageAgenda.tsx" />
+      <None Remove="ClientApp\src\pages\garage\car-service-book\CarServiceBook.tsx" />
+      <None Remove="ClientApp\src\pages\garage\overview\GarageOverview.tsx" />
       <None Remove="ClientApp\src\pages\select-vehicle\components\NavSection.tsx" />
     </ItemGroup>
 

@@ -1,135 +1,33 @@
-﻿import React, { forwardRef, useEffect, useMemo, useState } from "react";
+﻿import React, { forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
-    Button, IconButton, Dialog, DialogActions, DialogContent,
-    DialogTitle, TextField, useTheme, useMediaQuery, Select,
-    InputAdornment, MenuItem, FormControl, InputLabel,
-    CircularProgress, ListItemText, List, ListItem, Drawer,
-    Grid, Divider, Box
+    Button, Dialog, DialogActions, DialogContent,
+    DialogTitle, useTheme, useMediaQuery,
+    Grid, Box
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import AddIcon from '@mui/icons-material/Add';
-
-import {
-    Controller, useForm
-} from "react-hook-form";
-
-import {
-    GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, GarageServiceItemDto,
-    UpdateGarageEmployeeCommand
-} from "../../../../app/web-api-client";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from "react-router";
-import { useQuery, useQueryClient } from "react-query";
-import { useDispatch } from "react-redux";
-
-import { ROUTES } from "../../../../constants/routes";
-import { getTitleForServiceType } from "../../defaultGarageService";
-import useGarageEmployees from "../useGarageEmployees";
-import useConfirmationStep from "../../../../hooks/useConfirmationStep";
-import useUserRole from "../../../../hooks/useUserRole";
-import { GetGarageClient } from "../../../../app/GarageClient";
 import { useTranslation } from "react-i18next";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { DAYSINWEEKSHORT, DAYSINWEEK } from "../../../../constants/days";
 
 // own imports
+import { GarageEmployeeWorkSchemaItemDto } from "../../../../app/web-api-client";
+import { DAYSINWEEKSHORT, DAYSINWEEK } from "../../../../constants/days";
+import { DraggableHalfHour } from "./DraggableHalfHour";
+
+type DraggableHourProps = {
+    day: string;
+    dayIndex: number;
+    // Add any other props that you might need
+};
+
+//const dayStyles = {
+//    flex: '1',
+//    textAlign: 'center',
+//    padding: '10px',
+//    boxSizing: 'border-box',
+//};
 
 const dayStyles = {
     flexBasis: '14.284%',
     maxWidth: '14.284%'
 };
-
-const droppableStyles = {
-    borderRight: '1px solid gray'
-};
-
-const hourStyles = {
-    borderBottom: '1px solid gray',
-    height: '40px',
-    fontSize: "small"
-};
-
-interface DroppableDayProps {
-    day: number;
-    children?: React.ReactNode;
-}
-
-
-function findLastConnectedRange(time: number, day: number, selectedRanges: Array<{ time: number, day: number }>): { time: number, day: number } {
-    const nextItem = selectedRanges.find(item => item.day === day && item.time === time + 30);
-
-    if (!nextItem) {
-        return { time: time, day: day };
-    } else {
-        return findLastConnectedRange(nextItem.time, nextItem.day, selectedRanges);
-    }
-}
-
-
-
-const DroppableDay: React.FC<DroppableDayProps> = ({ day, children }) => {
-    const [{ isOver }, ref] = useDrop({
-        accept: "HOUR",
-        drop: (item: { hour: number }) => {
-            console.log(`Dropped hour ${item.hour} on day ${day}`);
-        },
-        collect: (monitor) => ({
-            isOver: !!monitor.isOver()
-        })
-    });
-
-    const opacity = useMemo(() => (isOver ? 0.5 : 1), [isOver]);
-
-    return <div ref={ref} style={{ ...droppableStyles, opacity }}>{children}</div>;
-};
-
-interface DraggableHalfHourProps {
-    hour: number;
-    minute: number;
-    day: number;
-    showHour: boolean;
-    isSelected: boolean;
-    onMouseDown: (hour: number, minute: number, day: number) => void;
-    onMouseEnter: (hour: number, minute: number) => void;
-    selectedRanges: Array<{ time: number, day: number }>;
-}
-
-const DraggableHalfHour = forwardRef<HTMLDivElement, DraggableHalfHourProps>((props, ref) => {
-    const { hour, minute, day, showHour, isSelected, onMouseDown, onMouseEnter, selectedRanges } = props;
-    const formattedHour = hour.toString().padStart(2, '0');
-    const formattedMinute = minute.toString().padStart(2, '0');
-
-    var background = isSelected ? 'lightblue' : 'transparent';
-    if (!isSelected && (hour < 8 || hour > 17)) {
-        background = 'lightgray';
-    }
-
-    let displayText = "";
-    const previousItem = selectedRanges.find(item => item.day === day && item.time === (hour * 60 + minute - 30));
-    if (isSelected && !previousItem) {
-        const lastRangeItem = findLastConnectedRange((hour * 60 + minute), day, selectedRanges);
-        lastRangeItem.time += 30;// set to end of range
-
-        const lastFormattedHour = (Math.floor(lastRangeItem.time / 60)).toString().padStart(2, '0');
-        const lastFormattedMinute = (lastRangeItem.time % 60).toString().padStart(2, '0');
-        displayText = `${formattedHour}:${formattedMinute}-${lastFormattedHour}:${lastFormattedMinute}`;
-    } else if ((isSelected && showHour) || showHour) {
-        displayText = `${formattedHour}:${formattedMinute}`;
-    }
-
-    return (
-        <div
-            ref={ref as any}
-            onMouseDown={() => onMouseDown(hour, minute, day)}
-            onMouseEnter={() => onMouseEnter(hour, minute)}
-            style={{ ...hourStyles, background }}
-        >
-            <span style={{ userSelect: "none" }}>{displayText}</span>
-        </div>
-    );
-});
 
 interface IProps {
     mode: 'create' | 'edit';
@@ -145,15 +43,6 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
-    const slotRefs = useMemo(() => new Map<string, React.RefObject<HTMLDivElement>>(), []);
-    hours.forEach(hour => {
-        [0, 30].forEach(minute => {
-            const key = `${hour}:${minute}`;
-            if (!slotRefs.has(key)) {
-                slotRefs.set(key, React.createRef());
-            }
-        });
-    });
 
     const [selectedRanges, setSelectedRanges] = useState<Array<{ time: number, day: number }>>([]);
     const [selectedHours, setSelectedHours] = useState<string[]>([]);
@@ -226,14 +115,6 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
         return () => window.removeEventListener('mouseup', handleMouseUp);
     }, [selectedRanges]);
 
-    useEffect(() => {
-        const scrollToSlot = slotRefs.get("7:0"); // Note: the minute is "0", not "00"
-        if (scrollToSlot?.current) {
-            scrollToSlot.current.scrollIntoView({
-                behavior: "smooth"
-            });
-        }
-    }, []);
 
     const handleSetWorkSchema = () => {
         const workSchemaItems: GarageEmployeeWorkSchemaItemDto[] = [];
@@ -275,6 +156,39 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
         setWorkSchema(workSchemaItems);
     }
 
+
+    const DraggableDayComponent: React.FC<DraggableHourProps> = ({ day, dayIndex }) => {
+        const seventhHourRef = useRef<HTMLDivElement>(null);
+
+        useEffect(() => {
+            if (seventhHourRef.current) {
+                seventhHourRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, []);
+
+        return (
+            <div key={day} style={{ borderRight: '1px solid gray', ...dayStyles }}>
+                {hours.map(hour => (
+                    [0, 30].map(minute => (
+                        <DraggableHalfHour
+                            ref={hour === 7 && minute === 0 ? seventhHourRef : null}
+                            key={`${hour}:${minute}`}
+                            hour={hour}
+                            minute={minute}
+                            day={dayIndex}
+                            showHour={dayIndex === 0 || dayIndex === draggingDay}
+                            isSelected={selectedRanges.find(item => item.day === dayIndex && item.time === (hour * 60 + minute)) !== undefined}
+                            onMouseDown={handleMouseDown}
+                            onMouseEnter={handleMouseEnter}
+                            selectedRanges={selectedRanges}
+                        />
+                    ))
+                ))}
+            </div>
+        );
+    }
+
+
     return (
         <Dialog
             open={dialogOpen}
@@ -282,58 +196,32 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
             fullScreen={isMobile}
             sx={{ display: 'flex', flexDirection: 'column' }}
         >
-            <DialogTitle>{t('Set WorkSchema')}</DialogTitle>
-            <DialogContent
-                style={{
-                    minWidth: isMobile ? undefined : '600px',
-                    flex: 1, // Ensures content fills the available space
-                    display: 'flex', // Flexbox for the content
-                    flexDirection: 'column', // Column direction for the flex items
-                    overflow: 'hidden' // To ensure overflow from children does not break the layout
-                }}
-            >
-                <Grid container style={isMobile ? { width: '100%' } : { width: '100%', paddingRight: "16px" }}>
-                    {(isMobile ? DAYSINWEEKSHORT : DAYSINWEEK).map((day) => (
-                        <Grid item xs={12} md={1} key={day} style={dayStyles}>
-                            <Box mb={2} textAlign="center">{day}</Box>
-                        </Grid>
-                    ))}
-                </Grid>
-                <DndProvider backend={HTML5Backend}>
-                    <Grid container style={{ flex: 1, display: 'flex', width: '100%', overflowY: 'auto', border: '1px solid gray' }}>
+            <DialogTitle>{t('schema_edit_title')}</DialogTitle>
+            <Grid container style={{ width: '100%', paddingLeft: "16px", paddingRight: "16px" }}>
+                {(isMobile ? DAYSINWEEKSHORT : DAYSINWEEK).map(day => (
+                    <div key={day} style={dayStyles}>
+                        <Box mb={2} textAlign="center">{t(day)}</Box>
+                    </div>
+                ))}
+            </Grid>
+            <form onSubmit={handleSetWorkSchema} style={{ minWidth: isMobile ? '100%' : '600px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <DialogContent dividers sx={{ padding: 0, marginLeft: "15px", marginRight: isMobile ? "15px" : "0" }}>
+                    <Grid container style={{ flex: 1, display: 'flex', width: '100%', overflowY: 'auto', borderLeft: '1px solid gray' }}>
                         {DAYSINWEEK.map((day, dayIndex) => (
-                            <Grid item xs={12} md={1} key={day} style={dayStyles}>
-                                <DroppableDay day={dayIndex}>
-                                    {hours.map(hour => (
-                                        [0, 30].map(minute => (
-                                            <DraggableHalfHour
-                                                ref={slotRefs.get(`${hour}:${minute}`)}
-                                                key={`${hour}:${minute}`}
-                                                hour={hour}
-                                                minute={minute}
-                                                day={dayIndex}
-                                                showHour={dayIndex === 0 || dayIndex === draggingDay}
-                                                isSelected={selectedRanges.find(item => item.day === dayIndex && item.time === (hour * 60 + minute)) != undefined}
-                                                onMouseDown={handleMouseDown}
-                                                onMouseEnter={handleMouseEnter}
-                                                selectedRanges={selectedRanges}
-                                            />
-                                        ))
-                                    ))}
-                                </DroppableDay>
-                            </Grid>
+                            <DraggableDayComponent day={day} dayIndex={dayIndex} />
                         ))}
                     </Grid>
-                </DndProvider>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setDialogOpen(false)}>
-                    {t("Cancel")}
-                </Button>
-                <Button onClick={handleSetWorkSchema} variant="contained" color="primary">
-                    {t("Confirm")}
-                </Button>
-            </DialogActions>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDialogOpen(false)}>
+                        {t("Cancel")}
+                    </Button>
+                    <Button type="submit" variant="contained" color="primary">
+                        {t("add")}
+                    </Button>
+                </DialogActions>
+            </form>
         </Dialog>
     );
+
 }

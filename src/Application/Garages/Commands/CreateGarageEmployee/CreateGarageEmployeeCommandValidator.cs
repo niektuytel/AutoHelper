@@ -48,7 +48,6 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
                         })
                         .WithMessage("No found defined service for this user.");
 
-                    item.RuleFor(we => we.Description).NotEmpty().WithMessage("Description cannot be empty.");
                 });
             });
 
