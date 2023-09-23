@@ -32,9 +32,9 @@ public class GarageRegisterController : ApiControllerBase
     }
 
     [HttpPost($"{nameof(Create)}")]
-    [ProducesResponseType(typeof(GarageItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GarageItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GarageItemDto>> Create([FromBody] CreateGarageCommand command)
+    public async Task<ActionResult<GarageItem>> Create([FromBody] CreateGarageCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         var userName = _currentUser.UserName ?? command.Name;

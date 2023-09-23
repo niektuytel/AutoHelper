@@ -4,7 +4,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
-import { GarageSettings, GarageLocationItem } from '../../../../app/web-api-client';
+import { GarageItem, GarageLocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
 interface BankingSectionProps {

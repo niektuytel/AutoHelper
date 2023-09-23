@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageService;
 
@@ -22,5 +23,8 @@ public class UpdateGarageServiceCommandValidator : AbstractValidator<UpdateGarag
         RuleFor(v => v.Price)
             .NotEmpty().WithMessage("Price is required.");
 
+        RuleFor(v => v.UserId)
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.");
     }
 }

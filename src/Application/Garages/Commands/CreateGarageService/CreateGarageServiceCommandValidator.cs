@@ -15,7 +15,8 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
 
         RuleFor(v => v.Type)
             .NotEmpty().WithMessage("Type is required.")
-            .MustAsync(TitleNotAlreadyExist).WithMessage(c => $"A service with title {c.Type} already exists for this garage.");
+            .MustAsync(TitleNotAlreadyExist)
+            .WithMessage(c => $"A service with title {c.Type} already exists for this garage.");
 
         RuleFor(v => v.Description)
             .NotEmpty().WithMessage("Description is required.")
@@ -28,32 +29,17 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             .NotEmpty().WithMessage("Price is required.");
 
         RuleFor(v => v.UserId)
-            .NotEmpty().WithMessage("UserId cannot be empty.")
-            .CustomAsync(async (userId, context, cancellationToken) => {
-                var garage = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
-                if (garage == null)
-                {
-                    context.AddFailure("No garage found for this user.");
-                }
-                else
-                {
-                    // Attach garage to the command for further processing in the command handler
-                    (context.InstanceToValidate as CreateGarageServiceCommand).UserGarage = garage;
-                }
-            });
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.")
+            .MustAsync(async (userId, cancellationToken) =>
+            {
+                return await _context.Garages.AnyAsync(x => x.UserId == userId, cancellationToken);
+            })
+            .WithMessage("No garage found for this user.");
     }
 
     private async Task<bool> TitleNotAlreadyExist(CreateGarageServiceCommand request, GarageServiceType type, CancellationToken cancellationToken)
     {
-        var garage = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-        if (garage == null) return true; // This check is redundant but keeping for clarity
-
-        var entity = await _context.GarageServices.FirstOrDefaultAsync(x =>
-            x.GarageId == garage.Id &&
-            x.UserId == request.UserId &&
-            x.Type == type
-        );
-
-        return entity == null;
+        return await _context.GarageServices.AnyAsync(x => x.UserId == request.UserId && x.Type == type, cancellationToken);
     }
 }

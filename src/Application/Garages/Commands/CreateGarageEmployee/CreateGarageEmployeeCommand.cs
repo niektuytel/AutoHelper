@@ -5,7 +5,6 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Commands.DTOs;
-using AutoHelper.Application.Garages.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
@@ -27,10 +26,8 @@ public record CreateGarageEmployeeCommand : IRequest<GarageEmployeeItem>
     public IEnumerable<GarageEmployeeWorkExperienceItemDto> WorkExperiences { get; set; }
 
     [JsonIgnore]
-    public string? UserId { get; set; }
+    public string UserId { get; set; }
 
-    [JsonIgnore]
-    public GarageItem? UserGarage { get; set; }
 }
 
 public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGarageEmployeeCommand, GarageEmployeeItem>
@@ -46,10 +43,16 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
 
     public async Task<GarageEmployeeItem> Handle(CreateGarageEmployeeCommand request, CancellationToken cancellationToken)
     {
+        var garageEntity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId, cancellationToken);
+        if (garageEntity == null)
+        {
+            throw new NotFoundException($"{nameof(GarageItem)} on UserId:", request.UserId);
+        }
+
         var entity = new GarageEmployeeItem
         {
             UserId = request.UserId,
-            GarageId = request.UserGarage.Id,
+            GarageId = garageEntity.Id,
             IsActive = request.IsActive,
             Contact = request.Contact,
             WorkSchema = new List<GarageEmployeeWorkSchemaItem>(),

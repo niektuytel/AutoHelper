@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageRegisterClient, GarageLocationItem, GarageSettings, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
+import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageRegisterClient, GarageLocationItem, GarageItem, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -62,7 +62,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
     const garageRegisterClient = GetGarageRegisterClient(accessToken);
 
 
-    const initialGarageSettings = new GarageSettings({
+    const initialGarageSettings = new GarageItem({
         name: "",
         email: "",
         phoneNumber: "",

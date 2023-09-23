@@ -4,7 +4,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
-import { GarageSettings, GarageLocationItem } from '../../../../app/web-api-client';
+
+// custom imports
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
 interface BankingSectionProps {
@@ -28,13 +29,13 @@ export default (
                     name="kvKNumber"
                     control={control}
                     defaultValue={""}
-                    rules={{ required: t("KvK Number is required!") }}
+                    rules={{ required: t("What is the KVK-number of your garage?") }}
                     render={({ field }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="medium"
-                            label={t("KvK Number")}
+                            label={t("KVK-number")}
                             variant="outlined"
                             error={Boolean(errors.kvKNumber)}
                             helperText={errors.kvKNumber ? t(errors.kvKNumber.message as string) : undefined}
@@ -47,7 +48,7 @@ export default (
                     name="bankName"
                     control={control}
                     defaultValue={""}
-                    rules={{ required: t("Selecting a bank is required!") }}
+                    rules={{ required: t("Select a bank...") }}
                     render={({ field }) => (
                         <FormControl
                             fullWidth
@@ -55,11 +56,9 @@ export default (
                             variant="outlined"
                             error={Boolean(errors.bankName)}
                         >
-                            <InputLabel id="bank-name-label">{t("Bank Name")}</InputLabel>
                             <Select
                                 {...field}
-                                labelId="bank-name-label"
-                                label={t("Bank Name")}
+                                label=""
                                 displayEmpty
                                 sx={{
                                     padding: 0,
@@ -118,13 +117,13 @@ export default (
                     name="accountHolderName"
                     control={control}
                     defaultValue={""}
-                    rules={{ required: t("Account Holder Name is required!") }}
+                    rules={{ required: t("What is the name of the account holder?") }}
                     render={({ field }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="medium"
-                            label={t("Account Holder Name")}
+                            label={t("Account holder name")}
                             variant="outlined"
                             error={Boolean(errors.accountHolderName)}
                             helperText={errors.accountHolderName ? t(errors.accountHolderName.message as string) : undefined}

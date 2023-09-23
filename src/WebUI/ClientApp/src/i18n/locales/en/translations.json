@@ -15,14 +15,30 @@
   "settings_camelcase": "Settings",
   "account_camelcase": "Account",
   "vehicle_search_camelcase": "Vehicle search",
-  "GarageSettingsHeader.Title": "Garage Settings",
-  "GarageSettingsHeader.Description": "Here you can change your garage settings",
-
-
-
-
-
-
+  "settings": "Settings",
+  "settings_description": "Here you can change your garage settings",
+  "profile": "profile",
+  "services": "services",
+  "employees": "employees",
+  "planning": "planning",
+  "Name": "Name",
+  "Select a bank...": "Select a bank...",
+  "Select an address": "Select an address",
+  "register": "register",
+  "save": "save",
+  "country_code": "en",
+  "Error on getting address location": "Error on getting address location",
+  "What is your garage name?": "What is your garage name?",
+  "What is your garage telephone number?": "What is your garage telephone number?",
+  "Telephone number": "Telephone number",
+  "Whatsapp number": "Whatsapp number",
+  "What is your garage email?": "What is your garage email?",
+  "Banking Details": "Banking Details",
+  "What is the KVK-number of your garage?": "What is the KVK-number of your garage?",
+  "KVK-number": "KVK-number",
+  "What is the name of the account holder?": "What is the name of the account holder?",
+  "Account holder name": "Account holder name",
+  "IBAN": "IBAN",
 
 
 
@@ -57,7 +73,7 @@
   "yes": "Yes",
   "no": "No",
   "are_you_sure": "Are you sure?",
-  "save": "Save",
+
   "create": "Create",
   "edit": "Edit",
   "successful_action": "Successful action",
@@ -115,7 +131,7 @@
   "select_your_profile": "Select Your Profile",
   "select_your_profile_explain": "Than we know which supplementen you need",
   "hasResource": "Heeft documentatie",
-  "name": "name",
+
   "scientificName": "scientific name",
   "extra_information": "Extra Information"
 }

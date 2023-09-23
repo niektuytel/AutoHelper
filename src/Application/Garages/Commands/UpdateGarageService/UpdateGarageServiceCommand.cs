@@ -4,12 +4,12 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Models;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageService;
 
@@ -18,8 +18,6 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
 {
     public Guid Id { get; set; }
 
-    [JsonIgnore]
-    public string UserId { get; set; }
 
     public GarageServiceType Type { get; set; }
 
@@ -29,6 +27,8 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
 
     public decimal Price { get; set; }
 
+    [JsonIgnore]
+    public string UserId { get; set; }
 }
 
 public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageServiceCommand, GarageServiceItem>
@@ -44,7 +44,7 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
 
     public async Task<GarageServiceItem> Handle(UpdateGarageServiceCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageServices.FindAsync(request.Id);
+        var entity = await _context.GarageServices.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
         if (entity == null)
         {
             throw new NotFoundException(nameof(GarageServiceItem), request.Id);
@@ -58,7 +58,7 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        _context.GarageServices.Update(entity);
+        // Since we fetched the entity directly from the DbContext, it's already tracked. 
         await _context.SaveChangesAsync(cancellationToken);
 
         return entity;

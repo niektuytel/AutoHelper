@@ -40,7 +40,6 @@ public class GetGarageSettingsQueryHandler : IRequestHandler<GetGarageSettingsQu
         var entity = await _context.Garages
             .Include(g => g.Location)
             .Include(g => g.BankingDetails)
-            .Include(g => g.Contacts)
             .FirstOrDefaultAsync(x => x.UserId == request.UserId);
 
         if (entity == null)

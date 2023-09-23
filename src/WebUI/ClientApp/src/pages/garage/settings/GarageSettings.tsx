@@ -1,9 +1,9 @@
-﻿import React, { Dispatch, memo, useEffect, useState } from "react";
-import { Box, Breadcrumbs, Button, ButtonGroup, CircularProgress, Container, Dialog, DialogContent, DialogContentText, DialogTitle, Divider, Drawer, FormControl, Grid, Hidden, IconButton, InputAdornment, InputLabel, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Paper, Select, TextField, Toolbar, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+﻿import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Box, Button, ButtonGroup, CircularProgress, Divider, Grid, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Controller, FieldValues, UseFormSetError, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 
 // own imports
@@ -11,16 +11,15 @@ import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbar
 import ProfileGeneralSection from "./components/ProfileGeneralSection";
 import ProfileBankingSection from "./components/ProfileBankingSection";
 import ProfileContactSection from "./components/ProfileContactSection";
-import { COLORS } from "../../../constants/colors";
 import useGarageSettings from "./useGarageSettings";
 import ServicesGeneralSection from "./components/ServicesGeneralSection";
 import ServicesDeliverySection from "./components/ServicesDeliverySection";
-import { ROUTES } from "../../../constants/routes";
+import { COLORS } from "../../../constants/colors";
 import { ROLES } from "../../../constants/roles";
 
-// TODO: set all translations for this page
+interface IProps
+{
 
-interface IProps {
 }
 
 export default ({ }: IProps) => {
@@ -40,11 +39,14 @@ export default ({ }: IProps) => {
     const { reset, handleSubmit, control, formState: { errors }, setError, setValue } = useForm();
     const { loading, isError, createGarage, updateGarageSettings, garageSettings } = useGarageSettings(reset, setError, notFound);
 
-
-    // Update hash when location changes
+    // update hash
     useEffect(() => {
         if (location.hash === "#services") {
             setActiveSection("services");
+        } else if (location.hash === "#employees") {
+            setActiveSection("employees");
+        } else if (location.hash === "#planning") {
+            setActiveSection("planning");
         } else {
             setActiveSection("profile");
         }
@@ -58,16 +60,16 @@ export default ({ }: IProps) => {
         if (t("Select a bank...").match(data.bankName)) {
             setError("bankName", {
                 type: "manual",
-                message: t("Bank name is required.")
+                message: t("Select a bank...")
             });
 
             return;
         }
         else if (!data.longitude) {
-            dispatch(showOnError(t("Select a address, it's required.")));
+            dispatch(showOnError(t("Select an address")));
             setError("address", {
                 type: "manual",
-                message: t("Select a address, it's required.")
+                message: t("Select an address")
             });
 
             return;
@@ -80,86 +82,100 @@ export default ({ }: IProps) => {
         }
     }
 
-    return (
-        <>
-            <Box pt={4}>
-                <Typography variant="h4" gutterBottom>
-                    {t("GarageSettingsHeader.Title")}
-                    {loading ?
-                        <CircularProgress size={20} style={{ marginLeft: '10px' }} />
-                        :
-                        <Tooltip title={t("GarageSettingsHeader.Description")}>
-                            <IconButton size="small">
-                                <InfoOutlinedIcon fontSize="inherit" />
-                            </IconButton>
-                        </Tooltip>
-                    }
-                </Typography>
-            </Box>
-            {!notFound ?
-                <ButtonGroup sx={{paddingBottom: 1}}>
-                    <Button variant={activeSection === "profile" ? "contained" : "outlined"} onClick={() => handleSectionChange('profile')}>
-                        {t('Profile')}
-                    </Button>
-                    <Button variant={activeSection === "services" ? "contained" : "outlined"} onClick={() => handleSectionChange('services')}>
-                        {t('Services')}
-                    </Button>
-                </ButtonGroup>
-                :
-                <Box py={3}></Box>
-            }
-            <Divider style={{ marginBottom: "20px" }} />
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <Grid container spacing={2}>
-                    {
-                        activeSection === 'profile' ?
-                            <>
-                                <ProfileGeneralSection errors={errors} control={control} setFormValue={setValue} defaultLocation={garageSettings} />
-                                <ProfileContactSection errors={errors} control={control} />
-                                <ProfileBankingSection errors={errors} control={control} />
-                            </>
-                            :
+    return <>
+        <Box pt={4}>
+            <Typography variant="h4" gutterBottom>
+                {t("settings")}
+                {loading ?
+                    <CircularProgress size={20} style={{ marginLeft: '10px' }} />
+                    :
+                    <Tooltip title={t("settings_description")}>
+                        <IconButton size="small">
+                            <InfoOutlinedIcon fontSize="inherit" />
+                        </IconButton>
+                    </Tooltip>
+                }
+            </Typography>
+        </Box>
+        {!notFound ?
+            <ButtonGroup sx={{ paddingBottom: 1 }}>
+                <Button variant={activeSection === "profile" ? "contained" : "outlined"} onClick={() => handleSectionChange('profile')}>
+                    {t('profile')}
+                </Button>
+                <Button disabled variant={activeSection === "services" ? "contained" : "outlined"} onClick={() => handleSectionChange('services')}>
+                    {t('services')}
+                </Button>
+                <Button disabled variant={activeSection === "employees" ? "contained" : "outlined"} onClick={() => handleSectionChange('employees')}>
+                    {t('employees')}
+                </Button>
+                <Button disabled variant={activeSection === "planning" ? "contained" : "outlined"} onClick={() => handleSectionChange('planning')}>
+                    {t('planning')}
+                </Button>
+            </ButtonGroup>
+            :
+            <Box py={3}></Box>
+        }
+        <Divider style={{ marginBottom: "20px" }} />
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <Grid container spacing={2}>
+                {
+                    activeSection === 'profile' ?
+                        <>
+                            <ProfileGeneralSection errors={errors} control={control} setFormValue={setValue} defaultLocation={garageSettings} />
+                            <ProfileContactSection errors={errors} control={control} />
+                            <ProfileBankingSection errors={errors} control={control} />
+                        </>
+                        : activeSection === 'services' ?
                             <>
                                 <ServicesGeneralSection errors={errors} control={control} />
                                 <ServicesDeliverySection errors={errors} control={control} />
                             </>
-                    }
-                    <Grid item xs={12}>
-                        <Box display="flex" justifyContent="center" alignItems="center" height="90px">
-                            {loading ?
+                            : activeSection === 'employees' ?
+                                <>
+                                    <ServicesGeneralSection errors={errors} control={control} />
+                                    <ServicesDeliverySection errors={errors} control={control} />
+                                </>
+                                :
+                                <>
+                                    <ServicesGeneralSection errors={errors} control={control} />
+                                    <ServicesDeliverySection errors={errors} control={control} />
+                                </>
+                }
+                <Grid item xs={12}>
+                    <Box display="flex" justifyContent="center" alignItems="center" height="90px">
+                        {loading ?
+                            <Button
+                                fullWidth={isMobile}
+                                variant="contained"
+                                disabled
+                                style={{ color: 'white', padding: '10px 30px' }}
+                            >
+                                <CircularProgress size={24} color="inherit" />
+                            </Button>
+                            : isError ?
+                                <div>
+                                    Error fetching garage settings
+                                </div>
+                                :
                                 <Button
                                     fullWidth={isMobile}
+                                    type="submit"
                                     variant="contained"
-                                    disabled
-                                    style={{ color: 'white', padding: '10px 30px' }}
+                                    sx={{
+                                        backgroundColor: COLORS.BLUE,
+                                        color: 'white',
+                                        padding: isMobile ? '10px 0' : '10px 30px',
+                                        textTransform: 'uppercase',
+                                        fontWeight: 'bold',
+                                        '&:hover': { backgroundColor: COLORS.HOVERED_BLUE }
+                                    }}
                                 >
-                                    <CircularProgress size={24} color="inherit" />
+                                    {notFound ? t("register") : t("save")}
                                 </Button>
-                                : isError ?
-                                    <div>
-                                        Error fetching garage settings
-                                    </div>
-                                    :
-                                    <Button
-                                        fullWidth={isMobile}
-                                        type="submit"
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: COLORS.BLUE,
-                                            color: 'white',
-                                            padding: isMobile ? '10px 0' : '10px 30px',
-                                            textTransform: 'uppercase',
-                                            fontWeight: 'bold',
-                                            '&:hover': { backgroundColor: COLORS.HOVERED_BLUE }
-                                        }}
-                                    >
-                                        {notFound ? t("Register") : t("Save")}
-                                    </Button>
-                            }
-                        </Box>
-                    </Grid>
+                        }
+                    </Box>
                 </Grid>
-            </form>
-        </>
-    );
+            </Grid>
+        </form>
+    </>;
 };

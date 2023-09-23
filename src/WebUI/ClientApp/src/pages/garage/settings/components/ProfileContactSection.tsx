@@ -4,7 +4,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues, useForm } from 'react-hook-form';
-import { GarageSettings, GarageLocationItem } from '../../../../app/web-api-client';
+import { GarageItem, GarageLocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
 interface BankingSectionProps {
@@ -19,25 +19,24 @@ export default (
 
     return (
         <>
-            {/* Contact Information Header */}
             <Grid item xs={12} style={{ marginTop: "40px" }}>
                 <Typography variant="h5">{t("Contact")}</Typography>
                 <Divider />
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Controller
-                    name="phoneNumber"  // Refactored name
+                    name="phoneNumber"
                     control={control}
-                    rules={{ required: t("Phone Number is required!") }}
+                    rules={{ required: t("What is your garage telephone number?") }}
                     defaultValue={""}
                     render={({ field }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="medium"
-                            label={t("Phone number")}
+                            label={t("Telephone number")}
                             variant="outlined"
-                            error={Boolean(errors.phoneNumber)}  // Refactored error check
+                            error={Boolean(errors.phoneNumber)}
                             helperText={errors.phoneNumber ? t(errors.phoneNumber.message as string) : undefined}
                         />
                     )}
@@ -45,7 +44,7 @@ export default (
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Controller
-                    name="whatsAppNumber"  // Refactored name
+                    name="whatsAppNumber"
                     control={control}
                     defaultValue={""}
                     render={({ field }) => (
@@ -53,7 +52,7 @@ export default (
                             {...field}
                             fullWidth
                             size="medium"
-                            label={t("Whatsapp phone number")}
+                            label={t("Whatsapp number")}
                             variant="outlined"
                         />
                     )}
@@ -63,7 +62,7 @@ export default (
                 <Controller
                     name="email"
                     control={control}
-                    rules={{ required: t("Email is required!") }}
+                    rules={{ required: t("What is your garage email?") }}
                     defaultValue={""}
                     render={({ field }) => (
                         <TextField

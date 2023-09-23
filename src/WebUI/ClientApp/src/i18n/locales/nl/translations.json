@@ -15,12 +15,30 @@
   "settings_camelcase": "Instellingen",
   "account_camelcase": "Account",
   "vehicle_search_camelcase": "Auto zoeken",
-  "GarageSettingsHeader.Title": "Garage Instellingen",
-  "GarageSettingsHeader.Description": "Hier kunt u uw garage instellingen aanpassen",
-
-
-
-
+  "settings": "Instellingen",
+  "settings_description": "Hier kunt u uw garage instellingen aanpassen",
+  "profile": "profiel",
+  "services": "diensten",
+  "employees": "collega's",
+  "planning": "planning",
+  "Name": "Naam",
+  "Select a bank...": "Selecteer een bank...",
+  "Select an address": "Selecteer een adres",
+  "register": "aanmaken",
+  "save": "opslaan",
+  "country_code": "nl",
+  "Error on getting address location": "Fout bij het ophalen van de adreslocatie",
+  "What is your garage name?": "Wat is u garage naam?",
+  "What is your garage telephone number?": "Wat is u garage telefoonnummer?",
+  "Telephone number": "Telefoonnummer",
+  "Whatsapp number": "Whatsapp-nummer",
+  "What is your garage email?": "Wat is het e-mailadres van uw garage?",
+  "Banking Details": "Bankgegevens",
+  "What is the KVK-number of your garage?": "Wat is het KVK-nummer van uw garage?",
+  "KVK-number": "KVK-nummer",
+  "What is the name of the account holder?": "Wat is de naam van de rekeninghouder?",
+  "Account holder name": "Naam rekeninghouder",
+  "IBAN": "Rekening nummer, b.v. NL08 RABO...",
 
 
 
@@ -60,7 +78,7 @@
   "yes": "Ja",
   "no": "Nee",
   "are_you_sure": "Weet u het zeker?",
-  "save": "Opslaan",
+
   "create": "Aanmaken",
   "edit": "Aanpassen",
   "successful_action": "Succesvolle actie",
@@ -118,7 +136,7 @@
   "select_your_profile": "Selecteer Uw Profiel",
   "select_your_profile_explain": "Dan weten we uw benodigde voedingsstoffen",
   "hasResource": "Heeft documentatie",
-  "name": "naam",
+
   "scientificName": "wetenschappelijke naam",
   "extra_information": "Extra Informatie"
 }

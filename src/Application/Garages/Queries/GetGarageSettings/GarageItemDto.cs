@@ -26,5 +26,4 @@ public class GarageItemDto : IMapFrom<GarageItem>
 
     public GarageServicesSettingsItem ServicesSettings { get; set; } = new GarageServicesSettingsItem();
 
-    public ICollection<ContactItem> Contacts { get; set; } = new List<ContactItem>();
 }

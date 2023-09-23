@@ -20,4 +20,9 @@
         <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Garages\Queries\GetGaragesByLocation\" />
+      <Folder Include="Garages\Queries\GetGarageAvailableWorkSlots\" />
+    </ItemGroup>
+
 </Project>

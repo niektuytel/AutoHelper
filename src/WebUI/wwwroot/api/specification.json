@@ -18,7 +18,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageSettings"
+                  "$ref": "#/components/schemas/GarageItemDto"
                 }
               }
             }
@@ -180,7 +180,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageSettings"
+                  "$ref": "#/components/schemas/GarageItem"
                 }
               }
             }
@@ -340,7 +340,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageSettings"
+                  "$ref": "#/components/schemas/GarageItem"
                 }
               }
             }
@@ -446,7 +446,7 @@
   },
   "components": {
     "schemas": {
-      "GarageSettings": {
+      "GarageItemDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1051,6 +1051,55 @@
             "minLength": 1
           }
         }
+      },
+      "GarageItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "whatsAppNumber": {
+                "type": "string"
+              },
+              "location": {
+                "$ref": "#/components/schemas/GarageLocationItem"
+              },
+              "bankingDetails": {
+                "$ref": "#/components/schemas/GarageBankingDetailsItem"
+              },
+              "servicesSettings": {
+                "$ref": "#/components/schemas/GarageServicesSettingsItem"
+              },
+              "contacts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ContactItem"
+                }
+              },
+              "vehicles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/VehicleItem"
+                }
+              }
+            }
+          }
+        ]
       },
       "UpdateGarageSettingsCommand": {
         "type": "object",

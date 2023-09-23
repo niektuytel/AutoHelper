@@ -42,13 +42,11 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
                 {
                     item.RuleFor(we => we.ServiceId)
                         .NotNull()
-                        .CustomAsync(async (serviceId, context, cancellationToken) => {
-                            var service = await _context.GarageServices.FirstOrDefaultAsync(x => x.Id == serviceId, cancellationToken);
-                            if (service == null)
-                            {
-                                context.AddFailure("No found defined service for this user.");
-                            }
-                        });
+                        .MustAsync(async (serviceId, cancellationToken) =>
+                        {
+                            return await _context.GarageServices.AnyAsync(x => x.Id == serviceId, cancellationToken);
+                        })
+                        .WithMessage("No found defined service for this user.");
 
                     item.RuleFor(we => we.Description).NotEmpty().WithMessage("Description cannot be empty.");
                 });
@@ -56,20 +54,11 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
 
         RuleFor(v => v.UserId)
             .NotEmpty()
-            .WithMessage("UserId cannot be empty.");
-
-        RuleFor(v => v.UserId)
-            .CustomAsync(async (userId, context, cancellationToken) => {
-                var garage = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
-                if (garage == null)
-                {
-                    context.AddFailure("No garage found for this user.");
-                }
-                else
-                {
-                    // Attach garage to the command for further processing in the command handler
-                    (context.InstanceToValidate as CreateGarageEmployeeCommand).UserGarage = garage;
-                }
-            });
+            .WithMessage("UserId cannot be empty.")
+            .MustAsync(async (userId, cancellationToken) =>
+            {
+                return await _context.Garages.AnyAsync(x => x.UserId == userId, cancellationToken);
+            })
+            .WithMessage("No garage found for this user.");
     }
 }

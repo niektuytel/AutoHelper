@@ -5,7 +5,6 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.DTOs;
-using AutoHelper.Application.Garages.Models;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Events;
@@ -45,7 +44,7 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
     }
     public async Task<GarageEmployeeItem> Handle(UpdateGarageEmployeeCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageEmployees.FindAsync(request.Id);
+        var entity = await _context.GarageEmployees.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
         if (entity == null)
         {
             throw new NotFoundException(nameof(GarageEmployeeItem), request.Id);
@@ -84,7 +83,10 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
             Description = item.Description
         }).ToList();
 
-        _context.GarageEmployees.Update(entity);
+        // If you wish to use domain events, then you can add them here:
+        // entity.AddDomainEvent(new SomeDomainEvent(entity));
+
+        // Since we fetched the entity directly from the DbContext, it's already tracked. 
         await _context.SaveChangesAsync(cancellationToken);
 
         return entity;

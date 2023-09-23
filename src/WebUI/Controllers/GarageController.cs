@@ -78,7 +78,7 @@ public class GarageController : ApiControllerBase
     }
 
     [HttpPut($"{nameof(UpdateSettings)}")]
-    public async Task<GarageItemDto> UpdateSettings([FromBody] UpdateGarageSettingsCommand command)
+    public async Task<GarageItem> UpdateSettings([FromBody] UpdateGarageSettingsCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(command);

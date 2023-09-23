@@ -42,41 +42,22 @@ public class UpdateGarageEmployeeCommandValidator : AbstractValidator<UpdateGara
                 {
                     item.RuleFor(we => we.ServiceId)
                     .NotNull()
-                    .CustomAsync(async (serviceId, context, cancellationToken) => {
-                            var service = await _context.GarageServices.FirstOrDefaultAsync(x => x.Id == serviceId, cancellationToken);
-                            if (service == null)
-                            {
-                                context.AddFailure("No found defined service for this user.");
-                            }
-                        });
+                    .MustAsync(async (serviceId, cancellationToken) =>
+                    {
+                        return await _context.GarageServices.AnyAsync(x => x.Id == serviceId, cancellationToken);
+                    })
+                    .WithMessage("No found defined service for this user.");
 
                     item.RuleFor(we => we.Description).NotEmpty().WithMessage("Description cannot be empty.");
                 });
             });
 
-        RuleFor(v => v.UserId)
-            .NotEmpty()
-            .WithMessage("UserId cannot be empty.");
-
         RuleFor(v => v.Id)
             .NotEmpty()
             .WithMessage("Id cannot be empty.");
 
-        // Custom rule that considers both UserId and EmployeeId
-        RuleFor(v => v)
-            .CustomAsync(async (request, context, cancellationToken) =>
-            {
-                var userId = request.UserId;
-                var employeeId = request.Id;
-
-                var garage = await _context.GarageEmployees.FirstOrDefaultAsync(x => x.UserId == userId && x.Id == employeeId, cancellationToken);
-                if (garage == null)
-                {
-                    context.AddFailure("No garage employee found for this user.");
-                }
-            });
-
-
-
+        RuleFor(v => v.UserId)
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.");
     }
 }

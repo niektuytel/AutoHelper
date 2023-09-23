@@ -5,7 +5,11 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
-import { GarageSettings, GarageLocationItem } from '../../../../app/web-api-client';
+import { useDispatch } from 'react-redux';
+
+
+// custom imports
+import { showOnError } from '../../../../redux/slices/statusSnackbarSlice';
 
 interface LocationSectionProps {
     control: any;
@@ -17,6 +21,7 @@ interface LocationSectionProps {
 export default ({ control, errors, setFormValue, defaultLocation }: LocationSectionProps) => {
     const [previousValue, setPreviousValue] = useState<any | null>(null);
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const {
         ready,
         value,
@@ -27,8 +32,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
         requestOptions: {
             types: ["address"],
             componentRestrictions: {
-                // TODO: set country based on the 'useTanslation()'
-                country: "nl",
+                country: t('country_code'),
             }
         },
         debounce: 250
@@ -56,7 +60,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                 });
             })
             .catch(error => {
-                // TODO: trigger an snackbar on redux, dispatch state with this error message (get it from the useTranslation)
+                dispatch(showOnError(t("Error on getting address location")));
                 console.log("Error fetching geocode:", error);
             });
     }
@@ -124,7 +128,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                 <Controller
                     name="name"
                     control={control}
-                    rules={{ required: t("Name is required!") }}
+                    rules={{ required: t("What is your garage name?") }}
                     defaultValue={""}
                     render={({ field }) => (
                         <TextField
@@ -143,7 +147,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                     <Controller
                         name="address"
                         control={control}
-                        rules={{ required: "Address is required!" }}
+                        rules={{ required: t("Select an address") }}
                         defaultValue={""}
                         render={({ field }) => (
                             <TextField
