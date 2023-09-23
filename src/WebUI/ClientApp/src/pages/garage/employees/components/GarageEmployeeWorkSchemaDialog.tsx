@@ -52,8 +52,12 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
     useEffect(() => {
         if (mode === "edit" && workSchema) {
             const ranges = workSchema.map(item => {
-                const startMinutes = item.startTime.getHours() * 60 + item.startTime.getMinutes();
-                const endMinutes = item.endTime.getHours() * 60 + item.endTime.getMinutes();
+                // Convert UTC to local time
+                const startTimeLocal = new Date(item.startTime);
+                const endTimeLocal = new Date(item.endTime);
+
+                const startMinutes = startTimeLocal.getHours() * 60 + startTimeLocal.getMinutes();
+                const endMinutes = endTimeLocal.getHours() * 60 + endTimeLocal.getMinutes();
                 const intervals = [];
 
                 for (let i = startMinutes; i < endMinutes; i += 30) {
