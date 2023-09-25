@@ -182,7 +182,7 @@ export default ({ licence_plate }: IProps) => {
                     </InputAdornment>
                 ),
                 style: {
-                    marginTop: '10px',
+                    marginTop: '60px',
                     height: '50px',
                     fontSize: '1.2em',
                     paddingRight: '0',

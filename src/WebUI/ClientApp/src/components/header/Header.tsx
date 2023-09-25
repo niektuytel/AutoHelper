@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Container, Grid, Hidden, IconButton, Theme, useMediaQuery } from "@mui/material";
+import { Container, Grid, Hidden, IconButton, Theme, useMediaQuery, useTheme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
@@ -17,13 +17,16 @@ import { ICookieProduct } from "../../interfaces/ICookieProduct";
 import LoginButton from "./components/LoginButton";
 import { BorderBottom } from "@mui/icons-material";
 import { COLORS } from "../../constants/colors";
+import { useParams } from "react-router";
+import HeaderLicensePlateSearch from "./components/HeaderLicensePlateSearch";
 
 interface IProps {
     showStaticDrawer: boolean;
 }
 
 const Header = ({ showStaticDrawer }: IProps) => {
-    const path = window.location.pathname;
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [onMenu, setOnMenu] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
     //const { items }:CartState = useSelector((state:any) => state.cart);
@@ -59,10 +62,13 @@ const Header = ({ showStaticDrawer }: IProps) => {
             >
                 <StyledToolbar>
                     <Grid container>
-                        <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid item xs={3} md={4} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small />
                         </Grid>
-                        <Grid item xs={6} sx={{ textAlign: "right" }}>
+                        <Grid item xs={6} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <HeaderLicensePlateSearch/>
+                        </Grid>
+                        <Grid item xs={3} md={4} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
                             <Hidden xsDown>
                                 {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
                                     <StyledIconButton onClick={() => setCartOpen(true)}>

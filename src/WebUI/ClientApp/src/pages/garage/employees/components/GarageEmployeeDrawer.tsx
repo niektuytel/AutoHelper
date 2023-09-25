@@ -134,7 +134,6 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
     };
 
     const setWorkSchema = (data: Array<GarageEmployeeWorkSchemaItemDto>) => {
-        console.log(data);
         setSelectedWorkSchema(data);
         setValue("WorkSchema", data);
         setWorkSchemaDialogOpen(false);
@@ -218,7 +217,10 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
                                         variant="outlined"
                                         color="primary"
                                         startIcon={<AccessTimeIcon />}
-                                        onClick={() => setWorkSchemaDialogOpen(true)}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setWorkSchemaDialogOpen(true);
+                                        }}
                                     >
                                         {t("work schema")}
                                     </Button>

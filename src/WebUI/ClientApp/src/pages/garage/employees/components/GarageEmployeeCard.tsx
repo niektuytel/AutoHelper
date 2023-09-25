@@ -75,7 +75,7 @@ export default ({ employee, selectedItem, setSelectedItem, updateEmployee }: IPr
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
             <CardActions style={{ padding: "0", justifyContent: "space-between" }}>
-                <Box display="flex" sx={{ "align-self": "self-end"}}>
+                <Box display="flex" sx={{ alignSelf: "self-end"}}>
                     <AccessTimeIcon color="action" fontSize="small" />
                     <Typography variant="caption" color="textSecondary" style={{ marginLeft: "8px" }}>
                         {(employee.workSchema && employee.workSchema.length != 0) ?

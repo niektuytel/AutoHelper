@@ -10,7 +10,10 @@ import {
     CardContent,
     AppBar,
     Toolbar,
-    Button} from "@mui/material";
+    Button,
+    styled,
+    Paper,
+    Theme} from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -29,7 +32,20 @@ import PlacesHeadView from "./views/PlacesSearchView";
 import VehicleHeaderBar from "./components/VehicleHeaderBar";
 import VehicleInfoView from "./views/VehicleInfoView";
 
+interface StyledProps {
+    theme: Theme;
+}
+
+const DemoPaper = styled(Paper)<StyledProps>(({ theme }) => ({
+    width: 120,
+    height: 120,
+    padding: theme.spacing(2),
+    ...theme.typography.body2,
+    textAlign: 'center',
+}));
+
 interface IProps {}
+
 
 export default ({ }: IProps) => {
     const { licence_plate } = useParams();
@@ -40,7 +56,6 @@ export default ({ }: IProps) => {
 
     return (
         <>
-            {(showOnMaintanance || showOnInfo) && <VehicleHeaderBar licence_plate={licence_plate || ""} />}
             {!showOnInfo && 
                 <GradientBox>
                     <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center" }}>
@@ -53,6 +68,10 @@ export default ({ }: IProps) => {
                 </GradientBox>
             }
             <Container maxWidth="lg">
+                {(showOnMaintanance || showOnInfo) && <>
+                    <VehicleHeaderBar licence_plate={licence_plate || ""} />
+                </>
+                }
                 {showOnInfo ?
                     <VehicleInfoView licence_plate={licence_plate || ""}/>
                     :

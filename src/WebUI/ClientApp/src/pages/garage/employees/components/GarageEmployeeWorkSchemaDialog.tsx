@@ -14,15 +14,43 @@ import { DraggableHalfHour } from "./DraggableHalfHour";
 type DraggableHourProps = {
     day: string;
     dayIndex: number;
-    // Add any other props that you might need
+    draggingDay: number | null;
+    onMouseDown: (hour: number, minute: number, day: number) => void;
+    onMouseEnter: (hour: number, minute: number) => void;
+    selectedRanges: Array<{ time: number, day: number }>;
 };
 
-//const dayStyles = {
-//    flex: '1',
-//    textAlign: 'center',
-//    padding: '10px',
-//    boxSizing: 'border-box',
-//};
+const DraggableDayComponent: React.FC<DraggableHourProps> = ({ day, dayIndex, draggingDay, onMouseDown, onMouseEnter, selectedRanges }) => {
+    const seventhHourRef = useRef<HTMLDivElement>(null);
+    const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
+
+    useEffect(() => {
+        if (seventhHourRef.current) {
+            seventhHourRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, []);
+
+    return (
+        <div key={day} style={{ borderRight: '1px solid gray', ...dayStyles }}>
+            {hours.map(hour => (
+                [0, 30].map(minute => (
+                    <DraggableHalfHour
+                        ref={hour === 7 && minute === 0 ? seventhHourRef : null}
+                        key={`${hour}:${minute}`}
+                        hour={hour}
+                        minute={minute}
+                        day={dayIndex}
+                        showHour={dayIndex === 0 || dayIndex === draggingDay}
+                        isSelected={selectedRanges.find(item => item.day === dayIndex && item.time === (hour * 60 + minute)) !== undefined}
+                        onMouseDown={onMouseDown}
+                        onMouseEnter={onMouseEnter}
+                        selectedRanges={selectedRanges}
+                    />
+                ))
+            ))}
+        </div>
+    );
+}
 
 const dayStyles = {
     flexBasis: '14.284%',
@@ -37,12 +65,11 @@ interface IProps {
     setWorkSchema: (data: Array<GarageEmployeeWorkSchemaItemDto>) => void;
 }
 
-export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, workSchema, setWorkSchema }: IProps) {
+export default ({ mode, dialogOpen, setDialogOpen, workSchema, setWorkSchema }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
 
     const [selectedRanges, setSelectedRanges] = useState<Array<{ time: number, day: number }>>([]);
     const [selectedHours, setSelectedHours] = useState<string[]>([]);
@@ -161,36 +188,6 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
     }
 
 
-    const DraggableDayComponent: React.FC<DraggableHourProps> = ({ day, dayIndex }) => {
-        const seventhHourRef = useRef<HTMLDivElement>(null);
-
-        useEffect(() => {
-            if (seventhHourRef.current) {
-                seventhHourRef.current.scrollIntoView({ behavior: 'smooth' });
-            }
-        }, []);
-
-        return (
-            <div key={day} style={{ borderRight: '1px solid gray', ...dayStyles }}>
-                {hours.map(hour => (
-                    [0, 30].map(minute => (
-                        <DraggableHalfHour
-                            ref={hour === 7 && minute === 0 ? seventhHourRef : null}
-                            key={`${hour}:${minute}`}
-                            hour={hour}
-                            minute={minute}
-                            day={dayIndex}
-                            showHour={dayIndex === 0 || dayIndex === draggingDay}
-                            isSelected={selectedRanges.find(item => item.day === dayIndex && item.time === (hour * 60 + minute)) !== undefined}
-                            onMouseDown={handleMouseDown}
-                            onMouseEnter={handleMouseEnter}
-                            selectedRanges={selectedRanges}
-                        />
-                    ))
-                ))}
-            </div>
-        );
-    }
 
 
     return (
@@ -208,11 +205,20 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
                     </div>
                 ))}
             </Grid>
-            <form onSubmit={handleSetWorkSchema} style={{ minWidth: isMobile ? '100%' : '600px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ minWidth: isMobile ? '100%' : '600px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
                 <DialogContent dividers sx={{ padding: 0, marginLeft: "15px", marginRight: isMobile ? "15px" : "0" }}>
                     <Grid container style={{ flex: 1, display: 'flex', width: '100%', overflowY: 'auto', borderLeft: '1px solid gray' }}>
                         {DAYSINWEEK.map((day, dayIndex) => (
-                            <DraggableDayComponent day={day} dayIndex={dayIndex} />
+                            <DraggableDayComponent
+                                key={day}
+                                day={day}
+                                dayIndex={dayIndex}
+                                draggingDay={draggingDay}
+                                onMouseDown={handleMouseDown}
+                                onMouseEnter={handleMouseEnter}
+                                selectedRanges={selectedRanges}
+
+                            />
                         ))}
                     </Grid>
                 </DialogContent>
@@ -220,11 +226,11 @@ export default function ExperienceDialog({ mode, dialogOpen, setDialogOpen, work
                     <Button onClick={() => setDialogOpen(false)}>
                         {t("Cancel")}
                     </Button>
-                    <Button type="submit" variant="contained" color="primary">
+                    <Button onClick={handleSetWorkSchema} variant="contained" color="primary">
                         {t("add")}
                     </Button>
                 </DialogActions>
-            </form>
+            </div>
         </Dialog>
     );
 

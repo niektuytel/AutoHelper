@@ -19,6 +19,7 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import { HashValues } from "../../../i18n/HashValues";
 import { useAuth0 } from "@auth0/auth0-react";
 import { VehicleClient } from "../../../app/web-api-client";
+import { getFormatedLicense } from "../../../app/LicensePlateUtils";
 
 
 interface IProps {
@@ -35,25 +36,7 @@ export default ({ }: IProps) => {
 
     const handleInput = (e: any) => {
         let license = e.target.value.toUpperCase().replace(/-/g, '');
-
-        switch (license.length) {
-            case 6:
-                license =
-                    /^[A-Z]{2}\d{3}[A-Z]$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 5)}-${license.slice(5)}` :
-                        /^[A-Z]\d{3}[A-Z]{2}$/.test(license) ? `${license.slice(0, 1)}-${license.slice(1, 4)}-${license.slice(4)}` :
-                            /^[A-Z]{3}\d{2}[A-Z]$/.test(license) ? `${license.slice(0, 3)}-${license.slice(3, 5)}-${license.slice(5)}` :
-                                /^\d[A-Z]{2}\d{3}$/.test(license) ? `${license.slice(0, 1)}-${license.slice(1, 3)}-${license.slice(3)}` :
-                                    /^[A-Z]{2}\d{2}[A-Z]{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4)}` :
-                                        /^\d{2}[A-Z]{3}\d$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 5)}-${license.slice(5)}` :
-                                            /^[A-Z]{2}\d{2}\d{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4, 6)}` :
-                                                /^\d{2}\d{2}[A-Z]{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4, 6)}` :  // Added for 83-93-SV
-                                                    /^[A-Z]{2}[A-Z]{2}\d{2}$/.test(license) ? `${license.slice(0, 2)}-${license.slice(2, 4)}-${license.slice(4, 6)}` :  // Added for JH-XD-30
-                                                        license;
-                break;
-            case 7:
-                license = `${license.slice(0, 3)}-${license.slice(3, 5)}-${license.slice(5)}`;
-                break;
-        }
+        license = getFormatedLicense(license);
 
         setValue(license);
     }

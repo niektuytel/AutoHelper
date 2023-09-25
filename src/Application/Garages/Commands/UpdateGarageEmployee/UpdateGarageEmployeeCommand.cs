@@ -56,19 +56,10 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
 
         // Update fields
         entity.Contact = request.Contact;
-
-        // when has schema + experience, employee is active
-        if (request.WorkSchema?.Any() == true && request.WorkExperiences?.Any() == true)
-        {
-            entity.IsActive = true;
-        }
-        else
-        {
-            entity.IsActive = false;
-        }
-
+        entity.IsActive = request.IsActive;
+        
         _context.GarageEmployeeWorkSchemaItems.RemoveRange(entity.WorkSchema);
-        if (request.WorkSchema.Any())
+        if (request.WorkSchema?.Any() == true)
         {
             entity.WorkSchema = request.WorkSchema.Select(item => new GarageEmployeeWorkSchemaItem
             {
@@ -83,10 +74,11 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
         else
         {
             entity.WorkSchema = new List<GarageEmployeeWorkSchemaItem>();
+            entity.IsActive = false;
         }
 
         _context.GarageEmployeeWorkExperienceItems.RemoveRange(entity.WorkExperiences);
-        if(request.WorkExperiences.Any())
+        if(request.WorkExperiences?.Any() == true)
         {
             entity.WorkExperiences = request.WorkExperiences.Select(item => new GarageEmployeeWorkExperienceItem
             {
@@ -98,6 +90,7 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
         else
         {
             entity.WorkExperiences = new List<GarageEmployeeWorkExperienceItem>();
+            entity.IsActive = false;
         }
 
         // If you wish to use domain events, then you can add them here:

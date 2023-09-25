@@ -23,11 +23,28 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    const utcToLocal = (utcDate: Date) => {
+        const localDate = new Date(utcDate);
+        const offsetInMs = (Math.abs(localDate.getTimezoneOffset()) * 60000);// 60000 to get milliseconds
+        return new Date(localDate.getTime() + offsetInMs);
+    }
+
     const fetchGarageEmployeesData = async () => {
         try {
             const response = await garageClient.getEmployees();
 
+            // Convert UTC time to local time for each workSchema item in each employee
+            response.forEach(employee => {
+                if (employee.workSchema) {
+                    employee.workSchema.forEach(schemaItem => {
+                        schemaItem.startTime = utcToLocal(new Date(schemaItem.startTime));
+                        schemaItem.endTime = utcToLocal(new Date(schemaItem.endTime));
+                    });
+                }
+            });
+
             return response;
+
         } catch (response: any) {
             // redirect + enable garage register page
             if (response.status === 404) {
@@ -39,6 +56,7 @@ function useGarageEmployees(onResponse: (data: any) => void) {
             throw response;
         }
     }
+
 
     const { data: garageEmployees, isLoading, isError } = useQuery(
         ['garageEmployees'],
@@ -108,8 +126,6 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     });
 
     const createEmployee = (data: any) => {
-        console.log(data);
-
         var command = new CreateGarageEmployeeCommand({
             isActive: data.isActive,
             contact: new ContactItem(),
@@ -136,8 +152,6 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     }
 
     const updateEmployee = (data: any) => {
-        console.log(data);
-
         var command = new UpdateGarageEmployeeCommand({
             id: data.id,
             isActive: data.isActive,

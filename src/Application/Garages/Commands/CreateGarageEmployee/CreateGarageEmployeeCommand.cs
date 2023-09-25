@@ -21,9 +21,9 @@ public record CreateGarageEmployeeCommand : IRequest<GarageEmployeeItem>
 
     public ContactItem Contact { get; set; }
 
-    public IEnumerable<GarageEmployeeWorkSchemaItemDto> WorkSchema { get; set; }
+    public IEnumerable<GarageEmployeeWorkSchemaItemDto> WorkSchema { get; set; } = new List<GarageEmployeeWorkSchemaItemDto>();
 
-    public IEnumerable<GarageEmployeeWorkExperienceItemDto> WorkExperiences { get; set; }
+    public IEnumerable<GarageEmployeeWorkExperienceItemDto> WorkExperiences { get; set; } = new List<GarageEmployeeWorkExperienceItemDto>();
 
     [JsonIgnore]
     public string UserId { get; set; }
@@ -54,23 +54,18 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
             UserId = request.UserId,
             GarageId = garageEntity.Id,
             Contact = request.Contact,
+            IsActive = true,
             WorkSchema = new List<GarageEmployeeWorkSchemaItem>(),
             WorkExperiences = new List<GarageEmployeeWorkExperienceItem>()
         };
-
-        // when has schema + experience, employee is active (in intial state)
-        if (request.WorkSchema?.Any() == true && request.WorkExperiences?.Any() == true)
-        {
-            entity.IsActive = true;
-        }
 
         // Guid will been used in work schema and work experience
         _context.GarageEmployees.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        entity.WorkSchema = request.WorkSchema.Select(item =>
+        if (request.WorkSchema?.Any() == true)
         {
-            return new GarageEmployeeWorkSchemaItem
+            entity.WorkSchema = request.WorkSchema.Select(item => new GarageEmployeeWorkSchemaItem
             {
                 EmployeeId = entity.Id,
                 WeekOfYear = item.WeekOfYear,
@@ -78,17 +73,29 @@ public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGara
                 StartTime = item.StartTime,
                 EndTime = item.EndTime,
                 Notes = item.Notes
-            };
-        });
-        entity.WorkExperiences = request.WorkExperiences.Select(item =>
+            }).ToList();
+        }
+        else
         {
-            return new GarageEmployeeWorkExperienceItem
+            entity.WorkSchema = new List<GarageEmployeeWorkSchemaItem>();
+            entity.IsActive = false;
+        }
+
+        if (request.WorkExperiences?.Any() == true)
+        {
+            entity.WorkExperiences = request.WorkExperiences.Select(item => new GarageEmployeeWorkExperienceItem
             {
                 EmployeeId = entity.Id,
                 ServiceId = item.ServiceId,
                 Description = item.Description
-            };
-        });
+            }).ToList();
+        }
+        else
+        {
+            entity.WorkExperiences = new List<GarageEmployeeWorkExperienceItem>();
+            entity.IsActive = false;
+        }
+
 
 
         // If you wish to use domain events, then you can add them here:

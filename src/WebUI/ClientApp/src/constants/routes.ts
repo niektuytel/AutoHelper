@@ -1,4 +1,4 @@
-﻿
+﻿import { useParams } from "react-router";
 
 export const ROUTES = {
     GARAGE: {

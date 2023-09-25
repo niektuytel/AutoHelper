@@ -25,11 +25,11 @@ public class GarageEmployeeItem : BaseAuditableEntity
     /// <summary>
     /// Working schema for this user
     /// </summary>
-    public IEnumerable<GarageEmployeeWorkSchemaItem> WorkSchema { get; set; }
+    public IEnumerable<GarageEmployeeWorkSchemaItem> WorkSchema { get; set; } = new List<GarageEmployeeWorkSchemaItem>();
 
     /// <summary>
     /// All the experiences of this user
     /// </summary>
-    public IEnumerable<GarageEmployeeWorkExperienceItem> WorkExperiences { get; set; }
+    public IEnumerable<GarageEmployeeWorkExperienceItem> WorkExperiences { get; set; } = new List<GarageEmployeeWorkExperienceItem>();
 
 }
