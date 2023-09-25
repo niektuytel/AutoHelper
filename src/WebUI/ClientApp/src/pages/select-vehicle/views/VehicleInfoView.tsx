@@ -13,6 +13,7 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 
 // own imports
 import { VehicleClient, VehicleInformationResponse } from "../../../app/web-api-client";
+import VehicleInfoButtons from '../components/VehicleInfoButtons';
 
 const Accordion = styled((props: AccordionProps) => (
     <MuiAccordion elevation={0} square {...props} />
@@ -96,13 +97,18 @@ export default ({ licence_plate }: IProps) => {
 
     return (
         <>
-            <Box sx={{ marginBottom: "40px", padding: "5vh"}}>
+            <Box sx={{ marginBottom: "40px" }}>
                 {isLoading ?
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
                     </Box>
                 : vehicleInformation?.data &&
                     <>
+                        <VehicleInfoButtons
+                            onButton1Click={() => console.log('Button 1 clicked!')}
+                            onButton2Click={() => console.log('Button 2 clicked!')}
+                            onButton3Click={() => console.log('Button 3 clicked!')}
+                        />
                         <Box sx={{ margin: "auto", maxWidth: "600px"}}>
                             <Typography variant="body2" style={{ textAlign: 'right', margin: "5px" }}>
                                 <i>
@@ -136,39 +142,41 @@ export default ({ licence_plate }: IProps) => {
                                 </Table>
                             </Card>
                         </Box>
-                        <Typography variant="h6" color="#1C94F3" style={{ textAlign: 'center', marginTop:"40px"  }}>
-                            <b>Alle informatie</b>
-                        </Typography>
-                        {vehicleInformation.data.map((section, index) => (
-                            <Accordion expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
-                                <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
-                                    <Typography>{section.title}</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{ padding: "0" }}>
-                                    <Table>
-                                        <TableBody>
-                                            {section.values!.map((line, rowIndex) => (
-                                                <TableRow
-                                                    key={rowIndex}
-                                                    sx={{
-                                                        backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
-                                                    }}
-                                                >
-                                                    {line!.map((value, cellIndex) => (
+                        <Box>
+                            <Typography variant="h6" color="#1C94F3" style={{ textAlign: 'center', marginTop:"40px"  }}>
+                                <b>Alle informatie</b>
+                            </Typography>
+                            {vehicleInformation.data.map((section, index) => (
+                                <Accordion expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
+                                    <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
+                                        <Typography>{section.title}</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails sx={{ padding: "0" }}>
+                                        <Table>
+                                            <TableBody>
+                                                {section.values!.map((line, rowIndex) => (
+                                                    <TableRow
+                                                        key={rowIndex}
+                                                        sx={{
+                                                            backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
+                                                        }}
+                                                    >
+                                                        {line!.map((value, cellIndex) => (
 
-                                                        <TableCell
-                                                            style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
-                                                        >
-                                                            {value}
-                                                        </TableCell>
-                                                    ))}
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </AccordionDetails>
-                            </Accordion>
-                        ))}
+                                                            <TableCell
+                                                                style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
+                                                            >
+                                                                {value}
+                                                            </TableCell>
+                                                        ))}
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </AccordionDetails>
+                                </Accordion>
+                            ))}
+                        </Box>
                     </>
                 }
             </Box>

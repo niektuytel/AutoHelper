@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Box, Container, Theme, useMediaQuery } from '@mui/material';
+import { Box, Container, Theme, ThemeProvider, useMediaQuery } from '@mui/material';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 // own imports
@@ -20,6 +20,7 @@ import { ROLES } from './constants/roles';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
 import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
+import theme from './constants/theme';
 
 export default () => {
     const location = useLocation();
@@ -58,52 +59,54 @@ export default () => {
     }
 
     return <>
-        <Header showStaticDrawer={showStaticDrawer} />
-        <Routes>
-            <Route path="/callback" element={<AuthCallback />} />{/*TODO: Maybe able to remove???*/}
-            <Route path="*" element={<NotFoundPage />} />
-            <Route path='/' element={<Navigate to="/select-vehicle" />} />
-            <Route path={`${ROUTES.SELECT_VEHICLE}`} element={<SelectVehicle />} />
-            <Route path={`${ROUTES.SELECT_VEHICLE}/:licence_plate` } element={<SelectVehicle />} />
-            <Route path={`${ROUTES.SELECT_VEHICLE}/:licence_plate/:lat/:lng`} element={<SelectGarage />} />
-            <Route path={`${ROUTES.GARAGE.OVERVIEW}`} element={
-                <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                    <GarageRouteContent>
-                        <GarageOverview/>
-                    </GarageRouteContent>
-                </AuthenticatedRoute>
-            } />
-            <Route path={`${ROUTES.GARAGE.PLANNING}`} element={
-                <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                    <GarageRouteContent>
-                        <GarageAgenda />
-                    </GarageRouteContent>
-                </AuthenticatedRoute>
-            } />
-            <Route path={`${ROUTES.GARAGE.SERVICES}`} element={
-                <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                    <GarageRouteContent>
-                        <GarageServices />
-                    </GarageRouteContent>
-                </AuthenticatedRoute>
-            } />
-            <Route path={`${ROUTES.GARAGE.EMPLOYEES}`} element={
-                <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                    <GarageRouteContent>
-                        <GarageEmployees />
-                    </GarageRouteContent>
-                </AuthenticatedRoute>
-            } />
-            <Route path={`${ROUTES.GARAGE.SETTINGS}`} element={
-                <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                    <GarageRouteContent>
-                        <GarageSettings />
-                    </GarageRouteContent>
-                </AuthenticatedRoute>
-            } />
-        </Routes>
-        <StatusSnackbar />
-        <Footer />
+        <ThemeProvider theme={theme}>
+            <Header showStaticDrawer={showStaticDrawer} />
+            <Routes>
+                <Route path="/callback" element={<AuthCallback />} />{/*TODO: Maybe able to remove???*/}
+                <Route path="*" element={<NotFoundPage />} />
+                <Route path='/' element={<Navigate to="/select-vehicle" />} />
+                <Route path={`${ROUTES.SELECT_VEHICLE}`} element={<SelectVehicle />} />
+                <Route path={`${ROUTES.SELECT_VEHICLE}/:licence_plate` } element={<SelectVehicle />} />
+                <Route path={`${ROUTES.SELECT_VEHICLE}/:licence_plate/:lat/:lng`} element={<SelectGarage />} />
+                <Route path={`${ROUTES.GARAGE.OVERVIEW}`} element={
+                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                        <GarageRouteContent>
+                            <GarageOverview/>
+                        </GarageRouteContent>
+                    </AuthenticatedRoute>
+                } />
+                <Route path={`${ROUTES.GARAGE.PLANNING}`} element={
+                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                        <GarageRouteContent>
+                            <GarageAgenda />
+                        </GarageRouteContent>
+                    </AuthenticatedRoute>
+                } />
+                <Route path={`${ROUTES.GARAGE.SERVICES}`} element={
+                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                        <GarageRouteContent>
+                            <GarageServices />
+                        </GarageRouteContent>
+                    </AuthenticatedRoute>
+                } />
+                <Route path={`${ROUTES.GARAGE.EMPLOYEES}`} element={
+                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                        <GarageRouteContent>
+                            <GarageEmployees />
+                        </GarageRouteContent>
+                    </AuthenticatedRoute>
+                } />
+                <Route path={`${ROUTES.GARAGE.SETTINGS}`} element={
+                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                        <GarageRouteContent>
+                            <GarageSettings />
+                        </GarageRouteContent>
+                    </AuthenticatedRoute>
+                } />
+            </Routes>
+            <StatusSnackbar />
+            <Footer />
+        </ThemeProvider>
     </>;
 }
 

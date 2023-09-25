@@ -27,6 +27,7 @@ export default ({ }: IProps) => {
     const [isVisable, setIsVisable] = React.useState<boolean>(licence_plate ? true : false);
     const [value, setValue] = React.useState<string>(licence_plate || "");
     const [hasError, setHasError] = React.useState(false);
+    const [focused, setFocused] = React.useState(false);
 
 
     // Update the license plate when pathname changes
@@ -68,6 +69,9 @@ export default ({ }: IProps) => {
     const handleEnterPress = async (event:any) => {
         if (event.key === 'Enter') {
             handleSearch();
+
+            // Remove focus from the TextField
+            event.target.blur();
         }
     };
 
@@ -83,6 +87,8 @@ export default ({ }: IProps) => {
             value={value}
             onChange={handleInput}
             onKeyDown={handleEnterPress}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             variant="outlined"
             placeholder={t("search_licenceplate_placeholder")}
             error={hasError}
@@ -90,13 +96,14 @@ export default ({ }: IProps) => {
                 endAdornment: (
                     <InputAdornment position="end">
                         {value.length > 0 &&
-                            <IconButton onClick={handleSearch}>
+                            <IconButton onClick={handleSearch} sx={{ color: focused ? "black" : "lightgray" }}>
                                 <SearchIcon />
                             </IconButton>
                         }
                     </InputAdornment>
                 ),
                 style: {
+                    color: focused ? "black" : "lightgray",
                     height: '40px',
                     fontSize: '1.2em',
                     paddingRight: '0',

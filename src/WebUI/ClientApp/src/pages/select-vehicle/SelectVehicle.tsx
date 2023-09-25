@@ -31,6 +31,7 @@ import PlacesHeadView from "./views/PlacesSearchView";
 
 import VehicleHeaderBar from "./components/VehicleHeaderBar";
 import VehicleInfoView from "./views/VehicleInfoView";
+import { ROUTES } from "../../constants/routes";
 
 interface StyledProps {
     theme: Theme;
@@ -68,14 +69,10 @@ export default ({ }: IProps) => {
                 </GradientBox>
             }
             <Container maxWidth="lg">
-                {(showOnMaintanance || showOnInfo) && <>
-                    <VehicleHeaderBar licence_plate={licence_plate || ""} />
-                </>
-                }
-                {showOnInfo ?
-                    <VehicleInfoView licence_plate={licence_plate || ""}/>
+                { window.location.pathname === ROUTES.SELECT_VEHICLE ? 
+                    <AutoHelperAboutView />
                     :
-                    <AutoHelperAboutView/>
+                    <VehicleInfoView licence_plate={licence_plate || ""}/>
                 }
             </Container>
         </>
