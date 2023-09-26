@@ -56,6 +56,10 @@ public static class ConfigureServices
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
+
+        services.AddTransient<RDWService>();
+        services.AddTransient<IVehicleService, VehicleService>();
+
         services.AddAuthentication()
             .AddIdentityServerJwt();
 

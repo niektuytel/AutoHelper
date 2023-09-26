@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List } from "@mui/material";
+import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery } from "@mui/material";
 import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
@@ -29,6 +29,8 @@ interface IProps {
 export default ({ licence_plate }: IProps) => {
     var hash = window.location.hash.length == 0 ? HashValues.default : window.location.hash;
     const navigate = useNavigate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const splitted_hash = hash.split("_")[0];
     const { t } = useTranslation();
 
@@ -182,7 +184,7 @@ export default ({ licence_plate }: IProps) => {
                     </InputAdornment>
                 ),
                 style: {
-                    marginTop: '60px',
+                    marginTop: isMobile ? '15px' : '60px',
                     height: '50px',
                     fontSize: '1.2em',
                     paddingRight: '0',

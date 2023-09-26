@@ -1,16 +1,18 @@
 ﻿using System.Diagnostics.Metrics;
 using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
 using AutoHelper.Application.TodoLists.Commands.DeleteTodoList;
 using AutoHelper.Application.TodoLists.Commands.UpdateTodoList;
 using AutoHelper.Application.TodoLists.Queries.ExportTodos;
 using AutoHelper.Application.TodoLists.Queries.GetTodos;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using WebUI.Extensions;
 using WebUI.Models.Response;
-using WebUI.Services;
 using YamlDotNet.Core.Tokens;
 
 namespace AutoHelper.WebUI.Controllers;
@@ -18,11 +20,11 @@ namespace AutoHelper.WebUI.Controllers;
 public class VehicleController : ApiControllerBase
 {
 
-    private readonly IVehicleInformationService _vehicleInformationService;
+    private readonly IVehicleService _vehicleService;
 
-    public VehicleController(IVehicleInformationService vehicleInformationService)
+    public VehicleController(IVehicleService vehicleService)
     {
-        _vehicleInformationService = vehicleInformationService;
+        _vehicleService = vehicleService;
     }
 
     [HttpGet("search")]
@@ -37,7 +39,7 @@ public class VehicleController : ApiControllerBase
 
             licensePlate = licensePlate.Replace("-", "").ToUpper();
 
-            var isValid = await _vehicleInformationService.ValidVehicle(licensePlate);
+            var isValid = await _vehicleService.ValidVehicle(licensePlate);
             if (!isValid)
             {
                 return BadRequest($"Invalid license plate: {licensePlate}");
@@ -50,26 +52,33 @@ public class VehicleController : ApiControllerBase
             return StatusCode(500, "Internal server error: " + ex.Message);
         }
     }
-
-    [HttpGet("information")]
-    public async Task<ActionResult<VehicleInformationResponse>> GetVehicleInformation([FromQuery] string licensePlate)
+    
+    [HttpPost($"{nameof(GetVehicleBriefInfo)}")]
+    [ProducesResponseType(typeof(VehicleBriefInfoItem), StatusCodes.Status200OK)]
+    public async Task<VehicleBriefInfoItem> GetVehicleBriefInfo([FromQuery] string licensePlate)
     {
-        try
-        {
-            licensePlate = licensePlate.Replace("-", "").ToUpper();
-
-            var result = await _vehicleInformationService.GetVehicleInformationAsync(licensePlate);
-            return Ok(result);
-        }
-        catch (NotFoundException nfe)
-        {
-            return NotFound(nfe.Message);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, "Internal server error: " + ex.Message);
-        }
+        return await Mediator.Send(new GetVehicleBriefInfoQuery(licensePlate));
     }
+
+    //[HttpGet("information")]
+    //public async Task<ActionResult<VehicleInformationResponse>> GetVehicleInformation([FromQuery] string licensePlate)
+    //{
+    //    try
+    //    {
+    //        licensePlate = licensePlate.Replace("-", "").ToUpper();
+
+    //        var result = await _vehicleService.GetVehicleInformationAsync(licensePlate);
+    //        return Ok(result);
+    //    }
+    //    catch (NotFoundException nfe)
+    //    {
+    //        return NotFound(nfe.Message);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return StatusCode(500, "Internal server error: " + ex.Message);
+    //    }
+    //}
 
 
 }

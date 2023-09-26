@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 // own imports
 import { getFormatedLicense, getLicenseFromPath } from "../../../app/LicensePlateUtils";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
 
 interface IProps {
@@ -82,9 +83,9 @@ export default ({ }: IProps) => {
     return <>
         <TextField
             fullWidth
-            label={value.length > 0 ? t("license") : undefined}
             autoComplete="new-password"
             value={value}
+            label={value.length > 0 && focused ? t("license") : undefined}
             onChange={handleInput}
             onKeyDown={handleEnterPress}
             onFocus={() => setFocused(true)}
@@ -108,6 +109,7 @@ export default ({ }: IProps) => {
                     fontSize: '1.2em',
                     paddingRight: '0',
                     backgroundColor: '#fff',
+                    
                 }
             }}
         />

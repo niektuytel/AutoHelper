@@ -1,6 +1,6 @@
 ﻿{
   "search_licenceplate_placeholder": "Licence plate, b.v. 87-GRN-6",
-  "search_places_placeholder": "Adres, b.v. Amstelplein 10",
+  "search_places_placeholder": "Address, e.g. Amstelplein 10",
   "search_camelcase": "Search",
   "next_camelcase": "Next",
   "suggestions_camelcase": "Suggestions",
@@ -81,7 +81,7 @@
   "Finish": "Finish",
   "Selected Services": "Selected Services",
   "Employees": "Employees",
-  "Employees.Description": "Here you can manage your colleagues to be scheduled for online requests",
+  "Employees.Description": "Here you can manage your employees to be scheduled for online requests",
   "has no work schema": "has no work schema",
   "Employee_delete_confirm_title": "Delete employee",
   "Employee_delete_confirm": "Are you sure you want to delete this employee?",
@@ -113,6 +113,7 @@
   "Information": "Information",
   "Maintenance": "Maintenance",
   "maintenance logs": "maintenance logs",
+  "e.g. 87-GRN-6": "e.g. 87-GRN-6",
 
 
 

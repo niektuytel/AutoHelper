@@ -600,7 +600,7 @@ export interface IVehicleClient {
 
     searchVehicle(licensePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
 
-    getVehicleInformation(licensePlate: string | null | undefined): Promise<VehicleInformationResponse>;
+    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItem>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -649,32 +649,32 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<LicencePlateBriefResponse>(null as any);
     }
 
-    getVehicleInformation(licensePlate: string | null | undefined): Promise<VehicleInformationResponse> {
-        let url_ = this.baseUrl + "/api/Vehicle/information?";
+    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetVehicleBriefInfo?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
-            method: "GET",
+            method: "POST",
             headers: {
                 "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetVehicleInformation(_response);
+            return this.processGetVehicleBriefInfo(_response);
         });
     }
 
-    protected processGetVehicleInformation(response: Response): Promise<VehicleInformationResponse> {
+    protected processGetVehicleBriefInfo(response: Response): Promise<VehicleBriefInfoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleInformationResponse.fromJS(resultData200);
+            result200 = VehicleBriefInfoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -682,7 +682,7 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleInformationResponse>(null as any);
+        return Promise.resolve<VehicleBriefInfoItem>(null as any);
     }
 }
 
@@ -2333,11 +2333,14 @@ export interface ILicencePlateBriefResponse {
     licencePlate?: string;
 }
 
-export class VehicleInformationResponse implements IVehicleInformationResponse {
-    cardInfo?: string[][];
-    data?: VehicleInformationSection[];
+export class VehicleBriefInfoItem implements IVehicleBriefInfoItem {
+    licensePlate?: string;
+    brand?: string;
+    consumption?: string;
+    motExpiryDate?: string;
+    mileage?: string;
 
-    constructor(data?: IVehicleInformationResponse) {
+    constructor(data?: IVehicleBriefInfoItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2348,93 +2351,38 @@ export class VehicleInformationResponse implements IVehicleInformationResponse {
 
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data["cardInfo"])) {
-                this.cardInfo = [] as any;
-                for (let item of _data["cardInfo"])
-                    this.cardInfo!.push(item);
-            }
-            if (Array.isArray(_data["data"])) {
-                this.data = [] as any;
-                for (let item of _data["data"])
-                    this.data!.push(VehicleInformationSection.fromJS(item));
-            }
+            this.licensePlate = _data["licensePlate"];
+            this.brand = _data["brand"];
+            this.consumption = _data["consumption"];
+            this.motExpiryDate = _data["motExpiryDate"];
+            this.mileage = _data["mileage"];
         }
     }
 
-    static fromJS(data: any): VehicleInformationResponse {
+    static fromJS(data: any): VehicleBriefInfoItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleInformationResponse();
+        let result = new VehicleBriefInfoItem();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.cardInfo)) {
-            data["cardInfo"] = [];
-            for (let item of this.cardInfo)
-                data["cardInfo"].push(item);
-        }
-        if (Array.isArray(this.data)) {
-            data["data"] = [];
-            for (let item of this.data)
-                data["data"].push(item.toJSON());
-        }
+        data["licensePlate"] = this.licensePlate;
+        data["brand"] = this.brand;
+        data["consumption"] = this.consumption;
+        data["motExpiryDate"] = this.motExpiryDate;
+        data["mileage"] = this.mileage;
         return data;
     }
 }
 
-export interface IVehicleInformationResponse {
-    cardInfo?: string[][];
-    data?: VehicleInformationSection[];
-}
-
-export class VehicleInformationSection implements IVehicleInformationSection {
-    title?: string;
-    values?: string[][];
-
-    constructor(data?: IVehicleInformationSection) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            if (Array.isArray(_data["values"])) {
-                this.values = [] as any;
-                for (let item of _data["values"])
-                    this.values!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): VehicleInformationSection {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleInformationSection();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        if (Array.isArray(this.values)) {
-            data["values"] = [];
-            for (let item of this.values)
-                data["values"].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IVehicleInformationSection {
-    title?: string;
-    values?: string[][];
+export interface IVehicleBriefInfoItem {
+    licensePlate?: string;
+    brand?: string;
+    consumption?: string;
+    motExpiryDate?: string;
+    mileage?: string;
 }
 
 export class WeatherForecast implements IWeatherForecast {

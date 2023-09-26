@@ -2,134 +2,94 @@
 import {
     InputAdornment,
     TextField,
-    IconButton,
-    Button,
-    Hidden,
-    CircularProgress
+    IconButton
 } from "@mui/material";
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import useOnclickOutside from "react-cool-onclickoutside";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 // own imports
-import { HashValues } from "../../../i18n/HashValues";
-import { useAuth0 } from "@auth0/auth0-react";
-import { VehicleClient } from "../../../app/web-api-client";
-import { getFormatedLicense } from "../../../app/LicensePlateUtils";
+import { getFormatedLicense, getLicenseFromPath } from "../../../app/LicensePlateUtils";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
 
 interface IProps {
+    license_plate: string;
 }
 
-export default ({ }: IProps) => {
-    const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
+export default ({ license_plate }: IProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { getAccessTokenSilently } = useAuth0();
-    const [value, setValue] = React.useState<string>("");
-    const [isSearching, setIsSearching] = React.useState<boolean>(false);
-    const ref = useOnclickOutside(() => handleClearInput());
+    const location = useLocation();
+
+    // initial license plate value
+    const [value, setValue] = React.useState<string>(license_plate || "");
+    const [hasError, setHasError] = React.useState(false);
 
     const handleInput = (e: any) => {
         let license = e.target.value.toUpperCase().replace(/-/g, '');
         license = getFormatedLicense(license);
-
         setValue(license);
+
+        var isValid = getLicenseFromPath(license) ? true : false;
+        if (isValid) setHasError(false);
     }
 
-    const handleClearInput = () => {
-        setValue("");
-    };
+    async function handleSearch(): Promise<boolean> {
+        var isValid = getLicenseFromPath(value) ? true : false;
+        setHasError(!isValid);
 
-    const handleSearch = async () => {
-        setIsSearching(true);
+        if (!isValid || value.length === 0 || !license_plate) {
+            return false;
+        }
 
-        vehicleClient.searchVehicle(value)
-            .then(response => {
-                if (response) {
-                    console.log("Response received:", response);
 
-                    navigate(`/select-vehicle/${value}`);
-                } else {
-                    // TODO: trigger snackbar
-                    console.error("Failed to get vehicle by license plate");
-                }
-            })
-            .catch(error => {
-                // TODO: trigger snackbar
-                console.error("Error occurred:", error);
-            })
-            .finally(() => {
-                setIsSearching(false);
-            });
+        // Combine pathname, search query, and hash fragment
+        let fullURI = location.pathname + location.search + location.hash;
+        const uri = fullURI.replace(license_plate, value);
+        navigate(uri);
+        return true;
     }
+
 
     const handleEnterPress = async (event:any) => {
-        if (event.key === 'Enter') {
-            handleSearch();
+        if (event.key === 'Enter' && await handleSearch()) {
+            // Remove focus from the TextField
+            event.target.blur();
         }
     };
+
+    //label={value.length > 0 ? t("license") : undefined}
 
     return <>
         <TextField
             fullWidth
-            autoComplete="new-password" // Use this line instead of autoComplete="off", because it is not working
-            autoFocus={true}
+            autoComplete="new-password"
             value={value}
             onChange={handleInput}
             onKeyDown={handleEnterPress}
             variant="outlined"
-            placeholder={t("search_licenceplate_placeholder")}
+            placeholder={t("e.g. 87-GRN-6")}
+            error={hasError}
             InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <LocationOnOutlinedIcon color="action" />
-                    </InputAdornment>
-                ),
                 endAdornment: (
                     <InputAdornment position="end">
                         {value.length > 0 &&
-                            <IconButton onClick={handleClearInput}>
-                                <ClearIcon color="action" />
+                            <IconButton onClick={handleSearch}>
+                                <SearchIcon sx={{ color:"lightgray"}} />
                             </IconButton>
                         }
-                        <Hidden mdUp>
-                            <IconButton onClick={handleSearch} style={{ marginRight: "10px" }}>
-                                {isSearching ? <CircularProgress size={24} /> : <SearchIcon />}
-                            </IconButton>
-                        </Hidden>
-                        <Hidden mdDown>
-                            <Button
-                                onClick={handleSearch}
-                                sx={{
-                                    backgroundColor: '#1B97F0',
-                                    color: 'white',
-                                    borderRadius: '4px',
-                                    height: '50px',
-                                    borderTopLeftRadius: '0',
-                                    borderBottomLeftRadius: '0',
-                                    margin: '0',
-                                    padding: '0',
-                                    '&:hover': {
-                                        backgroundColor: '#1888d9'
-                                    }
-                                }}
-                            >
-                                {isSearching ? <CircularProgress size={24} color="inherit" /> : t("search_camelcase")}
-                            </Button>
-                        </Hidden>
                     </InputAdornment>
                 ),
                 style: {
-                    marginTop: '60px',
-                    height: '50px',
-                    fontSize: '1.2em',
+                    color: "black",
+                    height: '40px',
+                    //fontSize: '1.2em',
                     paddingRight: '0',
-                    backgroundColor: 'white'
+                    //backgroundColor: '#fff',
+                    
                 }
             }}
         />

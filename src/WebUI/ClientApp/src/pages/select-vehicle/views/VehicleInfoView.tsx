@@ -12,8 +12,9 @@ import MuiAccordionSummary, {
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 
 // own imports
-import { VehicleClient, VehicleInformationResponse } from "../../../app/web-api-client";
+//import { VehicleClient, VehicleInformationResponse } from "../../../app/web-api-client";
 import VehicleInfoButtons from '../components/VehicleInfoButtons';
+import VehicleBriefInfoCard from '../components/VehicleBriefInfoCard';
 
 const Accordion = styled((props: AccordionProps) => (
     <MuiAccordion elevation={0} square {...props} />
@@ -54,131 +55,97 @@ interface IProps {
 }
 
 export default ({ licence_plate }: IProps) => {
-    const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
-    const [expanded, setExpanded] = React.useState<string[]>([]);
-    const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [vehicleInformation, setVehicleInformation] = React.useState<VehicleInformationResponse | undefined>(undefined);
+    //const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
+    //const [expanded, setExpanded] = React.useState<string[]>([]);
+    //const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    //const [vehicleInformation, setVehicleInformation] = React.useState<VehicleInformationResponse | undefined>(undefined);
 
-    const handleLoading = () => {
-        setIsLoading(true);
+    //const handleLoading = () => {
+    //    setIsLoading(true);
 
-        vehicleClient.getVehicleInformation(licence_plate)
-            .then(response => {
-                if (response) {
-                    console.log("Response received:", response);
-                    setVehicleInformation(response);
-                } else {
-                    // TODO: trigger snackbar
-                    console.error("Failed to get vehicle by license plate");
-                }
-            })
-            .catch(error => {
-                // TODO: trigger snackbar
-                console.error("Error occurred:", error);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    }
+    //    vehicleClient.getVehicleInformation(licence_plate)
+    //        .then(response => {
+    //            if (response) {
+    //                console.log("Response received:", response);
+    //                setVehicleInformation(response);
+    //            } else {
+    //                // TODO: trigger snackbar
+    //                console.error("Failed to get vehicle by license plate");
+    //            }
+    //        })
+    //        .catch(error => {
+    //            // TODO: trigger snackbar
+    //            console.error("Error occurred:", error);
+    //        })
+    //        .finally(() => {
+    //            setIsLoading(false);
+    //        });
+    //}
 
-    useEffect(() => {
-        if (vehicleInformation === undefined) {
-            handleLoading();
-        }
-    }, []);
+    //useEffect(() => {
+    //    if (vehicleInformation === undefined) {
+    //        handleLoading();
+    //    }
+    //}, []);
 
-    const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-        if (newExpanded) {
-            setExpanded((prev) => [...prev, panel]);
-        } else {
-            setExpanded((prev) => prev.filter((item) => item !== panel));
-        }
-    };
+    //const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+    //    if (newExpanded) {
+    //        setExpanded((prev) => [...prev, panel]);
+    //    } else {
+    //        setExpanded((prev) => prev.filter((item) => item !== panel));
+    //    }
+    //};
 
     return (
         <>
             <Box sx={{ marginBottom: "40px" }}>
-                {isLoading ?
-                    <Box display="flex" justifyContent="center">
-                        <CircularProgress />
-                    </Box>
-                : vehicleInformation?.data &&
-                    <>
-                        <VehicleInfoButtons
-                            onButton1Click={() => console.log('Button 1 clicked!')}
-                            onButton2Click={() => console.log('Button 2 clicked!')}
-                            onButton3Click={() => console.log('Button 3 clicked!')}
-                        />
-                        <Box sx={{ margin: "auto", maxWidth: "600px"}}>
-                            <Typography variant="body2" style={{ textAlign: 'right', margin: "5px" }}>
-                                <i>
-                                    (bron: <Link href="https://ovi.rdw.nl" target="_blank" rel="noopener noreferrer">rdw.nl</Link>)
-                                </i>
-                            </Typography>
-                            <Card sx={{ alignContent: "center" }} elevation={6}>
-                                <Typography variant="h6" color="black" style={{ textAlign: 'center', margin: "20px" }}>
-                                    <b>Informatie: {licence_plate}</b>
-                                </Typography>
-                                <Table>
-                                    <TableBody>
-                                        {vehicleInformation.cardInfo!.map((line, rowIndex) => (
-                                            <TableRow
-                                                key={rowIndex}
-                                                sx={{
-                                                    backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
-                                                }}
-                                            >
-                                                {line!.map((value) => (
+                <VehicleInfoButtons
+                    onButton1Click={() => console.log('Button 1 clicked!')}
+                    onButton2Click={() => console.log('Button 2 clicked!')}
+                    onButton3Click={() => console.log('Button 3 clicked!')}
+                />
+                {/*<VehicleBriefInfoCard license_plate={licence_plate} />*/}
+                {/*{isLoading ?*/}
+                {/*    <Box display="flex" justifyContent="center">*/}
+                {/*        <CircularProgress />*/}
+                {/*    </Box>*/}
+                {/*: vehicleInformation?.data &&*/}
+                {/*    <Box>*/}
+                {/*        <Typography variant="h6" color="#1C94F3" style={{ textAlign: 'center', marginTop:"40px"  }}>*/}
+                {/*            <b>Alle informatie</b>*/}
+                {/*        </Typography>*/}
+                        {/*{vehicleInformation.data.map((section, index) => (*/}
+                        {/*    <Accordion expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>*/}
+                        {/*        <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>*/}
+                        {/*            <Typography>{section.title}</Typography>*/}
+                        {/*        </AccordionSummary>*/}
+                        {/*        <AccordionDetails sx={{ padding: "0" }}>*/}
+                        {/*            <Table>*/}
+                        {/*                <TableBody>*/}
+                        {/*                    {section.values!.map((line, rowIndex) => (*/}
+                        {/*                        <TableRow*/}
+                        {/*                            key={rowIndex}*/}
+                        {/*                            sx={{*/}
+                        {/*                                backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'*/}
+                        {/*                            }}*/}
+                        {/*                        >*/}
+                        {/*                            {line!.map((value, cellIndex) => (*/}
 
-                                                    <TableCell
-                                                        style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
-                                                    >
-                                                        {value}
-                                                    </TableCell>
-                                                ))}
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </Card>
-                        </Box>
-                        <Box>
-                            <Typography variant="h6" color="#1C94F3" style={{ textAlign: 'center', marginTop:"40px"  }}>
-                                <b>Alle informatie</b>
-                            </Typography>
-                            {vehicleInformation.data.map((section, index) => (
-                                <Accordion expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
-                                    <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
-                                        <Typography>{section.title}</Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails sx={{ padding: "0" }}>
-                                        <Table>
-                                            <TableBody>
-                                                {section.values!.map((line, rowIndex) => (
-                                                    <TableRow
-                                                        key={rowIndex}
-                                                        sx={{
-                                                            backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
-                                                        }}
-                                                    >
-                                                        {line!.map((value, cellIndex) => (
-
-                                                            <TableCell
-                                                                style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
-                                                            >
-                                                                {value}
-                                                            </TableCell>
-                                                        ))}
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    </AccordionDetails>
-                                </Accordion>
-                            ))}
-                        </Box>
-                    </>
-                }
+                        {/*                                <TableCell*/}
+                        {/*                                    style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}*/}
+                        {/*                                >*/}
+                        {/*                                    {value}*/}
+                        {/*                                </TableCell>*/}
+                        {/*                            ))}*/}
+                        {/*                        </TableRow>*/}
+                        {/*                    ))}*/}
+                        {/*                </TableBody>*/}
+                        {/*            </Table>*/}
+                        {/*        </AccordionDetails>*/}
+                        {/*    </Accordion>*/}
+                        {/*))}*/}
+                {/*    </Box>*/}
+                {/*}*/}
             </Box>
         </>
     );

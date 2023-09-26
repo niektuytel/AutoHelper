@@ -2,6 +2,7 @@
 using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Infrastructure.Persistence;
+using AutoHelper.Infrastructure.Services;
 using AutoHelper.WebUI.Filters;
 using AutoHelper.WebUI.Services;
 using FluentValidation.AspNetCore;
@@ -14,7 +15,6 @@ using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using WebUI.Models.Response;
-using WebUI.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -37,8 +37,8 @@ public static class ConfigureServices
     private static IServiceCollection AddControllerServices(this IServiceCollection services)
     {
         services.AddSingleton<ICurrentUserService, CurrentUserService>();// IHttpContextAccessor is singleton
-        services.AddHttpClient<IRDWService, RDWService>();
-        services.AddScoped<IVehicleInformationService, VehicleInformationService>();
+        //services.AddHttpClient<IRDWService, RDWService>();
+        //services.AddScoped<IVehicleInformationService, VehicleInformationService>();
 
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())

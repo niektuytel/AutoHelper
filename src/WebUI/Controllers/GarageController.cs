@@ -14,6 +14,8 @@ using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.TodoItems.Commands.CreateTodoItem;
+using AutoHelper.Application.Vehicles.Queries;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using AutoHelper.Domain.Entities;
 using MediatR;

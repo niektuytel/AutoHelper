@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Infrastructure.Common;
 using Newtonsoft.Json.Linq;
 using WebUI.Extensions;
 using WebUI.Models.Response;

@@ -499,12 +499,12 @@
         }
       }
     },
-    "/api/Vehicle/information": {
-      "get": {
+    "/api/Vehicle/GetVehicleBriefInfo": {
+      "post": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetVehicleInformation",
+        "operationId": "Vehicle_GetVehicleBriefInfo",
         "parameters": [
           {
             "name": "licensePlate",
@@ -522,7 +522,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleInformationResponse"
+                  "$ref": "#/components/schemas/VehicleBriefInfoItem"
                 }
               }
             }
@@ -1385,42 +1385,24 @@
           }
         }
       },
-      "VehicleInformationResponse": {
+      "VehicleBriefInfoItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "cardInfo": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VehicleInformationSection"
-            }
-          }
-        }
-      },
-      "VehicleInformationSection": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "title": {
+          "licensePlate": {
             "type": "string"
           },
-          "values": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+          "brand": {
+            "type": "string"
+          },
+          "consumption": {
+            "type": "string"
+          },
+          "motExpiryDate": {
+            "type": "string"
+          },
+          "mileage": {
+            "type": "string"
           }
         }
       },

@@ -62,13 +62,13 @@ const Header = ({ showStaticDrawer }: IProps) => {
             >
                 <StyledToolbar>
                     <Grid container>
-                        <Grid item xs={3} md={4} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
+                        <Grid item xs={6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small />
                         </Grid>
-                        <Grid item xs={6} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <HeaderLicensePlateSearch/>
-                        </Grid>
-                        <Grid item xs={3} md={4} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
+                        {/*<Grid item xs={6} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>*/}
+                        {/*    <HeaderLicensePlateSearch/>*/}
+                        {/*</Grid>*/}
+                        <Grid item xs={6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
                             <Hidden xsDown>
                                 {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
                                     <StyledIconButton onClick={() => setCartOpen(true)}>

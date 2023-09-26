@@ -37,7 +37,7 @@ export default ({ }: IProps) => {
     return (
         <>
             <GradientBox>
-                <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center" }}>
+                <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center", minHeight:"400px" }}>
                     { window.location.pathname === ROUTES.SELECT_VEHICLE ?
                         <LicensePlateHeadView/>
                         :

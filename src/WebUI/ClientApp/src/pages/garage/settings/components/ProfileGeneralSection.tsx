@@ -32,7 +32,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
         requestOptions: {
             types: ["address"],
             componentRestrictions: {
-                country: t('country_code'),
+                country: 'nl',//t('country_code')
             }
         },
         debounce: 250
