@@ -6,10 +6,11 @@ import { useParams } from 'react-router-dom';
 import VehicleBriefInfoCard from '../components/VehicleBriefInfoCard';
 
 interface IProps {
-    licence_plate: string
+    isMobile: boolean;
+    licence_plate: string;
 }
 
-export default ({ licence_plate }: IProps) => {
+export default ({ isMobile, licence_plate }: IProps) => {
 
     return (
         <>
@@ -30,7 +31,7 @@ export default ({ licence_plate }: IProps) => {
                         {/*/>*/}
                     </Grid>
                     <Grid item xs={6} sx={{ marginTop: "25px", paddingLeft:"50px" }}>
-                        <VehicleBriefInfoCard license_plate={licence_plate} />
+                        <VehicleBriefInfoCard isMobile={isMobile} license_plate={licence_plate} />
                     </Grid>
                 </Grid>
             </Hidden>
@@ -44,7 +45,7 @@ export default ({ licence_plate }: IProps) => {
                     </Typography>
                     <PlacesTextField licence_plate={licence_plate} />
                     <Box sx={{ marginTop: "25px" }}>
-                        <VehicleBriefInfoCard license_plate={licence_plate} />
+                        <VehicleBriefInfoCard isMobile={isMobile} license_plate={licence_plate} />
                     </Box>
                     {/*<img*/}
                     {/*    src="/images/carbridge.png"*/}

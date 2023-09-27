@@ -13,7 +13,9 @@ import {
     Button,
     styled,
     Paper,
-    Theme} from "@mui/material";
+    Theme,
+    useTheme,
+    useMediaQuery} from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -32,6 +34,8 @@ interface IProps {}
 
 
 export default ({ }: IProps) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { licence_plate } = useParams();
 
     return (
@@ -41,7 +45,7 @@ export default ({ }: IProps) => {
                     { window.location.pathname === ROUTES.SELECT_VEHICLE ?
                         <LicensePlateHeadView/>
                         :
-                        <PlacesHeadView licence_plate={licence_plate || ""}/>
+                        <PlacesHeadView isMobile={isMobile} licence_plate={licence_plate || ""}/>
                     }
                 </Container>
             </GradientBox>

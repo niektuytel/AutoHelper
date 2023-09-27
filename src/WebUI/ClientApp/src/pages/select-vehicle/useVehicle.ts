@@ -1,12 +1,12 @@
-﻿import { useQuery, useMutation, useQueryClient } from "react-query";
+﻿import { useRef, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-
-//own imports
 import { VehicleClient } from "../../app/web-api-client";
 
-function useVehicle(license_plate: string) {
+function useVehicle(initialLicensePlate: string) {
+    const [license_plate, setLicensePlate] = useState(initialLicensePlate);
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
@@ -22,11 +22,11 @@ function useVehicle(license_plate: string) {
         }
     }
 
-    const { data: vehicleBriefInfo, isLoading, isError } = useQuery(
+    const { data: vehicleBriefInfo, isLoading, isError, refetch } = useQuery(
         [`vehicleBriefInfo-${license_plate}`],
         fetchVehicleBriefInfoData,
         {
-            enabled: true,
+            enabled: false,
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000,  // 30 minutes
@@ -34,10 +34,18 @@ function useVehicle(license_plate: string) {
         }
     );
 
-    // only reset the form when the data is loaded
+    const fetchVehicleData = (newLicensePlate: string) => {
+        setLicensePlate(newLicensePlate);
+        refetch();
+    }
+
     const loading = isLoading;
+
     return {
-        loading, isError, vehicleBriefInfo
+        loading,
+        isError,
+        vehicleBriefInfo,
+        fetchVehicleData
     }
 }
 

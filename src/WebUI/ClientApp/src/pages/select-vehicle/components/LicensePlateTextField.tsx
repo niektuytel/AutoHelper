@@ -25,6 +25,9 @@ export default ({ license_plate }: IProps) => {
     const location = useLocation();
 
     // initial license plate value
+
+    const { loading, isError, vehicleBriefInfo } = useVehicle(license_plate);
+
     const [value, setValue] = React.useState<string>(license_plate || "");
     const [hasError, setHasError] = React.useState(false);
 
