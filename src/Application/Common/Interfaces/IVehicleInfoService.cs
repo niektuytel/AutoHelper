@@ -4,7 +4,7 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
-public interface IVehicleService
+public interface IVehicleInfoService
 {
     Task<bool> ValidVehicle(string licensePlate);
     Task<VehicleBriefInfoItemDto?> GetVehicleBriefInfo(string licensePlate);

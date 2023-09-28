@@ -10,11 +10,11 @@ using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal class VehicleService : IVehicleService
+internal class VehicleInfoService : IVehicleInfoService
 {
     private readonly RDWService _rdwService;
 
-    public VehicleService(RDWService rdwService)
+    public VehicleInfoService(RDWService rdwService)
     {
         _rdwService = rdwService;
     }

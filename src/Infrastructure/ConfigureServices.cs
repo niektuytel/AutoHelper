@@ -58,7 +58,7 @@ public static class ConfigureServices
 
 
         services.AddTransient<RDWService>();
-        services.AddTransient<IVehicleService, VehicleService>();
+        services.AddTransient<IVehicleInfoService, VehicleInfoService>();
 
         services.AddAuthentication()
             .AddIdentityServerJwt();

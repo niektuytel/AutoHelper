@@ -26,9 +26,9 @@ public record GetVehicleInfoQuery : IRequest<VehicleInfoItemDto>
 
 public class GetVehicleInfoQueryQueryHandler : IRequestHandler<GetVehicleInfoQuery, VehicleInfoItemDto>
 {
-    private readonly IVehicleService _vehicleService;
+    private readonly IVehicleInfoService _vehicleService;
 
-    public GetVehicleInfoQueryQueryHandler(IVehicleService vehicleService)
+    public GetVehicleInfoQueryQueryHandler(IVehicleInfoService vehicleService)
     {
         _vehicleService = vehicleService;
     }
