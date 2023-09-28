@@ -11,5 +11,7 @@ export const ROUTES = {
     USER: {
         OVERVIEW: "/user/overview"
     },
-    SELECT_VEHICLE: "/select-vehicle"
+    SELECT_VEHICLE: "/select-vehicle",
+    SELECT_GARAGE: "/select-garage",
+    SELECT_SERVICES: "/select-services",
 };

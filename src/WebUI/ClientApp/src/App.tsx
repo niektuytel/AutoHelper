@@ -66,8 +66,9 @@ export default () => {
                 <Route path="*" element={<NotFoundPage />} />
                 <Route path='/' element={<Navigate to="/select-vehicle" />} />
                 <Route path={`${ROUTES.SELECT_VEHICLE}`} element={<SelectVehicle />} />
-                <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate` } element={<SelectVehicle />} />
-                <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate/:lat/:lng`} element={<SelectGarage />} />
+                <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate`} element={<SelectVehicle />} />
+                <Route path={`${ROUTES.SELECT_GARAGE}/:license_plate/:lat/:lng`} element={<SelectGarage />} />
+                <Route path={`${ROUTES.SELECT_SERVICES}/:license_plate/:lat/:lng/:garage_id`} element={<SelectGarage />} />
                 <Route path={`${ROUTES.GARAGE.OVERVIEW}`} element={
                     <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                         <GarageRouteContent>
