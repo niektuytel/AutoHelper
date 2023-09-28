@@ -1,6 +1,6 @@
 ﻿using AutoHelper.Domain.Common;
 
-namespace AutoHelper.Domain.Entities;
+namespace AutoHelper.Domain.Entities.Deprecated;
 
 public class GarageServicesSettingsItem : BaseEntity
 {

@@ -64,6 +64,7 @@
     <ItemGroup>
       <Compile Remove="Controllers\TodoItemsController.cs" />
       <Compile Remove="Controllers\TodoListsController.cs" />
+      <Compile Remove="Models\Response\VehicleInformationResponse.cs" />
       <Compile Remove="Services\IRDWService.cs" />
       <Compile Remove="Services\IVehicleInformationService.cs" />
       <Compile Remove="Services\RDWService.cs" />

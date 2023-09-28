@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.TodoLists.Queries.GetTodos;
-using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
+using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageEmployees;

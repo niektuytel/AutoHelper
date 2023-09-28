@@ -20,7 +20,7 @@ const GradientBox: React.FC<GradientBoxProps> = ({ children }) => {
                 <Box
                     sx={{
                         ...style,
-                        background: `linear-gradient(80deg, ${leftColor} 50%, ${rightColor} 50%)`
+                        background: `linear-gradient(80deg, ${leftColor} 50%, ${rightColor} 50.1%)`
                     }}
                 >
                     {children}
@@ -30,7 +30,7 @@ const GradientBox: React.FC<GradientBoxProps> = ({ children }) => {
                 <Box
                     sx={{
                         ...style,
-                        background: `linear-gradient(171deg, ${leftColor} 53%, ${rightColor} 47%)`
+                        background: `linear-gradient(171deg, ${leftColor} 57%, ${rightColor} 57.1%)`
                     }}
                 >
                     {children}

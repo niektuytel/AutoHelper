@@ -7,6 +7,8 @@ using AutoHelper.Application.TodoLists.Commands.UpdateTodoList;
 using AutoHelper.Application.TodoLists.Queries.ExportTodos;
 using AutoHelper.Application.TodoLists.Queries.GetTodos;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +21,6 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class VehicleController : ApiControllerBase
 {
-
     private readonly IVehicleService _vehicleService;
 
     public VehicleController(IVehicleService vehicleService)
@@ -53,32 +54,17 @@ public class VehicleController : ApiControllerBase
         }
     }
     
-    [HttpPost($"{nameof(GetVehicleBriefInfo)}")]
-    [ProducesResponseType(typeof(VehicleBriefInfoItem), StatusCodes.Status200OK)]
-    public async Task<VehicleBriefInfoItem> GetVehicleBriefInfo([FromQuery] string licensePlate)
+    [HttpGet($"{nameof(GetVehicleBriefInfo)}")]
+    [ProducesResponseType(typeof(VehicleBriefInfoItemDto), StatusCodes.Status200OK)]
+    public async Task<VehicleBriefInfoItemDto> GetVehicleBriefInfo([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleBriefInfoQuery(licensePlate));
     }
 
-    //[HttpGet("information")]
-    //public async Task<ActionResult<VehicleInformationResponse>> GetVehicleInformation([FromQuery] string licensePlate)
-    //{
-    //    try
-    //    {
-    //        licensePlate = licensePlate.Replace("-", "").ToUpper();
-
-    //        var result = await _vehicleService.GetVehicleInformationAsync(licensePlate);
-    //        return Ok(result);
-    //    }
-    //    catch (NotFoundException nfe)
-    //    {
-    //        return NotFound(nfe.Message);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, "Internal server error: " + ex.Message);
-    //    }
-    //}
-
-
+    [HttpGet($"{nameof(GetVehicleInfo)}")]
+    [ProducesResponseType(typeof(VehicleInfoItemDto), StatusCodes.Status200OK)]
+    public async Task<VehicleInfoItemDto> GetVehicleInfo([FromQuery] string licensePlate)
+    {
+        return await Mediator.Send(new GetVehicleInfoQuery(licensePlate));
+    }
 }

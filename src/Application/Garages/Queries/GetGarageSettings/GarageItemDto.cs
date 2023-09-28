@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Deprecated;
+using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageSettings;
 

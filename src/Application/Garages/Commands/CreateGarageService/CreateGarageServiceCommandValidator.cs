@@ -1,5 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 

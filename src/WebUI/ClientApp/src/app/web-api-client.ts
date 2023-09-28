@@ -600,7 +600,9 @@ export interface IVehicleClient {
 
     searchVehicle(licensePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
 
-    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItem>;
+    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto>;
+
+    getVehicleInfo(licensePlate: string | null | undefined): Promise<VehicleInfoItemDto>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -649,14 +651,14 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<LicencePlateBriefResponse>(null as any);
     }
 
-    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItem> {
+    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto> {
         let url_ = this.baseUrl + "/api/Vehicle/GetVehicleBriefInfo?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Accept": "application/json"
             }
@@ -667,14 +669,14 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processGetVehicleBriefInfo(response: Response): Promise<VehicleBriefInfoItem> {
+    protected processGetVehicleBriefInfo(response: Response): Promise<VehicleBriefInfoItemDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleBriefInfoItem.fromJS(resultData200);
+            result200 = VehicleBriefInfoItemDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -682,7 +684,43 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleBriefInfoItem>(null as any);
+        return Promise.resolve<VehicleBriefInfoItemDto>(null as any);
+    }
+
+    getVehicleInfo(licensePlate: string | null | undefined): Promise<VehicleInfoItemDto> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetVehicleInfo?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetVehicleInfo(_response);
+        });
+    }
+
+    protected processGetVehicleInfo(response: Response): Promise<VehicleInfoItemDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleInfoItemDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleInfoItemDto>(null as any);
     }
 }
 
@@ -850,12 +888,12 @@ export interface IBaseEntity {
 }
 
 export class GarageLocationItem extends BaseEntity implements IGarageLocationItem {
-    address?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-    longitude?: number;
-    latitude?: number;
+    address!: string;
+    city!: string;
+    postalCode!: string;
+    country!: string;
+    longitude!: number;
+    latitude!: number;
 
     constructor(data?: IGarageLocationItem) {
         super(data);
@@ -894,12 +932,12 @@ export class GarageLocationItem extends BaseEntity implements IGarageLocationIte
 }
 
 export interface IGarageLocationItem extends IBaseEntity {
-    address?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-    longitude?: number;
-    latitude?: number;
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    longitude: number;
+    latitude: number;
 }
 
 export abstract class BaseEvent implements IBaseEvent {
@@ -1184,24 +1222,32 @@ export interface IBaseAuditableEntity extends IBaseEntity {
 }
 
 export class VehicleItem extends BaseAuditableEntity implements IVehicleItem {
-    licensePlate?: string;
-    model?: string;
-    brand?: string;
-    registrationDate?: Date;
-    vehicleOwner?: VehicleOwnerItem;
+    licensePlate!: string;
+    motExpiryDate!: Date;
+    lastLocation!: VehicleLocationItem;
+    lastVehicleOwner?: VehicleOwnerItem | undefined;
+    serviceLogs!: VehicleServiceLogItem[];
 
     constructor(data?: IVehicleItem) {
         super(data);
+        if (!data) {
+            this.lastLocation = new VehicleLocationItem();
+            this.serviceLogs = [];
+        }
     }
 
     init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.licensePlate = _data["licensePlate"];
-            this.model = _data["model"];
-            this.brand = _data["brand"];
-            this.registrationDate = _data["registrationDate"] ? new Date(_data["registrationDate"].toString()) : <any>undefined;
-            this.vehicleOwner = _data["vehicleOwner"] ? VehicleOwnerItem.fromJS(_data["vehicleOwner"]) : <any>undefined;
+            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
+            this.lastLocation = _data["lastLocation"] ? VehicleLocationItem.fromJS(_data["lastLocation"]) : new VehicleLocationItem();
+            this.lastVehicleOwner = _data["lastVehicleOwner"] ? VehicleOwnerItem.fromJS(_data["lastVehicleOwner"]) : <any>undefined;
+            if (Array.isArray(_data["serviceLogs"])) {
+                this.serviceLogs = [] as any;
+                for (let item of _data["serviceLogs"])
+                    this.serviceLogs!.push(VehicleServiceLogItem.fromJS(item));
+            }
         }
     }
 
@@ -1215,27 +1261,85 @@ export class VehicleItem extends BaseAuditableEntity implements IVehicleItem {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["licensePlate"] = this.licensePlate;
-        data["model"] = this.model;
-        data["brand"] = this.brand;
-        data["registrationDate"] = this.registrationDate ? this.registrationDate.toISOString() : <any>undefined;
-        data["vehicleOwner"] = this.vehicleOwner ? this.vehicleOwner.toJSON() : <any>undefined;
+        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
+        data["lastLocation"] = this.lastLocation ? this.lastLocation.toJSON() : <any>undefined;
+        data["lastVehicleOwner"] = this.lastVehicleOwner ? this.lastVehicleOwner.toJSON() : <any>undefined;
+        if (Array.isArray(this.serviceLogs)) {
+            data["serviceLogs"] = [];
+            for (let item of this.serviceLogs)
+                data["serviceLogs"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
 }
 
 export interface IVehicleItem extends IBaseAuditableEntity {
-    licensePlate?: string;
-    model?: string;
-    brand?: string;
-    registrationDate?: Date;
-    vehicleOwner?: VehicleOwnerItem;
+    licensePlate: string;
+    motExpiryDate: Date;
+    lastLocation: VehicleLocationItem;
+    lastVehicleOwner?: VehicleOwnerItem | undefined;
+    serviceLogs: VehicleServiceLogItem[];
+}
+
+export class VehicleLocationItem extends BaseEntity implements IVehicleLocationItem {
+    address?: string | undefined;
+    city?: string | undefined;
+    postalCode?: string | undefined;
+    country?: string | undefined;
+    longitude!: number;
+    latitude!: number;
+
+    constructor(data?: IVehicleLocationItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.postalCode = _data["postalCode"];
+            this.country = _data["country"];
+            this.longitude = _data["longitude"];
+            this.latitude = _data["latitude"];
+        }
+    }
+
+    static fromJS(data: any): VehicleLocationItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleLocationItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["postalCode"] = this.postalCode;
+        data["country"] = this.country;
+        data["longitude"] = this.longitude;
+        data["latitude"] = this.latitude;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IVehicleLocationItem extends IBaseEntity {
+    address?: string | undefined;
+    city?: string | undefined;
+    postalCode?: string | undefined;
+    country?: string | undefined;
+    longitude: number;
+    latitude: number;
 }
 
 export class VehicleOwnerItem extends BaseAuditableEntity implements IVehicleOwnerItem {
     fullName!: string;
-    phoneNumber?: string;
-    email?: string;
+    email!: string;
+    phoneNumber?: string | undefined;
+    vehicleOwnerLocation?: VehicleOwnerLocationItem | undefined;
 
     constructor(data?: IVehicleOwnerItem) {
         super(data);
@@ -1245,8 +1349,9 @@ export class VehicleOwnerItem extends BaseAuditableEntity implements IVehicleOwn
         super.init(_data);
         if (_data) {
             this.fullName = _data["fullName"];
-            this.phoneNumber = _data["phoneNumber"];
             this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.vehicleOwnerLocation = _data["vehicleOwnerLocation"] ? VehicleOwnerLocationItem.fromJS(_data["vehicleOwnerLocation"]) : <any>undefined;
         }
     }
 
@@ -1260,8 +1365,9 @@ export class VehicleOwnerItem extends BaseAuditableEntity implements IVehicleOwn
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["fullName"] = this.fullName;
-        data["phoneNumber"] = this.phoneNumber;
         data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["vehicleOwnerLocation"] = this.vehicleOwnerLocation ? this.vehicleOwnerLocation.toJSON() : <any>undefined;
         super.toJSON(data);
         return data;
     }
@@ -1269,8 +1375,209 @@ export class VehicleOwnerItem extends BaseAuditableEntity implements IVehicleOwn
 
 export interface IVehicleOwnerItem extends IBaseAuditableEntity {
     fullName: string;
-    phoneNumber?: string;
-    email?: string;
+    email: string;
+    phoneNumber?: string | undefined;
+    vehicleOwnerLocation?: VehicleOwnerLocationItem | undefined;
+}
+
+export class VehicleOwnerLocationItem extends BaseEntity implements IVehicleOwnerLocationItem {
+    address!: string;
+    city!: string;
+    postalCode?: string | undefined;
+    country?: string | undefined;
+    longitude?: number | undefined;
+    latitude?: number | undefined;
+
+    constructor(data?: IVehicleOwnerLocationItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.postalCode = _data["postalCode"];
+            this.country = _data["country"];
+            this.longitude = _data["longitude"];
+            this.latitude = _data["latitude"];
+        }
+    }
+
+    static fromJS(data: any): VehicleOwnerLocationItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleOwnerLocationItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["postalCode"] = this.postalCode;
+        data["country"] = this.country;
+        data["longitude"] = this.longitude;
+        data["latitude"] = this.latitude;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IVehicleOwnerLocationItem extends IBaseEntity {
+    address: string;
+    city: string;
+    postalCode?: string | undefined;
+    country?: string | undefined;
+    longitude?: number | undefined;
+    latitude?: number | undefined;
+}
+
+export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehicleServiceLogItem {
+    ownerId!: string;
+    owner?: VehicleOwnerItem;
+    vehicleId!: string;
+    vehicle?: VehicleItem;
+    date!: Date;
+    mileage!: number;
+    totalPrice!: number;
+    description?: string | undefined;
+    serviceItems!: GarageServiceItem[];
+    metaData?: string;
+
+    constructor(data?: IVehicleServiceLogItem) {
+        super(data);
+        if (!data) {
+            this.serviceItems = [];
+        }
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.ownerId = _data["ownerId"];
+            this.owner = _data["owner"] ? VehicleOwnerItem.fromJS(_data["owner"]) : <any>undefined;
+            this.vehicleId = _data["vehicleId"];
+            this.vehicle = _data["vehicle"] ? VehicleItem.fromJS(_data["vehicle"]) : <any>undefined;
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.mileage = _data["mileage"];
+            this.totalPrice = _data["totalPrice"];
+            this.description = _data["description"];
+            if (Array.isArray(_data["serviceItems"])) {
+                this.serviceItems = [] as any;
+                for (let item of _data["serviceItems"])
+                    this.serviceItems!.push(GarageServiceItem.fromJS(item));
+            }
+            this.metaData = _data["metaData"];
+        }
+    }
+
+    static fromJS(data: any): VehicleServiceLogItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleServiceLogItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["ownerId"] = this.ownerId;
+        data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
+        data["vehicleId"] = this.vehicleId;
+        data["vehicle"] = this.vehicle ? this.vehicle.toJSON() : <any>undefined;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["mileage"] = this.mileage;
+        data["totalPrice"] = this.totalPrice;
+        data["description"] = this.description;
+        if (Array.isArray(this.serviceItems)) {
+            data["serviceItems"] = [];
+            for (let item of this.serviceItems)
+                data["serviceItems"].push(item.toJSON());
+        }
+        data["metaData"] = this.metaData;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IVehicleServiceLogItem extends IBaseAuditableEntity {
+    ownerId: string;
+    owner?: VehicleOwnerItem;
+    vehicleId: string;
+    vehicle?: VehicleItem;
+    date: Date;
+    mileage: number;
+    totalPrice: number;
+    description?: string | undefined;
+    serviceItems: GarageServiceItem[];
+    metaData?: string;
+}
+
+export class GarageServiceItem extends BaseAuditableEntity implements IGarageServiceItem {
+    userId?: string;
+    garageId?: string;
+    type?: GarageServiceType;
+    description?: string;
+    durationInMinutes?: number;
+    price?: number;
+    status?: number;
+
+    constructor(data?: IGarageServiceItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.userId = _data["userId"];
+            this.garageId = _data["garageId"];
+            this.type = _data["type"];
+            this.description = _data["description"];
+            this.durationInMinutes = _data["durationInMinutes"];
+            this.price = _data["price"];
+            this.status = _data["status"];
+        }
+    }
+
+    static fromJS(data: any): GarageServiceItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageServiceItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["garageId"] = this.garageId;
+        data["type"] = this.type;
+        data["description"] = this.description;
+        data["durationInMinutes"] = this.durationInMinutes;
+        data["price"] = this.price;
+        data["status"] = this.status;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageServiceItem extends IBaseAuditableEntity {
+    userId?: string;
+    garageId?: string;
+    type?: GarageServiceType;
+    description?: string;
+    durationInMinutes?: number;
+    price?: number;
+    status?: number;
+}
+
+export enum GarageServiceType {
+    Other = 0,
+    Inspection = 1,
+    SmallMaintenance = 2,
+    GreatMaintenance = 3,
+    AirConditioningMaintenance = 4,
+    SeasonalTireChange = 5,
+    MOTService = 6,
 }
 
 export class GarageServiceItemDto implements IGarageServiceItemDto {
@@ -1327,16 +1634,6 @@ export interface IGarageServiceItemDto {
     durationInMinutes?: number;
     price?: number;
     status?: number;
-}
-
-export enum GarageServiceType {
-    Other = 0,
-    Inspection = 1,
-    SmallMaintenance = 2,
-    GreatMaintenance = 3,
-    AirConditioningMaintenance = 4,
-    SeasonalTireChange = 5,
-    MOTService = 6,
 }
 
 export class GarageEmployeeItemDto implements IGarageEmployeeItemDto {
@@ -1540,63 +1837,6 @@ export interface IGarageEmployeeWorkExperienceItem extends IBaseEntity {
     employeeId: string;
     serviceId: string;
     description: string;
-}
-
-export class GarageServiceItem extends BaseAuditableEntity implements IGarageServiceItem {
-    userId?: string;
-    garageId?: string;
-    type?: GarageServiceType;
-    description?: string;
-    durationInMinutes?: number;
-    price?: number;
-    status?: number;
-
-    constructor(data?: IGarageServiceItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.userId = _data["userId"];
-            this.garageId = _data["garageId"];
-            this.type = _data["type"];
-            this.description = _data["description"];
-            this.durationInMinutes = _data["durationInMinutes"];
-            this.price = _data["price"];
-            this.status = _data["status"];
-        }
-    }
-
-    static fromJS(data: any): GarageServiceItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageServiceItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["garageId"] = this.garageId;
-        data["type"] = this.type;
-        data["description"] = this.description;
-        data["durationInMinutes"] = this.durationInMinutes;
-        data["price"] = this.price;
-        data["status"] = this.status;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageServiceItem extends IBaseAuditableEntity {
-    userId?: string;
-    garageId?: string;
-    type?: GarageServiceType;
-    description?: string;
-    durationInMinutes?: number;
-    price?: number;
-    status?: number;
 }
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
@@ -2333,14 +2573,14 @@ export interface ILicencePlateBriefResponse {
     licencePlate?: string;
 }
 
-export class VehicleBriefInfoItem implements IVehicleBriefInfoItem {
+export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {
     licensePlate?: string;
     brand?: string;
     consumption?: string;
     motExpiryDate?: string;
     mileage?: string;
 
-    constructor(data?: IVehicleBriefInfoItem) {
+    constructor(data?: IVehicleBriefInfoItemDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2359,9 +2599,9 @@ export class VehicleBriefInfoItem implements IVehicleBriefInfoItem {
         }
     }
 
-    static fromJS(data: any): VehicleBriefInfoItem {
+    static fromJS(data: any): VehicleBriefInfoItemDto {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleBriefInfoItem();
+        let result = new VehicleBriefInfoItemDto();
         result.init(data);
         return result;
     }
@@ -2377,12 +2617,104 @@ export class VehicleBriefInfoItem implements IVehicleBriefInfoItem {
     }
 }
 
-export interface IVehicleBriefInfoItem {
+export interface IVehicleBriefInfoItemDto {
     licensePlate?: string;
     brand?: string;
     consumption?: string;
     motExpiryDate?: string;
     mileage?: string;
+}
+
+export class VehicleInfoItemDto implements IVehicleInfoItemDto {
+    data?: VehicleInfoSectionItem[];
+
+    constructor(data?: IVehicleInfoItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(VehicleInfoSectionItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleInfoItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleInfoItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IVehicleInfoItemDto {
+    data?: VehicleInfoSectionItem[];
+}
+
+export class VehicleInfoSectionItem implements IVehicleInfoSectionItem {
+    title?: string;
+    values?: string[][];
+
+    constructor(data?: IVehicleInfoSectionItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            if (Array.isArray(_data["values"])) {
+                this.values = [] as any;
+                for (let item of _data["values"])
+                    this.values!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleInfoSectionItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleInfoSectionItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        if (Array.isArray(this.values)) {
+            data["values"] = [];
+            for (let item of this.values)
+                data["values"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IVehicleInfoSectionItem {
+    title?: string;
+    values?: string[][];
 }
 
 export class WeatherForecast implements IWeatherForecast {

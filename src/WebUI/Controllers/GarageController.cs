@@ -17,7 +17,7 @@ using AutoHelper.Application.TodoItems.Commands.CreateTodoItem;
 using AutoHelper.Application.Vehicles.Queries;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

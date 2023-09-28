@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities.Garages;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
-public class GarageServiceItemDto : IMapFrom<GarageServiceItem>
+namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
+public class VehicleGarageServiceItemDto : IMapFrom<GarageServiceItem>
 {
     public Guid Id { get; set; }
 
@@ -25,15 +25,5 @@ public class GarageServiceItemDto : IMapFrom<GarageServiceItem>
     /// Duration of the service in minutes
     /// </summary>
     public int DurationInMinutes { get; set; }
-
-    /// <summary>
-    /// Price of the service
-    /// </summary>
-    public decimal Price { get; set; }
-
-    /// <summary>
-    /// Status of the service
-    /// </summary>
-    public int Status { get; set; } = -1;
 
 }

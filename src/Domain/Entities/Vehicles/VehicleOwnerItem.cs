@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Domain.Entities;
+namespace AutoHelper.Domain.Entities.Vehicles;
 
 public class VehicleOwnerItem : BaseAuditableEntity
 {
     [Required]
     public string FullName { get; set; }
 
-    public string PhoneNumber { get; set; }
-
+    [Required]
     public string Email { get; set; }
 
-    //[InverseProperty("VehicleOwner")]
-    //public ICollection<VehicleItem> Vehicles { get; set; }
+    public string? PhoneNumber { get; set; }
+
+    public VehicleOwnerLocationItem? VehicleOwnerLocation { get; set; }
 }

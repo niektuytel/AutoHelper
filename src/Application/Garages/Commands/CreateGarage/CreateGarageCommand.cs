@@ -6,6 +6,7 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
+using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Events;
 using AutoMapper;
 using MediatR;

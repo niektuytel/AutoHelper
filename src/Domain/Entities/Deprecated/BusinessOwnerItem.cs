@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Domain.Entities;
+namespace AutoHelper.Domain.Entities.Deprecated;
 
 public class BusinessOwnerItem : BaseEntity
 {

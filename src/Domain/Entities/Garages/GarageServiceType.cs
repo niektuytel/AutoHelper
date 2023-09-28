@@ -1,4 +1,4 @@
-﻿namespace AutoHelper.Domain.Entities;
+﻿namespace AutoHelper.Domain.Entities.Garages;
 
 public enum GarageServiceType
 {

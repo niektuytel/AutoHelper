@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AutoHelper.Domain.Entities;
+namespace AutoHelper.Domain.Entities.Deprecated;
 
 public class MaintenanceItem : BaseAuditableEntity
 {

@@ -10,7 +10,7 @@ using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.TodoItems.Commands.CreateTodoItem;
 using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

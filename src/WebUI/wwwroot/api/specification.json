@@ -500,7 +500,7 @@
       }
     },
     "/api/Vehicle/GetVehicleBriefInfo": {
-      "post": {
+      "get": {
         "tags": [
           "Vehicle"
         ],
@@ -522,7 +522,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleBriefInfoItem"
+                  "$ref": "#/components/schemas/VehicleBriefInfoItemDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/GetVehicleInfo": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_GetVehicleInfo",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleInfoItemDto"
                 }
               }
             }
@@ -591,26 +622,38 @@
           {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "address",
+              "city",
+              "postalCode",
+              "country",
+              "longitude",
+              "latitude"
+            ],
             "properties": {
               "address": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "city": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "postalCode": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "country": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "longitude": {
                 "type": "number",
-                "format": "double"
+                "format": "float"
               },
               "latitude": {
                 "type": "number",
-                "format": "double"
+                "format": "float"
               }
             }
           }
@@ -745,22 +788,79 @@
           {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "licensePlate",
+              "motExpiryDate",
+              "lastLocation",
+              "serviceLogs"
+            ],
             "properties": {
               "licensePlate": {
-                "type": "string"
-              },
-              "model": {
-                "type": "string"
-              },
-              "brand": {
-                "type": "string"
-              },
-              "registrationDate": {
                 "type": "string",
-                "format": "date-time"
+                "minLength": 1
               },
-              "vehicleOwner": {
-                "$ref": "#/components/schemas/VehicleOwnerItem"
+              "motExpiryDate": {
+                "type": "string",
+                "format": "date-time",
+                "minLength": 1
+              },
+              "lastLocation": {
+                "$ref": "#/components/schemas/VehicleLocationItem"
+              },
+              "lastVehicleOwner": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/VehicleOwnerItem"
+                  }
+                ]
+              },
+              "serviceLogs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/VehicleServiceLogItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "VehicleLocationItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "longitude",
+              "latitude"
+            ],
+            "properties": {
+              "address": {
+                "type": "string",
+                "nullable": true
+              },
+              "city": {
+                "type": "string",
+                "nullable": true
+              },
+              "postalCode": {
+                "type": "string",
+                "nullable": true
+              },
+              "country": {
+                "type": "string",
+                "nullable": true
+              },
+              "longitude": {
+                "type": "number",
+                "format": "float"
+              },
+              "latitude": {
+                "type": "number",
+                "format": "float"
               }
             }
           }
@@ -775,18 +875,72 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "fullName"
+              "fullName",
+              "email"
             ],
             "properties": {
               "fullName": {
                 "type": "string",
                 "minLength": 1
               },
-              "phoneNumber": {
-                "type": "string"
-              },
               "email": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
+              },
+              "phoneNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "vehicleOwnerLocation": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/VehicleOwnerLocationItem"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "VehicleOwnerLocationItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "address",
+              "city"
+            ],
+            "properties": {
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "city": {
+                "type": "string",
+                "minLength": 1
+              },
+              "postalCode": {
+                "type": "string",
+                "nullable": true
+              },
+              "country": {
+                "type": "string",
+                "nullable": true
+              },
+              "longitude": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
+              },
+              "latitude": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
               }
             }
           }
@@ -823,6 +977,129 @@
           }
         ]
       },
+      "VehicleServiceLogItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ownerId",
+              "vehicleId",
+              "date",
+              "mileage",
+              "totalPrice",
+              "serviceItems"
+            ],
+            "properties": {
+              "ownerId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
+              "owner": {
+                "$ref": "#/components/schemas/VehicleOwnerItem"
+              },
+              "vehicleId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
+              "vehicle": {
+                "$ref": "#/components/schemas/VehicleItem"
+              },
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "minLength": 1
+              },
+              "mileage": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "totalPrice": {
+                "type": "number",
+                "format": "decimal"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "serviceItems": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              },
+              "metaData": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "GarageServiceItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "garageId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "type": {
+                "$ref": "#/components/schemas/GarageServiceType"
+              },
+              "description": {
+                "type": "string"
+              },
+              "durationInMinutes": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "price": {
+                "type": "number",
+                "format": "decimal"
+              },
+              "status": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ]
+      },
+      "GarageServiceType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Inspection",
+          "SmallMaintenance",
+          "GreatMaintenance",
+          "AirConditioningMaintenance",
+          "SeasonalTireChange",
+          "MOTService"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
       "GarageServiceItemDto": {
         "type": "object",
         "additionalProperties": false,
@@ -850,28 +1127,6 @@
             "format": "int32"
           }
         }
-      },
-      "GarageServiceType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "Inspection",
-          "SmallMaintenance",
-          "GreatMaintenance",
-          "AirConditioningMaintenance",
-          "SeasonalTireChange",
-          "MOTService"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6
-        ]
       },
       "GarageEmployeeItemDto": {
         "type": "object",
@@ -1002,44 +1257,6 @@
               "description": {
                 "type": "string",
                 "minLength": 1
-              }
-            }
-          }
-        ]
-      },
-      "GarageServiceItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "garageId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "type": {
-                "$ref": "#/components/schemas/GarageServiceType"
-              },
-              "description": {
-                "type": "string"
-              },
-              "durationInMinutes": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "price": {
-                "type": "number",
-                "format": "decimal"
-              },
-              "status": {
-                "type": "integer",
-                "format": "int32"
               }
             }
           }
@@ -1350,11 +1567,11 @@
           },
           "longitude": {
             "type": "number",
-            "format": "double"
+            "format": "float"
           },
           "latitude": {
             "type": "number",
-            "format": "double"
+            "format": "float"
           }
         }
       },
@@ -1385,7 +1602,7 @@
           }
         }
       },
-      "VehicleBriefInfoItem": {
+      "VehicleBriefInfoItemDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1403,6 +1620,36 @@
           },
           "mileage": {
             "type": "string"
+          }
+        }
+      },
+      "VehicleInfoItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleInfoSectionItem"
+            }
+          }
+        }
+      },
+      "VehicleInfoSectionItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         }
       },

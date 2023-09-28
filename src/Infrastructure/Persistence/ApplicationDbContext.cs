@@ -2,8 +2,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Deprecated;
+using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using Duende.IdentityServer.EntityFramework.Options;
@@ -36,6 +37,9 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems => Set<GarageEmployeeWorkSchemaItem>();
     public DbSet<GarageEmployeeWorkExperienceItem> GarageEmployeeWorkExperienceItems => Set<GarageEmployeeWorkExperienceItem>();
 
+    public DbSet<VehicleItem> Vehicles => Set<VehicleItem>();
+    public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
@@ -49,7 +53,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
                .Property(p => p.DeliveryPrice)
                .HasColumnType("decimal(18,2)");
     }
-
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

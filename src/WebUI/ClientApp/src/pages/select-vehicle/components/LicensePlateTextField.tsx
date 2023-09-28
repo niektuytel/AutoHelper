@@ -5,15 +5,11 @@ import {
     IconButton
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-
 // own imports
 import { getFormatedLicense, getLicenseFromPath } from "../../../app/LicensePlateUtils";
-import { alignProperty } from "@mui/material/styles/cssUtils";
-import useVehicle from "../useVehicle";
 
 
 interface IProps {
@@ -24,11 +20,6 @@ export default ({ license_plate }: IProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const location = useLocation();
-
-    // initial license plate value
-
-    const { loading, isError, vehicleBriefInfo } = useVehicle(license_plate);
-
     const [value, setValue] = React.useState<string>(license_plate || "");
     const [focused, setFocused] = React.useState(false);
     const [hasError, setHasError] = React.useState(false);
@@ -61,12 +52,9 @@ export default ({ license_plate }: IProps) => {
 
     const handleEnterPress = async (event:any) => {
         if (event.key === 'Enter' && await handleSearch()) {
-            // Remove focus from the TextField
             event.target.blur();
         }
     };
-
-    //label={value.length > 0 ? t("license") : undefined}
 
     return <>
         <TextField
@@ -85,7 +73,7 @@ export default ({ license_plate }: IProps) => {
                     <InputAdornment position="end">
                         <IconButton onClick={handleSearch}>
                             <SearchIcon
-                                sx={{ color: value.length > 0 && focused ? "lightgray" : "transparent" }}
+                                sx={{ color: "lightgray" }}
                             />
                         </IconButton>
                     </InputAdornment>
@@ -93,11 +81,7 @@ export default ({ license_plate }: IProps) => {
                 style: {
                     color: "black",
                     height: '40px',
-                    //fontSize: '1.2em',
-                    paddingRight: '0',
-                    boxSizing: 'border-box',
-                    //backgroundColor: '#fff',
-                    
+                    paddingRight: '0'
                 }
             }}
         />

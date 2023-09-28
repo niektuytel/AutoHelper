@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Domain.Entities;
+namespace AutoHelper.Domain.Entities.Garages;
 
-public class GarageEmployeeWorkSchemaItem: BaseEntity
+public class GarageEmployeeWorkSchemaItem : BaseEntity
 {
     [Required]
     public Guid EmployeeId { get; set; }

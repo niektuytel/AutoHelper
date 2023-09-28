@@ -1,4 +1,6 @@
-﻿namespace AutoHelper.Domain.Entities;
+﻿using AutoHelper.Domain.Entities.Deprecated;
+
+namespace AutoHelper.Domain.Entities.Garages;
 
 public class GarageEmployeeItem : BaseAuditableEntity
 {

@@ -24,10 +24,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // own imports
 import GradientBox from "./components/GradientBox";
-import LicensePlateHeadView from "./views/LicensePlateSearchView";
-import AutoHelperAboutView from "./views/AutoHelperAboutView";
-import PlacesHeadView from "./views/PlacesSearchView";
-import VehicleInfoView from "./views/VehicleInfoView";
+import HomeHeaderView from "./views/HomeHeaderView";
+import HomeBodyView from "./views/HomeBodyView";
+import VehicleHeaderView from "./views/VehicleHeaderView";
+import VehicleBodyView from "./views/VehicleBodyView";
 import { ROUTES } from "../../constants/routes";
 
 interface IProps {}
@@ -36,24 +36,24 @@ interface IProps {}
 export default ({ }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const { licence_plate } = useParams();
+    const { license_plate } = useParams();
 
     return (
         <>
             <GradientBox>
                 <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center", minHeight:"400px" }}>
                     { window.location.pathname === ROUTES.SELECT_VEHICLE ?
-                        <LicensePlateHeadView/>
+                        <HomeHeaderView/>
                         :
-                        <PlacesHeadView isMobile={isMobile} licence_plate={licence_plate || ""}/>
+                        <VehicleHeaderView isMobile={isMobile} license_plate={license_plate || ""}/>
                     }
                 </Container>
             </GradientBox>
-            <Container maxWidth="lg">
+            <Container maxWidth="lg" sx={{ padding: "0" }}>
                 { window.location.pathname === ROUTES.SELECT_VEHICLE ? 
-                    <AutoHelperAboutView />
+                    <HomeBodyView/>
                     :
-                    <VehicleInfoView licence_plate={licence_plate || ""}/>
+                    <VehicleBodyView isMobile={isMobile} license_plate={license_plate || ""}/>
                 }
             </Container>
         </>

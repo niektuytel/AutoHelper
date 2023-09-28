@@ -1,7 +1,8 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageEmployee;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
