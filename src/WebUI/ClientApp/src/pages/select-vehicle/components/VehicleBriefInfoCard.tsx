@@ -1,12 +1,8 @@
-﻿
-
+﻿import React, { useEffect } from "react";
 import { Box, Card, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import React, { useEffect } from "react";
-import { styled } from '@mui/material/styles';
-import { VehicleClient } from "../../../app/web-api-client";
-import HeaderLicensePlateSearch from "../../../components/header/components/HeaderLicensePlateSearch";
 import LicensePlateTextField from "./LicensePlateTextField";
 import useVehicle from "../useVehicle";
+import { CSSProperties } from "react";
 
 interface IProps {
     isMobile: boolean;
@@ -14,13 +10,8 @@ interface IProps {
 }
 
 export default ({ isMobile, license_plate }: IProps) => {
-    //const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
-    //const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    //const [vehicleInformation, setVehicleInformation] = React.useState<VehicleInformationResponse | undefined>(undefined);
-
-
-    const { loading, isError, vehicleBriefInfo } = useVehicle(license_plate);
-
+    const { loading, vehicleBriefInfo } = useVehicle(license_plate);
+    const cellStyle: CSSProperties = isMobile ? { textAlign: 'left' } : { textAlign: 'left', paddingRight: '0' };
     return <>
         <Box sx={{ margin: "auto", maxWidth: "600px" }}>
             <Paper variant={isMobile ? "outlined" : "elevation"} sx={{ alignContent: "center" }} elevation={0}>
@@ -30,7 +21,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                             <TableCell style={{ textAlign: 'left' }}>
                                 Kenteken
                             </TableCell>
-                            <TableCell style={{ textAlign: 'left' }}>
+                            <TableCell style={cellStyle}>
                                 <LicensePlateTextField license_plate={license_plate} />
                             </TableCell>
                         </TableRow>
@@ -39,11 +30,11 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 Merk
                             </TableCell>
                             {loading ?
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell  style={cellStyle}>
                                     {vehicleBriefInfo?.brand}
                                 </TableCell>
                             }
@@ -53,11 +44,11 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 Verbruik
                             </TableCell>
                             {loading ?
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell  style={cellStyle}>
                                     {vehicleBriefInfo?.consumption}
                                 </TableCell>
                             }
@@ -67,11 +58,11 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 Vervaldatum APK
                             </TableCell>
                             {loading ?
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell style={cellStyle}>
                                     {vehicleBriefInfo?.motExpiryDate}
                                 </TableCell>
                             }
@@ -81,11 +72,11 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 Kilometer stand
                             </TableCell>
                             {loading ?
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell style={{ textAlign: 'left' }}>
+                                <TableCell style={cellStyle}>
                                     {vehicleBriefInfo?.mileage}
                                 </TableCell>
                             }

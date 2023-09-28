@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // own imports
 import { getFormatedLicense, getLicenseFromPath } from "../../../app/LicensePlateUtils";
 import { alignProperty } from "@mui/material/styles/cssUtils";
+import useVehicle from "../useVehicle";
 
 
 interface IProps {
@@ -29,6 +30,7 @@ export default ({ license_plate }: IProps) => {
     const { loading, isError, vehicleBriefInfo } = useVehicle(license_plate);
 
     const [value, setValue] = React.useState<string>(license_plate || "");
+    const [focused, setFocused] = React.useState(false);
     const [hasError, setHasError] = React.useState(false);
 
     const handleInput = (e: any) => {
@@ -73,17 +75,19 @@ export default ({ license_plate }: IProps) => {
             value={value}
             onChange={handleInput}
             onKeyDown={handleEnterPress}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             variant="outlined"
             placeholder={t("e.g. 87-GRN-6")}
             error={hasError}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
-                        {value.length > 0 &&
-                            <IconButton onClick={handleSearch}>
-                                <SearchIcon sx={{ color:"lightgray"}} />
-                            </IconButton>
-                        }
+                        <IconButton onClick={handleSearch}>
+                            <SearchIcon
+                                sx={{ color: value.length > 0 && focused ? "lightgray" : "transparent" }}
+                            />
+                        </IconButton>
                     </InputAdornment>
                 ),
                 style: {
@@ -91,6 +95,7 @@ export default ({ license_plate }: IProps) => {
                     height: '40px',
                     //fontSize: '1.2em',
                     paddingRight: '0',
+                    boxSizing: 'border-box',
                     //backgroundColor: '#fff',
                     
                 }

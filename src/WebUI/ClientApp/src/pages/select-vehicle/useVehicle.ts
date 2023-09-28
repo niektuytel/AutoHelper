@@ -1,32 +1,32 @@
-﻿import { useRef, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from "react-query";
+﻿import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+
+//own imports
 import { VehicleClient } from "../../app/web-api-client";
 
-function useVehicle(initialLicensePlate: string) {
-    const [license_plate, setLicensePlate] = useState(initialLicensePlate);
+function useVehicle(license_plate: string) {
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const fetchVehicleBriefInfoData = async () => {
+    const fetchVehicleBriefInfoData = async (licensePlate: string) => {
         try {
-            const response = await vehicleClient.getVehicleBriefInfo(license_plate);
+            const response = await vehicleClient.getVehicleBriefInfo(licensePlate);
             return response;
         } catch (response: any) {
             throw response;
         }
     }
 
-    const { data: vehicleBriefInfo, isLoading, isError, refetch } = useQuery(
+    const { data: vehicleBriefInfo, isLoading, isError } = useQuery(
         [`vehicleBriefInfo-${license_plate}`],
-        fetchVehicleBriefInfoData,
+        () => fetchVehicleBriefInfoData(license_plate),
         {
-            enabled: false,
+            enabled: true,
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000,  // 30 minutes
@@ -34,18 +34,24 @@ function useVehicle(initialLicensePlate: string) {
         }
     );
 
-    const fetchVehicleData = (newLicensePlate: string) => {
-        setLicensePlate(newLicensePlate);
-        refetch();
+    const fetchVehicleByPlate = async (licensePlate: string) => {
+        // Check if data exists in cache first
+        const cachedData = queryClient.getQueryData(
+            [`vehicleBriefInfo-${licensePlate}`]
+        );
+
+        if (cachedData) {
+            return cachedData;
+        }
+
+        return fetchVehicleBriefInfoData(licensePlate);
     }
 
-    const loading = isLoading;
 
+    // only reset the form when the data is loaded
+    const loading = isLoading;
     return {
-        loading,
-        isError,
-        vehicleBriefInfo,
-        fetchVehicleData
+        loading, isError, vehicleBriefInfo, fetchVehicleByPlate
     }
 }
 
