@@ -87,7 +87,11 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGaragesBySearch
                             .Distinct()
                             .ToArray()
                     })
-                    .ToList()
+                    .ToList(),
+                HasPickupService = true,// TODO: Implement pickup service
+                HasReplacementTransportService = true,// TODO: Implement replacement transport service
+                HasBestPrice = true,// TODO: Implement best price
+
             })
             .Where(g => g.DistanceInKm <= request.InKmRange)
             .OrderBy(g => g.DistanceInKm)

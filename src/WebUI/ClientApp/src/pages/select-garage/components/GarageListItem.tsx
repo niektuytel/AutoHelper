@@ -1,11 +1,15 @@
 ﻿
-import { Box, Chip, Typography } from '@mui/material';
+import { Box, Chip, Paper, Typography } from '@mui/material';
 import React from 'react';
 import { GarageItemSearchDto } from '../../../app/web-api-client';
+import EuroSymbolIcon from '@mui/icons-material/EuroSymbol';
 import PlaceIcon from '@mui/icons-material/Place';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
+import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { DAYSINWEEKSHORT } from '../../../constants/days';
 import { useTranslation } from 'react-i18next';
+import ImageLogo from '../../../components/logo/ImageLogo';
 
 interface IProps {
     garage: GarageItemSearchDto;
@@ -16,7 +20,8 @@ export default ({ garage }: IProps) => {
 
 
     return <>
-        <Box
+        <Paper
+            elevation={5}  
             style={{
                 display: "flex",
                 flexDirection: "row",
@@ -34,7 +39,6 @@ export default ({ garage }: IProps) => {
                 }}
             >
                 {/*<ImageLogo*/}
-                {/*    src={garage.logo}*/}
                 {/*    style={{*/}
                 {/*        width: "50px",*/}
                 {/*        height: "50px",*/}
@@ -51,24 +55,43 @@ export default ({ garage }: IProps) => {
                     <Typography variant="h6">
                         {garage.name}
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <PlaceIcon fontSize='small' />
                         {`${garage.location?.address}, ${garage.location?.city}`}
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <AccessTimeIcon fontSize='small' />
                         {`
                             ${[...new Set(garage.employees?.flatMap(x => x.workingDaysOfWeek) || [])]
                                 .map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}
                         `}
                     </Typography>
-                    <Typography variant="body1">
+                    <Box>
                         <Chip
-                            avatar={<PlaceIcon />}
-                            label="Pick up your car!"
                             variant="outlined"
+                            color="primary"
+                            size="small"
+                            label="auto op laten halen"// HasPickupService
+                            icon={<ModeOfTravelIcon />}
+                            sx={{ mr: 1 }}
                         />
-                    </Typography>
+                        <Chip
+                            variant="outlined"
+                            color="default"
+                            size="small"
+                            label="vervangend vervoer"// HasReplacementTransportService
+                            icon={<PublishedWithChangesIcon />}
+                            sx={{ mr: 1 }}
+                        />
+                        <Chip
+                            variant="outlined"
+                            color="success"
+                            size="small"
+                            label="beste prijs"// HasBestPrice
+                            icon={<EuroSymbolIcon />}
+                            sx={{ mr: 1 }}
+                        />
+                    </Box>
                 </Box>
             </Box>
             <Box
@@ -95,7 +118,7 @@ export default ({ garage }: IProps) => {
                 {/*    {garage.price} €*/}
                 {/*</Typography>*/}
             </Box>
-        </Box>
+        </Paper>
     </>;
 
 }

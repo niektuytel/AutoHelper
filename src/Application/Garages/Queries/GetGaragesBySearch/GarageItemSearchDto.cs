@@ -17,4 +17,8 @@ public class GarageItemSearchDto: IMapFrom<GarageItem>
     public GarageLocationItem Location { get; set; }
 
     public ICollection<GarageEmployeeItemSearchDto> Employees { get; set; }
+
+    public bool HasPickupService { get; set; }
+    public bool HasReplacementTransportService { get; internal set; }
+    public bool HasBestPrice { get; internal set; }
 }
