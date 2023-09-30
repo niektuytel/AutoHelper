@@ -2678,6 +2678,9 @@ export class GarageItemSearchDto implements IGarageItemSearchDto {
     distanceInKm?: number;
     location?: GarageLocationItem;
     employees?: GarageEmployeeItemSearchDto[];
+    hasPickupService?: boolean;
+    hasReplacementTransportService?: boolean;
+    hasBestPrice?: boolean;
 
     constructor(data?: IGarageItemSearchDto) {
         if (data) {
@@ -2699,6 +2702,9 @@ export class GarageItemSearchDto implements IGarageItemSearchDto {
                 for (let item of _data["employees"])
                     this.employees!.push(GarageEmployeeItemSearchDto.fromJS(item));
             }
+            this.hasPickupService = _data["hasPickupService"];
+            this.hasReplacementTransportService = _data["hasReplacementTransportService"];
+            this.hasBestPrice = _data["hasBestPrice"];
         }
     }
 
@@ -2720,6 +2726,9 @@ export class GarageItemSearchDto implements IGarageItemSearchDto {
             for (let item of this.employees)
                 data["employees"].push(item.toJSON());
         }
+        data["hasPickupService"] = this.hasPickupService;
+        data["hasReplacementTransportService"] = this.hasReplacementTransportService;
+        data["hasBestPrice"] = this.hasBestPrice;
         return data;
     }
 }
@@ -2730,6 +2739,9 @@ export interface IGarageItemSearchDto {
     distanceInKm?: number;
     location?: GarageLocationItem;
     employees?: GarageEmployeeItemSearchDto[];
+    hasPickupService?: boolean;
+    hasReplacementTransportService?: boolean;
+    hasBestPrice?: boolean;
 }
 
 export class GarageEmployeeItemSearchDto implements IGarageEmployeeItemSearchDto {

@@ -1732,6 +1732,15 @@
             "items": {
               "$ref": "#/components/schemas/GarageEmployeeItemSearchDto"
             }
+          },
+          "hasPickupService": {
+            "type": "boolean"
+          },
+          "hasReplacementTransportService": {
+            "type": "boolean"
+          },
+          "hasBestPrice": {
+            "type": "boolean"
           }
         }
       },
