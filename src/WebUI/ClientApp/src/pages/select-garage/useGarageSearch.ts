@@ -44,7 +44,7 @@ function useGarageSearch(
     }
 
     const { data: garages, isLoading, isError } = useQuery(
-        [`search-garages`],
+        [`garagesSearch-${licensePlate}-${latitude}-${longitude}`],
         () => fetchGaragesData(
             licensePlate,
             latitude,
@@ -72,7 +72,7 @@ function useGarageSearch(
     ) => {
         // Check if data exists in cache first
         const cachedData = queryClient.getQueryData(
-            [`search-garages`]
+            [`garagesSearch-${licensePlate}-${latitude}-${longitude}`],
         );
 
         if (cachedData) {

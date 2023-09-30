@@ -32,7 +32,15 @@ public class GarageSearchController : ApiControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10
     ){
-        var query = new GetGaragesBySearchQuery(licensePlate, latitude, longitude, inKmRange, pageNumber, pageSize);
+        var query = new GetGaragesBySearchQuery(
+            licensePlate, 
+            latitude, 
+            longitude, 
+            inKmRange, 
+            pageNumber, 
+            pageSize
+        );
+
         return await Mediator.Send(query);
     }
     

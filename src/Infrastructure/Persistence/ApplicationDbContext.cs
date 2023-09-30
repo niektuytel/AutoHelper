@@ -74,5 +74,10 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
         return await base.SaveChangesAsync(cancellationToken);
     }
-    
+
+    public void SetQueryTrackingBehavior(QueryTrackingBehavior behavior)
+    {
+        this.ChangeTracker.QueryTrackingBehavior = behavior;
+    }
+
 }
