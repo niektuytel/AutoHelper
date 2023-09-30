@@ -50,39 +50,110 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGaragesBySearch
 
     public async Task<PaginatedList<GarageItemSearchDto>> Handle(GetGaragesBySearchQuery request, CancellationToken cancellationToken)
     {
-        // 1. Optional: Bounding Box Optimization
-        // Define a method to get the bounding box for latitude and longitude. You can then use these values to filter the garages.
+        // 1. Query the database
+        _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-        // 2. Fetch Relevant Data
         var garages = await _context.Garages
             .Include(x => x.Location)
             .Include(x => x.Employees)
-            //.ThenInclude(x => x.WorkExperiences)
-            //.Include(x => x.Employees)
-            //.ThenInclude(x => x.WorkSchema)
+                .ThenInclude(x => x.WorkExperiences)
+            .Include(x => x.Employees)
+                .ThenInclude(x => x.WorkSchema)
+            .Where(x => x.Employees.Any(y => y.IsActive))
+            .Select(item => new GarageItemSearchDto()
+            {
+                Id = item.Id,
+                Name = item.Name,
+                DistanceInKm = _garageInfoService.CalculateDistanceInKm(
+                    item.Location.Latitude,
+                    item.Location.Longitude,
+                    request.Latitude,
+                    request.Longitude
+                ),
+                Location = item.Location,
+                Employees = item.Employees
+                    .Where(x => x.IsActive)
+                    .Select(e => new GarageEmployeeItemSearchDto()
+                    {
+                        WorkExperiences = e.WorkExperiences,
+                        WorkingDaysOfWeek = e.WorkSchema
+                            .Select(x => x.DayOfWeek)
+                            .Distinct()
+                            .ToArray()
+                    })
+                    .ToList()
+            })
+            .AsSplitQuery() // Split the query
             .ToListAsync();
 
-        // 3. Filter In Memory (for ordering)
-        var filteredGarages = garages
-            .Where(x =>
-                x.Employees.Any(y =>
-                    y.IsActive &&
-                    y.WorkExperiences.Any() &&
-                    y.WorkSchema.Any()
-                )
-            )
-            .Where(g => _garageInfoService.CalculateDistanceInKm(g.Location, request.Latitude, request.Longitude) <= request.InKmRange)
-            .OrderBy(g => _garageInfoService.CalculateDistanceInKm(g.Location, request.Latitude, request.Longitude))
+        // 2. Filter and paginate in memory
+        var garagesInRange = garages
+            .Where(g => g.DistanceInKm <= request.InKmRange)
+            .OrderBy(g => g.DistanceInKm)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToList();
 
-        // 4. Use ProjectTo and PaginatedListAsync
-        var garagesInRange = await filteredGarages
-            .AsQueryable() // Convert the list back to IQueryable
-            .ProjectTo<GarageItemSearchDto>(_mapper.ConfigurationProvider)
-            .PaginatedListAsync(request.PageNumber, request.PageSize);
-
-
         return garagesInRange;
+
+        //_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        //_context.ChangeTracker.LazyLoadingEnabled = false;
+        //// 1. Optional: Bounding Box Optimization
+        //// Define a method to get the bounding box for latitude and longitude. You can then use these values to filter the garages.
+
+        //// 2. Fetch Relevant Data, that is active
+        //var garages = _context.Garages
+        //    .Include(x => x.Employees)
+        //    .Where(x => x.Employees.Any(y => y.IsActive))
+        //    .Include(x => x.Location)
+        //    .Include(x => x.Employees)
+        //    .ThenInclude(x => x.WorkExperiences)
+        //    .Include(x => x.Employees)
+        //    .ThenInclude(x => x.WorkSchema)
+        //    .Select(item => new GarageItemSearchDto()
+        //    {
+        //        Id = item.Id,
+        //        Name = item.Name,
+        //        DistanceInKm = _garageInfoService.CalculateDistanceInKm(
+        //            item.Location.Latitude,
+        //            item.Location.Longitude,
+        //            request.Latitude,
+        //            request.Longitude
+        //        ),
+        //        Location = item.Location,
+        //        Employees = item.Employees
+        //            .Where(x => x.IsActive)
+        //            .Select(e => new GarageEmployeeItemSearchDto()
+        //            {
+        //                WorkExperiences = e.WorkExperiences,
+        //                WorkingDaysOfWeek = e.WorkSchema
+        //                    .Select(x => x.DayOfWeek)
+        //                    .Distinct()
+        //                    .ToArray()
+        //            })
+        //            .ToList()
+        //    })
+        //    .ToList();
+
+        //// 3. Filter in memory
+        //var garagesInRange = await garages
+        //    .AsQueryable()
+        //    .Where(g => g.DistanceInKm <= request.InKmRange)
+        //    .OrderBy(g => g.DistanceInKm)
+        //    .PaginatedListAsync(request.PageNumber, request.PageSize);
+
+        //////.Where(g => g.DistanceInKm <= request.InKmRange)
+        ////.OrderBy(g => g.DistanceInKm)
+        ////.PaginatedListAsync(request.PageNumber, request.PageSize);
+
+        //// 3. Filter in memory
+        ////var garagesInRange = garages.ToList();
+
+
+        ////.PaginatedListAsync(request.PageNumber, request.PageSize);
+
+
+        return null;// garagesInRange;
     }
 
 }

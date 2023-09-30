@@ -15,9 +15,9 @@ namespace AutoHelper.Infrastructure.Services;
 
 internal class GarageInfoService : IGarageInfoService
 {
-    public int CalculateDistanceInKm(GarageLocationItem location, float latitude, float longitude)
+    public int CalculateDistanceInKm(float garageLatitude, float garageLongitude, float latitude, float longitude)
     {
-        var preciseDistance = LocationExtentions.CalculateDistance(location.Latitude, location.Longitude, latitude, longitude);
+        var preciseDistance = LocationExtentions.CalculateDistance(garageLatitude, garageLongitude, latitude, longitude);
         return (int)Math.Round(preciseDistance);
     }
 }

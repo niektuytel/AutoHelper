@@ -1719,6 +1719,38 @@
           },
           "name": {
             "type": "string"
+          },
+          "distanceInKm": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GarageLocationItem"
+          },
+          "employees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeItemSearchDto"
+            }
+          }
+        }
+      },
+      "GarageEmployeeItemSearchDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workExperiences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+            }
+          },
+          "workingDaysOfWeek": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         }
       },

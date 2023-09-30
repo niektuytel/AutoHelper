@@ -57,9 +57,10 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
         // Configuring the relationship between GarageItem and GarageEmployeeItem
         builder.Entity<GarageEmployeeItem>()
-            .HasOne(e => e.Garage) // Specifies that GarageEmployeeItem has one GarageItem
-            .WithMany(g => g.Employees) // Specifies that GarageItem has many GarageEmployeeItems
-            .HasForeignKey(e => e.GarageId); // Specifies the foreign key property
+            .HasOne(e => e.Garage)
+            .WithMany(g => g.Employees)
+            .HasForeignKey(e => e.GarageId);
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

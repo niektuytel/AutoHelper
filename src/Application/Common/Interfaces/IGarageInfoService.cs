@@ -8,5 +8,5 @@ namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IGarageInfoService
 {
-    int CalculateDistanceInKm(GarageLocationItem location, float latitude, float longitude);
+    int CalculateDistanceInKm(float garageLatitude, float garageLongitude, float latitude, float longitude);
 }

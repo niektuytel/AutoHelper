@@ -7,8 +7,9 @@ namespace AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
 
 public class GarageEmployeeItemSearchDto : IMapFrom<GarageEmployeeItem>
 {
-    public bool IsActive { get; set; } = false;
-
     public ICollection<GarageEmployeeWorkExperienceItem> WorkExperiences { get; set; }
+
+    public ICollection<int> WorkingDaysOfWeek { get; set; }
+
 
 }

@@ -2675,6 +2675,9 @@ export interface IPaginatedListOfGarageItemSearchDto {
 export class GarageItemSearchDto implements IGarageItemSearchDto {
     id?: string;
     name?: string;
+    distanceInKm?: number;
+    location?: GarageLocationItem;
+    employees?: GarageEmployeeItemSearchDto[];
 
     constructor(data?: IGarageItemSearchDto) {
         if (data) {
@@ -2689,6 +2692,13 @@ export class GarageItemSearchDto implements IGarageItemSearchDto {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
+            this.distanceInKm = _data["distanceInKm"];
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            if (Array.isArray(_data["employees"])) {
+                this.employees = [] as any;
+                for (let item of _data["employees"])
+                    this.employees!.push(GarageEmployeeItemSearchDto.fromJS(item));
+            }
         }
     }
 
@@ -2703,6 +2713,13 @@ export class GarageItemSearchDto implements IGarageItemSearchDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        data["distanceInKm"] = this.distanceInKm;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        if (Array.isArray(this.employees)) {
+            data["employees"] = [];
+            for (let item of this.employees)
+                data["employees"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -2710,6 +2727,65 @@ export class GarageItemSearchDto implements IGarageItemSearchDto {
 export interface IGarageItemSearchDto {
     id?: string;
     name?: string;
+    distanceInKm?: number;
+    location?: GarageLocationItem;
+    employees?: GarageEmployeeItemSearchDto[];
+}
+
+export class GarageEmployeeItemSearchDto implements IGarageEmployeeItemSearchDto {
+    workExperiences?: GarageEmployeeWorkExperienceItem[];
+    workingDaysOfWeek?: number[];
+
+    constructor(data?: IGarageEmployeeItemSearchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["workExperiences"])) {
+                this.workExperiences = [] as any;
+                for (let item of _data["workExperiences"])
+                    this.workExperiences!.push(GarageEmployeeWorkExperienceItem.fromJS(item));
+            }
+            if (Array.isArray(_data["workingDaysOfWeek"])) {
+                this.workingDaysOfWeek = [] as any;
+                for (let item of _data["workingDaysOfWeek"])
+                    this.workingDaysOfWeek!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): GarageEmployeeItemSearchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageEmployeeItemSearchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.workExperiences)) {
+            data["workExperiences"] = [];
+            for (let item of this.workExperiences)
+                data["workExperiences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.workingDaysOfWeek)) {
+            data["workingDaysOfWeek"] = [];
+            for (let item of this.workingDaysOfWeek)
+                data["workingDaysOfWeek"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IGarageEmployeeItemSearchDto {
+    workExperiences?: GarageEmployeeWorkExperienceItem[];
+    workingDaysOfWeek?: number[];
 }
 
 export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {

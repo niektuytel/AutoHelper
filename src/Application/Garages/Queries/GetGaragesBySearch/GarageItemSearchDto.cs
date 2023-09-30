@@ -9,7 +9,12 @@ public class GarageItemSearchDto: IMapFrom<GarageItem>
 
     public string Name { get; set; }
 
-    //public GarageLocationItem Location { get; set; }
+    /// <summary>
+    /// Only used for filtering and ordering
+    /// </summary>
+    public int DistanceInKm { get; set; }
 
-    //public ICollection<GarageEmployeeItemSearchDto> Employees { get; set; }
+    public GarageLocationItem Location { get; set; }
+
+    public ICollection<GarageEmployeeItemSearchDto> Employees { get; set; }
 }
