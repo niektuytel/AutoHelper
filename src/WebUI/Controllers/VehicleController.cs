@@ -29,7 +29,7 @@ public class VehicleController : ApiControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<LicencePlateBriefResponse>> SearchVehicle([FromQuery] string licensePlate)
+    public async Task<ActionResult> SearchVehicle([FromQuery] string licensePlate)
     {
         try
         {

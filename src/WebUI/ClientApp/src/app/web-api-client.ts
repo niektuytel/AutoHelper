@@ -596,9 +596,80 @@ export class GarageRegisterClient implements IGarageRegisterClient {
     }
 }
 
+export interface IGarageSearchClient {
+
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Promise<PaginatedListOfGarageItemSearchDto>;
+}
+
+export class GarageSearchClient implements IGarageSearchClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Promise<PaginatedListOfGarageItemSearchDto> {
+        let url_ = this.baseUrl + "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}?";
+        if (licensePlate === undefined || licensePlate === null)
+            throw new Error("The parameter 'licensePlate' must be defined.");
+        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
+        if (latitude === undefined || latitude === null)
+            throw new Error("The parameter 'latitude' must be defined.");
+        url_ = url_.replace("{latitude}", encodeURIComponent("" + latitude));
+        if (longitude === undefined || longitude === null)
+            throw new Error("The parameter 'longitude' must be defined.");
+        url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
+        if (inKmRange === null)
+            throw new Error("The parameter 'inKmRange' cannot be null.");
+        else if (inKmRange !== undefined)
+            url_ += "inKmRange=" + encodeURIComponent("" + inKmRange) + "&";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSearchGarages(_response);
+        });
+    }
+
+    protected processSearchGarages(response: Response): Promise<PaginatedListOfGarageItemSearchDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedListOfGarageItemSearchDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PaginatedListOfGarageItemSearchDto>(null as any);
+    }
+}
+
 export interface IVehicleClient {
 
-    searchVehicle(licensePlate: string | null | undefined): Promise<LicencePlateBriefResponse>;
+    searchVehicle(licensePlate: string | null | undefined): Promise<FileResponse>;
 
     getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto>;
 
@@ -615,7 +686,7 @@ export class VehicleClient implements IVehicleClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchVehicle(licensePlate: string | null | undefined): Promise<LicencePlateBriefResponse> {
+    searchVehicle(licensePlate: string | null | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/Vehicle/search?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
@@ -624,7 +695,7 @@ export class VehicleClient implements IVehicleClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             }
         };
 
@@ -633,22 +704,26 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processSearchVehicle(response: Response): Promise<LicencePlateBriefResponse> {
+    protected processSearchVehicle(response: Response): Promise<FileResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = LicencePlateBriefResponse.fromJS(resultData200);
-            return result200;
-            });
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<LicencePlateBriefResponse>(null as any);
+        return Promise.resolve<FileResponse>(null as any);
     }
 
     getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto> {
@@ -1799,6 +1874,7 @@ export interface IGarageEmployeeWorkSchemaItem extends IBaseEntity {
 }
 
 export class GarageEmployeeWorkExperienceItem extends BaseEntity implements IGarageEmployeeWorkExperienceItem {
+    garageId!: string;
     employeeId!: string;
     serviceId!: string;
     description!: string;
@@ -1810,6 +1886,7 @@ export class GarageEmployeeWorkExperienceItem extends BaseEntity implements IGar
     init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.garageId = _data["garageId"];
             this.employeeId = _data["employeeId"];
             this.serviceId = _data["serviceId"];
             this.description = _data["description"];
@@ -1825,6 +1902,7 @@ export class GarageEmployeeWorkExperienceItem extends BaseEntity implements IGar
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["garageId"] = this.garageId;
         data["employeeId"] = this.employeeId;
         data["serviceId"] = this.serviceId;
         data["description"] = this.description;
@@ -1834,6 +1912,7 @@ export class GarageEmployeeWorkExperienceItem extends BaseEntity implements IGar
 }
 
 export interface IGarageEmployeeWorkExperienceItem extends IBaseEntity {
+    garageId: string;
     employeeId: string;
     serviceId: string;
     description: string;
@@ -1890,6 +1969,7 @@ export interface ICreateGarageServiceCommand {
 export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEmployeeItem {
     userId?: string;
     garageId?: string;
+    garage?: GarageItem;
     isActive?: boolean;
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItem[];
@@ -1904,6 +1984,7 @@ export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEm
         if (_data) {
             this.userId = _data["userId"];
             this.garageId = _data["garageId"];
+            this.garage = _data["garage"] ? GarageItem.fromJS(_data["garage"]) : <any>undefined;
             this.isActive = _data["isActive"];
             this.contact = _data["contact"] ? ContactItem.fromJS(_data["contact"]) : <any>undefined;
             if (Array.isArray(_data["workSchema"])) {
@@ -1930,6 +2011,7 @@ export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEm
         data = typeof data === 'object' ? data : {};
         data["userId"] = this.userId;
         data["garageId"] = this.garageId;
+        data["garage"] = this.garage ? this.garage.toJSON() : <any>undefined;
         data["isActive"] = this.isActive;
         data["contact"] = this.contact ? this.contact.toJSON() : <any>undefined;
         if (Array.isArray(this.workSchema)) {
@@ -1950,10 +2032,84 @@ export class GarageEmployeeItem extends BaseAuditableEntity implements IGarageEm
 export interface IGarageEmployeeItem extends IBaseAuditableEntity {
     userId?: string;
     garageId?: string;
+    garage?: GarageItem;
     isActive?: boolean;
     contact?: ContactItem;
     workSchema?: GarageEmployeeWorkSchemaItem[];
     workExperiences?: GarageEmployeeWorkExperienceItem[];
+}
+
+export class GarageItem extends BaseAuditableEntity implements IGarageItem {
+    userId?: string;
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
+    employees?: GarageEmployeeItem[];
+
+    constructor(data?: IGarageItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.userId = _data["userId"];
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsAppNumber = _data["whatsAppNumber"];
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
+            if (Array.isArray(_data["employees"])) {
+                this.employees = [] as any;
+                for (let item of _data["employees"])
+                    this.employees!.push(GarageEmployeeItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GarageItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsAppNumber"] = this.whatsAppNumber;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
+        if (Array.isArray(this.employees)) {
+            data["employees"] = [];
+            for (let item of this.employees)
+                data["employees"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageItem extends IBaseAuditableEntity {
+    userId?: string;
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+    servicesSettings?: GarageServicesSettingsItem;
+    employees?: GarageEmployeeItem[];
 }
 
 export class CreateGarageEmployeeCommand implements ICreateGarageEmployeeCommand {
@@ -2110,91 +2266,6 @@ export class GarageEmployeeWorkExperienceItemDto implements IGarageEmployeeWorkE
 export interface IGarageEmployeeWorkExperienceItemDto {
     serviceId: string;
     description: string;
-}
-
-export class GarageItem extends BaseAuditableEntity implements IGarageItem {
-    userId?: string;
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    location?: GarageLocationItem;
-    bankingDetails?: GarageBankingDetailsItem;
-    servicesSettings?: GarageServicesSettingsItem;
-    contacts?: ContactItem[];
-    vehicles?: VehicleItem[];
-
-    constructor(data?: IGarageItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.userId = _data["userId"];
-            this.name = _data["name"];
-            this.email = _data["email"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsAppNumber = _data["whatsAppNumber"];
-            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
-            this.servicesSettings = _data["servicesSettings"] ? GarageServicesSettingsItem.fromJS(_data["servicesSettings"]) : <any>undefined;
-            if (Array.isArray(_data["contacts"])) {
-                this.contacts = [] as any;
-                for (let item of _data["contacts"])
-                    this.contacts!.push(ContactItem.fromJS(item));
-            }
-            if (Array.isArray(_data["vehicles"])) {
-                this.vehicles = [] as any;
-                for (let item of _data["vehicles"])
-                    this.vehicles!.push(VehicleItem.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): GarageItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["name"] = this.name;
-        data["email"] = this.email;
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsAppNumber"] = this.whatsAppNumber;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
-        data["servicesSettings"] = this.servicesSettings ? this.servicesSettings.toJSON() : <any>undefined;
-        if (Array.isArray(this.contacts)) {
-            data["contacts"] = [];
-            for (let item of this.contacts)
-                data["contacts"].push(item.toJSON());
-        }
-        if (Array.isArray(this.vehicles)) {
-            data["vehicles"] = [];
-            for (let item of this.vehicles)
-                data["vehicles"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageItem extends IBaseAuditableEntity {
-    userId?: string;
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    location?: GarageLocationItem;
-    bankingDetails?: GarageBankingDetailsItem;
-    servicesSettings?: GarageServicesSettingsItem;
-    contacts?: ContactItem[];
-    vehicles?: VehicleItem[];
 }
 
 export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand {
@@ -2537,10 +2608,15 @@ export interface IBriefBankingDetailsDto {
     iban?: string;
 }
 
-export class LicencePlateBriefResponse implements ILicencePlateBriefResponse {
-    licencePlate?: string;
+export class PaginatedListOfGarageItemSearchDto implements IPaginatedListOfGarageItemSearchDto {
+    items?: GarageItemSearchDto[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 
-    constructor(data?: ILicencePlateBriefResponse) {
+    constructor(data?: IPaginatedListOfGarageItemSearchDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2551,26 +2627,89 @@ export class LicencePlateBriefResponse implements ILicencePlateBriefResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.licencePlate = _data["licencePlate"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GarageItemSearchDto.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
         }
     }
 
-    static fromJS(data: any): LicencePlateBriefResponse {
+    static fromJS(data: any): PaginatedListOfGarageItemSearchDto {
         data = typeof data === 'object' ? data : {};
-        let result = new LicencePlateBriefResponse();
+        let result = new PaginatedListOfGarageItemSearchDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["licencePlate"] = this.licencePlate;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
         return data;
     }
 }
 
-export interface ILicencePlateBriefResponse {
-    licencePlate?: string;
+export interface IPaginatedListOfGarageItemSearchDto {
+    items?: GarageItemSearchDto[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+}
+
+export class GarageItemSearchDto implements IGarageItemSearchDto {
+    id?: string;
+    name?: string;
+
+    constructor(data?: IGarageItemSearchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): GarageItemSearchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageItemSearchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IGarageItemSearchDto {
+    id?: string;
+    name?: string;
 }
 
 export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {
@@ -2763,6 +2902,13 @@ export interface IWeatherForecast {
     temperatureC?: number;
     temperatureF?: number;
     summary?: string | undefined;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class SwaggerException extends Error {

@@ -3,7 +3,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Infrastructure.Common;
+using AutoHelper.Infrastructure.Common.Extentions;
 using Azure;
 using MediatR;
 using Newtonsoft.Json.Linq;

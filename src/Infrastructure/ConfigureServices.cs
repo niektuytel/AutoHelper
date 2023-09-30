@@ -56,15 +56,15 @@ public static class ConfigureServices
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
-
-        services.AddTransient<RDWService>();
-        services.AddTransient<IVehicleInfoService, VehicleInfoService>();
-
         services.AddAuthentication()
             .AddIdentityServerJwt();
 
         //services.AddAuthorization(options =>
         //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
+
+        services.AddTransient<RDWService>();
+        services.AddTransient<IVehicleInfoService, VehicleInfoService>();
+        services.AddTransient<IGarageInfoService, GarageInfoService>();
 
         return services;
     }

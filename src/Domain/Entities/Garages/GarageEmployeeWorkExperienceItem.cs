@@ -5,6 +5,9 @@ namespace AutoHelper.Domain.Entities.Garages;
 public class GarageEmployeeWorkExperienceItem : BaseEntity
 {
     [Required]
+    public Guid GarageId { get; set; }
+
+    [Required]
     public Guid EmployeeId { get; set; }
 
     [Required]

@@ -4,6 +4,7 @@ using AutoHelper.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230929230803_Update garageitem")]
+    partial class Updategarageitem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,6 +198,9 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<Guid>("GarageId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("GarageItemId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -212,7 +218,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("ContactId");
 
-                    b.HasIndex("GarageId");
+                    b.HasIndex("GarageItemId");
 
                     b.ToTable("GarageEmployees");
                 });
@@ -998,15 +1004,11 @@ namespace AutoHelper.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AutoHelper.Domain.Entities.Garages.GarageItem", "Garage")
+                    b.HasOne("AutoHelper.Domain.Entities.Garages.GarageItem", null)
                         .WithMany("Employees")
-                        .HasForeignKey("GarageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GarageItemId");
 
                     b.Navigation("Contact");
-
-                    b.Navigation("Garage");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageEmployeeWorkExperienceItem", b =>

@@ -1,4 +1,5 @@
-﻿using AutoHelper.Domain.Entities.Deprecated;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using AutoHelper.Domain.Entities.Deprecated;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -13,6 +14,9 @@ public class GarageEmployeeItem : BaseAuditableEntity
     /// GarageId of the garage (currently working for)
     /// </summary>
     public Guid GarageId { get; set; }
+
+    [ForeignKey("GarageId")]
+    public virtual GarageItem Garage { get; set; }
 
     /// <summary>
     /// Employee is active or not (if not, he is not visible in the garage)
@@ -32,6 +36,6 @@ public class GarageEmployeeItem : BaseAuditableEntity
     /// <summary>
     /// All the experiences of this user
     /// </summary>
-    public IEnumerable<GarageEmployeeWorkExperienceItem> WorkExperiences { get; set; } = new List<GarageEmployeeWorkExperienceItem>();
+    public ICollection<GarageEmployeeWorkExperienceItem> WorkExperiences { get; set; } = new List<GarageEmployeeWorkExperienceItem>();
 
 }

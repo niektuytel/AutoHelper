@@ -2,9 +2,11 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using Duende.IdentityServer.EntityFramework.Options;
@@ -52,6 +54,12 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         builder.Entity<GarageServicesSettingsItem>()
                .Property(p => p.DeliveryPrice)
                .HasColumnType("decimal(18,2)");
+
+        // Configuring the relationship between GarageItem and GarageEmployeeItem
+        builder.Entity<GarageEmployeeItem>()
+            .HasOne(e => e.Garage) // Specifies that GarageEmployeeItem has one GarageItem
+            .WithMany(g => g.Employees) // Specifies that GarageItem has many GarageEmployeeItems
+            .HasForeignKey(e => e.GarageId); // Specifies the foreign key property
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

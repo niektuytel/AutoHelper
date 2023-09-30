@@ -38,7 +38,6 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
     public async Task<GarageOverview> Handle(GetGarageOverviewQuery request, CancellationToken cancellationToken)
     {
         var entity = await _context.Garages
-            .Include(g => g.Vehicles)
             .FirstOrDefaultAsync(x => x.UserId == request.UserId);
 
         if (entity == null)

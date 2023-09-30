@@ -468,6 +468,88 @@
         }
       }
     },
+    "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}": {
+      "get": {
+        "tags": [
+          "GarageSearch"
+        ],
+        "operationId": "GarageSearch_SearchGarages",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "latitude",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "longitude",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "x-position": 3
+          },
+          {
+            "name": "inKmRange",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 4
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "x-position": 5
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 6
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListOfGarageItemSearchDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/search": {
       "get": {
         "tags": [
@@ -489,9 +571,10 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/LicencePlateBriefResponse"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1239,11 +1322,17 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "garageId",
               "employeeId",
               "serviceId",
               "description"
             ],
             "properties": {
+              "garageId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
               "employeeId": {
                 "type": "string",
                 "format": "guid",
@@ -1298,6 +1387,9 @@
                 "type": "string",
                 "format": "guid"
               },
+              "garage": {
+                "$ref": "#/components/schemas/GarageItem"
+              },
               "isActive": {
                 "type": "boolean"
               },
@@ -1314,6 +1406,49 @@
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "GarageItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "whatsAppNumber": {
+                "type": "string"
+              },
+              "location": {
+                "$ref": "#/components/schemas/GarageLocationItem"
+              },
+              "bankingDetails": {
+                "$ref": "#/components/schemas/GarageBankingDetailsItem"
+              },
+              "servicesSettings": {
+                "$ref": "#/components/schemas/GarageServicesSettingsItem"
+              },
+              "employees": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeItem"
                 }
               }
             }
@@ -1396,55 +1531,6 @@
             "minLength": 1
           }
         }
-      },
-      "GarageItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "name": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
-              },
-              "phoneNumber": {
-                "type": "string"
-              },
-              "whatsAppNumber": {
-                "type": "string"
-              },
-              "location": {
-                "$ref": "#/components/schemas/GarageLocationItem"
-              },
-              "bankingDetails": {
-                "$ref": "#/components/schemas/GarageBankingDetailsItem"
-              },
-              "servicesSettings": {
-                "$ref": "#/components/schemas/GarageServicesSettingsItem"
-              },
-              "contacts": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ContactItem"
-                }
-              },
-              "vehicles": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/VehicleItem"
-                }
-              }
-            }
-          }
-        ]
       },
       "UpdateGarageSettingsCommand": {
         "type": "object",
@@ -1593,11 +1679,45 @@
           }
         }
       },
-      "LicencePlateBriefResponse": {
+      "PaginatedListOfGarageItemSearchDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "licencePlate": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageItemSearchDto"
+            }
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GarageItemSearchDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "name": {
             "type": "string"
           }
         }

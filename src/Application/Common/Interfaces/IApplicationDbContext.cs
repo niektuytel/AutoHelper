@@ -1,4 +1,5 @@
-﻿using AutoHelper.Domain.Entities.Deprecated;
+﻿using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
+using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;

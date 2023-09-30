@@ -5,6 +5,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.DTOs;
+using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Events;
@@ -82,6 +83,7 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
         {
             entity.WorkExperiences = request.WorkExperiences.Select(item => new GarageEmployeeWorkExperienceItem
             {
+                GarageId = entity.GarageId,
                 EmployeeId = entity.Id,
                 ServiceId = item.ServiceId,
                 Description = item.Description

@@ -1,11 +1,12 @@
 ﻿using AutoHelper.Domain.Common;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediatR;
+namespace AutoHelper.Infrastructure.Common.Extentions;
 
 public static class MediatorExtensions
 {
-    public static async Task DispatchDomainEvents(this IMediator mediator, DbContext context) 
+    public static async Task DispatchDomainEvents(this IMediator mediator, DbContext context)
     {
         var entities = context.ChangeTracker
             .Entries<BaseEntity>()

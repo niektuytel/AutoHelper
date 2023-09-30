@@ -11,6 +11,7 @@ using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
+using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.TodoItems.Commands.CreateTodoItem;

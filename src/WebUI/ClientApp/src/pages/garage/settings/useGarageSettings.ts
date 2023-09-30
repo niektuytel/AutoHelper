@@ -68,8 +68,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         phoneNumber: "",
         whatsAppNumber: "",
         location: initialGarageLocation(),
-        bankingDetails: new GarageBankingDetailsItem(),
-        contacts: []
+        bankingDetails: new GarageBankingDetailsItem()
     });
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
