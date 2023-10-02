@@ -28,20 +28,23 @@ public class GarageSearchController : ApiControllerBase
         [FromRoute] string licensePlate,
         [FromRoute] float latitude,
         [FromRoute] float longitude,
+        CancellationToken cancellationToken,
         [FromQuery] int inKmRange = 10,
         [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10
-    ){
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? autoCompleteOnGarageName = null
+    )
+    {
         var query = new GetGaragesBySearchQuery(
             licensePlate, 
             latitude, 
             longitude, 
-            inKmRange, 
+            inKmRange,
+            autoCompleteOnGarageName,
             pageNumber, 
             pageSize
         );
 
-        return await Mediator.Send(query);
+        return await Mediator.Send(query, cancellationToken);
     }
-    
 }

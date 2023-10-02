@@ -534,6 +534,15 @@
               "default": 10
             },
             "x-position": 6
+          },
+          {
+            "name": "autoCompleteOnGarageName",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 7
           }
         ],
         "responses": {

@@ -10,6 +10,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { DAYSINWEEKSHORT } from '../../../constants/days';
 import { useTranslation } from 'react-i18next';
 import ImageLogo from '../../../components/logo/ImageLogo';
+import { useNavigate } from 'react-router';
 
 interface IProps {
     garage: GarageItemSearchDto;
@@ -17,11 +18,35 @@ interface IProps {
 
 export default ({ garage }: IProps) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    // Local state for hover effect
+    const [isHovered, setIsHovered] = React.useState(false);
+
+    // Handler for mouse enter
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+    };
+
+    // Handler for mouse leave
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
+    // Handler for click
+    const handleClick = () => {
+        navigate(`${window.location.pathname}/${garage.id}`);
+    };
 
 
     return <>
         <Paper
-            elevation={5}  
+            variant="outlined"
+            sx={{
+                mb: 1,
+                cursor: 'pointer',
+                backgroundColor: isHovered ? 'grey.100' : 'white'
+            }}
             style={{
                 display: "flex",
                 flexDirection: "row",
@@ -30,6 +55,9 @@ export default ({ garage }: IProps) => {
                 padding: "10px",
                 borderBottom: "1px solid #ccc"
             }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={handleClick}
         >
             <Box
                 style={{
@@ -56,15 +84,13 @@ export default ({ garage }: IProps) => {
                         {garage.name}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <PlaceIcon fontSize='small' />
-                        {`${garage.location?.address}, ${garage.location?.city}`}
+                        <PlaceIcon fontSize='small' sx={{ mr: 1 }} />
+                        {`${garage.location?.address}, ${garage.location?.city} (${garage.distanceInKm} km)`}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <AccessTimeIcon fontSize='small' />
-                        {`
-                            ${[...new Set(garage.employees?.flatMap(x => x.workingDaysOfWeek) || [])]
-                                .map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}
-                        `}
+                        <AccessTimeIcon fontSize='small' sx={{mr:1}} />
+                        {`${[...new Set(garage.employees?.flatMap(x => x.workingDaysOfWeek) || [])]
+                                .map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
                     <Box>
                         <Chip

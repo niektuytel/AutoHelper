@@ -598,7 +598,7 @@ export class GarageRegisterClient implements IGarageRegisterClient {
 
 export interface IGarageSearchClient {
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Promise<PaginatedListOfGarageItemSearchDto>;
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageItemSearchDto>;
 }
 
 export class GarageSearchClient implements IGarageSearchClient {
@@ -611,7 +611,7 @@ export class GarageSearchClient implements IGarageSearchClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Promise<PaginatedListOfGarageItemSearchDto> {
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageItemSearchDto> {
         let url_ = this.baseUrl + "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}?";
         if (licensePlate === undefined || licensePlate === null)
             throw new Error("The parameter 'licensePlate' must be defined.");
@@ -634,6 +634,8 @@ export class GarageSearchClient implements IGarageSearchClient {
             throw new Error("The parameter 'pageSize' cannot be null.");
         else if (pageSize !== undefined)
             url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (autoCompleteOnGarageName !== undefined && autoCompleteOnGarageName !== null)
+            url_ += "autoCompleteOnGarageName=" + encodeURIComponent("" + autoCompleteOnGarageName) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {

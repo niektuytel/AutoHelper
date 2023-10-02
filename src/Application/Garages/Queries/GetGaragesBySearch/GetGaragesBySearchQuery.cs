@@ -18,12 +18,20 @@ namespace AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
 
 public record GetGaragesBySearchQuery : IRequest<PaginatedList<GarageItemSearchDto>>
 {
-    public GetGaragesBySearchQuery(string licensePlate, float latitude, float longitude, int inKmRange = 10, int pageNumber=1, int pageSize=10)
-    {
+    public GetGaragesBySearchQuery(
+        string licensePlate, 
+        float latitude, 
+        float longitude, 
+        int inKmRange = 10, 
+        string? autoCompleteOnGarageName = null, 
+        int pageNumber = 1, 
+        int pageSize = 10
+    ) {
         LicensePlate = licensePlate;
         Latitude = latitude;
         Longitude = longitude;
         InKmRange = inKmRange;
+        AutoCompleteOnGarageName = autoCompleteOnGarageName;
         PageNumber = pageNumber;
         PageSize = pageSize;
     }
@@ -32,6 +40,7 @@ public record GetGaragesBySearchQuery : IRequest<PaginatedList<GarageItemSearchD
     public float Latitude { get; private set; }
     public float Longitude { get; private set; }
     public int InKmRange { get; private set; }
+    public string? AutoCompleteOnGarageName { get; private set; }
     public int PageNumber { get; private set; }
     public int PageSize { get; private set; }
 }
@@ -54,14 +63,22 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGaragesBySearch
         _context.SetQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         // First, retrieve potential results from the database without the distance filter
-        var potentialResults = await _context.Garages
+        var queryable = _context.Garages
             .Include(x => x.Location)
             .Include(x => x.Employees)
                 .ThenInclude(x => x.WorkExperiences)
             .Include(x => x.Employees)
                 .ThenInclude(x => x.WorkSchema)
-            .Where(x => x.Employees.Any(y => y.IsActive))
-            .ToListAsync();
+            .Where(x => x.Employees.Any(y => y.IsActive));
+
+        // SearchOnAutoComplete
+        if (!string.IsNullOrEmpty(request.AutoCompleteOnGarageName))
+        {
+            var value = request.AutoCompleteOnGarageName.ToLower();
+            queryable = queryable.Where(x => x.Name.ToLower().Contains(value));
+        }
+
+        var potentialResults = await queryable.ToListAsync(cancellationToken: cancellationToken);
 
         // Now, filter and project in-memory using LINQ to Objects
         var filteredResults = potentialResults
