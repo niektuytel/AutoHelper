@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
+using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
@@ -34,6 +34,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     }
 
     public DbSet<GarageItem> Garages => Set<GarageItem>();
+    public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();
     public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();
     public DbSet<GarageEmployeeItem> GarageEmployees => Set<GarageEmployeeItem>();
     public DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems => Set<GarageEmployeeWorkSchemaItem>();
@@ -41,6 +42,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<VehicleItem> Vehicles => Set<VehicleItem>();
     public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

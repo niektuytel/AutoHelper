@@ -11,7 +11,7 @@ import useGarageSearch from "./useGarageSearch";
 import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";
 import GarageInviteListItem from "./components/GarageInviteListItem";
-import { GarageItemSearchDto, PaginatedListOfGarageItemSearchDto } from "../../app/web-api-client";
+import { GarageLookupDto, PaginatedListOfGarageLookupDto } from "../../app/web-api-client";
 import GarageSearchField from "./components/GarageSearchField";
 import { useQueryClient } from "react-query";
 
@@ -34,7 +34,7 @@ export default ({ }: IProps) => {
         fetchGarages(license_plate!, Number(lat!), Number(lng!), inKmRange, value, pageSize, null);
     };
 
-    const handleSearchExecuted = (data: PaginatedListOfGarageItemSearchDto) => {
+    const handleSearchExecuted = (data: PaginatedListOfGarageLookupDto) => {
         // Assuming setGaragesData is what you named the updater function
         setGaragesData(data);
     };

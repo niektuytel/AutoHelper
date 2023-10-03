@@ -2,7 +2,8 @@
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
-using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
+using AutoHelper.Application.Garages.Queries;
+using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
 using AutoHelper.Application.TodoLists.Commands.DeleteTodoList;
 using AutoHelper.Application.TodoLists.Commands.UpdateTodoList;
@@ -24,7 +25,7 @@ namespace AutoHelper.WebUI.Controllers;
 public class GarageSearchController : ApiControllerBase
 {
     [HttpGet($"{nameof(SearchGarages)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
-    public async Task<PaginatedList<GarageItemSearchDto>> SearchGarages(
+    public async Task<PaginatedList<GarageLookupDto>> SearchGarages(
         [FromRoute] string licensePlate,
         [FromRoute] float latitude,
         [FromRoute] float longitude,
@@ -35,7 +36,7 @@ public class GarageSearchController : ApiControllerBase
         [FromQuery] string? autoCompleteOnGarageName = null
     )
     {
-        var query = new GetGaragesBySearchQuery(
+        var query = new GetGarageLookupsQuery(
             licensePlate, 
             latitude, 
             longitude, 

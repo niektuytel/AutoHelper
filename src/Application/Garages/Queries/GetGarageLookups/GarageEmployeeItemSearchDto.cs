@@ -11,5 +11,4 @@ public class GarageEmployeeItemSearchDto : IMapFrom<GarageEmployeeItem>
 
     public ICollection<int> WorkingDaysOfWeek { get; set; }
 
-
 }

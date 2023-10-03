@@ -263,7 +263,7 @@ internal class VehicleInfoService : IVehicleInfoService
         {
             new() {"Jaar laatste registratie", $"{data.GetSafeValue("jaar_laatste_registratie_tellerstand")}"},
             new() {"Oordeel", $"{data.GetSafeValue("tellerstandoordeel")}"},
-            new() {"Toelichting", _rdwService.GetCounterReadingsDescription(data.GetSafeValue("code_toelichting_tellerstandoordeel"))}
+            new() {"Toelichting", _rdwService.GetVehicleCounterReadingsDescription(data.GetSafeValue("code_toelichting_tellerstandoordeel"))}
         }
         };
     }

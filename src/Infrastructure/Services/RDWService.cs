@@ -1,10 +1,13 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.IO;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static AutoHelper.Infrastructure.Common.Models.RDWService;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal class RDWService
+internal partial class RDWService
 {
     private readonly HttpClient _httpClient;
 
@@ -85,7 +88,7 @@ internal class RDWService
     /// <summary>
     /// https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Tellerstandoordeel-Trend-Toelichting/jqs4-4kvw
     /// </summary>
-    public string GetCounterReadingsDescription(string judgement)
+    public string GetVehicleCounterReadingsDescription(string judgement)
     {
         switch (judgement)
         {
@@ -108,6 +111,25 @@ internal class RDWService
             default://NG
                 return "Niet geregistreerd.";
         }
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/5k74-3jha.json
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IEnumerable<RDWRecognizedCompany>> GetRDWRecognizedCompanies()
+    {
+        var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        var companies = JsonConvert.DeserializeObject<IEnumerable<RDWRecognizedCompany>>(json);
+        return companies;
     }
 
 }

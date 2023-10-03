@@ -1,7 +1,7 @@
 ﻿
 import { Box, Button, Chip, Paper, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { GarageItemSearchDto } from '../../../app/web-api-client';
+import { GarageLookupDto } from '../../../app/web-api-client';
 import EuroSymbolIcon from '@mui/icons-material/EuroSymbol';
 import PlaceIcon from '@mui/icons-material/Place';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';

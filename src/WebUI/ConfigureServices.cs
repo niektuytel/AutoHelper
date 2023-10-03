@@ -1,11 +1,15 @@
 ﻿using App.Authorization;
 using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Commands.SyncGarageLookups;
+using AutoHelper.Hangfire;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Services;
 using AutoHelper.WebUI.Filters;
 using AutoHelper.WebUI.Services;
 using FluentValidation.AspNetCore;
+using Hangfire;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
+using WebUI.Extensions;
 using WebUI.Models.Response;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -36,10 +41,7 @@ public static class ConfigureServices
 
     private static IServiceCollection AddControllerServices(this IServiceCollection services)
     {
-        services.AddSingleton<ICurrentUserService, CurrentUserService>();// IHttpContextAccessor is singleton
-        //services.AddHttpClient<IRDWService, RDWService>();
-        //services.AddScoped<IVehicleInformationService, VehicleInformationService>();
-
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())
                 .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
@@ -110,6 +112,7 @@ public static class ConfigureServices
 
         return services;
     }
+
 
     public static WebApplication UseWebUIServices(this WebApplication app)
     {

@@ -551,7 +551,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedListOfGarageItemSearchDto"
+                  "$ref": "#/components/schemas/PaginatedListOfGarageLookupDto"
                 }
               }
             }
@@ -1688,14 +1688,14 @@
           }
         }
       },
-      "PaginatedListOfGarageItemSearchDto": {
+      "PaginatedListOfGarageLookupDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "items": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GarageItemSearchDto"
+              "$ref": "#/components/schemas/GarageLookupDto"
             }
           },
           "pageNumber": {
@@ -1718,59 +1718,84 @@
           }
         }
       },
-      "GarageItemSearchDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
+      "GarageLookupDto": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GarageLookupItem"
           },
-          "name": {
-            "type": "string"
-          },
-          "distanceInKm": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "location": {
-            "$ref": "#/components/schemas/GarageLocationItem"
-          },
-          "employees": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageEmployeeItemSearchDto"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "distanceInKm": {
+                "type": "integer",
+                "format": "int32"
+              }
             }
-          },
-          "hasPickupService": {
-            "type": "boolean"
-          },
-          "hasReplacementTransportService": {
-            "type": "boolean"
-          },
-          "hasBestPrice": {
-            "type": "boolean"
           }
-        }
+        ]
       },
-      "GarageEmployeeItemSearchDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "workExperiences": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
-            }
+      "GarageLookupItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
           },
-          "workingDaysOfWeek": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "longitude",
+              "latitude"
+            ],
+            "properties": {
+              "garageId": {
+                "type": "string",
+                "format": "guid",
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "phoneNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "whatsappNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "emailAddress": {
+                "type": "string",
+                "nullable": true
+              },
+              "address": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "longitude": {
+                "type": "number",
+                "format": "float"
+              },
+              "latitude": {
+                "type": "number",
+                "format": "float"
+              },
+              "hasPickupService": {
+                "type": "boolean"
+              },
+              "hasReplacementTransportService": {
+                "type": "boolean"
+              },
+              "hasBestPrice": {
+                "type": "boolean"
+              }
             }
           }
-        }
+        ]
       },
       "VehicleBriefInfoItemDto": {
         "type": "object",

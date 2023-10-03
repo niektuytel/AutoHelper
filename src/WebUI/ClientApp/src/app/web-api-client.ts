@@ -598,7 +598,7 @@ export class GarageRegisterClient implements IGarageRegisterClient {
 
 export interface IGarageSearchClient {
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageItemSearchDto>;
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto>;
 }
 
 export class GarageSearchClient implements IGarageSearchClient {
@@ -611,7 +611,7 @@ export class GarageSearchClient implements IGarageSearchClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageItemSearchDto> {
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto> {
         let url_ = this.baseUrl + "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}?";
         if (licensePlate === undefined || licensePlate === null)
             throw new Error("The parameter 'licensePlate' must be defined.");
@@ -650,14 +650,14 @@ export class GarageSearchClient implements IGarageSearchClient {
         });
     }
 
-    protected processSearchGarages(response: Response): Promise<PaginatedListOfGarageItemSearchDto> {
+    protected processSearchGarages(response: Response): Promise<PaginatedListOfGarageLookupDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginatedListOfGarageItemSearchDto.fromJS(resultData200);
+            result200 = PaginatedListOfGarageLookupDto.fromJS(resultData200);
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -665,7 +665,7 @@ export class GarageSearchClient implements IGarageSearchClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<PaginatedListOfGarageItemSearchDto>(null as any);
+        return Promise.resolve<PaginatedListOfGarageLookupDto>(null as any);
     }
 }
 
@@ -2610,15 +2610,15 @@ export interface IBriefBankingDetailsDto {
     iban?: string;
 }
 
-export class PaginatedListOfGarageItemSearchDto implements IPaginatedListOfGarageItemSearchDto {
-    items?: GarageItemSearchDto[];
+export class PaginatedListOfGarageLookupDto implements IPaginatedListOfGarageLookupDto {
+    items?: GarageLookupDto[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
 
-    constructor(data?: IPaginatedListOfGarageItemSearchDto) {
+    constructor(data?: IPaginatedListOfGarageLookupDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2632,7 +2632,7 @@ export class PaginatedListOfGarageItemSearchDto implements IPaginatedListOfGarag
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(GarageItemSearchDto.fromJS(item));
+                    this.items!.push(GarageLookupDto.fromJS(item));
             }
             this.pageNumber = _data["pageNumber"];
             this.totalPages = _data["totalPages"];
@@ -2642,9 +2642,9 @@ export class PaginatedListOfGarageItemSearchDto implements IPaginatedListOfGarag
         }
     }
 
-    static fromJS(data: any): PaginatedListOfGarageItemSearchDto {
+    static fromJS(data: any): PaginatedListOfGarageLookupDto {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginatedListOfGarageItemSearchDto();
+        let result = new PaginatedListOfGarageLookupDto();
         result.init(data);
         return result;
     }
@@ -2665,8 +2665,8 @@ export class PaginatedListOfGarageItemSearchDto implements IPaginatedListOfGarag
     }
 }
 
-export interface IPaginatedListOfGarageItemSearchDto {
-    items?: GarageItemSearchDto[];
+export interface IPaginatedListOfGarageLookupDto {
+    items?: GarageLookupDto[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
@@ -2674,132 +2674,114 @@ export interface IPaginatedListOfGarageItemSearchDto {
     hasNextPage?: boolean;
 }
 
-export class GarageItemSearchDto implements IGarageItemSearchDto {
-    id?: string;
-    name?: string;
-    distanceInKm?: number;
-    location?: GarageLocationItem;
-    employees?: GarageEmployeeItemSearchDto[];
+export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
+    garageId?: string | undefined;
+    name!: string;
+    phoneNumber?: string | undefined;
+    whatsappNumber?: string | undefined;
+    emailAddress?: string | undefined;
+    address?: string;
+    city?: string;
+    longitude!: number;
+    latitude!: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
     hasBestPrice?: boolean;
 
-    constructor(data?: IGarageItemSearchDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+    constructor(data?: IGarageLookupItem) {
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
-            this.id = _data["id"];
+            this.garageId = _data["garageId"];
             this.name = _data["name"];
-            this.distanceInKm = _data["distanceInKm"];
-            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
-            if (Array.isArray(_data["employees"])) {
-                this.employees = [] as any;
-                for (let item of _data["employees"])
-                    this.employees!.push(GarageEmployeeItemSearchDto.fromJS(item));
-            }
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsappNumber = _data["whatsappNumber"];
+            this.emailAddress = _data["emailAddress"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.longitude = _data["longitude"];
+            this.latitude = _data["latitude"];
             this.hasPickupService = _data["hasPickupService"];
             this.hasReplacementTransportService = _data["hasReplacementTransportService"];
             this.hasBestPrice = _data["hasBestPrice"];
         }
     }
 
-    static fromJS(data: any): GarageItemSearchDto {
+    static fromJS(data: any): GarageLookupItem {
         data = typeof data === 'object' ? data : {};
-        let result = new GarageItemSearchDto();
+        let result = new GarageLookupItem();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data["garageId"] = this.garageId;
         data["name"] = this.name;
-        data["distanceInKm"] = this.distanceInKm;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        if (Array.isArray(this.employees)) {
-            data["employees"] = [];
-            for (let item of this.employees)
-                data["employees"].push(item.toJSON());
-        }
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsappNumber"] = this.whatsappNumber;
+        data["emailAddress"] = this.emailAddress;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["longitude"] = this.longitude;
+        data["latitude"] = this.latitude;
         data["hasPickupService"] = this.hasPickupService;
         data["hasReplacementTransportService"] = this.hasReplacementTransportService;
         data["hasBestPrice"] = this.hasBestPrice;
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface IGarageItemSearchDto {
-    id?: string;
-    name?: string;
-    distanceInKm?: number;
-    location?: GarageLocationItem;
-    employees?: GarageEmployeeItemSearchDto[];
+export interface IGarageLookupItem extends IBaseEntity {
+    garageId?: string | undefined;
+    name: string;
+    phoneNumber?: string | undefined;
+    whatsappNumber?: string | undefined;
+    emailAddress?: string | undefined;
+    address?: string;
+    city?: string;
+    longitude: number;
+    latitude: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
     hasBestPrice?: boolean;
 }
 
-export class GarageEmployeeItemSearchDto implements IGarageEmployeeItemSearchDto {
-    workExperiences?: GarageEmployeeWorkExperienceItem[];
-    workingDaysOfWeek?: number[];
+export class GarageLookupDto extends GarageLookupItem implements IGarageLookupDto {
+    distanceInKm?: number;
 
-    constructor(data?: IGarageEmployeeItemSearchDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+    constructor(data?: IGarageLookupDto) {
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
-            if (Array.isArray(_data["workExperiences"])) {
-                this.workExperiences = [] as any;
-                for (let item of _data["workExperiences"])
-                    this.workExperiences!.push(GarageEmployeeWorkExperienceItem.fromJS(item));
-            }
-            if (Array.isArray(_data["workingDaysOfWeek"])) {
-                this.workingDaysOfWeek = [] as any;
-                for (let item of _data["workingDaysOfWeek"])
-                    this.workingDaysOfWeek!.push(item);
-            }
+            this.distanceInKm = _data["distanceInKm"];
         }
     }
 
-    static fromJS(data: any): GarageEmployeeItemSearchDto {
+    static fromJS(data: any): GarageLookupDto {
         data = typeof data === 'object' ? data : {};
-        let result = new GarageEmployeeItemSearchDto();
+        let result = new GarageLookupDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.workExperiences)) {
-            data["workExperiences"] = [];
-            for (let item of this.workExperiences)
-                data["workExperiences"].push(item.toJSON());
-        }
-        if (Array.isArray(this.workingDaysOfWeek)) {
-            data["workingDaysOfWeek"] = [];
-            for (let item of this.workingDaysOfWeek)
-                data["workingDaysOfWeek"].push(item);
-        }
+        data["distanceInKm"] = this.distanceInKm;
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface IGarageEmployeeItemSearchDto {
-    workExperiences?: GarageEmployeeWorkExperienceItem[];
-    workingDaysOfWeek?: number[];
+export interface IGarageLookupDto extends IGarageLookupItem {
+    distanceInKm?: number;
 }
 
 export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {

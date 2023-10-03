@@ -1,11 +1,11 @@
 ﻿using AutoHelper.Application.TodoItems.Queries.GetTodoItemsWithPagination;
 using FluentValidation;
 
-namespace AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
+namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 
-public class GetGaragesBySearchQueryValidator : AbstractValidator<GetGaragesBySearchQuery>
+public class GetGarageLookupsQueryValidator : AbstractValidator<GetGarageLookupsQuery>
 {
-    public GetGaragesBySearchQueryValidator()
+    public GetGarageLookupsQueryValidator()
     {
         RuleFor(x => x.LicensePlate)
             .NotEmpty().WithMessage("LicensePlate is required.");

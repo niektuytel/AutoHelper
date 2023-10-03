@@ -1,4 +1,4 @@
-﻿using AutoHelper.Application.Garages.Queries.GetGaragesBySearch;
+﻿using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
@@ -9,6 +9,7 @@ namespace AutoHelper.Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<GarageItem> Garages { get; }
+    DbSet<GarageLookupItem> GarageLookups { get; }
     DbSet<GarageServiceItem> GarageServices { get; }
     DbSet<GarageEmployeeItem> GarageEmployees { get; }
     DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems { get; }

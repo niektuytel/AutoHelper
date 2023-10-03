@@ -1,7 +1,7 @@
 ﻿
 import { Box, Chip, Paper, Typography } from '@mui/material';
 import React from 'react';
-import { GarageItemSearchDto } from '../../../app/web-api-client';
+import { GarageLookupDto } from '../../../app/web-api-client';
 import EuroSymbolIcon from '@mui/icons-material/EuroSymbol';
 import PlaceIcon from '@mui/icons-material/Place';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
@@ -13,7 +13,7 @@ import ImageLogo from '../../../components/logo/ImageLogo';
 import { useNavigate } from 'react-router';
 
 interface IProps {
-    garage: GarageItemSearchDto;
+    garage: GarageLookupDto;
 }
 
 export default ({ garage }: IProps) => {
@@ -85,12 +85,12 @@ export default ({ garage }: IProps) => {
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <PlaceIcon fontSize='small' sx={{ mr: 1 }} />
-                        {`${garage.location?.address}, ${garage.location?.city} (${garage.distanceInKm} km)`}
+                        {`${garage?.address}, ${garage?.city} (${garage.distanceInKm} km)`}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <AccessTimeIcon fontSize='small' sx={{mr:1}} />
-                        {`${[...new Set(garage.employees?.flatMap(x => x.workingDaysOfWeek) || [])]
-                                .map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
+                        {/*{`${[...new Set(garage.employees?.flatMap(x => x.workingDaysOfWeek) || [])]*/}
+                        {/*        .map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}*/}
                     </Typography>
                     <Box>
                         <Chip

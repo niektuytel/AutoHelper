@@ -21,7 +21,7 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import { HashValues } from "../../../i18n/HashValues";
 import { useDispatch } from "react-redux";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
-import { GarageItemSearchDto, GarageSearchClient, PaginatedListOfGarageItemSearchDto } from "../../../app/web-api-client";
+import { GarageLookupDto, GarageSearchClient, PaginatedListOfGarageLookupDto } from "../../../app/web-api-client";
 import { useQueryClient } from "react-query";
 
 
@@ -33,7 +33,7 @@ interface IProps
     longitude: number,
     in_km_range: number,
     page_size: number,
-    onSearchExecuted: (data: PaginatedListOfGarageItemSearchDto) => void;
+    onSearchExecuted: (data: PaginatedListOfGarageLookupDto) => void;
 }
 
 export default ({ license_plate, latitude, longitude, in_km_range, page_size, onSearchExecuted }: IProps) => {
@@ -48,11 +48,11 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [isFocused, setIsFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [value, setValue] = useState("");
-    const [suggestions, setSuggestions] = React.useState<readonly GarageItemSearchDto[]>([]);
+    const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDto[]>([]);
     const useGarageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
 
-    const fetchGaragesData = async (autocomplete: string): Promise<PaginatedListOfGarageItemSearchDto> => {
+    const fetchGaragesData = async (autocomplete: string): Promise<PaginatedListOfGarageLookupDto> => {
         try {
             const response = await useGarageSearchClient.searchGarages(
                 license_plate,
