@@ -24,7 +24,7 @@ internal class GarageInfoService : IGarageInfoService
         _rdwService = rdwService;
     }
 
-    public async Task<IEnumerable<GarageLookupItem>> GetGarageLookups()
+    public async Task<IEnumerable<GarageLookupItem>> GetRDWGarageLookups()
     {
         var rdwCompanies = await _rdwService.GetRDWRecognizedCompanies();
         var garageLookups = rdwCompanies.Select(x => new GarageLookupItem

@@ -36,15 +36,17 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
     public Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         var garageLookups = _context.GarageLookups.ToArray();
-        var newGarageLookups = _garageInfoService.GetGarageLookups();
+        var newGarageLookups = _garageInfoService.GetRDWGarageLookups();
 
         foreach (var newGarageLookup in newGarageLookups.Result)
         {
-            var existingGarageLookup = garageLookups.FirstOrDefault(x => x.Name == newGarageLookup.Name);
+            var identifier = newGarageLookup.Identifier.ToString();
+            var existingGarageLookup = garageLookups.FirstOrDefault(x => x.Identifier == identifier);
             if (existingGarageLookup == null)
             {
                 newGarageLookup.Latitude = 1;// TODO: Get from google maps api
                 newGarageLookup.Longitude = 1;// TODO: Get from google maps api
+                newGarageLookup.PhoneNumber = "1234567890";// TODO:// https://www.nldelphi.com/showthread.php?42479-Telefoonboek-goudengids-API
                 _context.GarageLookups.Add(newGarageLookup);
             }
             else
@@ -53,10 +55,6 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
                 existingGarageLookup.Name = newGarageLookup.Name;
                 existingGarageLookup.Address = newGarageLookup.Address;
                 existingGarageLookup.City = newGarageLookup.City;
-                existingGarageLookup.Latitude = newGarageLookup.Latitude;
-                existingGarageLookup.City = newGarageLookup.City;
-                existingGarageLookup.Latitude = newGarageLookup.Latitude;
-                existingGarageLookup.Longitude = newGarageLookup.Longitude;
             }
         }
 
