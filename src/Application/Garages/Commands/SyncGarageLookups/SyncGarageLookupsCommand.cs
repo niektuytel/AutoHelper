@@ -33,17 +33,18 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
         _garageInfoService = garageInfoService;
     }
 
-    public Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         var garageLookups = _context.GarageLookups.ToArray();
-        var newGarageLookups = _garageInfoService.GetRDWGarageLookups();
 
-        foreach (var newGarageLookup in newGarageLookups.Result)
+        var newGarageLookups = await _garageInfoService.GetBriefGarageLookups();
+        foreach (var newGarageLookup in newGarageLookups)
         {
             var identifier = newGarageLookup.Identifier.ToString();
             var existingGarageLookup = garageLookups.FirstOrDefault(x => x.Identifier == identifier);
             if (existingGarageLookup == null)
             {
+                var detailedInfo = await _garageInfoService.UpdateByAddressAndCity(newGarageLookup);
                 newGarageLookup.Latitude = 1;// TODO: Get from google maps api
                 newGarageLookup.Longitude = 1;// TODO: Get from google maps api
                 newGarageLookup.PhoneNumber = "1234567890";// TODO:// https://www.nldelphi.com/showthread.php?42479-Telefoonboek-goudengids-API
@@ -60,6 +61,6 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
 
         // Kan ik meer informatie uit de RDW halen of ergenst anders vandaan?
 
-        return Unit.Task;
+        return Unit.Value;
     }
 }

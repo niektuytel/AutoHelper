@@ -1744,7 +1744,11 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "identifier",
               "name",
+              "status",
+              "address",
+              "city",
               "longitude",
               "latitude"
             ],
@@ -1754,9 +1758,29 @@
                 "format": "guid",
                 "nullable": true
               },
+              "identifier": {
+                "type": "string",
+                "minLength": 1
+              },
               "name": {
                 "type": "string",
                 "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1
+              },
+              "imageUrl": {
+                "type": "string",
+                "nullable": true
+              },
+              "daysOfWeek": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
               },
               "phoneNumber": {
                 "type": "string",
@@ -1770,11 +1794,27 @@
                 "type": "string",
                 "nullable": true
               },
+              "website": {
+                "type": "string",
+                "nullable": true
+              },
+              "rating": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
+              },
+              "userRatingsTotal": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
               "address": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "city": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               },
               "longitude": {
                 "type": "number",
@@ -1792,6 +1832,9 @@
               },
               "hasBestPrice": {
                 "type": "boolean"
+              },
+              "googleApiDetailsJson": {
+                "type": "string"
               }
             }
           }

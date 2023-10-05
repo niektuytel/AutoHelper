@@ -29,7 +29,7 @@ var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 var enableRecurringjobs = app.Configuration["Hangfire:EnableRecurringJobs"];
 _ = bool.TryParse(enableRecurringjobs, out var isRecurring);
 
-if(mediator != null)
+if (mediator != null)
 {
     mediator.RecurringJobWeekly($"{nameof(SyncGarageLookupsCommand)}", new SyncGarageLookupsCommand(), isRecurring);
 }

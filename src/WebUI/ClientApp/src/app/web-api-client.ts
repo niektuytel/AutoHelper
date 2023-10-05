@@ -2676,17 +2676,25 @@ export interface IPaginatedListOfGarageLookupDto {
 
 export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
     garageId?: string | undefined;
+    identifier!: string;
     name!: string;
+    status!: string;
+    imageUrl?: string | undefined;
+    daysOfWeek?: number[] | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
-    address?: string;
-    city?: string;
+    website?: string | undefined;
+    rating?: number | undefined;
+    userRatingsTotal?: number | undefined;
+    address!: string;
+    city!: string;
     longitude!: number;
     latitude!: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
     hasBestPrice?: boolean;
+    googleApiDetailsJson?: string;
 
     constructor(data?: IGarageLookupItem) {
         super(data);
@@ -2696,10 +2704,21 @@ export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
         super.init(_data);
         if (_data) {
             this.garageId = _data["garageId"];
+            this.identifier = _data["identifier"];
             this.name = _data["name"];
+            this.status = _data["status"];
+            this.imageUrl = _data["imageUrl"];
+            if (Array.isArray(_data["daysOfWeek"])) {
+                this.daysOfWeek = [] as any;
+                for (let item of _data["daysOfWeek"])
+                    this.daysOfWeek!.push(item);
+            }
             this.phoneNumber = _data["phoneNumber"];
             this.whatsappNumber = _data["whatsappNumber"];
             this.emailAddress = _data["emailAddress"];
+            this.website = _data["website"];
+            this.rating = _data["rating"];
+            this.userRatingsTotal = _data["userRatingsTotal"];
             this.address = _data["address"];
             this.city = _data["city"];
             this.longitude = _data["longitude"];
@@ -2707,6 +2726,7 @@ export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
             this.hasPickupService = _data["hasPickupService"];
             this.hasReplacementTransportService = _data["hasReplacementTransportService"];
             this.hasBestPrice = _data["hasBestPrice"];
+            this.googleApiDetailsJson = _data["googleApiDetailsJson"];
         }
     }
 
@@ -2720,10 +2740,21 @@ export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["garageId"] = this.garageId;
+        data["identifier"] = this.identifier;
         data["name"] = this.name;
+        data["status"] = this.status;
+        data["imageUrl"] = this.imageUrl;
+        if (Array.isArray(this.daysOfWeek)) {
+            data["daysOfWeek"] = [];
+            for (let item of this.daysOfWeek)
+                data["daysOfWeek"].push(item);
+        }
         data["phoneNumber"] = this.phoneNumber;
         data["whatsappNumber"] = this.whatsappNumber;
         data["emailAddress"] = this.emailAddress;
+        data["website"] = this.website;
+        data["rating"] = this.rating;
+        data["userRatingsTotal"] = this.userRatingsTotal;
         data["address"] = this.address;
         data["city"] = this.city;
         data["longitude"] = this.longitude;
@@ -2731,6 +2762,7 @@ export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
         data["hasPickupService"] = this.hasPickupService;
         data["hasReplacementTransportService"] = this.hasReplacementTransportService;
         data["hasBestPrice"] = this.hasBestPrice;
+        data["googleApiDetailsJson"] = this.googleApiDetailsJson;
         super.toJSON(data);
         return data;
     }
@@ -2738,17 +2770,25 @@ export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
 
 export interface IGarageLookupItem extends IBaseEntity {
     garageId?: string | undefined;
+    identifier: string;
     name: string;
+    status: string;
+    imageUrl?: string | undefined;
+    daysOfWeek?: number[] | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
-    address?: string;
-    city?: string;
+    website?: string | undefined;
+    rating?: number | undefined;
+    userRatingsTotal?: number | undefined;
+    address: string;
+    city: string;
     longitude: number;
     latitude: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
     hasBestPrice?: boolean;
+    googleApiDetailsJson?: string;
 }
 
 export class GarageLookupDto extends GarageLookupItem implements IGarageLookupDto {
