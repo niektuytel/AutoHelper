@@ -9,7 +9,7 @@ namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 
 public class GarageLookupDto
 {
-    public GarageLookupDto(GarageLookupItem garageLookupItem, double distance)
+    public GarageLookupDto(GarageLookupItem garageLookupItem, double distanceInMeters)
     {
         GarageId = garageLookupItem.GarageId;
         Website = garageLookupItem.Website;
@@ -19,7 +19,7 @@ public class GarageLookupDto
         FirstPlacePhoto = garageLookupItem.FirstPlacePhoto;
         DaysOfWeek = garageLookupItem.DaysOfWeek == null ? new int[0] : garageLookupItem.DaysOfWeek;
         KnownServices = garageLookupItem.KnownServices;
-        DistanceInKm = (int)distance;
+        DistanceInKm = (int)(distanceInMeters * 0.001);
         Rating = garageLookupItem.Rating;
         UserRatingsTotal = garageLookupItem.UserRatingsTotal;
         HasPickupService = true;// TODO: Implement pickup service
