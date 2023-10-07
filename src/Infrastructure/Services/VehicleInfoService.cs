@@ -12,9 +12,9 @@ namespace AutoHelper.Infrastructure.Services;
 
 internal class VehicleInfoService : IVehicleInfoService
 {
-    private readonly RDWService _rdwService;
+    private readonly RDWApiClient _rdwService;
 
-    public VehicleInfoService(RDWService rdwService)
+    public VehicleInfoService(RDWApiClient rdwService)
     {
         _rdwService = rdwService;
     }

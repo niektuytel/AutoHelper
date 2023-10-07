@@ -5,7 +5,7 @@
 namespace AutoHelper.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class confirm : Migration
+    public partial class Setrequired : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

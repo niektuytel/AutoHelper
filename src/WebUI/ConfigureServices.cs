@@ -3,6 +3,7 @@ using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.SyncGarageLookups;
 using AutoHelper.Hangfire;
+using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Services;
 using AutoHelper.WebUI.Filters;
@@ -126,6 +127,16 @@ public static class ConfigureServices
         }
 
         UseCommonWebUIServices(app);
+
+        // Initialize (+ Run) Recurrence jobs
+        var mediator = app.Services.GetRequiredService<IMediator>();
+        var enableRecurringjobs = app.Configuration["Hangfire:EnableRecurringJobs"];
+        _ = bool.TryParse(enableRecurringjobs, out var isRecurring);
+
+        if (mediator != null)
+        {
+            mediator.RecurringJobWeekly($"{nameof(SyncGarageLookupsCommand)}", new SyncGarageLookupsCommand(), isRecurring);
+        }
 
         return app;
     }

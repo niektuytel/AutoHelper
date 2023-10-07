@@ -57,6 +57,10 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
                .Property(p => p.DeliveryPrice)
                .HasColumnType("decimal(18,2)");
 
+        builder.Entity<VehicleServiceLogItem>()
+               .Property(p => p.TotalPrice)
+               .HasColumnType("decimal(18,2)");
+
         // Configuring the relationship between GarageItem and GarageEmployeeItem
         builder.Entity<GarageEmployeeItem>()
             .HasOne(e => e.Garage)

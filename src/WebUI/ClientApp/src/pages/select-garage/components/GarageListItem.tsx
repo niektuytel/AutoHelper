@@ -35,7 +35,12 @@ export default ({ garage }: IProps) => {
 
     // Handler for click
     const handleClick = () => {
-        navigate(`${window.location.pathname}/${garage.id}`);
+        var identifier = garage.garageId;
+        if (!identifier && garage.website) {
+            identifier = encodeURIComponent(garage.website);
+        }
+
+        navigate(`${window.location.pathname}/${identifier}`);
     };
 
 

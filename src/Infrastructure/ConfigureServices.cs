@@ -6,6 +6,7 @@ using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using AutoHelper.Infrastructure.Services;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,13 +24,21 @@ public static class ConfigureServices
         if (configuration.GetValue<bool>("UseInMemoryDatabase"))
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase("AutoHelperDb"));
+            {
+                options.UseInMemoryDatabase("AutoHelperDb");
+                //options.UseNetTopologySuite();
+            });
         }
         else
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                    builder => {
+                        builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                        builder.UseNetTopologySuite();
+                    }
+                )
+            );
         }
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
@@ -62,7 +71,10 @@ public static class ConfigureServices
         //services.AddAuthorization(options =>
         //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
 
-        services.AddTransient<RDWService>();
+        services.AddTransient<HtmlWeb>();
+        services.AddTransient<WebScraperClient>();
+        services.AddTransient<RDWApiClient>();
+        services.AddTransient<GoogleApiClient>();
         services.AddTransient<IVehicleInfoService, VehicleInfoService>();
         services.AddTransient<IGarageInfoService, GarageInfoService>();
 

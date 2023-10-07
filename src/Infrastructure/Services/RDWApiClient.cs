@@ -1,17 +1,19 @@
 ﻿using System.IO;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Infrastructure.Common.Models;
+using Azure;
+using GoogleApi.Entities.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static AutoHelper.Infrastructure.Common.Models.RDWService;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal partial class RDWService
+internal partial class RDWApiClient
 {
     private readonly HttpClient _httpClient;
 
-    public RDWService(HttpClient httpClient)
+    public RDWApiClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -117,19 +119,72 @@ internal partial class RDWService
     /// https://opendata.rdw.nl/resource/5k74-3jha.json
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<RDWRecognizedCompany>> GetRDWRecognizedCompanies()
+    public async Task<IEnumerable<RDWKnownCompany>> GetKnownCompanies()
     {
         var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json";
+        var allCompanies = new List<RDWKnownCompany>();
+        var limit = 2000;
+        var offset = 0;
 
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
-        request.Headers.Add("Accept", "application/json");
-        var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        do
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset*limit}");
+            request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+            request.Headers.Add("Accept", "application/json");
+            var response = await _httpClient.SendAsync(request);
 
-        var json = await response.Content.ReadAsStringAsync();
-        var companies = JsonConvert.DeserializeObject<IEnumerable<RDWRecognizedCompany>>(json);
-        return companies;
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var page = JsonConvert.DeserializeObject<IEnumerable<RDWKnownCompany>>(json) ?? new List<RDWKnownCompany>();
+
+                allCompanies.AddRange(page!);
+                offset++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (allCompanies.Count == (limit * offset));
+
+        return allCompanies;
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/nmwb-dqkz.json
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IEnumerable<RDWKnownService>> GetKnownServices()
+    {
+        var url = $"https://opendata.rdw.nl/resource/nmwb-dqkz.json";
+        var allServices = new List<RDWKnownService>();
+        var limit = 5000;
+        var offset = 0;
+
+        do
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+            request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+            request.Headers.Add("Accept", "application/json");
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var page = JsonConvert.DeserializeObject<IEnumerable<RDWKnownService>>(json) ?? new List<RDWKnownService>();
+
+                allServices.AddRange(page!);
+                offset++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        while (allServices.Count == (limit * offset));
+
+        return allServices;
     }
 
 }

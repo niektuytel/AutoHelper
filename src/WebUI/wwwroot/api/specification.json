@@ -1719,126 +1719,68 @@
         }
       },
       "GarageLookupDto": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/GarageLookupItem"
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "garageId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "distanceInKm": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        ]
-      },
-      "GarageLookupItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
+          "website": {
+            "type": "string",
+            "nullable": true
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "identifier",
-              "name",
-              "status",
-              "address",
-              "city",
-              "longitude",
-              "latitude"
-            ],
-            "properties": {
-              "garageId": {
-                "type": "string",
-                "format": "guid",
-                "nullable": true
-              },
-              "identifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "name": {
-                "type": "string",
-                "minLength": 1
-              },
-              "status": {
-                "type": "string",
-                "minLength": 1
-              },
-              "imageUrl": {
-                "type": "string",
-                "nullable": true
-              },
-              "daysOfWeek": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "phoneNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "whatsappNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "emailAddress": {
-                "type": "string",
-                "nullable": true
-              },
-              "website": {
-                "type": "string",
-                "nullable": true
-              },
-              "rating": {
-                "type": "number",
-                "format": "float",
-                "nullable": true
-              },
-              "userRatingsTotal": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "address": {
-                "type": "string",
-                "minLength": 1
-              },
-              "city": {
-                "type": "string",
-                "minLength": 1
-              },
-              "longitude": {
-                "type": "number",
-                "format": "float"
-              },
-              "latitude": {
-                "type": "number",
-                "format": "float"
-              },
-              "hasPickupService": {
-                "type": "boolean"
-              },
-              "hasReplacementTransportService": {
-                "type": "boolean"
-              },
-              "hasBestPrice": {
-                "type": "boolean"
-              },
-              "googleApiDetailsJson": {
-                "type": "string"
-              }
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "firstPlacePhoto": {
+            "type": "string",
+            "nullable": true
+          },
+          "daysOfWeek": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
             }
+          },
+          "knownServices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rating": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "userRatingsTotal": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "distanceInKm": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPickupService": {
+            "type": "boolean"
+          },
+          "hasReplacementTransportService": {
+            "type": "boolean"
+          },
+          "hasBestPrice": {
+            "type": "boolean"
           }
-        ]
+        }
       },
       "VehicleBriefInfoItemDto": {
         "type": "object",

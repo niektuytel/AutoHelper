@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
+
 namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 
 public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
@@ -61,39 +65,32 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
 
     public async Task<PaginatedList<GarageLookupDto>> Handle(GetGarageLookupsQuery request, CancellationToken cancellationToken)
     {
-        var queryable = _context.GarageLookups.AsNoTracking();
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        var userLocation = geometryFactory.CreatePoint(new Coordinate(request.Longitude, request.Latitude));
 
-        // SearchOnAutoComplete
+        var queryable = _context.GarageLookups
+            .AsNoTracking()
+            .Where(x => x.Location != null
+                        && !string.IsNullOrEmpty(x.KnownServicesString)
+                        && !string.IsNullOrEmpty(x.DaysOfWeekString)
+                        && (!string.IsNullOrEmpty(x.Website) || x.GarageId != null));
+
         if (!string.IsNullOrEmpty(request.AutoCompleteOnGarageName))
         {
             var value = request.AutoCompleteOnGarageName.ToLower();
             queryable = queryable.Where(x => x.Name.ToLower().Contains(value));
         }
 
-        // Now, filter and project in-memory using LINQ to Objects
-        var potentialResults = await queryable.ToListAsync(cancellationToken: cancellationToken);
-        var filteredResults = potentialResults
-            .Select(item => new GarageLookupDto(item)
-            {
-                DistanceInKm = _garageInfoService.CalculateDistanceInKm(
-                    item.Latitude,
-                    item.Longitude,
-                    request.Latitude,
-                    request.Longitude
-                )
-            })
-            .Where(g => g.DistanceInKm <= request.InKmRange)
-            .OrderBy(g => g.DistanceInKm)
-            .ToList();
-
-        // Paginate results
-        var items = filteredResults
+        var filteredResults = queryable
+            .OrderBy(x => x.Location!.Distance(userLocation))
+            .Select(item => new GarageLookupDto(item, item.Location!.Distance(userLocation)))
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .ToList();
+            //.Where(g => g.DistanceInKm <= request.InKmRange)
 
         var pagedResults = new PaginatedList<GarageLookupDto>(
-            items,
+            filteredResults,
             filteredResults.Count,
             request.PageNumber,
             request.PageSize

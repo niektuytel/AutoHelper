@@ -35,31 +35,37 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
 
     public async Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
-        var garageLookups = _context.GarageLookups.ToArray();
-
-        var newGarageLookups = await _garageInfoService.GetBriefGarageLookups();
-        foreach (var newGarageLookup in newGarageLookups)
+        var newLookups = await _garageInfoService.GetBriefGarageLookups();
+        for (int i = 0; i < newLookups.Length; i++)
         {
-            var identifier = newGarageLookup.Identifier.ToString();
-            var existingGarageLookup = garageLookups.FirstOrDefault(x => x.Identifier == identifier);
-            if (existingGarageLookup == null)
+            var newLookup = newLookups[i];
+
+            // not valid when having no name, city or address
+            if(string.IsNullOrWhiteSpace(newLookup.Name) || string.IsNullOrWhiteSpace(newLookup.City) || string.IsNullOrWhiteSpace(newLookup.Address))
             {
-                var detailedInfo = await _garageInfoService.UpdateByAddressAndCity(newGarageLookup);
-                newGarageLookup.Latitude = 1;// TODO: Get from google maps api
-                newGarageLookup.Longitude = 1;// TODO: Get from google maps api
-                newGarageLookup.PhoneNumber = "1234567890";// TODO:// https://www.nldelphi.com/showthread.php?42479-Telefoonboek-goudengids-API
-                _context.GarageLookups.Add(newGarageLookup);
+                continue;
             }
-            else
+
+            var currentLookup = _context.GarageLookups
+                .Include(x => x.LargeData)
+                .FirstOrDefault(x => x.Identifier == newLookup.Identifier.ToString());
+
+            if (currentLookup == null)
             {
-                existingGarageLookup.Identifier = newGarageLookup.Identifier;
-                existingGarageLookup.Name = newGarageLookup.Name;
-                existingGarageLookup.Address = newGarageLookup.Address;
-                existingGarageLookup.City = newGarageLookup.City;
+                newLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
+
+
+                _context.GarageLookups.Add(newLookup);
+
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+            else if (currentLookup.Address != newLookup.Address)
+            {
+                currentLookup = await _garageInfoService.UpdateByAddressAndCity(currentLookup);
+
+                await _context.SaveChangesAsync(cancellationToken);
             }
         }
-
-        // Kan ik meer informatie uit de RDW halen of ergenst anders vandaan?
 
         return Unit.Value;
     }

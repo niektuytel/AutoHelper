@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Domain.Entities.Deprecated;
+using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -18,39 +19,61 @@ public class GarageLookupItem : BaseEntity
     public Guid? GarageId { get; set; }
 
     [Required]
+    public GarageLookupLargeItem LargeData { get; set; }
+
+    [Required]
     public string Identifier { get; set; }
 
     [Required]
     public string Name { get; set; }
 
-    [Required]
-    public string Status { get; set; }
+    [NotMapped]
+    public string[] KnownServices
+    {
+        get
+        {
+            if (KnownServicesString == null)
+            {
+                return new string[0];
+            }
+            return KnownServicesString.Split(';');
+        }
+        set
+        {
+            KnownServicesString = value == null ? "" : string.Join(";", value);
+        }
+    }
 
-    public string? ImageUrl { get; set; }
+    [Required]
+    public string KnownServicesString { get; set; } = "";
+
+    public string? Status { get; set; }
+
+    public string? FirstPlacePhoto { get; set; }
 
     [NotMapped]
     public int[]? DaysOfWeek
     {
         get
         {
-            if (_daysOfWeek == null)
+            if (string.IsNullOrEmpty(DaysOfWeekString))
             {
                 return new int[0];
             }
-            return Array.ConvertAll(_daysOfWeek.Split(','), int.Parse);
+            return Array.ConvertAll(DaysOfWeekString.Split(','), int.Parse);
         }
         set
         {
-            _daysOfWeek = value == null? "" : string.Join(",", value);
+            DaysOfWeekString = value == null? "" : string.Join(",", value);
         }
     }
-    private string _daysOfWeek = "";
+    public string DaysOfWeekString { get; set; } = "";
 
-    public string? PhoneNumber { get; set; }//TODO
+    public string? PhoneNumber { get; set; }
 
-    public string? WhatsappNumber { get; set; }//TODO
+    public string? WhatsappNumber { get; set; }
 
-    public string? EmailAddress { get; set; }//TODO
+    public string? EmailAddress { get; set; }
 
     public string? Website { get; set; }
 
@@ -64,18 +87,12 @@ public class GarageLookupItem : BaseEntity
     [Required]
     public string City { get; set; }
 
-    [Required]
-    public float Longitude { get; set; }
-
-    [Required]
-    public float Latitude { get; set; }
+    public Geometry? Location { get; set; }
 
     public bool HasPickupService { get; set; } = false;
 
     public bool HasReplacementTransportService { get; set; } = false;
 
     public bool HasBestPrice { get; set; } = false;
-
-    public string GoogleApiDetailsJson { get; set; }
 
 }

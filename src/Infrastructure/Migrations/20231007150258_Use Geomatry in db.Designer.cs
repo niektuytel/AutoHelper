@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231003212335_Add Garage lookup entities")]
-    partial class AddGaragelookupentities
+    [Migration("20231007150258_Use Geomatry in db")]
+    partial class UseGeomatryindb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -390,7 +391,14 @@ namespace AutoHelper.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DaysOfWeekString")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmailAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstPlacePhoto")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("GarageId")
@@ -405,11 +413,19 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<bool>("HasReplacementTransportService")
                         .HasColumnType("bit");
 
-                    b.Property<float>("Latitude")
-                        .HasColumnType("real");
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("Longitude")
-                        .HasColumnType("real");
+                    b.Property<string>("KnownServicesString")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LargeDataId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Geometry>("Location")
+                        .HasColumnType("geography");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -418,12 +434,41 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<float?>("Rating")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserRatingsTotal")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Website")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("WhatsappNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LargeDataId");
+
                     b.ToTable("GarageLookups");
+                });
+
+            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupLargeItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GoogleApiDetailsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GarageLookupLargeItem");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageServiceItem", b =>
@@ -1101,6 +1146,17 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("ServicesSettings");
+                });
+
+            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupItem", b =>
+                {
+                    b.HasOne("AutoHelper.Domain.Entities.Garages.GarageLookupLargeItem", "LargeData")
+                        .WithMany()
+                        .HasForeignKey("LargeDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LargeData");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageServiceItem", b =>
