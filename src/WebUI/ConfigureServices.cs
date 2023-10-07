@@ -135,7 +135,10 @@ public static class ConfigureServices
 
         if (mediator != null)
         {
-            mediator.RecurringJobWeekly($"{nameof(SyncGarageLookupsCommand)}", new SyncGarageLookupsCommand(), isRecurring);
+            if(bool.Parse(app.Configuration["Hangfire:EnableGarageRecurringSyncJob"]!) == true)
+            {
+                mediator.RecurringJobWeekly($"{nameof(SyncGarageLookupsCommand)}", new SyncGarageLookupsCommand(), isRecurring);
+            }
         }
 
         return app;

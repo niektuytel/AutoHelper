@@ -598,7 +598,7 @@ export class GarageRegisterClient implements IGarageRegisterClient {
 
 export interface IGarageSearchClient {
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto>;
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto>;
 }
 
 export class GarageSearchClient implements IGarageSearchClient {
@@ -611,7 +611,7 @@ export class GarageSearchClient implements IGarageSearchClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inKmRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto> {
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto> {
         let url_ = this.baseUrl + "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}?";
         if (licensePlate === undefined || licensePlate === null)
             throw new Error("The parameter 'licensePlate' must be defined.");
@@ -622,10 +622,10 @@ export class GarageSearchClient implements IGarageSearchClient {
         if (longitude === undefined || longitude === null)
             throw new Error("The parameter 'longitude' must be defined.");
         url_ = url_.replace("{longitude}", encodeURIComponent("" + longitude));
-        if (inKmRange === null)
-            throw new Error("The parameter 'inKmRange' cannot be null.");
-        else if (inKmRange !== undefined)
-            url_ += "inKmRange=" + encodeURIComponent("" + inKmRange) + "&";
+        if (inMetersRange === null)
+            throw new Error("The parameter 'inMetersRange' cannot be null.");
+        else if (inMetersRange !== undefined)
+            url_ += "inMetersRange=" + encodeURIComponent("" + inMetersRange) + "&";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
         else if (pageNumber !== undefined)
@@ -2676,16 +2676,16 @@ export interface IPaginatedListOfGarageLookupDto {
 
 export class GarageLookupDto implements IGarageLookupDto {
     garageId?: string | undefined;
-    website?: string | undefined;
     name?: string;
     address?: string;
     city?: string;
+    website?: string | undefined;
     firstPlacePhoto?: string | undefined;
     daysOfWeek?: number[];
     knownServices?: string[];
     rating?: number | undefined;
     userRatingsTotal?: number | undefined;
-    distanceInKm?: number;
+    distanceInMeter?: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
     hasBestPrice?: boolean;
@@ -2702,10 +2702,10 @@ export class GarageLookupDto implements IGarageLookupDto {
     init(_data?: any) {
         if (_data) {
             this.garageId = _data["garageId"];
-            this.website = _data["website"];
             this.name = _data["name"];
             this.address = _data["address"];
             this.city = _data["city"];
+            this.website = _data["website"];
             this.firstPlacePhoto = _data["firstPlacePhoto"];
             if (Array.isArray(_data["daysOfWeek"])) {
                 this.daysOfWeek = [] as any;
@@ -2719,7 +2719,7 @@ export class GarageLookupDto implements IGarageLookupDto {
             }
             this.rating = _data["rating"];
             this.userRatingsTotal = _data["userRatingsTotal"];
-            this.distanceInKm = _data["distanceInKm"];
+            this.distanceInMeter = _data["distanceInMeter"];
             this.hasPickupService = _data["hasPickupService"];
             this.hasReplacementTransportService = _data["hasReplacementTransportService"];
             this.hasBestPrice = _data["hasBestPrice"];
@@ -2736,10 +2736,10 @@ export class GarageLookupDto implements IGarageLookupDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["garageId"] = this.garageId;
-        data["website"] = this.website;
         data["name"] = this.name;
         data["address"] = this.address;
         data["city"] = this.city;
+        data["website"] = this.website;
         data["firstPlacePhoto"] = this.firstPlacePhoto;
         if (Array.isArray(this.daysOfWeek)) {
             data["daysOfWeek"] = [];
@@ -2753,7 +2753,7 @@ export class GarageLookupDto implements IGarageLookupDto {
         }
         data["rating"] = this.rating;
         data["userRatingsTotal"] = this.userRatingsTotal;
-        data["distanceInKm"] = this.distanceInKm;
+        data["distanceInMeter"] = this.distanceInMeter;
         data["hasPickupService"] = this.hasPickupService;
         data["hasReplacementTransportService"] = this.hasReplacementTransportService;
         data["hasBestPrice"] = this.hasBestPrice;
@@ -2763,16 +2763,16 @@ export class GarageLookupDto implements IGarageLookupDto {
 
 export interface IGarageLookupDto {
     garageId?: string | undefined;
-    website?: string | undefined;
     name?: string;
     address?: string;
     city?: string;
+    website?: string | undefined;
     firstPlacePhoto?: string | undefined;
     daysOfWeek?: number[];
     knownServices?: string[];
     rating?: number | undefined;
     userRatingsTotal?: number | undefined;
-    distanceInKm?: number;
+    distanceInMeter?: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
     hasBestPrice?: boolean;

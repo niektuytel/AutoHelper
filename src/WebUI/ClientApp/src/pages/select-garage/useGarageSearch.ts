@@ -10,7 +10,7 @@ function useGarageSearch(
     licensePlate: string,
     latitude: number,
     longitude: number,
-    inKmRange: number,
+    inMeterRange: number,
     pageNumber: number,
     pageSize: number
 ) {
@@ -24,7 +24,7 @@ function useGarageSearch(
         license_plate: string,
         latitude: number,
         longitude: number,
-        in_km_range: number,
+        in_meter_range: number,
         page_number: number,
         page_size: number,
         autoCompleteGarageName: string | null = null
@@ -33,7 +33,7 @@ function useGarageSearch(
             license_plate,
             latitude,
             longitude,
-            in_km_range,
+            in_meter_range,
             page_number,
             page_size,
             autoCompleteGarageName
@@ -46,7 +46,7 @@ function useGarageSearch(
 
     const { isLoading, isError } = useQuery(
         ['fetchGaragesData', licensePlate, latitude, longitude, pageNumber], // unique query key
-        () => fetchGaragesData(licensePlate, latitude, longitude, inKmRange, pageNumber, pageSize),
+        () => fetchGaragesData(licensePlate, latitude, longitude, inMeterRange, pageNumber, pageSize),
         {
             enabled: true,
             retry: 1,

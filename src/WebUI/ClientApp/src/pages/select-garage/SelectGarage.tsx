@@ -18,20 +18,20 @@ import { useQueryClient } from "react-query";
 interface IProps {
 }
 
-const inKmRange = 1000;
+const inMeterRange = 150000;
 const pageSize = 10;
 
 export default ({ }: IProps) => {
     const { license_plate, lat, lng } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
-    const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inKmRange, currentPage, pageSize);
+    const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize);
 
 
     const queryClient = useQueryClient();
 
     const handlePageChange = (event:any, value:number) => {
         setCurrentPage(value);
-        fetchGarages(license_plate!, Number(lat!), Number(lng!), inKmRange, value, pageSize, null);
+        fetchGarages(license_plate!, Number(lat!), Number(lng!), inMeterRange, value, pageSize, null);
     };
 
     const handleSearchExecuted = (data: PaginatedListOfGarageLookupDto) => {
@@ -51,7 +51,7 @@ export default ({ }: IProps) => {
                             license_plate={license_plate!}
                             latitude={Number(lat!)}
                             longitude={Number(lng!)}
-                            in_km_range={inKmRange}
+                            in_km_range={inMeterRange}
                             page_size={pageSize}
                             onSearchExecuted={handleSearchExecuted}
                         />
@@ -60,7 +60,6 @@ export default ({ }: IProps) => {
                         {garages?.items?.map((item, index) => (
                             <GarageListItem key={`garageItem-${index}`} garage={item}/>
                         ))}
-                        {garages?.items && garages?.items?.length < pageSize && <GarageInviteListItem />}
                     </Box>
                     <Paper
                         elevation={5}
@@ -68,15 +67,10 @@ export default ({ }: IProps) => {
                         style={{
                             display: "flex",
                             flexDirection: "row",
-                            justifyContent: garages?.items && garages?.items?.length === pageSize ? "space-between" : "flex-end",
+                            justifyContent: "flex-end",
                             alignItems: "center"
                         }}
                     >
-                        {garages?.items && garages?.items?.length === pageSize &&
-                            <Button variant="outlined" sx={{ backgroundColor: "#fff" }}>
-                                Invite Garage
-                            </Button>
-                        }
                         <Pagination
                             count={garages?.totalPages}
                             shape="rounded"

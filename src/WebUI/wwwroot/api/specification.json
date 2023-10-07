@@ -506,12 +506,12 @@
             "x-position": 3
           },
           {
-            "name": "inKmRange",
+            "name": "inMetersRange",
             "in": "query",
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 10
+              "default": 5000
             },
             "x-position": 4
           },
@@ -1727,10 +1727,6 @@
             "format": "guid",
             "nullable": true
           },
-          "website": {
-            "type": "string",
-            "nullable": true
-          },
           "name": {
             "type": "string"
           },
@@ -1739,6 +1735,10 @@
           },
           "city": {
             "type": "string"
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
           },
           "firstPlacePhoto": {
             "type": "string",
@@ -1767,7 +1767,7 @@
             "format": "int32",
             "nullable": true
           },
-          "distanceInKm": {
+          "distanceInMeter": {
             "type": "integer",
             "format": "int32"
           },

@@ -30,7 +30,7 @@ public class GarageSearchController : ApiControllerBase
         [FromRoute] float latitude,
         [FromRoute] float longitude,
         CancellationToken cancellationToken,
-        [FromQuery] int inKmRange = 10,
+        [FromQuery] int inMetersRange = 5000,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] string? autoCompleteOnGarageName = null
@@ -40,7 +40,7 @@ public class GarageSearchController : ApiControllerBase
             licensePlate, 
             latitude, 
             longitude, 
-            inKmRange,
+            inMetersRange,
             autoCompleteOnGarageName,
             pageNumber, 
             pageSize

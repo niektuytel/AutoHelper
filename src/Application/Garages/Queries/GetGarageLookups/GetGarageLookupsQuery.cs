@@ -26,7 +26,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
         string licensePlate,
         float latitude,
         float longitude,
-        int inKmRange = 10,
+        int inMeterRange = 10,
         string? autoCompleteOnGarageName = null,
         int pageNumber = 1,
         int pageSize = 10
@@ -35,7 +35,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
         LicensePlate = licensePlate;
         Latitude = latitude;
         Longitude = longitude;
-        InKmRange = inKmRange;
+        InMeterRange = inMeterRange;
         AutoCompleteOnGarageName = autoCompleteOnGarageName;
         PageNumber = pageNumber;
         PageSize = pageSize;
@@ -44,7 +44,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
     public string LicensePlate { get; private set; }
     public float Latitude { get; private set; }
     public float Longitude { get; private set; }
-    public int InKmRange { get; private set; }
+    public int InMeterRange { get; private set; }
     public string? AutoCompleteOnGarageName { get; private set; }
     public int PageNumber { get; private set; }
     public int PageSize { get; private set; }
@@ -73,7 +73,8 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
             .Where(x => x.Location != null
                         && !string.IsNullOrEmpty(x.KnownServicesString)
                         && !string.IsNullOrEmpty(x.DaysOfWeekString)
-                        && (!string.IsNullOrEmpty(x.Website) || x.GarageId != null));
+                        && (!string.IsNullOrEmpty(x.Website) || x.GarageId != null)
+            );
 
         if (!string.IsNullOrEmpty(request.AutoCompleteOnGarageName))
         {
@@ -81,17 +82,20 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
             queryable = queryable.Where(x => x.Name.ToLower().Contains(value));
         }
 
-        var filteredResults = queryable
+        // Filter by distance in the database query itself
+        queryable = queryable.Where(g => g.Location.Distance(userLocation) <= request.InMeterRange);
+
+        var totalRecords = queryable.Count();
+        var pageRecords = queryable
             .OrderBy(x => x.Location!.Distance(userLocation))
-            .Select(item => new GarageLookupDto(item, item.Location!.Distance(userLocation)))
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .Select(item => new GarageLookupDto(item, item.Location!.Distance(userLocation)))
             .ToList();
-            //.Where(g => g.DistanceInKm <= request.InKmRange)
 
         var pagedResults = new PaginatedList<GarageLookupDto>(
-            filteredResults,
-            filteredResults.Count,
+            pageRecords,
+            totalRecords,
             request.PageNumber,
             request.PageSize
         );

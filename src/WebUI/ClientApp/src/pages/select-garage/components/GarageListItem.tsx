@@ -90,38 +90,56 @@ export default ({ garage }: IProps) => {
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <PlaceIcon fontSize='small' sx={{ mr: 1 }} />
-                        {`${garage?.address}, ${garage?.city} (${garage.distanceInKm} km)`}
+                        {`${garage?.address}, ${garage?.city} (${garage.distanceInMeter! * 0.001} km)`}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <AccessTimeIcon fontSize='small' sx={{mr:1}} />
-                        {/*{`${[...new Set(garage.employees?.flatMap(x => x.workingDaysOfWeek) || [])]*/}
-                        {/*        .map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}*/}
+                        <AccessTimeIcon fontSize='small' sx={{ mr: 1 }} />
+                        {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
+                    { garage.hasBestPrice || garage.hasPickupService || garage.hasReplacementTransportService  &&
+                        <Box>
+                            { garage.hasPickupService &&
+                                <Chip
+                                    variant="outlined"
+                                    color="primary"
+                                    size="small"
+                                    label="auto op laten halen"// TODO: translate
+                                    icon={<ModeOfTravelIcon />}
+                                    sx={{ mr: 1 }}
+                                />
+                            }
+                            {garage.hasReplacementTransportService &&
+                                <Chip
+                                    variant="outlined"
+                                    color="default"
+                                    size="small"
+                                    label="vervangend vervoer"// TODO: translate
+                                    icon={<PublishedWithChangesIcon />}
+                                    sx={{ mr: 1 }}
+                                />
+                            }
+                            {garage.hasBestPrice &&
+                                <Chip
+                                    variant="outlined"
+                                    color="success"
+                                    size="small"
+                                    label="beste prijs"// TODO: translate
+                                    icon={<EuroSymbolIcon />}
+                                    sx={{ mr: 1 }}
+                                />
+                            }
+                        </Box>
+                    }
                     <Box>
-                        <Chip
-                            variant="outlined"
-                            color="primary"
-                            size="small"
-                            label="auto op laten halen"// HasPickupService
-                            icon={<ModeOfTravelIcon />}
-                            sx={{ mr: 1 }}
-                        />
-                        <Chip
-                            variant="outlined"
-                            color="default"
-                            size="small"
-                            label="vervangend vervoer"// HasReplacementTransportService
-                            icon={<PublishedWithChangesIcon />}
-                            sx={{ mr: 1 }}
-                        />
-                        <Chip
-                            variant="outlined"
-                            color="success"
-                            size="small"
-                            label="beste prijs"// HasBestPrice
-                            icon={<EuroSymbolIcon />}
-                            sx={{ mr: 1 }}
-                        />
+                        {garage.knownServices!.map(knownservice => 
+                            <Chip
+                                variant="outlined"
+                                color="default"
+                                size="small"
+                                label={knownservice}
+                                sx={{ mr: 1, mt: 1 }}
+                            />
+                        )}
                     </Box>
                 </Box>
             </Box>
