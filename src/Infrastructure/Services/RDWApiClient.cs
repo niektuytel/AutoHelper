@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Common.Models;
 using Azure;
 using GoogleApi.Entities.Interfaces;
@@ -153,6 +155,29 @@ internal partial class RDWApiClient
 
     /// <summary>
     /// https://opendata.rdw.nl/resource/nmwb-dqkz.json
+    /// 
+    /// All Types:
+    /// - Fotograaf bemand
+    /// - APK Lichte voertuigen
+    /// - Bedrijfsvoorraad
+    /// - Handelaarskenteken
+    /// - Tenaamstellen
+    /// - APK Zware voertuigen
+    /// - Controleapparaten
+    /// - Uitvoer
+    /// - Versnelde inschrijving
+    /// - Ombouwmelding Snorfiets
+    /// - Export dienstverlening
+    /// - Demontage
+    /// - Verplichtingennemer
+    /// - APK-Landbouw
+    /// - Gasinstallaties
+    /// - Boordcomputertaxi
+    /// - Kentekenplaatfabrikant
+    /// - Onderzoeksgerechtigde
+    /// - Lamineerder
+    /// - Fotograaf onbemand
+    /// - Kentekenloket
     /// </summary>
     /// <returns></returns>
     public async Task<IEnumerable<RDWKnownService>> GetKnownServices()
@@ -173,8 +198,12 @@ internal partial class RDWApiClient
             {
                 var json = await response.Content.ReadAsStringAsync();
                 var page = JsonConvert.DeserializeObject<IEnumerable<RDWKnownService>>(json) ?? new List<RDWKnownService>();
+                foreach (var item in page)
+                {
+                    item.ServiceType = GetKnownServiceType(item.Erkenning);
+                    allServices.Add(item);
+                }
 
-                allServices.AddRange(page!);
                 offset++;
             }
             else
@@ -186,5 +215,26 @@ internal partial class RDWApiClient
 
         return allServices;
     }
+
+    private static GarageServiceType GetKnownServiceType(string rdwErkenning)
+    {
+        return rdwErkenning switch
+        {
+            "Bedrijfsvoorraad" => GarageServiceType.CompanyStockService,
+            "Tenaamstellen" => GarageServiceType.RegistrationService,
+            "Versnelde inschrijving" => GarageServiceType.AcceleratedRegistrationService,
+            "APK Lichte voertuigen" => GarageServiceType.MOTServiceLightVehicle,
+            "APK Zware voertuigen" => GarageServiceType.MOTServiceHeavyVehicle,
+            "APK-Landbouw" => GarageServiceType.MOTServiceAgriculture,
+            "Controleapparaten" => GarageServiceType.ControlDeviceService,
+            "Gasinstallaties" => GarageServiceType.GasInstallationService,
+            "Ombouwmelding Snorfiets" => GarageServiceType.MopedConversionService,
+            "Demontage" => GarageServiceType.DismantlingService,
+            "Boordcomputertaxi" => GarageServiceType.TaxiComputerService,
+            "Kentekenplaatfabrikant" => GarageServiceType.LicensePlateManufactureService,
+            _ => GarageServiceType.Other,
+        };
+    }
+
 
 }

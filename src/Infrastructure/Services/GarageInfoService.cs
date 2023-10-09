@@ -45,22 +45,34 @@ internal class GarageInfoService : IGarageInfoService
     {
         var rdwCompanies = await _rdwApiClient.GetKnownCompanies();
         var rdwServices = await _rdwApiClient.GetKnownServices();
+        var garageLookups = new List<GarageLookupItem>();
 
-        var garageLookups = rdwCompanies
-            .Select(x => new GarageLookupItem
+        foreach (var rdwCompany in rdwCompanies)
+        {
+            var services = rdwServices
+                .Where(y => y.Volgnummer == rdwCompany.Volgnummer)
+                .Select(y => y.ServiceType)
+                .ToArray();
+
+            // Has no services to offer
+            if (services.Length == 0)
             {
-                Identifier = x.Volgnummer.ToString(),
-                Name = x.Naambedrijf,
-                KnownServices = rdwServices
-                    .Where(y => y.Volgnummer == x.Volgnummer)
-                    .Select(y => y.Erkenning)
-                    .ToArray(),
-                Address = $"{x.Straat}, {x.Huisnummer}{x.Huisnummertoevoeging}",
-                City = x.Plaats
-            })
-            .ToArray();
+                continue;
+            }
 
-        return garageLookups;
+            var garageLookup = new GarageLookupItem
+            {
+                Identifier = rdwCompany.Volgnummer.ToString(),
+                Name = rdwCompany.Naambedrijf,
+                KnownServices = services,
+                Address = $"{rdwCompany.Straat}, {rdwCompany.Huisnummer}{rdwCompany.Huisnummertoevoeging}",
+                City = rdwCompany.Plaats
+            };
+
+            garageLookups.Add(garageLookup);
+        }
+
+        return garageLookups.ToArray();
     }
 
     public int CalculateDistanceInKm(float garageLatitude, float garageLongitude, float latitude, float longitude)

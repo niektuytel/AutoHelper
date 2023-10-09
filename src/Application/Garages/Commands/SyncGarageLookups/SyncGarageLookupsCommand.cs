@@ -35,7 +35,13 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
 
     public async Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
-        var newLookups = await _garageInfoService.GetBriefGarageLookups();
+        var briefLookups = await _garageInfoService.GetBriefGarageLookups();
+
+        // only keep lookups with known services
+        var newLookups = briefLookups
+            .Where(x => x.KnownServices.Any(y => y != GarageServiceType.Other))
+            .ToArray();
+
         for (int i = 0; i < newLookups.Length; i++)
         {
             var newLookup = newLookups[i];
@@ -54,14 +60,13 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
             {
                 newLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
 
-
                 _context.GarageLookups.Add(newLookup);
 
                 await _context.SaveChangesAsync(cancellationToken);
             }
             else if (currentLookup.Address != newLookup.Address)
             {
-                currentLookup = await _garageInfoService.UpdateByAddressAndCity(currentLookup);
+                currentLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
 
                 await _context.SaveChangesAsync(cancellationToken);
             }

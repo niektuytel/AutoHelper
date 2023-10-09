@@ -27,7 +27,8 @@ function useGarageSearch(
         in_meter_range: number,
         page_number: number,
         page_size: number,
-        autoCompleteGarageName: string | null = null
+        autoCompleteGarageName: string | null = null,
+        filters: string[] | null = null
     ) => {
         const response = await garageSearchClient.searchGarages(
             license_plate,
@@ -36,7 +37,8 @@ function useGarageSearch(
             in_meter_range,
             page_number,
             page_size,
-            autoCompleteGarageName
+            autoCompleteGarageName,
+            filters
         );
 
         setLocalGarages(response);

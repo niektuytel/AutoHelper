@@ -598,7 +598,7 @@ export class GarageRegisterClient implements IGarageRegisterClient {
 
 export interface IGarageSearchClient {
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto>;
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupDto>;
 }
 
 export class GarageSearchClient implements IGarageSearchClient {
@@ -611,7 +611,7 @@ export class GarageSearchClient implements IGarageSearchClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined): Promise<PaginatedListOfGarageLookupDto> {
+    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupDto> {
         let url_ = this.baseUrl + "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}?";
         if (licensePlate === undefined || licensePlate === null)
             throw new Error("The parameter 'licensePlate' must be defined.");
@@ -636,6 +636,8 @@ export class GarageSearchClient implements IGarageSearchClient {
             url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         if (autoCompleteOnGarageName !== undefined && autoCompleteOnGarageName !== null)
             url_ += "autoCompleteOnGarageName=" + encodeURIComponent("" + autoCompleteOnGarageName) + "&";
+        if (filters !== undefined && filters !== null)
+            filters && filters.forEach(item => { url_ += "filters=" + encodeURIComponent("" + item) + "&"; });
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1649,12 +1651,23 @@ export interface IGarageServiceItem extends IBaseAuditableEntity {
 
 export enum GarageServiceType {
     Other = 0,
-    Inspection = 1,
-    SmallMaintenance = 2,
-    GreatMaintenance = 3,
-    AirConditioningMaintenance = 4,
-    SeasonalTireChange = 5,
-    MOTService = 6,
+    CompanyStockService = 30,
+    RegistrationService = 40,
+    AcceleratedRegistrationService = 50,
+    MOTServiceLightVehicle = 60,
+    MOTServiceHeavyVehicle = 61,
+    MOTServiceAgriculture = 62,
+    ControlDeviceService = 70,
+    GasInstallationService = 80,
+    MopedConversionService = 90,
+    DismantlingService = 100,
+    TaxiComputerService = 110,
+    LicensePlateManufactureService = 120,
+    Inspection = 131,
+    SmallMaintenance = 132,
+    GreatMaintenance = 133,
+    AirConditioningMaintenance = 134,
+    SeasonalTireChange = 135,
 }
 
 export class GarageServiceItemDto implements IGarageServiceItemDto {
@@ -2682,7 +2695,6 @@ export class GarageLookupDto implements IGarageLookupDto {
     website?: string | undefined;
     firstPlacePhoto?: string | undefined;
     daysOfWeek?: number[];
-    knownServices?: string[];
     rating?: number | undefined;
     userRatingsTotal?: number | undefined;
     distanceInMeter?: number;
@@ -2711,11 +2723,6 @@ export class GarageLookupDto implements IGarageLookupDto {
                 this.daysOfWeek = [] as any;
                 for (let item of _data["daysOfWeek"])
                     this.daysOfWeek!.push(item);
-            }
-            if (Array.isArray(_data["knownServices"])) {
-                this.knownServices = [] as any;
-                for (let item of _data["knownServices"])
-                    this.knownServices!.push(item);
             }
             this.rating = _data["rating"];
             this.userRatingsTotal = _data["userRatingsTotal"];
@@ -2746,11 +2753,6 @@ export class GarageLookupDto implements IGarageLookupDto {
             for (let item of this.daysOfWeek)
                 data["daysOfWeek"].push(item);
         }
-        if (Array.isArray(this.knownServices)) {
-            data["knownServices"] = [];
-            for (let item of this.knownServices)
-                data["knownServices"].push(item);
-        }
         data["rating"] = this.rating;
         data["userRatingsTotal"] = this.userRatingsTotal;
         data["distanceInMeter"] = this.distanceInMeter;
@@ -2769,7 +2771,6 @@ export interface IGarageLookupDto {
     website?: string | undefined;
     firstPlacePhoto?: string | undefined;
     daysOfWeek?: number[];
-    knownServices?: string[];
     rating?: number | undefined;
     userRatingsTotal?: number | undefined;
     distanceInMeter?: number;

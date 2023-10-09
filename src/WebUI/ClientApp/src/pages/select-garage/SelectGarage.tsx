@@ -41,7 +41,7 @@ export default ({ }: IProps) => {
 
     return <>
         <Container maxWidth="lg" sx={{ minHeight: "70vh" }}>
-            <Box display="flex" sx={{ marginBottom: "75px" }}>
+            <Box sx={{ marginBottom: "75px" }}>
                 <Box flexGrow={1}>
                     <Paper
                         elevation={5}

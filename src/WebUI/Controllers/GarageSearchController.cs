@@ -33,7 +33,8 @@ public class GarageSearchController : ApiControllerBase
         [FromQuery] int inMetersRange = 5000,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
-        [FromQuery] string? autoCompleteOnGarageName = null
+        [FromQuery] string? autoCompleteOnGarageName = null,
+        [FromQuery] string[]? filters = null
     )
     {
         var query = new GetGarageLookupsQuery(
@@ -42,6 +43,7 @@ public class GarageSearchController : ApiControllerBase
             longitude, 
             inMetersRange,
             autoCompleteOnGarageName,
+            filters,
             pageNumber, 
             pageSize
         );

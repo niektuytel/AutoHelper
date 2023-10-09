@@ -16,8 +16,8 @@ export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceT
             return t("AirConditioningMaintenance");
         case GarageServiceType.SeasonalTireChange:
             return t("SeasonalTireChange");
-        case GarageServiceType.MOTService:
-            return t("MOTService");
+        //case GarageServiceType.MOTService:
+        //    return t("MOTService");
     }
 
     if (altValue == "" && serviceType == GarageServiceType.Other) {
@@ -29,12 +29,12 @@ export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceT
 
 export function getDefaultCreateGarageServices(t: TFunction) {
     const defaultServices: CreateGarageServiceCommand[] = [
-        new CreateGarageServiceCommand({
-            type: GarageServiceType.MOTService,
-            description: t("MOTService.Description"),
-            durationInMinutes: 180,
-            price: 30.00
-        }),
+        //new CreateGarageServiceCommand({
+        //    type: GarageServiceType.MOTService,
+        //    description: t("MOTService.Description"),
+        //    durationInMinutes: 180,
+        //    price: 30.00
+        //}),
         new CreateGarageServiceCommand({
             type: GarageServiceType.Inspection,
             description: t("Inspection.Description"),

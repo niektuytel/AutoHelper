@@ -130,17 +130,6 @@ export default ({ garage }: IProps) => {
                             }
                         </Box>
                     }
-                    <Box>
-                        {garage.knownServices!.map(knownservice => 
-                            <Chip
-                                variant="outlined"
-                                color="default"
-                                size="small"
-                                label={knownservice}
-                                sx={{ mr: 1, mt: 1 }}
-                            />
-                        )}
-                    </Box>
                 </Box>
             </Box>
             <Box

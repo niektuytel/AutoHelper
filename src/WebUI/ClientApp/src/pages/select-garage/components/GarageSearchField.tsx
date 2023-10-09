@@ -1,5 +1,5 @@
-﻿import React, { useState } from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery, Autocomplete, CircularProgress } from "@mui/material";
+﻿import React, { useEffect, useState } from "react";
+import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery, Autocomplete, CircularProgress, Chip } from "@mui/material";
 import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
@@ -21,8 +21,9 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import { HashValues } from "../../../i18n/HashValues";
 import { useDispatch } from "react-redux";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
-import { GarageLookupDto, GarageSearchClient, PaginatedListOfGarageLookupDto } from "../../../app/web-api-client";
+import { GarageLookupDto, GarageSearchClient, GarageServiceType, PaginatedListOfGarageLookupDto } from "../../../app/web-api-client";
 import { useQueryClient } from "react-query";
+import { enumToKeyArray, enumToKeyValueArray, enumToStringArray } from "../../../app/utils";
 
 
 
@@ -42,15 +43,26 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const theme = useTheme();
     const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const queryParams = new URLSearchParams(window.location.search);
     const splitted_hash = hash.split("_")[0];
     const { t } = useTranslation();
 
     const [isFocused, setIsFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [value, setValue] = useState("");
+    const [filters, setFilters] = useState<string[]>([]);
     const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDto[]>([]);
     const useGarageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
+
+    useEffect(() => {
+        if (queryParams.has("filters")) {
+            const filters = queryParams.get("filters")?.split(",");
+            setFilters(filters || []);
+        }
+        
+    }, [window.location.search]);
+
 
     const fetchGaragesData = async (autocomplete: string): Promise<PaginatedListOfGarageLookupDto> => {
         try {
@@ -61,7 +73,8 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 in_km_range,
                 1,
                 page_size,
-                autocomplete
+                autocomplete,
+                filters
             );
             return response;
         } catch (response: any) {
@@ -86,15 +99,37 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
         setIsLoading(false);
     }
 
+    const handleChipClick = async (filterKey: string) => {
+        setIsLoading(true);
+
+        var filterValues = filters;
+        if (filters.includes(filterKey)) {
+            filterValues = filterValues.filter(f => f !== filterKey);
+        } else {
+            filterValues = [...filterValues, filterKey];
+        }
+
+        // Refetch the data
+        const data = await fetchGaragesData(value);
+        setSuggestions(data?.items || []);
+        setFilters(filterValues);
+
+        // Update the URI with the filters
+        const filtersRecord: Record<string, string> = {};
+        filtersRecord["filters"] = filterValues.join(",");
+        const newQueryParams = new URLSearchParams(filtersRecord);
+        navigate(`${window.location.pathname}?${newQueryParams.toString()}`);
+
+        setIsLoading(false);
+    };
+
     const handleClearInput = () => {
         setValue("");
         setSuggestions([]);
     };
 
-    const ref = useOnclickOutside(() => handleClearInput());
-
     return <>
-        <Box position="relative">
+        <Box>
 
             <TextField
                 fullWidth
@@ -139,6 +174,20 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                     }
                 }}
             />
+            {/*TODO: set t on it, and when not same only show, otherwise we see al enum string based values that is not nice*/}
+            <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%", mt: 1 }}>
+                {enumToKeyValueArray(GarageServiceType)
+                    .slice(1)
+                    .map(({ key, value }) => 
+                        <Chip
+                            key={key}
+                            label={value}
+                            variant={filters.includes(String(key)) ? "filled" : "outlined"}
+                            sx={{ mb: 1, mr: 1 }}
+                            onClick={() => handleChipClick(String(key))}
+                        />
+                    )}
+            </Box>
         </Box>
     </>
 }

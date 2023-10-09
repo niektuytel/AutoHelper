@@ -28,6 +28,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
         float longitude,
         int inMeterRange = 10,
         string? autoCompleteOnGarageName = null,
+        string[]? filters = null,
         int pageNumber = 1,
         int pageSize = 10
     )
@@ -37,6 +38,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
         Longitude = longitude;
         InMeterRange = inMeterRange;
         AutoCompleteOnGarageName = autoCompleteOnGarageName;
+        Filters = filters;
         PageNumber = pageNumber;
         PageSize = pageSize;
     }
@@ -46,6 +48,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
     public float Longitude { get; private set; }
     public int InMeterRange { get; private set; }
     public string? AutoCompleteOnGarageName { get; private set; }
+    public string[]? Filters { get; private set; }
     public int PageNumber { get; private set; }
     public int PageSize { get; private set; }
 }
@@ -76,11 +79,21 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
                         && (!string.IsNullOrEmpty(x.Website) || x.GarageId != null)
             );
 
+        // autocomplete on garage name
         if (!string.IsNullOrEmpty(request.AutoCompleteOnGarageName))
         {
             var value = request.AutoCompleteOnGarageName.ToLower();
             queryable = queryable.Where(x => x.Name.ToLower().Contains(value));
         }
+
+        //// TODO: filter by garage services
+        //if (request.Filters != null && request.Filters.Any())
+        //{
+        //    foreach (var filter in request.Filters)
+        //    {
+        //        queryable = queryable.Where(x => x.KnownServices.Any(y => y.ToString() == filter));
+        //    }
+        //}
 
         // Filter by distance in the database query itself
         queryable = queryable.Where(g => g.Location.Distance(userLocation) <= request.InMeterRange);

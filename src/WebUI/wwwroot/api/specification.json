@@ -543,6 +543,20 @@
               "nullable": true
             },
             "x-position": 7
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "nullable": true,
+              "items": {
+                "type": "string"
+              }
+            },
+            "x-position": 8
           }
         ],
         "responses": {
@@ -1175,21 +1189,43 @@
         "description": "",
         "x-enumNames": [
           "Other",
+          "CompanyStockService",
+          "RegistrationService",
+          "AcceleratedRegistrationService",
+          "MOTServiceLightVehicle",
+          "MOTServiceHeavyVehicle",
+          "MOTServiceAgriculture",
+          "ControlDeviceService",
+          "GasInstallationService",
+          "MopedConversionService",
+          "DismantlingService",
+          "TaxiComputerService",
+          "LicensePlateManufactureService",
           "Inspection",
           "SmallMaintenance",
           "GreatMaintenance",
           "AirConditioningMaintenance",
-          "SeasonalTireChange",
-          "MOTService"
+          "SeasonalTireChange"
         ],
         "enum": [
           0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6
+          30,
+          40,
+          50,
+          60,
+          61,
+          62,
+          70,
+          80,
+          90,
+          100,
+          110,
+          120,
+          131,
+          132,
+          133,
+          134,
+          135
         ]
       },
       "GarageServiceItemDto": {
@@ -1749,12 +1785,6 @@
             "items": {
               "type": "integer",
               "format": "int32"
-            }
-          },
-          "knownServices": {
-            "type": "array",
-            "items": {
-              "type": "string"
             }
           },
           "rating": {

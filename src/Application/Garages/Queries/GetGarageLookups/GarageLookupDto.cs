@@ -18,7 +18,6 @@ public class GarageLookupDto
         Website = garageLookupItem.Website;
         FirstPlacePhoto = garageLookupItem.FirstPlacePhoto;
         DaysOfWeek = garageLookupItem.DaysOfWeek == null ? new int[0] : garageLookupItem.DaysOfWeek;
-        KnownServices = garageLookupItem.KnownServices;
         DistanceInMeter = (int)distanceInMeters;
         Rating = garageLookupItem.Rating;
         UserRatingsTotal = garageLookupItem.UserRatingsTotal;
@@ -41,8 +40,6 @@ public class GarageLookupDto
     public string? FirstPlacePhoto { get; set; }
 
     public int[] DaysOfWeek { get; set; }
-
-    public string[] KnownServices { get; set; }
 
     public float? Rating { get; set; }
 

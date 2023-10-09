@@ -28,19 +28,22 @@ public class GarageLookupItem : BaseEntity
     public string Name { get; set; }
 
     [NotMapped]
-    public string[] KnownServices
+    public GarageServiceType[] KnownServices
     {
         get
         {
             if (KnownServicesString == null)
             {
-                return new string[0];
+                return new GarageServiceType[0];
             }
-            return KnownServicesString.Split(';');
+            return KnownServicesString
+                .Split(';')
+                .Select(x => (GarageServiceType)int.Parse(x))
+                .ToArray();
         }
         set
         {
-            KnownServicesString = value == null ? "" : string.Join(";", value);
+            KnownServicesString = value == null ? "" : string.Join(";", value.Select(v => ((int)v).ToString()));
         }
     }
 
