@@ -39,6 +39,9 @@ export default ({ }: IProps) => {
         setGaragesData(data);
     };
 
+    // TODO: want header input field to be able to search for other vihcels
+    // TODO: Set search inputbar to be fixed on top same inline as previous pages
+    // TODO: Space between search inputbar and header set motivational text, 'wij zorgen voor je onderhouds boekje', 'wij vragen offertes op en houden je op de hoogte', 'Wij be(zorgen) voor je auto'
     return <>
         <Container maxWidth="lg" sx={{ minHeight: "70vh" }}>
             <Box sx={{ marginBottom: "75px" }}>

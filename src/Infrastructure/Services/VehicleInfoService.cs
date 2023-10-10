@@ -327,7 +327,7 @@ internal class VehicleInfoService : IVehicleInfoService
         };
     }
 
-
+    // TODO: Reduce filters to only the ones that are actually used by given license plate
     ///// <summary>
     ///// Decide which services are available for a vehicle based on the data from the RDW
     ///// </summary>
