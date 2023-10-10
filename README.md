@@ -3,10 +3,9 @@ Able to let customers help with their car
 
 
 ## Updating new garage service type
-Add service type to the Autohelper Domain GarageServiceType.cs file add represented servicetype string inside i18n folder translations to be able to use it.
-
-
-
+- Add service type to the Autohelper Domain GarageServiceType.cs file.
+- Add service type represented string value inside i18n folder translation files.
+- Add service type to representing license type inside the 'VehicleInfoService.cs' function 'GetRelatedServiceTypesByLicencePlate'.
 
 
 # Will use following 3th parties

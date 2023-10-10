@@ -19,6 +19,7 @@ import { BorderBottom } from "@mui/icons-material";
 import { COLORS } from "../../constants/colors";
 import { useParams } from "react-router";
 import HeaderLicensePlateSearch from "./components/HeaderLicensePlateSearch";
+import { ROUTES } from "../../constants/routes";
 
 interface IProps {
     showStaticDrawer: boolean;
@@ -48,6 +49,7 @@ const Header = ({ showStaticDrawer }: IProps) => {
         }
     }, [headerRef.current]);
 
+    const isEditableLicensePlate = location.pathname.startsWith(ROUTES.SELECT_GARAGE);
     return (
         <>
             <div style={{ margin: `${headerHeight}px 0` }} />
@@ -62,13 +64,15 @@ const Header = ({ showStaticDrawer }: IProps) => {
             >
                 <StyledToolbar>
                     <Grid container>
-                        <Grid item xs={6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
+                        <Grid item xs={isEditableLicensePlate ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small />
                         </Grid>
-                        {/*<Grid item xs={6} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>*/}
-                        {/*    <HeaderLicensePlateSearch/>*/}
-                        {/*</Grid>*/}
-                        <Grid item xs={6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
+                        { isEditableLicensePlate &&
+                            <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <HeaderLicensePlateSearch/>
+                            </Grid>
+                        }
+                        <Grid item xs={isEditableLicensePlate ? 4 : 6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
                             <Hidden xsDown>
                                 {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
                                     <StyledIconButton onClick={() => setCartOpen(true)}>

@@ -52,8 +52,6 @@ public class GarageLookupItem : BaseEntity
 
     public string? Status { get; set; }
 
-    public string? FirstPlacePhoto { get; set; }
-
     [NotMapped]
     public int[]? DaysOfWeek
     {
@@ -92,10 +90,8 @@ public class GarageLookupItem : BaseEntity
 
     public Geometry? Location { get; set; }
 
-    public bool HasPickupService { get; set; } = false;
+    public bool HasPickupService { get; set; } = false;// TODO: Implement pickup service
 
-    public bool HasReplacementTransportService { get; set; } = false;
-
-    public bool HasBestPrice { get; set; } = false;
+    public bool HasReplacementTransportService { get; set; } = false;// TODO: Implement replacement transport service
 
 }

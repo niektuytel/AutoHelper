@@ -10,7 +10,6 @@ import { colorOnIndex } from "../../i18n/ColorValues";
 import useGarageSearch from "./useGarageSearch";
 import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";
-import GarageInviteListItem from "./components/GarageInviteListItem";
 import { GarageLookupDto, PaginatedListOfGarageLookupDto } from "../../app/web-api-client";
 import GarageSearchField from "./components/GarageSearchField";
 import { useQueryClient } from "react-query";
@@ -26,6 +25,7 @@ export default ({ }: IProps) => {
     const [currentPage, setCurrentPage] = useState(1);
     const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize);
 
+    // TODO: const { loading, services, fetchServices } = useVehicleRelatedServices(license_plate!);
 
     const queryClient = useQueryClient();
 
@@ -39,16 +39,16 @@ export default ({ }: IProps) => {
         setGaragesData(data);
     };
 
-    // TODO: want header input field to be able to search for other vihcels
-    // TODO: Set search inputbar to be fixed on top same inline as previous pages
-    // TODO: Space between search inputbar and header set motivational text, 'wij zorgen voor je onderhouds boekje', 'wij vragen offertes op en houden je op de hoogte', 'Wij be(zorgen) voor je auto'
     return <>
         <Container maxWidth="lg" sx={{ minHeight: "70vh" }}>
             <Box sx={{ marginBottom: "75px" }}>
                 <Box flexGrow={1}>
+                    <Box sx={{ height: "70px", backgroundColor: COLORS.BLUE }}>
+                        {/*// TODO: Space between search inputbar and header set motivational text, 'wij zorgen voor je onderhouds boekje', 'wij vragen offertes op en houden je op de hoogte', 'Wij be(zorgen) voor je auto'*/}
+                    </Box>
                     <Paper
                         elevation={5}
-                        sx={{ mb: 1, p: 1, width:"100%", mt:"60px" }}
+                        sx={{ mb: 1, p: 1, width: "100%", position: "relative", top: "-8px" }}
                     >
                         <GarageSearchField
                             license_plate={license_plate!}

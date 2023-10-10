@@ -667,6 +667,41 @@
         }
       }
     },
+    "/api/Vehicle/GetVehicleRelatedServices/{licensePlate}": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_GetVehicleRelatedServices",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GarageServiceType"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/WeatherForecast": {
       "get": {
         "tags": [
@@ -1776,10 +1811,6 @@
             "type": "string",
             "nullable": true
           },
-          "firstPlacePhoto": {
-            "type": "string",
-            "nullable": true
-          },
           "daysOfWeek": {
             "type": "array",
             "items": {
@@ -1805,9 +1836,6 @@
             "type": "boolean"
           },
           "hasReplacementTransportService": {
-            "type": "boolean"
-          },
-          "hasBestPrice": {
             "type": "boolean"
           }
         }

@@ -678,6 +678,8 @@ export interface IVehicleClient {
     getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto>;
 
     getVehicleInfo(licensePlate: string | null | undefined): Promise<VehicleInfoItemDto>;
+
+    getVehicleRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -800,6 +802,50 @@ export class VehicleClient implements IVehicleClient {
             });
         }
         return Promise.resolve<VehicleInfoItemDto>(null as any);
+    }
+
+    getVehicleRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetVehicleRelatedServices/{licensePlate}";
+        if (licensePlate === undefined || licensePlate === null)
+            throw new Error("The parameter 'licensePlate' must be defined.");
+        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetVehicleRelatedServices(_response);
+        });
+    }
+
+    protected processGetVehicleRelatedServices(response: Response): Promise<GarageServiceType[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceType[]>(null as any);
     }
 }
 
@@ -2693,14 +2739,12 @@ export class GarageLookupDto implements IGarageLookupDto {
     address?: string;
     city?: string;
     website?: string | undefined;
-    firstPlacePhoto?: string | undefined;
     daysOfWeek?: number[];
     rating?: number | undefined;
     userRatingsTotal?: number | undefined;
     distanceInMeter?: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
-    hasBestPrice?: boolean;
 
     constructor(data?: IGarageLookupDto) {
         if (data) {
@@ -2718,7 +2762,6 @@ export class GarageLookupDto implements IGarageLookupDto {
             this.address = _data["address"];
             this.city = _data["city"];
             this.website = _data["website"];
-            this.firstPlacePhoto = _data["firstPlacePhoto"];
             if (Array.isArray(_data["daysOfWeek"])) {
                 this.daysOfWeek = [] as any;
                 for (let item of _data["daysOfWeek"])
@@ -2729,7 +2772,6 @@ export class GarageLookupDto implements IGarageLookupDto {
             this.distanceInMeter = _data["distanceInMeter"];
             this.hasPickupService = _data["hasPickupService"];
             this.hasReplacementTransportService = _data["hasReplacementTransportService"];
-            this.hasBestPrice = _data["hasBestPrice"];
         }
     }
 
@@ -2747,7 +2789,6 @@ export class GarageLookupDto implements IGarageLookupDto {
         data["address"] = this.address;
         data["city"] = this.city;
         data["website"] = this.website;
-        data["firstPlacePhoto"] = this.firstPlacePhoto;
         if (Array.isArray(this.daysOfWeek)) {
             data["daysOfWeek"] = [];
             for (let item of this.daysOfWeek)
@@ -2758,7 +2799,6 @@ export class GarageLookupDto implements IGarageLookupDto {
         data["distanceInMeter"] = this.distanceInMeter;
         data["hasPickupService"] = this.hasPickupService;
         data["hasReplacementTransportService"] = this.hasReplacementTransportService;
-        data["hasBestPrice"] = this.hasBestPrice;
         return data;
     }
 }
@@ -2769,14 +2809,12 @@ export interface IGarageLookupDto {
     address?: string;
     city?: string;
     website?: string | undefined;
-    firstPlacePhoto?: string | undefined;
     daysOfWeek?: number[];
     rating?: number | undefined;
     userRatingsTotal?: number | undefined;
     distanceInMeter?: number;
     hasPickupService?: boolean;
     hasReplacementTransportService?: boolean;
-    hasBestPrice?: boolean;
 }
 
 export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {

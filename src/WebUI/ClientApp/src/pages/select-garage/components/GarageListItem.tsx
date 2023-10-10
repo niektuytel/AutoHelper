@@ -1,16 +1,17 @@
 ﻿
 import { Box, Chip, Paper, Typography } from '@mui/material';
 import React from 'react';
-import { GarageLookupDto } from '../../../app/web-api-client';
-import EuroSymbolIcon from '@mui/icons-material/EuroSymbol';
 import PlaceIcon from '@mui/icons-material/Place';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import { DAYSINWEEKSHORT } from '../../../constants/days';
 import { useTranslation } from 'react-i18next';
-import ImageLogo from '../../../components/logo/ImageLogo';
+import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router';
+
+// own imports
+import { GarageLookupDto } from '../../../app/web-api-client';
+import { DAYSINWEEKSHORT } from '../../../constants/days';
 
 interface IProps {
     garage: GarageLookupDto;
@@ -35,9 +36,10 @@ export default ({ garage }: IProps) => {
 
     // Handler for click
     const handleClick = () => {
-        var identifier = garage.garageId;
+        let identifier = garage.garageId;
         if (!identifier && garage.website) {
-            identifier = encodeURIComponent(garage.website);
+            const url = new URL(garage.website);
+            identifier = encodeURIComponent(url.hostname);
         }
 
         navigate(`${window.location.pathname}/${identifier}`);
@@ -71,13 +73,6 @@ export default ({ garage }: IProps) => {
                     alignItems: "center"
                 }}
             >
-                {/*<ImageLogo*/}
-                {/*    style={{*/}
-                {/*        width: "50px",*/}
-                {/*        height: "50px",*/}
-                {/*        marginRight: "10px"*/}
-                {/*    }}*/}
-                {/*/>*/}
                 <Box
                     style={{
                         display: "flex",
@@ -89,72 +84,46 @@ export default ({ garage }: IProps) => {
                         {garage.name}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <PlaceIcon fontSize='small' sx={{ mr: 1 }} />
-                        {`${garage?.address}, ${garage?.city} (${garage.distanceInMeter! * 0.001} km)`}
+                        <PlaceIcon fontSize='small' sx={{ mr: 1 }} /> {/*, color:"#E34133"*/}
+                        {`${garage?.address}, ${garage?.city} (${Math.round(garage.distanceInMeter! * 0.001)} km)`}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <AccessTimeIcon fontSize='small' sx={{ mr: 1 }} />
                         {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
-                    { garage.hasBestPrice || garage.hasPickupService || garage.hasReplacementTransportService  &&
-                        <Box>
-                            { garage.hasPickupService &&
-                                <Chip
-                                    variant="outlined"
-                                    color="primary"
-                                    size="small"
-                                    label="auto op laten halen"// TODO: translate
-                                    icon={<ModeOfTravelIcon />}
-                                    sx={{ mr: 1 }}
-                                />
-                            }
-                            {garage.hasReplacementTransportService &&
-                                <Chip
-                                    variant="outlined"
-                                    color="default"
-                                    size="small"
-                                    label="vervangend vervoer"// TODO: translate
-                                    icon={<PublishedWithChangesIcon />}
-                                    sx={{ mr: 1 }}
-                                />
-                            }
-                            {garage.hasBestPrice &&
-                                <Chip
-                                    variant="outlined"
-                                    color="success"
-                                    size="small"
-                                    label="beste prijs"// TODO: translate
-                                    icon={<EuroSymbolIcon />}
-                                    sx={{ mr: 1 }}
-                                />
-                            }
-                        </Box>
-                    }
+                    <Box>
+                        {garage.userRatingsTotal && garage.userRatingsTotal > 5 &&
+                            <Chip
+                                variant="outlined"
+                                color="warning"
+                                size="small"
+                                label={`${garage.rating}/5.0`}
+                                icon={<StarIcon />}
+                                sx={{ mr: 1, mt: 1, color:"orange" }}
+                            />
+                        }
+                        {garage.hasPickupService === true &&
+                            <Chip
+                                variant="outlined"
+                                color="primary"
+                                size="small"
+                                label={t('have the car picked up')}
+                                icon={<ModeOfTravelIcon />}
+                                sx={{ mr: 1, mt: 1 }}
+                            />
+                        }
+                        {garage.hasReplacementTransportService === true &&
+                            <Chip
+                                variant="outlined"
+                                color="default"
+                                size="small"
+                                label={t('replacement vehicle')}
+                                icon={<PublishedWithChangesIcon />}
+                                sx={{ mr: 1, mt: 1 }}
+                            />
+                        }
+                    </Box>
                 </Box>
-            </Box>
-            <Box
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-end"
-                }}
-            >
-                {/*<Typography*/}
-                {/*    variant="body1"*/}
-                {/*    style={{*/}
-                {/*        color: colorOnIndex(index)*/}
-                {/*    }}*/}
-                {/*>*/}
-                {/*    {garage.distance} km*/}
-                {/*</Typography>*/}
-                {/*<Typography*/}
-                {/*    variant="body1"*/}
-                {/*    style={{*/}
-                {/*        color: colorOnIndex(index)*/}
-                {/*    }}*/}
-                {/*>*/}
-                {/*    {garage.price} €*/}
-                {/*</Typography>*/}
             </Box>
         </Paper>
     </>;

@@ -2,7 +2,9 @@
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
+using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Infrastructure.Common.Extentions;
 using Azure;
 using MediatR;
@@ -327,28 +329,25 @@ internal class VehicleInfoService : IVehicleInfoService
         };
     }
 
-    // TODO: Reduce filters to only the ones that are actually used by given license plate
-    ///// <summary>
-    ///// Decide which services are available for a vehicle based on the data from the RDW
-    ///// </summary>
-    ///// <param name="licensePlate"></param>
-    ///// <returns></returns>
-    //public async Task<GarageServiceType[]> GetKnownServiceTypesByLicencePlate(string licensePlate)
-    //{
-    //    var data = await GetVehicle(licensePlate);
-    //    var serviceTypes = new List<GarageServiceType>();
+    /// <summary>
+    /// Decide which services are available for a vehicle based on the data from the RDW
+    /// </summary>
+    public async Task<GarageServiceType[]> GetRelatedServiceTypesByLicencePlate(string licensePlate)
+    {
+        var data = await _rdwService.GetVehicle(licensePlate);
+        var serviceTypes = new List<GarageServiceType>();
 
-    //    if(int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
-    //    {
-    //        serviceTypes.Add(GarageServiceType.MOTServiceHeavyVehicle);
-    //    }
-    //    else
-    //    {
-    //        serviceTypes.Add(GarageServiceType.MOTServiceLightVehicle);
-    //    }
+        if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
+        {
+            serviceTypes.Add(GarageServiceType.MOTServiceHeavyVehicle);
+        }
+        else
+        {
+            serviceTypes.Add(GarageServiceType.MOTServiceLightVehicle);
+        }
 
-    //    return serviceTypes.ToArray();
-    //}
+        return serviceTypes.ToArray();
+    }
 
     // TODO
     //Lichte Voertuigen Relevant:

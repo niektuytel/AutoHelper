@@ -12,4 +12,5 @@ public class GarageLookupLargeItem : BaseEntity
 {
     public string GoogleApiDetailsJson { get; set; } = "";
 
+    public string? FirstPlacePhoto { get; set; }
 }

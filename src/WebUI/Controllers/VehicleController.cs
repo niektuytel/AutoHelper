@@ -8,8 +8,10 @@ using AutoHelper.Application.TodoLists.Queries.ExportTodos;
 using AutoHelper.Application.TodoLists.Queries.GetTodos;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -67,4 +69,12 @@ public class VehicleController : ApiControllerBase
     {
         return await Mediator.Send(new GetVehicleInfoQuery(licensePlate));
     }
+
+    [HttpGet($"{nameof(GetVehicleRelatedServices)}/{{licensePlate}}")]
+    public async Task<IEnumerable<GarageServiceType>> GetVehicleRelatedServices([FromRoute] string licensePlate)
+    {
+        var query = new GetVehicleRelatedServicesQuery(licensePlate);
+        return await Mediator.Send(query);
+    }
+
 }

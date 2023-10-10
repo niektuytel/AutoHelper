@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.Json;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
@@ -54,9 +55,13 @@ internal class GarageInfoService : IGarageInfoService
                 .Select(y => y.ServiceType)
                 .ToArray();
 
-            // Has no services to offer
-            if (services.Length == 0)
-            {
+            // Has no services to offer, invalid garage
+            if (
+                services.Length == 0 ||
+                string.IsNullOrWhiteSpace(rdwCompany.Naambedrijf) ||
+                string.IsNullOrWhiteSpace(rdwCompany.Plaats) ||
+                string.IsNullOrWhiteSpace(rdwCompany.Straat)
+            ){
                 continue;
             }
 
@@ -65,14 +70,45 @@ internal class GarageInfoService : IGarageInfoService
                 Identifier = rdwCompany.Volgnummer.ToString(),
                 Name = rdwCompany.Naambedrijf,
                 KnownServices = services,
-                Address = $"{rdwCompany.Straat}, {rdwCompany.Huisnummer}{rdwCompany.Huisnummertoevoeging}",
-                City = rdwCompany.Plaats
+                Address = FormatAddress(rdwCompany.Straat, rdwCompany.Huisnummer.ToString(), rdwCompany.Huisnummertoevoeging),
+                City = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(rdwCompany.Plaats.ToLower())
             };
 
             garageLookups.Add(garageLookup);
         }
 
         return garageLookups.ToArray();
+    }
+
+    private static string FormatAddress(string street, string houseNumber, string? houseNumberAddition)
+    {
+        if (string.IsNullOrWhiteSpace(street))
+        {
+            throw new Exception("Street is empty");
+        }
+        
+        if (string.IsNullOrWhiteSpace(houseNumber))
+        {
+            throw new Exception("House number is empty");
+        }
+
+        // Capitalize the first letter of the street
+        street = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(street.ToLower());
+
+        // Remove unexpected commas from the inputs
+        street = street.Replace(",", "").Trim();
+        houseNumber = houseNumber.Replace(",", "").Trim();
+        houseNumberAddition = string.IsNullOrWhiteSpace(houseNumberAddition) ? "" : houseNumberAddition.Replace(",", "").Trim();
+
+        // Conditionally add comma based on the presence of houseNumber
+        if (!string.IsNullOrEmpty(houseNumber))
+        {
+            return $"{street} {houseNumber}{houseNumberAddition}";
+        }
+        else
+        {
+            return $"{street} {houseNumberAddition}".Trim();
+        }
     }
 
     public int CalculateDistanceInKm(float garageLatitude, float garageLongitude, float latitude, float longitude)
@@ -108,13 +144,13 @@ internal class GarageInfoService : IGarageInfoService
         var reference = details.result.photos?[0].photo_reference;
         if(!string.IsNullOrEmpty(reference))
         {
-            var photo = await _googleApiClient.GetPlacePhotoInBase64(reference, 400);
-            item.FirstPlacePhoto = photo;
+            var photo = await _googleApiClient.GetPlacePhotoInBase64(reference, 2000);
+            item.LargeData.FirstPlacePhoto = photo;
         }
 
         item.Status = details.result.business_status;
         item.DaysOfWeek = details.result.opening_hours?.periods != null ?
-            details.result.opening_hours?.periods!.Select(x => x.open.day).ToArray()
+            details.result.opening_hours?.periods!.Select(x => x.open.day).Distinct().ToArray()
             :
             null;
         item.PhoneNumber = details.result.formatted_phone_number;

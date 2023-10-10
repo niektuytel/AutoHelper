@@ -85,31 +85,27 @@ export default ({ }: IProps) => {
             fullWidth
             autoComplete="new-password"
             value={value}
-            label={value.length > 0 && focused ? t("license") : undefined}
             onChange={handleInput}
             onKeyDown={handleEnterPress}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             variant="outlined"
-            placeholder={t("search_licenceplate_placeholder")}
+            placeholder={t("e.g. 87-GRN-6")}
             error={hasError}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
-                        {value.length > 0 &&
-                            <IconButton onClick={handleSearch} sx={{ color: focused ? "black" : "lightgray" }}>
-                                <SearchIcon />
-                            </IconButton>
-                        }
+                        <IconButton onClick={handleSearch}>
+                            <SearchIcon
+                                sx={{ color: "lightgray" }}
+                            />
+                        </IconButton>
                     </InputAdornment>
                 ),
                 style: {
                     color: focused ? "black" : "lightgray",
                     height: '40px',
-                    fontSize: '1.2em',
-                    paddingRight: '0',
-                    backgroundColor: '#fff',
-                    
+                    paddingRight: '0'
                 }
             }}
         />
