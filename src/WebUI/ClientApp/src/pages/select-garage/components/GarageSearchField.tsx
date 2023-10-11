@@ -181,7 +181,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 {loading ?
                     <>Loading...</>
                     :
-                    enumToKeyValueArray(GarageServiceType)
+                    enumToKeyValueArray(GarageServiceType)//TODO: replace with api response value
                     .slice(1)
                     .map(({ key, value }) => 
                         <Chip
