@@ -8,7 +8,6 @@ using AutoHelper.Application.TodoLists.Queries.ExportTodos;
 using AutoHelper.Application.TodoLists.Queries.GetTodos;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
@@ -68,13 +67,6 @@ public class VehicleController : ApiControllerBase
     public async Task<VehicleInfoItemDto> GetVehicleInfo([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleInfoQuery(licensePlate));
-    }
-
-    [HttpGet($"{nameof(GetVehicleRelatedServices)}/{{licensePlate}}")]
-    public async Task<IEnumerable<GarageServiceType>> GetVehicleRelatedServices([FromRoute] string licensePlate)
-    {
-        var query = new GetVehicleRelatedServicesQuery(licensePlate);
-        return await Mediator.Send(query);
     }
 
 }

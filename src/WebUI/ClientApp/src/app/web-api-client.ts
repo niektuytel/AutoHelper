@@ -599,6 +599,8 @@ export class GarageRegisterClient implements IGarageRegisterClient {
 export interface IGarageSearchClient {
 
     searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupDto>;
+
+    getGarageServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]>;
 }
 
 export class GarageSearchClient implements IGarageSearchClient {
@@ -662,12 +664,70 @@ export class GarageSearchClient implements IGarageSearchClient {
             result200 = PaginatedListOfGarageLookupDto.fromJS(resultData200);
             return result200;
             });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
         return Promise.resolve<PaginatedListOfGarageLookupDto>(null as any);
+    }
+
+    getGarageServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]> {
+        let url_ = this.baseUrl + "/api/GarageSearch/GetGarageServiceTypesByLicensePlate/{licensePlate}";
+        if (licensePlate === undefined || licensePlate === null)
+            throw new Error("The parameter 'licensePlate' must be defined.");
+        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetGarageServiceTypesByLicensePlate(_response);
+        });
+    }
+
+    protected processGetGarageServiceTypesByLicensePlate(response: Response): Promise<GarageServiceType[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceType[]>(null as any);
     }
 }
 
@@ -678,8 +738,6 @@ export interface IVehicleClient {
     getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto>;
 
     getVehicleInfo(licensePlate: string | null | undefined): Promise<VehicleInfoItemDto>;
-
-    getVehicleRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -802,50 +860,6 @@ export class VehicleClient implements IVehicleClient {
             });
         }
         return Promise.resolve<VehicleInfoItemDto>(null as any);
-    }
-
-    getVehicleRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetVehicleRelatedServices/{licensePlate}";
-        if (licensePlate === undefined || licensePlate === null)
-            throw new Error("The parameter 'licensePlate' must be defined.");
-        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetVehicleRelatedServices(_response);
-        });
-    }
-
-    protected processGetVehicleRelatedServices(response: Response): Promise<GarageServiceType[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(item);
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<GarageServiceType[]>(null as any);
     }
 }
 

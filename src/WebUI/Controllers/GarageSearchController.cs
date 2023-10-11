@@ -3,6 +3,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages.Queries;
+using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
 using AutoHelper.Application.TodoLists.Commands.DeleteTodoList;
@@ -26,6 +27,8 @@ namespace AutoHelper.WebUI.Controllers;
 public class GarageSearchController : ApiControllerBase
 {
     [HttpGet($"{nameof(SearchGarages)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
+    [ProducesResponseType(typeof(PaginatedList<GarageLookupDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<PaginatedList<GarageLookupDto>> SearchGarages(
         [FromRoute] string licensePlate,
         [FromRoute] float latitude,
@@ -51,5 +54,16 @@ public class GarageSearchController : ApiControllerBase
 
         return await Mediator.Send(query, cancellationToken);
     }
+
+
+    [HttpGet($"{nameof(GetGarageServiceTypesByLicensePlate)}/{{licensePlate}}")]
+    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<GarageServiceType>> GetGarageServiceTypesByLicensePlate([FromRoute] string licensePlate)
+    {
+        var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
+        return await Mediator.Send(query);
+    }
+
 
 }

@@ -2,9 +2,9 @@
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
 using Azure;
 using MediatR;
@@ -329,65 +329,15 @@ internal class VehicleInfoService : IVehicleInfoService
         };
     }
 
-    /// <summary>
-    /// Decide which services are available for a vehicle based on the data from the RDW
-    /// </summary>
-    public async Task<GarageServiceType[]> GetRelatedServiceTypesByLicencePlate(string licensePlate)
+    public async Task<VehicleType> GetVehicleType(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
-        var serviceTypes = new List<GarageServiceType>();
-
         if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
         {
-            serviceTypes.Add(GarageServiceType.MOTServiceHeavyVehicle);
-        }
-        else
-        {
-            serviceTypes.Add(GarageServiceType.MOTServiceLightVehicle);
+            return VehicleType.HeavyCar;
         }
 
-        return serviceTypes.ToArray();
+        return VehicleType.LightCar;
     }
-
-    // TODO
-    //Lichte Voertuigen Relevant:
-
-    //Fotograaf bemand: Voor identificatiedoeleinden of documentatie van lichte voertuigen.
-    //APK Lichte voertuigen: Verplichte keuring voor lichte voertuigen.
-    //Bedrijfsvoorraad: Kan lichte voertuigen bevatten die klaar zijn voor verkoop of lease.
-    //Handelaarskenteken: Voor voertuigbedrijven om met lichte voertuigen te rijden zonder ze op naam te zetten.
-    //Tenaamstellen: Registratie van lichte voertuigen op naam van een persoon of bedrijf.
-    //Controleapparaten: Apparaten zoals tachografen die in lichte voertuigen kunnen worden gebruikt.
-    //Uitvoer: Voor het exporteren van lichte voertuigen uit Nederland.
-    //Versnelde inschrijving: Snellere procedure voor lichte voertuigen.
-    //Ombouwmelding Snorfiets: Wijzigingen aan een snorfiets melden.
-    //Gasinstallaties: Diensten voor het installeren of repareren van gasinstallaties in lichte voertuigen.
-    //Kentekenplaatfabrikant: Produceert kentekenplaten voor lichte voertuigen.
-    //Fotograaf onbemand: Voor het vastleggen van lichte voertuigen.
-    //Kentekenloket: Voor zaken gerelateerd aan registratie van lichte voertuigen en kentekens.
-
-    //Zware Voertuigen Relevant:
-
-    //APK Zware voertuigen: Verplichte keuring voor zware voertuigen.
-    //Bedrijfsvoorraad: Kan zware voertuigen bevatten die klaar zijn voor verkoop of lease.
-    //Handelaarskenteken: Voor voertuigbedrijven om met zware voertuigen te rijden zonder ze op naam te zetten.
-    //Tenaamstellen: Registratie van zware voertuigen op naam van een persoon of bedrijf.
-    //Controleapparaten: Apparaten zoals tachografen die in zware voertuigen worden gebruikt.
-    //Uitvoer: Voor het exporteren van zware voertuigen uit Nederland.
-    //Demontage: Het proces van het uit elkaar halen van zware voertuigen.
-    //Gasinstallaties: Diensten voor het installeren of repareren van gasinstallaties in zware voertuigen.
-    //Boordcomputertaxi: Mogelijk gebruikt in zware voertuigen zoals bussen.
-    //Kentekenplaatfabrikant: Produceert kentekenplaten voor zware voertuigen.
-    //Kentekenloket: Voor zaken gerelateerd aan registratie van zware voertuigen en kentekens.
-
-    //Landbouw Relevant:
-
-    //APK-Landbouw: Verplichte keuring voor landbouwvoertuigen.
-    //Bedrijfsvoorraad: Kan landbouwvoertuigen bevatten die klaar zijn voor gebruik.
-    //Handelaarskenteken: Voor bedrijven om met landbouwvoertuigen te rijden zonder ze op naam te zetten.
-    //Tenaamstellen: Registratie van landbouwvoertuigen op naam van een persoon of bedrijf.
-    //Kentekenplaatfabrikant: Produceert kentekenplaten voor landbouwvoertuigen.
-    //Kentekenloket: Voor zaken gerelateerd aan registratie van landbouwvoertuigen en kentekens.
-    //Let op: Sommige items kunnen relevant zijn voor meer dan één categorie, en sommige items zijn mogelijk niet strikt relevant voor een specifieke categorie maar zijn toch opgenomen voor volledigheid.
 
 }

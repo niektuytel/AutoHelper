@@ -24,6 +24,7 @@ import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 import { GarageLookupDto, GarageSearchClient, GarageServiceType, PaginatedListOfGarageLookupDto } from "../../../app/web-api-client";
 import { useQueryClient } from "react-query";
 import { enumToKeyArray, enumToKeyValueArray, enumToStringArray } from "../../../app/utils";
+import useGarageSearchServiceTypes from "../useGarageSearchServiceTypes";
 
 
 
@@ -52,6 +53,8 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [value, setValue] = useState("");
     const [filters, setFilters] = useState<string[]>([]);
     const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDto[]>([]);
+
+    const { loading, garageServiceTypes } = useGarageSearchServiceTypes(license_plate!);
     const useGarageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
 
@@ -174,14 +177,16 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                     }
                 }}
             />
-            {/*TODO: set t on it, and when not same only show, otherwise we see al enum string based values that is not nice*/}
             <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%", mt: 1 }}>
-                {enumToKeyValueArray(GarageServiceType)
+                {loading ?
+                    <>Loading...</>
+                    :
+                    enumToKeyValueArray(GarageServiceType)
                     .slice(1)
                     .map(({ key, value }) => 
                         <Chip
                             key={key}
-                            label={value}
+                            label={t(value)}
                             variant={filters.includes(String(key)) ? "filled" : "outlined"}
                             sx={{ mb: 1, mr: 1 }}
                             onClick={() => handleChipClick(String(key))}

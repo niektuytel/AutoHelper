@@ -569,6 +569,61 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageSearch/GetGarageServiceTypesByLicensePlate/{licensePlate}": {
+      "get": {
+        "tags": [
+          "GarageSearch"
+        ],
+        "operationId": "GarageSearch_GetGarageServiceTypesByLicensePlate",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GarageServiceType"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -660,41 +715,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VehicleInfoItemDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/GetVehicleRelatedServices/{licensePlate}": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetVehicleRelatedServices",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GarageServiceType"
-                  }
                 }
               }
             }
