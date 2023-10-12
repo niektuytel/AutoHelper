@@ -30,21 +30,6 @@ function useGarageSearchServiceTypes(licensePlate: string) {
         }
     );
 
-    //const fetchVehicleByPlate = async (licensePlate: string) => {
-    //    // Check if data exists in cache first
-    //    const cachedData = queryClient.getQueryData(
-    //        [`garageServiceTypes-${licensePlate}`]
-    //    );
-
-    //    if (cachedData) {
-    //        return cachedData;
-    //    }
-
-    //    return fetchVehicleInfoData(licensePlate);
-    //}
-
-
-
     return {
         loading: isLoading,
         isError,

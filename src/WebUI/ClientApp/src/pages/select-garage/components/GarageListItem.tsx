@@ -60,6 +60,7 @@ export default ({ garage }: IProps) => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 padding: "10px",
+                width: "100%",
                 borderBottom: "1px solid #ccc"
             }}
             onMouseEnter={handleMouseEnter}
@@ -70,38 +71,49 @@ export default ({ garage }: IProps) => {
                 style={{
                     display: "flex",
                     flexDirection: "row",
+                    width: "100%",
                     alignItems: "center"
                 }}
             >
                 <Box
                     style={{
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start"
+                        flexDirection: "column", // keep this as 'column'
+                        alignItems: "flex-start",
+                        width: "100%"
                     }}
                 >
-                    <Typography variant="h6">
-                        {garage.name}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <PlaceIcon fontSize='small' sx={{ mr: 1 }} /> {/*, color:"#E34133"*/}
-                        {`${garage?.address}, ${garage?.city} (${Math.round(garage.distanceInMeter! * 0.001)} km)`}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <AccessTimeIcon fontSize='small' sx={{ mr: 1 }} />
-                        {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
-                    </Typography>
-                    <Box>
+                    <Box
+                        style={{
+                            display: "flex",
+                            flexDirection: "row", // Change this to 'row'
+                            alignItems: "center",
+                            justifyContent: "space-between", // Spread items apart
+                            width: "100%" // Ensure this inner container also takes up the full width
+                        }}
+                    >
+                        <Typography variant="h6">{garage.name}</Typography>
+
                         {garage.userRatingsTotal && garage.userRatingsTotal > 5 &&
                             <Chip
                                 variant="outlined"
                                 color="warning"
                                 size="small"
-                                label={`${garage.rating}/5.0`}
+                                label={`${garage.rating!.toFixed(1)}`}
                                 icon={<StarIcon />}
-                                sx={{ mr: 1, mt: 1, color:"orange" }}
+                                sx={{ ml: 1, color: "orange" }}
                             />
                         }
+                    </Box>
+                    <Typography variant="body1" sx={{ color: 'grey.600' }}>
+                        <PlaceIcon fontSize='small'  /> {/*, color:"#E34133"*/}
+                        {`${garage?.address}, ${garage?.city} (${Math.round(garage.distanceInMeter! * 0.001)} km)`}
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'grey.600' }}>
+                        <AccessTimeIcon fontSize='small' sx={{ mr: "4px" }} />
+                        {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
+                    </Typography>
+                    <Box>
                         {garage.hasPickupService === true &&
                             <Chip
                                 variant="outlined"
@@ -109,7 +121,7 @@ export default ({ garage }: IProps) => {
                                 size="small"
                                 label={t('have the car picked up')}
                                 icon={<ModeOfTravelIcon />}
-                                sx={{ mr: 1, mt: 1 }}
+                                sx={{ mr: "3px", mt: "3px" }}
                             />
                         }
                         {garage.hasReplacementTransportService === true &&
@@ -119,7 +131,7 @@ export default ({ garage }: IProps) => {
                                 size="small"
                                 label={t('replacement vehicle')}
                                 icon={<PublishedWithChangesIcon />}
-                                sx={{ mr: 1, mt: 1 }}
+                                sx={{ mr: "3px", mt: "3px" }}
                             />
                         }
                     </Box>

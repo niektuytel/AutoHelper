@@ -1,29 +1,14 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery, Autocomplete, CircularProgress, Chip } from "@mui/material";
+import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery, Autocomplete, CircularProgress, Chip, Skeleton } from "@mui/material";
 import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import usePlacesAutocomplete, {
-    getGeocode,
-    getLatLng,
-    HookArgs,
-    Suggestion,
-} from "use-places-autocomplete";
-import useOnclickOutside from "react-cool-onclickoutside";
-
 
 // own imports
 import { HashValues } from "../../../i18n/HashValues";
-import { useDispatch } from "react-redux";
-import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 import { GarageLookupDto, GarageSearchClient, GarageServiceType, PaginatedListOfGarageLookupDto } from "../../../app/web-api-client";
-import { useQueryClient } from "react-query";
-import { enumToKeyArray, enumToKeyValueArray, enumToStringArray } from "../../../app/utils";
 import useGarageSearchServiceTypes from "../useGarageSearchServiceTypes";
 
 
@@ -42,10 +27,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     var hash = window.location.hash.length == 0 ? HashValues.default : window.location.hash;
     const navigate = useNavigate();
     const theme = useTheme();
-    const dispatch = useDispatch();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const queryParams = new URLSearchParams(window.location.search);
-    const splitted_hash = hash.split("_")[0];
     const { t } = useTranslation();
 
     const [isFocused, setIsFocused] = useState(false);
@@ -56,7 +38,6 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
 
     const { loading, garageServiceTypes } = useGarageSearchServiceTypes(license_plate!);
     const useGarageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
-    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (queryParams.has("filters")) {
@@ -66,8 +47,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
         
     }, [window.location.search]);
 
-
-    const fetchGaragesData = async (autocomplete: string): Promise<PaginatedListOfGarageLookupDto> => {
+    const fetchGaragesData = async (autocomplete: string, filterValues: string[]): Promise<PaginatedListOfGarageLookupDto> => {
         try {
             const response = await useGarageSearchClient.searchGarages(
                 license_plate,
@@ -77,7 +57,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 1,
                 page_size,
                 autocomplete,
-                filters
+                filterValues
             );
             return response;
         } catch (response: any) {
@@ -89,7 +69,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
         setIsLoading(true);
 
         setValue(e.target.value);
-        var data = await fetchGaragesData(e.target.value);
+        var data = await fetchGaragesData(e.target.value, filters);
         setSuggestions(data?.items || []);
 
         // Overwrite the cached data with the new data
@@ -113,9 +93,15 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
         }
 
         // Refetch the data
-        const data = await fetchGaragesData(value);
+        const data = await fetchGaragesData(value, filterValues);
         setSuggestions(data?.items || []);
         setFilters(filterValues);
+
+        // Overwrite the cached data with the new data
+        if (data?.items && data?.items?.length > 0) {
+            // Trigger the callback to notify the parent about the executed search
+            onSearchExecuted(data);
+        }
 
         // Update the URI with the filters
         const filtersRecord: Record<string, string> = {};
@@ -133,7 +119,23 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
 
     return <>
         <Box>
-
+            <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%" }}>
+                {loading ?
+                    <>
+                        <Skeleton variant="rounded" width="100%" height="32px" sx={{ mb: 1 }} />
+                    </>
+                    :
+                    garageServiceTypes!.map(service =>
+                        <Chip
+                            key={service}
+                            label={t(`${GarageServiceType[service]}.Filter`)}
+                            variant={filters.includes(String(service)) ? "filled" : "outlined"}
+                            sx={{ mr: 1, mb: 1 }}
+                            onClick={() => handleChipClick(String(service))}
+                        />
+                    )
+                }
+            </Box>
             <TextField
                 fullWidth
                 autoComplete="new-password" // Use this line instead of autoComplete="off", because it is not working
@@ -144,7 +146,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 onChange={handleInput}
                 variant="outlined"
                 size="small"
-                placeholder={t("Zoek op garage naam...")}
+                placeholder={t("Search by garage name...")}
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
@@ -177,22 +179,6 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                     }
                 }}
             />
-            <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%", mt: 1 }}>
-                {loading ?
-                    <>Loading...</>
-                    :
-                    enumToKeyValueArray(GarageServiceType)//TODO: replace with api response value
-                    .slice(1)
-                    .map(({ key, value }) => 
-                        <Chip
-                            key={key}
-                            label={t(value)}
-                            variant={filters.includes(String(key)) ? "filled" : "outlined"}
-                            sx={{ mb: 1, mr: 1 }}
-                            onClick={() => handleChipClick(String(key))}
-                        />
-                    )}
-            </Box>
         </Box>
     </>
 }

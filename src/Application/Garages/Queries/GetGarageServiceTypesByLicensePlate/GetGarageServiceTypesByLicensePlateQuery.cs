@@ -28,27 +28,19 @@ public record GetGarageServiceTypesByLicensePlateQuery : IRequest<IEnumerable<Ga
 public class GetGarageServiceTypesByLicensePlateQueryHandler : IRequestHandler<GetGarageServiceTypesByLicensePlateQuery, IEnumerable<GarageServiceType>>
 {
     private readonly IVehicleInfoService _vehicleInfoService;
+    private readonly IGarageInfoService _garageInfoService;
 
-    public GetGarageServiceTypesByLicensePlateQueryHandler(IVehicleInfoService vehicleInfoService)
+    public GetGarageServiceTypesByLicensePlateQueryHandler(IVehicleInfoService vehicleInfoService, IGarageInfoService garageInfoService)
     {
         _vehicleInfoService = vehicleInfoService;
+        _garageInfoService = garageInfoService;
     }
 
     public async Task<IEnumerable<GarageServiceType>> Handle(GetGarageServiceTypesByLicensePlateQuery request, CancellationToken cancellationToken)
     {
         var type = await _vehicleInfoService.GetVehicleType(request.LicensePlate);
-        return type switch
-        {
-            Domain.Entities.Vehicles.VehicleType.LightCar => new List<GarageServiceType>()
-            {
-                GarageServiceType.MOTServiceLightVehicle
-            },
-            Domain.Entities.Vehicles.VehicleType.HeavyCar => new List<GarageServiceType>()
-            {
-                GarageServiceType.MOTServiceHeavyVehicle
-            },
-            _ => new List<GarageServiceType>(),
-        };
+        var serviceTypes = _garageInfoService.GetRelatedServiceTypes(type);
+        return serviceTypes;
     }
 
 }

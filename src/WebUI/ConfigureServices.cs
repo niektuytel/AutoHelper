@@ -131,19 +131,6 @@ public static class ConfigureServices
 
         UseCommonWebUIServices(app);
 
-        // Initialize (+ Run) Recurrence jobs
-        var mediator = app.Services.GetRequiredService<IMediator>();
-        var enableRecurringjobs = app.Configuration["Hangfire:EnableRecurringJobs"];
-        _ = bool.TryParse(enableRecurringjobs, out var isRecurring);
-
-        if (mediator != null)
-        {
-            if(bool.Parse(app.Configuration["Hangfire:EnableGarageRecurringSyncJob"]!) == true)
-            {
-                mediator.RecurringJobWeekly($"{nameof(SyncGarageLookupsCommand)}", new SyncGarageLookupsCommand(), isRecurring);
-            }
-        }
-
         return app;
     }
 

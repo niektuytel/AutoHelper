@@ -116,6 +116,37 @@
   "e.g. 87-GRN-6": "b.v. 87-GRN-6",
   "have the car picked up": "auto op laten halen",
   "replacement vehicle": "vervangend vervoer",
+  "No results": "Geen resultaat",
+  "Search by garage name...": "Zoek op garage naam...",
+  "CompanyStockService.Filter": "Handelaar",
+  "RegistrationService.Filter": "Registratie",
+  "AcceleratedRegistrationService.Filter": "Snelle Registratie",
+  "MOTServiceLightVehicle.Filter": "APK Keuring",
+  "MOTServiceHeavyVehicle.Filter": "APK Keuring",
+  "MOTServiceAgriculture.Filter": "APK Keuring",
+  "ControlDeviceService.Filter": "Besturingsapparaat Onderhoud",
+  "GasInstallationService.Filter": "Gas Installatie Onderhoud",
+  "MopedConversionService.Filter": "Brommer Ombouw",
+  "DismantlingService.Filter": "Voertuig Slopen",
+  "TaxiComputerService.Filter": "Taxi Computer Onderhoud",
+  "LicensePlateManufactureService.Filter": "Kentekenplaat Produceren",
+  "Inspection.Filter": "Voertuig Keuren",
+  "SmallMaintenance.Filter": "Kleine Beurt",
+  "GreatMaintenance.Filter": "Groot Beurt",
+  "AirConditioningMaintenance.Filter": "Airco Onderhoud",
+  "SeasonalTireChange.Filter": "Seizoensbanden Vervangen",
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -329,15 +329,45 @@ internal class VehicleInfoService : IVehicleInfoService
         };
     }
 
+    // TODO: Need better investigation
+    // can add more cases based on other vehicle kinds present in the RDW data.
     public async Task<VehicleType> GetVehicleType(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
+
+        // Check "voertuigsoort" field for various types
+        var vehicleKind = data?["voertuigsoort"]?.ToString();
+
+        // Check weight for HeavyCar
         if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
         {
             return VehicleType.HeavyCar;
         }
 
-        return VehicleType.LightCar;
+        switch (vehicleKind)
+        {
+            case "Personenauto":
+                return VehicleType.LightCar;
+            case "Driewielig motorrijtuig":
+                return VehicleType.Motorcycle;
+            case "Land- of bosbouwtrekker":
+                return VehicleType.Tractor;
+            case "Land- of bosb aanhw of getr uitr stuk":
+                return VehicleType.Tractor;
+
+            default:
+                break;
+        }
+
+        // Check Taxi
+        if (data?["taxi_indicator"]?.ToString() == "Ja")
+        {
+            return VehicleType.Taxi;
+        }
+
+
+        // If no matches, return Other
+        return VehicleType.Other;
     }
 
 }

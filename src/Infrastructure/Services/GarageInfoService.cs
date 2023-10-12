@@ -9,6 +9,7 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Common.Models;
 using AutoHelper.Infrastructure.Common.Models.NewFolder;
@@ -34,7 +35,7 @@ internal class GarageInfoService : IGarageInfoService
 
     public GarageInfoService(
         WebScraperClient webScraperClient,
-        GoogleApiClient googleApiClient, 
+        GoogleApiClient googleApiClient,
         RDWApiClient rdwApiClient
     ) {
         _webScraperClient = webScraperClient;
@@ -61,7 +62,7 @@ internal class GarageInfoService : IGarageInfoService
                 string.IsNullOrWhiteSpace(rdwCompany.Naambedrijf) ||
                 string.IsNullOrWhiteSpace(rdwCompany.Plaats) ||
                 string.IsNullOrWhiteSpace(rdwCompany.Straat)
-            ){
+            ) {
                 continue;
             }
 
@@ -86,7 +87,7 @@ internal class GarageInfoService : IGarageInfoService
         {
             throw new Exception("Street is empty");
         }
-        
+
         if (string.IsNullOrWhiteSpace(houseNumber))
         {
             throw new Exception("House number is empty");
@@ -136,13 +137,13 @@ internal class GarageInfoService : IGarageInfoService
         var details = JsonSerializer.Deserialize<GoogleApiDetailPlaceItem>(placeDetailsJson)!;
         item.LargeData = new GarageLookupLargeItem()
         {
-            Id = item.LargeData == null ? Guid.NewGuid() : item.LargeData.Id, 
+            Id = item.LargeData == null ? Guid.NewGuid() : item.LargeData.Id,
             GoogleApiDetailsJson = placeDetailsJson
         };
 
         // Set small first photo (if exist)
         var reference = details.result.photos?[0].photo_reference;
-        if(!string.IsNullOrEmpty(reference))
+        if (!string.IsNullOrEmpty(reference))
         {
             var photo = await _googleApiClient.GetPlacePhotoInBase64(reference, 2000);
             item.LargeData.FirstPlacePhoto = photo;
@@ -155,7 +156,7 @@ internal class GarageInfoService : IGarageInfoService
             null;
         item.PhoneNumber = details.result.formatted_phone_number;
 
-        if(details.result.geometry.location != null)
+        if (details.result.geometry.location != null)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             item.Location = geometryFactory.CreatePoint(new Coordinate(details.result.geometry.location.lng, details.result.geometry.location.lat));
@@ -192,5 +193,24 @@ internal class GarageInfoService : IGarageInfoService
         }
 
         return item;
+    }
+
+    // TODO: Need better investigation
+    public IEnumerable<GarageServiceType> GetRelatedServiceTypes(VehicleType vehicleType)
+    {
+        return vehicleType switch
+        {
+            VehicleType.LightCar => new List<GarageServiceType>()
+            {
+                GarageServiceType.MOTServiceLightVehicle,
+                GarageServiceType.SmallMaintenance,
+                GarageServiceType.GreatMaintenance,
+                GarageServiceType.SeasonalTireChange,
+                GarageServiceType.AirConditioningMaintenance,
+                GarageServiceType.Inspection,
+                GarageServiceType.AcceleratedRegistrationService
+            },
+            _ => new List<GarageServiceType>(),
+        };
     }
 }

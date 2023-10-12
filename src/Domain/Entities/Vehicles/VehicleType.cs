@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AutoHelper.Domain.Entities.Vehicles;
+
+
 public enum VehicleType
 {
     Other,
