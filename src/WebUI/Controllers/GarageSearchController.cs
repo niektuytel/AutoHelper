@@ -3,6 +3,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages.Queries;
+using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
@@ -26,44 +27,5 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class GarageSearchController : ApiControllerBase
 {
-    [HttpGet($"{nameof(SearchGarages)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
-    [ProducesResponseType(typeof(PaginatedList<GarageLookupDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<PaginatedList<GarageLookupDto>> SearchGarages(
-        [FromRoute] string licensePlate,
-        [FromRoute] float latitude,
-        [FromRoute] float longitude,
-        CancellationToken cancellationToken,
-        [FromQuery] int inMetersRange = 5000,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery] string? autoCompleteOnGarageName = null,
-        [FromQuery] string[]? filters = null
-    )
-    {
-        var query = new GetGarageLookupsQuery(
-            licensePlate, 
-            latitude, 
-            longitude, 
-            inMetersRange,
-            autoCompleteOnGarageName,
-            filters,
-            pageNumber, 
-            pageSize
-        );
-
-        return await Mediator.Send(query, cancellationToken);
-    }
-
-
-    [HttpGet($"{nameof(GetGarageServiceTypesByLicensePlate)}/{{licensePlate}}")]
-    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetGarageServiceTypesByLicensePlate([FromRoute] string licensePlate)
-    {
-        var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
-        return await Mediator.Send(query);
-    }
-
 
 }

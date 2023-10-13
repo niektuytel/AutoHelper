@@ -2,12 +2,12 @@
 import { useState } from "react";
 
 import {
-    GarageSearchClient,
-    PaginatedListOfGarageLookupDto,
+    GarageClient,
+    PaginatedListOfGarageLookupBriefDto,
 } from "../../app/web-api-client";
 
 function useGarageSearchServiceTypes(licensePlate: string) {
-    const garageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
+    const garageSearchClient = new GarageClient(process.env.PUBLIC_URL);
 
     const fetchGarageServiceTypesOnLicense = async (licensePlate: string) => {
         try {

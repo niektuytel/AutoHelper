@@ -2,7 +2,7 @@
 // Used to get user id to pass the api, nswag does not integrate this functionality
 // to pass the bearer token(IDToken) to the api with user specific data 
 
-import { GarageClient, GarageRegisterClient } from "./web-api-client";
+import { GarageAccountClient } from "./web-api-client";
 
 async function fetchWithToken(accessToken: Promise<string>, url: RequestInfo, init?: RequestInit): Promise<Response> {
     const resolvedToken = await accessToken;
@@ -16,14 +16,8 @@ async function fetchWithToken(accessToken: Promise<string>, url: RequestInfo, in
     return window.fetch(url, request);
 }
 
-export function GetGarageClient(accessToken: Promise<string>): GarageClient {
-    const client = new GarageClient(process.env.PUBLIC_URL, { fetch: (url: RequestInfo, init?: RequestInit) => fetchWithToken(accessToken, url, init) });
+export function GetGarageAccountClient(accessToken: Promise<string>): GarageAccountClient {
+    const client = new GarageAccountClient(process.env.PUBLIC_URL, { fetch: (url: RequestInfo, init?: RequestInit) => fetchWithToken(accessToken, url, init) });
     return client;
 }
-
-export function GetGarageRegisterClient(accessToken: Promise<string>): GarageRegisterClient {
-    const client = new GarageRegisterClient(process.env.PUBLIC_URL, { fetch: (url: RequestInfo, init?: RequestInit) => fetchWithToken(accessToken, url, init) });
-    return client;
-}
-
 

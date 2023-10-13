@@ -61,11 +61,11 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     if (userRole == ROLES.GARAGE) {
         return (
             <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE.OVERVIEW} />
-                <ListItemLink disabled={configurationIndex < 4} primary={t('planning_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE.PLANNING} />
-                <ListItemLink disabled={configurationIndex < 3} primary={t('Employees')} icon={<GroupIcon />} to={ROUTES.GARAGE.EMPLOYEES} />
-                <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE.SERVICES} />
-                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE.SETTINGS} />
+                <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
+                <ListItemLink disabled={configurationIndex < 4} primary={t('planning_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE_ACCOUNT.PLANNING} />
+                <ListItemLink disabled={configurationIndex < 3} primary={t('Employees')} icon={<GroupIcon />} to={ROUTES.GARAGE_ACCOUNT.EMPLOYEES} />
+                <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
+                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
             </List>
         );
     }

@@ -3,14 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageClient, GarageRegisterClient, GarageLocationItem, GarageItem, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
+import { BriefBankingDetailsDto, BriefLocationDto, CreateGarageCommand, GarageBankingDetailsItem, GarageAccountClient, GarageLocationItem, GarageItem, UpdateGarageSettingsCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
-import { GetGarageClient, GetGarageRegisterClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
@@ -58,8 +58,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageClient(accessToken);
-    const garageRegisterClient = GetGarageRegisterClient(accessToken);
+    const garageClient = GetGarageAccountClient(accessToken);
 
 
     const initialGarageSettings = new GarageItem({
@@ -127,7 +126,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         }
     );
 
-    const createMutation = useMutation(garageRegisterClient.create.bind(garageRegisterClient), {
+    const createMutation = useMutation(garageClient.create.bind(garageClient), {
         onSuccess: (response) => {
             // Enable garage overview + services pages
             setConfigurationIndex(2, userRole)

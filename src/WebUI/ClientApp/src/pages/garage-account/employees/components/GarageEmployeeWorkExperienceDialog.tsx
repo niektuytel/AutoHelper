@@ -13,7 +13,7 @@ import { useNavigate } from "react-router";
 import { GarageEmployeeWorkExperienceItemDto, GarageServiceItemDto, UpdateGarageEmployeeCommand } from "../../../../app/web-api-client";
 import { ROUTES } from "../../../../constants/routes";
 import { getTitleForServiceType } from "../../defaultGarageService";
-import { GetGarageClient } from "../../../../app/GarageClient";
+import { GetGarageAccountClient } from "../../../../app/GarageClient";
 import useGarageEmployees from "../useGarageEmployees";
 import useConfirmationStep from "../../../../hooks/useConfirmationStep";
 import useUserRole from "../../../../hooks/useUserRole";
@@ -35,7 +35,7 @@ export default function ExperienceDialog({ dialogOpen, setDialogOpen, selectedEx
     const { setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageClient(accessToken);
+    const garageClient = GetGarageAccountClient(accessToken);
     const navigate = useNavigate();
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();

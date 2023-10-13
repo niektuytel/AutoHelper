@@ -1,7 +1,10 @@
 ﻿import { useParams } from "react-router";
 
 export const ROUTES = {
-    GARAGE: {
+    SELECT_VEHICLE: "/select-vehicle",
+    SELECT_GARAGE: "/select-garage",
+    GARAGE: "/garage",
+    GARAGE_ACCOUNT: {
         OVERVIEW: "/garage/overview",
         PLANNING: "/garage/planning",
         SERVICES: "/garage/services",
@@ -11,7 +14,4 @@ export const ROUTES = {
     USER: {
         OVERVIEW: "/user/overview"
     },
-    SELECT_VEHICLE: "/select-vehicle",
-    SELECT_GARAGE: "/select-garage",
-    SELECT_SERVICES: "/select-services",
 };

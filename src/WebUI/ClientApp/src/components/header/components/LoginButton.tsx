@@ -75,7 +75,7 @@ const LoginButton: React.FC<IProps> = ({ asIcon }) => {
     const handleLogin = useCallback((role: string) => {
         const redirectSettings = role === ROLES.GARAGE
             ? {
-                returnTo: ROUTES.GARAGE.OVERVIEW
+                returnTo: ROUTES.GARAGE_ACCOUNT.OVERVIEW
             }
             : {
                 returnTo: ROUTES.SELECT_VEHICLE

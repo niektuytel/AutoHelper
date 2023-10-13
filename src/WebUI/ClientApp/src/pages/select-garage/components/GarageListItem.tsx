@@ -10,14 +10,18 @@ import StarIcon from '@mui/icons-material/Star';
 import { useNavigate } from 'react-router';
 
 // own imports
-import { GarageLookupDto } from '../../../app/web-api-client';
+import { GarageLookupBriefDto, GarageServiceType } from '../../../app/web-api-client';
 import { DAYSINWEEKSHORT } from '../../../constants/days';
+import { ROUTES } from '../../../constants/routes';
 
 interface IProps {
-    garage: GarageLookupDto;
+    garage: GarageLookupBriefDto;
+    licensePlate: string;
+    lat: string;
+    lng: string;
 }
 
-export default ({ garage }: IProps) => {
+export default ({ garage, licensePlate, lat, lng }: IProps) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -36,13 +40,7 @@ export default ({ garage }: IProps) => {
 
     // Handler for click
     const handleClick = () => {
-        let identifier = garage.garageId;
-        if (!identifier && garage.website) {
-            const url = new URL(garage.website);
-            identifier = encodeURIComponent(url.hostname);
-        }
-
-        navigate(`${window.location.pathname}/${identifier}`);
+        navigate(`${ROUTES.GARAGE}/${garage.identifier}?licensePlate=${licensePlate}&lat=${lat}&lng=${lng}`);
     };
 
 
@@ -114,6 +112,15 @@ export default ({ garage }: IProps) => {
                         {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
                     <Box>
+                        {garage.knownServices && garage.knownServices.map(service => service !== GarageServiceType.Other &&
+                            <Chip
+                                key={service}
+                                label={t(`${GarageServiceType[service]}.Filter`)}
+                                sx={{ mr: 1, mt: 1 }}
+                                variant="outlined"
+                                size="small"
+                            />
+                        )}
                         {garage.hasPickupService === true &&
                             <Chip
                                 variant="outlined"

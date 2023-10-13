@@ -8,7 +8,7 @@ import { ContactItem, CreateGarageEmployeeCommand, GarageClient, GarageEmployeeW
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
-import { GetGarageClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
@@ -17,7 +17,7 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageClient(accessToken);
+    const garageClient = GetGarageAccountClient(accessToken);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -49,7 +49,7 @@ function useGarageEmployees(onResponse: (data: any) => void) {
             // redirect + enable garage register page
             if (response.status === 404) {
                 setConfigurationIndex(1, userRole);
-                navigate(ROUTES.GARAGE.SETTINGS);
+                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
                 return;
             }
 

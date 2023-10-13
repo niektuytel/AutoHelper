@@ -29,7 +29,7 @@ import { getTitleForServiceType } from "../../defaultGarageService";
 import { ROUTES } from "../../../../constants/routes";
 import useConfirmationStep from "../../../../hooks/useConfirmationStep";
 import useUserRole from "../../../../hooks/useUserRole";
-import { GetGarageClient } from "../../../../app/GarageClient";
+import { GetGarageAccountClient } from "../../../../app/GarageClient";
 import GarageEmployeeWorkExperienceDialog from "./GarageEmployeeWorkExperienceDialog";
 import GarageEmployeeWorkSchemaDialog from "./GarageEmployeeWorkSchemaDialog";
 
@@ -50,7 +50,7 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageClient(accessToken);
+    const garageClient = GetGarageAccountClient(accessToken);
     const navigate = useNavigate();
 
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
@@ -91,7 +91,7 @@ export default ({ dialogOpen, setDialogOpen, mode, employee, createEmployee, upd
         } catch (response: any) {
             if (response.status === 404) {
                 setConfigurationIndex(1, userRole);
-                navigate(ROUTES.GARAGE.SETTINGS);
+                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
                 return;
             }
             throw response;

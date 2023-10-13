@@ -2,8 +2,8 @@
 import { useState } from "react";
 
 import {
-    GarageSearchClient,
-    PaginatedListOfGarageLookupDto,
+    GarageClient,
+    PaginatedListOfGarageLookupBriefDto,
 } from "../../app/web-api-client";
 
 function useGarageSearch(
@@ -14,10 +14,10 @@ function useGarageSearch(
     pageNumber: number,
     pageSize: number
 ) {
-    const garageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
+    const garageSearchClient = new GarageClient(process.env.PUBLIC_URL);
 
-    const [localGarages, setLocalGarages] = useState<PaginatedListOfGarageLookupDto>(
-        new PaginatedListOfGarageLookupDto()
+    const [localGarages, setLocalGarages] = useState<PaginatedListOfGarageLookupBriefDto>(
+        new PaginatedListOfGarageLookupBriefDto()
     );
 
     const fetchGaragesData = async (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Container, Grid, Hidden, IconButton, Theme, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Container, Grid, Hidden, IconButton, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
@@ -20,12 +20,15 @@ import { COLORS } from "../../constants/colors";
 import { useParams } from "react-router";
 import HeaderLicensePlateSearch from "./components/HeaderLicensePlateSearch";
 import { ROUTES } from "../../constants/routes";
+import { GarageLookupDto } from "../../app/web-api-client";
 
 interface IProps {
     showStaticDrawer: boolean;
+    garageLookupIsLoading?: boolean | undefined;
+    garageLookup?: GarageLookupDto | undefined;
 }
 
-const Header = ({ showStaticDrawer }: IProps) => {
+const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [onMenu, setOnMenu] = useState(false);
@@ -37,6 +40,14 @@ const Header = ({ showStaticDrawer }: IProps) => {
     var badgeContent = 0;
     items.forEach(item => badgeContent += item.quantity);
 
+    // 1. State to track the currently focused button
+    const [focusedButton, setFocusedButton] = useState<string | null>("#services");
+
+    // 2. Handler function to update the URL and set the focused button
+    const handleButtonClick = (hash: string) => {
+        window.location.hash = hash;
+        setFocusedButton(hash);
+    };
 
     // Step 1: Create a ref for the header and a state to store its height.
     const headerRef = React.useRef<HTMLDivElement | null>(null);
@@ -50,6 +61,7 @@ const Header = ({ showStaticDrawer }: IProps) => {
     }, [headerRef.current]);
 
     const isEditableLicensePlate = location.pathname.startsWith(ROUTES.SELECT_GARAGE);
+    const has3Sections = isEditableLicensePlate || (garageLookupIsLoading || garageLookup);
     return (
         <>
             <div style={{ margin: `${headerHeight}px 0` }} />
@@ -64,27 +76,71 @@ const Header = ({ showStaticDrawer }: IProps) => {
             >
                 <StyledToolbar>
                     <Grid container>
-                        <Grid item xs={isEditableLicensePlate ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
+                        <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small />
                         </Grid>
-                        { isEditableLicensePlate &&
+                        { has3Sections &&
                             <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <HeaderLicensePlateSearch/>
+                                {isEditableLicensePlate && <HeaderLicensePlateSearch />}
+                                {garageLookupIsLoading && <Skeleton variant='rounded' />}
+                                {garageLookup?.name &&
+                                    <Typography 
+                                        variant={"h5"} 
+                                        sx={{
+                                            color: "black",
+                                            fontFamily: "Dubai light",
+                                            cursor: "pointer",
+                                            marginTop: "5px",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                            maxWidth: "100%"  // or set to any value that fits well in your layout
+                                        }}
+                                    >
+                                        <b>{garageLookup.name}</b>
+                                    </Typography>
+                                }
                             </Grid>
                         }
-                        <Grid item xs={isEditableLicensePlate ? 4 : 6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
-                            <Hidden xsDown>
-                                {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
-                                    <StyledIconButton onClick={() => setCartOpen(true)}>
-                                        <StyledBadge badgeContent={badgeContent} color="error">
-                                            <ShoppingCartOutlinedIcon />
-                                        </StyledBadge>
+                        <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
+                            {garageLookup ?
+                                <>
+                                    <Hidden mdDown>
+                                        <Button
+                                            style={{ color: 'black', fontWeight: focusedButton === '#aboutUs' ? 'bold' : 'normal' }}
+                                            onClick={() => handleButtonClick('#aboutUs')}
+                                        >
+                                            About Us
+                                        </Button>
+                                        <Button
+                                            style={{ color: 'black', fontWeight: focusedButton === '#services' ? 'bold' : 'normal' }}
+                                            onClick={() => handleButtonClick('#services')}
+                                        >
+                                            Services
+                                        </Button>
+                                    </Hidden>
+                                    <Hidden mdUp>
+                                        <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
+                                            <MenuIcon />
+                                        </StyledIconButton>
+                                    </Hidden>
+                                </>
+                                :
+                                <>
+                                    <Hidden xsDown>
+                                        {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
+                                            <StyledIconButton onClick={() => setCartOpen(true)}>
+                                                <StyledBadge badgeContent={badgeContent} color="error">
+                                                    <ShoppingCartOutlinedIcon />
+                                                </StyledBadge>
+                                            </StyledIconButton>
+                                        }
+                                    </Hidden>
+                                    <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
+                                        <MenuIcon />
                                     </StyledIconButton>
-                                }
-                            </Hidden>
-                            <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
-                                <MenuIcon />
-                            </StyledIconButton>
+                                </>
+                            }
                         </Grid>
                     </Grid>
                 </StyledToolbar>

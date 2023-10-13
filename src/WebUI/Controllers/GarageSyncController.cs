@@ -29,62 +29,35 @@ using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate
 
 namespace AutoHelper.WebUI.Controllers;
 
-public class GarageController : ApiControllerBase
+[Authorize]// TODO: (Policy="Admin")
+public class GarageSyncController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
 
-    public GarageController(ICurrentUserService currentUser, IIdentityService identityService)
+    public GarageSyncController(ICurrentUserService currentUser, IIdentityService identityService)
     {
         _currentUser = currentUser;
         _identityService = identityService;
     }
 
-    [HttpGet($"{nameof(SearchGarages)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
-    [ProducesResponseType(typeof(PaginatedList<GarageLookupBriefDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<PaginatedList<GarageLookupBriefDto>> SearchGarages(
-        [FromRoute] string licensePlate,
-        [FromRoute] float latitude,
-        [FromRoute] float longitude,
-        CancellationToken cancellationToken,
-        [FromQuery] int inMetersRange = 5000,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10,
-        [FromQuery] string? autoCompleteOnGarageName = null,
-        [FromQuery] string[]? filters = null
-    )
-    {
-        var query = new GetGarageLookupsQuery(
-            licensePlate,
-            latitude,
-            longitude,
-            inMetersRange,
-            autoCompleteOnGarageName,
-            filters,
-            pageNumber,
-            pageSize
-        );
 
-        return await Mediator.Send(query, cancellationToken);
+    [HttpGet($"{nameof(AnalyzeGarageLookupData)}")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<int> AnalyzeGarageLookupData(CancellationToken cancellationToken)
+    {
+        // TODO: Check if all current garages are up to date
+        return -1;
     }
 
-    [HttpGet($"{nameof(GetGarageServiceTypesByLicensePlate)}/{{licensePlate}}")]
-    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
+    [HttpPut($"{nameof(UpsertGarageLookups)}")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetGarageServiceTypesByLicensePlate([FromRoute] string licensePlate)
+    public async Task<bool> UpsertGarageLookups(CancellationToken cancellationToken, [FromQuery] int maxInsertAmount = 1000)
     {
-        var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
-        return await Mediator.Send(query);
-    }
+        // TODO: Start here hangfire sync tool
 
-
-    [HttpGet($"{nameof(GetLookup)}/{{identifier}}")]
-    [ProducesResponseType(typeof(GarageLookupDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<GarageLookupDto> GetLookup([FromRoute] string identifier, [FromQuery] string licensePlate)
-    {
-        var request = new GetGarageLookupQuery(identifier, licensePlate);
-        return await Mediator.Send(request);
+        return false;
     }
 }

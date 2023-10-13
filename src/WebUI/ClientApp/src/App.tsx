@@ -11,16 +11,17 @@ import SelectGarage from './pages/select-garage/SelectGarage';
 import AuthCallback from './pages/AuthCallbackPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { ROUTES } from './constants/routes';
-import GarageOverview from './pages/garage/overview/GarageOverview';
-import GarageSettings from './pages/garage/settings/GarageSettings';
-import GarageEmployees from './pages/garage/employees/GarageEmployees';
-import GarageServices from './pages/garage/services/GarageServices';
-import GarageAgenda from './pages/garage/agenda/GarageAgenda';
+import GarageOverview from './pages/garage-account/overview/GarageOverview';
+import GarageSettings from './pages/garage-account/settings/GarageSettings';
+import GarageEmployees from './pages/garage-account/employees/GarageEmployees';
+import GarageServices from './pages/garage-account/services/GarageServices';
 import { ROLES } from './constants/roles';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
 import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
 import theme from './constants/theme';
+import GarageAgenda from './pages/garage-account/agenda/GarageAgenda';
+import Garage from './pages/garage/Garage';
 
 export default () => {
     const location = useLocation();
@@ -35,9 +36,9 @@ export default () => {
         // redirect when user is on confirmation step 1
         useEffect(() => {
             if (userRole === ROLES.GARAGE) {
-                if (location.pathname != ROUTES.GARAGE.SETTINGS && confirmationStepIndex == 1) {
+                if (location.pathname != ROUTES.GARAGE_ACCOUNT.SETTINGS && confirmationStepIndex == 1) {
                     console.log("Confirmation is in step 1, we need more information. (redirecting to the settings page)")
-                    navigate(ROUTES.GARAGE.SETTINGS);
+                    navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
                 }
             }
         }, [navigate, userRole, confirmationStepIndex]);
@@ -60,49 +61,92 @@ export default () => {
 
     return <>
         <ThemeProvider theme={theme}>
-            <Header showStaticDrawer={showStaticDrawer} />
             <Routes>
-                <Route path="/callback" element={<AuthCallback />} />{/*TODO: Maybe able to remove???*/}
-                <Route path="*" element={<NotFoundPage />} />
+                <Route path="/callback" element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <AuthCallback />
+                    </>
+                } />{/*TODO: Maybe able to remove???*/}
+                <Route path="*" element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <NotFoundPage />
+                    </>
+                } />
                 <Route path='/' element={<Navigate to="/select-vehicle" />} />
-                <Route path={`${ROUTES.SELECT_VEHICLE}`} element={<SelectVehicle />} />
-                <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate`} element={<SelectVehicle />} />
-                <Route path={`${ROUTES.SELECT_GARAGE}/:license_plate/:lat/:lng`} element={<SelectGarage />} />
-                <Route path={`${ROUTES.SELECT_SERVICES}/:license_plate/:lat/:lng/:garage_id`} element={<SelectGarage />} />
-                <Route path={`${ROUTES.GARAGE.OVERVIEW}`} element={
-                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                        <GarageRouteContent>
-                            <GarageOverview/>
-                        </GarageRouteContent>
-                    </AuthenticatedRoute>
+                <Route path={`${ROUTES.SELECT_VEHICLE}`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <SelectVehicle />
+                    </>
                 } />
-                <Route path={`${ROUTES.GARAGE.PLANNING}`} element={
-                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                        <GarageRouteContent>
-                            <GarageAgenda />
-                        </GarageRouteContent>
-                    </AuthenticatedRoute>
+                <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <SelectVehicle />
+                    </>
                 } />
-                <Route path={`${ROUTES.GARAGE.SERVICES}`} element={
-                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                        <GarageRouteContent>
-                            <GarageServices />
-                        </GarageRouteContent>
-                    </AuthenticatedRoute>
+                <Route path={`${ROUTES.SELECT_GARAGE}/:license_plate/:lat/:lng`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <SelectGarage />
+                    </>
                 } />
-                <Route path={`${ROUTES.GARAGE.EMPLOYEES}`} element={
-                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                        <GarageRouteContent>
-                            <GarageEmployees />
-                        </GarageRouteContent>
-                    </AuthenticatedRoute>
+                <Route path={`${ROUTES.GARAGE}/:identifier`} element={
+                    <>
+                        <Garage />
+                    </>
+                } />{/* ?licensePlate= ?lat= &lng=  */}
+                <Route path={`${ROUTES.GARAGE_ACCOUNT.OVERVIEW}`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                            <GarageRouteContent>
+                                <GarageOverview/>
+                            </GarageRouteContent>
+                        </AuthenticatedRoute>
+                    </>
                 } />
-                <Route path={`${ROUTES.GARAGE.SETTINGS}`} element={
-                    <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                        <GarageRouteContent>
-                            <GarageSettings />
-                        </GarageRouteContent>
-                    </AuthenticatedRoute>
+                <Route path={`${ROUTES.GARAGE_ACCOUNT.PLANNING}`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                            <GarageRouteContent>
+                                <GarageAgenda />
+                            </GarageRouteContent>
+                        </AuthenticatedRoute>
+                    </>
+                } />
+                <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICES}`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                            <GarageRouteContent>
+                                <GarageServices />
+                            </GarageRouteContent>
+                        </AuthenticatedRoute>
+                    </>
+                } />
+                <Route path={`${ROUTES.GARAGE_ACCOUNT.EMPLOYEES}`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                            <GarageRouteContent>
+                                <GarageEmployees />
+                            </GarageRouteContent>
+                        </AuthenticatedRoute>
+                    </>
+                } />
+                <Route path={`${ROUTES.GARAGE_ACCOUNT.SETTINGS}`} element={
+                    <>
+                        <Header showStaticDrawer={showStaticDrawer} />
+                        <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                            <GarageRouteContent>
+                                <GarageSettings />
+                            </GarageRouteContent>
+                        </AuthenticatedRoute>
+                    </>
                 } />
             </Routes>
             <StatusSnackbar />

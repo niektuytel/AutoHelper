@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 // own imports
 import { HashValues } from "../../../i18n/HashValues";
-import { GarageLookupDto, GarageSearchClient, GarageServiceType, PaginatedListOfGarageLookupDto } from "../../../app/web-api-client";
+import { GarageLookupDto, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
 import useGarageSearchServiceTypes from "../useGarageSearchServiceTypes";
 
 
@@ -20,7 +20,7 @@ interface IProps
     longitude: number,
     in_km_range: number,
     page_size: number,
-    onSearchExecuted: (data: PaginatedListOfGarageLookupDto) => void;
+    onSearchExecuted: (data: PaginatedListOfGarageLookupBriefDto) => void;
 }
 
 export default ({ license_plate, latitude, longitude, in_km_range, page_size, onSearchExecuted }: IProps) => {
@@ -37,7 +37,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDto[]>([]);
 
     const { loading, garageServiceTypes } = useGarageSearchServiceTypes(license_plate!);
-    const useGarageSearchClient = new GarageSearchClient(process.env.PUBLIC_URL);
+    const useGarageClient = new GarageClient(process.env.PUBLIC_URL);
 
     useEffect(() => {
         if (queryParams.has("filters")) {
@@ -47,9 +47,9 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
         
     }, [window.location.search]);
 
-    const fetchGaragesData = async (autocomplete: string, filterValues: string[]): Promise<PaginatedListOfGarageLookupDto> => {
+    const fetchGaragesData = async (autocomplete: string, filterValues: string[]): Promise<PaginatedListOfGarageLookupBriefDto> => {
         try {
-            const response = await useGarageSearchClient.searchGarages(
+            const response = await useGarageClient.searchGarages(
                 license_plate,
                 latitude,
                 longitude,
@@ -119,23 +119,6 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
 
     return <>
         <Box>
-            <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%" }}>
-                {loading ?
-                    <>
-                        <Skeleton variant="rounded" width="100%" height="32px" sx={{ mb: 1 }} />
-                    </>
-                    :
-                    garageServiceTypes!.map(service =>
-                        <Chip
-                            key={service}
-                            label={t(`${GarageServiceType[service]}.Filter`)}
-                            variant={filters.includes(String(service)) ? "filled" : "outlined"}
-                            sx={{ mr: 1, mb: 1 }}
-                            onClick={() => handleChipClick(String(service))}
-                        />
-                    )
-                }
-            </Box>
             <TextField
                 fullWidth
                 autoComplete="new-password" // Use this line instead of autoComplete="off", because it is not working
@@ -179,6 +162,23 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                     }
                 }}
             />
+            <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%" }}>
+                {loading ?
+                    <>
+                        <Skeleton variant="rounded" width="100%" height="32px" sx={{ mt: 1 }} />
+                    </>
+                    :
+                    garageServiceTypes!.map(service =>
+                        <Chip
+                            key={service}
+                            label={t(`${GarageServiceType[service]}.Filter`)}
+                            variant={filters.includes(String(service)) ? "filled" : "outlined"}
+                            sx={{ mr: 1, mt: 1 }}
+                            onClick={() => handleChipClick(String(service))}
+                        />
+                    )
+                }
+            </Box>
         </Box>
     </>
 }

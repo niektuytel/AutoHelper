@@ -63,6 +63,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Controllers\GarageRegisterController.cs" />
+      <Compile Remove="Controllers\GarageSearchController.cs" />
       <Compile Remove="Controllers\TodoItemsController.cs" />
       <Compile Remove="Controllers\TodoListsController.cs" />
       <Compile Remove="Models\Response\VehicleInformationResponse.cs" />
@@ -82,7 +84,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ClientApp\src\pages\garage\" />
+      <Folder Include="ClientApp\src\pages\garage\components\" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

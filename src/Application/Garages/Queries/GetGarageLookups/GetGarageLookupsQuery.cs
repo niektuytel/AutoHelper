@@ -22,7 +22,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 
-public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
+public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupBriefDto>>
 {
     public GetGarageLookupsQuery(
         string licensePlate,
@@ -55,7 +55,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupDto>>
     public int PageSize { get; private set; }
 }
 
-public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQuery, PaginatedList<GarageLookupDto>>
+public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQuery, PaginatedList<GarageLookupBriefDto>>
 {
     private readonly IVehicleInfoService _vehicleInfoService;
     private readonly IGarageInfoService _garageInfoService;
@@ -70,7 +70,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         _mapper = mapper;
     }
 
-    public async Task<PaginatedList<GarageLookupDto>> Handle(GetGarageLookupsQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<GarageLookupBriefDto>> Handle(GetGarageLookupsQuery request, CancellationToken cancellationToken)
     {
         var queryable = _context.GarageLookups
             .AsNoTracking()
@@ -95,10 +95,10 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         var pageRecords = queryable
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(item => new GarageLookupDto(item, item.Location!.Distance(userLocation)))
+            .Select(item => new GarageLookupBriefDto(item, item.Location!.Distance(userLocation)))
             .ToList();
 
-        var pagedResults = new PaginatedList<GarageLookupDto>(
+        var pagedResults = new PaginatedList<GarageLookupBriefDto>(
             pageRecords,
             totalRecords,
             request.PageNumber,

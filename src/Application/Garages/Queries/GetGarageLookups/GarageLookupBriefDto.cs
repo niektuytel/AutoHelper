@@ -7,16 +7,18 @@ using NetTopologySuite.Index.HPRtree;
 
 namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 
-public class GarageLookupDto
+public class GarageLookupBriefDto
 {
-    public GarageLookupDto(GarageLookupItem garageLookupItem, double distanceInMeters)
+    public GarageLookupBriefDto(GarageLookupItem garageLookupItem, double distanceInMeters)
     {
         GarageId = garageLookupItem.GarageId;
+        Identifier = garageLookupItem.Identifier;
         Name = garageLookupItem.Name;
         Address = garageLookupItem.Address;
         City = garageLookupItem.City;
         Website = garageLookupItem.Website;
         DaysOfWeek = garageLookupItem.DaysOfWeek == null ? new int[0] : garageLookupItem.DaysOfWeek;
+        KnownServices = garageLookupItem.KnownServices == null ? new GarageServiceType[0] : garageLookupItem.KnownServices;
         DistanceInMeter = (int)distanceInMeters;
         Rating = garageLookupItem.Rating;
         UserRatingsTotal = garageLookupItem.UserRatingsTotal;
@@ -25,6 +27,8 @@ public class GarageLookupDto
     }
 
     public Guid? GarageId { get; set; }
+
+    public string Identifier { get; set; }
 
     public string Name { get; set; }
 
@@ -35,6 +39,8 @@ public class GarageLookupDto
     public string? Website { get; set; }
 
     public int[] DaysOfWeek { get; set; }
+
+    public GarageServiceType[] KnownServices { get; set; }
 
     public float? Rating { get; set; }
 

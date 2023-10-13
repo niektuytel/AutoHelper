@@ -10,7 +10,7 @@ import { colorOnIndex } from "../../i18n/ColorValues";
 import useGarageSearch from "./useGarageSearch";
 import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";
-import { GarageLookupDto, PaginatedListOfGarageLookupDto } from "../../app/web-api-client";
+import { GarageLookupDto, PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
 import GarageSearchField from "./components/GarageSearchField";
 import { useQueryClient } from "react-query";
 
@@ -30,7 +30,7 @@ export default ({ }: IProps) => {
         fetchGarages(license_plate!, Number(lat!), Number(lng!), inMeterRange, value, pageSize, null, null);
     };
 
-    const handleSearchExecuted = (data: PaginatedListOfGarageLookupDto) => {
+    const handleSearchExecuted = (data: PaginatedListOfGarageLookupBriefDto) => {
         // Assuming setGaragesData is what you named the updater function
         setGaragesData(data);
     };
@@ -42,7 +42,7 @@ export default ({ }: IProps) => {
                     <Box sx={{ backgroundColor: COLORS.BLUE, borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px", p:1 }}>
                         <Paper
                             elevation={2}
-                            sx={{ p: 1, width: "initial", position: "relative", mt:2 }}
+                            sx={{ p: 1, width: "initial", position: "relative", marginTop:"55px" }}
                         >
                             <GarageSearchField
                                 license_plate={license_plate!}
@@ -65,7 +65,13 @@ export default ({ }: IProps) => {
                             </>
                             :
                             garages?.items?.map((item, index) => (
-                                <GarageListItem key={`garageItem-${index}`} garage={item}/>
+                                <GarageListItem
+                                    key={`garageItem-${index}`}
+                                    garage={item}
+                                    licensePlate={license_plate!}
+                                    lat={lat!}
+                                    lng={lng!}
+                                />
                             ))
                         }
                     </Box>

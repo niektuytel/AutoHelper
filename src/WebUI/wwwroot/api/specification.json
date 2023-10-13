@@ -6,12 +6,12 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Garage/GetSettings": {
+    "/api/GarageAccount/GetSettings": {
       "get": {
         "tags": [
-          "Garage"
+          "GarageAccount"
         ],
-        "operationId": "Garage_GetSettings",
+        "operationId": "GarageAccount_GetSettings",
         "responses": {
           "200": {
             "description": "",
@@ -36,12 +36,12 @@
         }
       }
     },
-    "/api/Garage/GetOverview": {
+    "/api/GarageAccount/GetOverview": {
       "get": {
         "tags": [
-          "Garage"
+          "GarageAccount"
         ],
-        "operationId": "Garage_GetOverview",
+        "operationId": "GarageAccount_GetOverview",
         "responses": {
           "200": {
             "description": "",
@@ -66,12 +66,12 @@
         }
       }
     },
-    "/api/Garage/GetServices": {
+    "/api/GarageAccount/GetServices": {
       "get": {
         "tags": [
-          "Garage"
+          "GarageAccount"
         ],
-        "operationId": "Garage_GetServices",
+        "operationId": "GarageAccount_GetServices",
         "responses": {
           "200": {
             "description": "",
@@ -99,12 +99,12 @@
         }
       }
     },
-    "/api/Garage/GetEmployees": {
+    "/api/GarageAccount/GetEmployees": {
       "get": {
         "tags": [
-          "Garage"
+          "GarageAccount"
         ],
-        "operationId": "Garage_GetEmployees",
+        "operationId": "GarageAccount_GetEmployees",
         "responses": {
           "200": {
             "description": "",
@@ -132,306 +132,12 @@
         }
       }
     },
-    "/api/Garage/CreateService": {
+    "/api/GarageAccount/Create": {
       "post": {
         "tags": [
-          "Garage"
+          "GarageAccount"
         ],
-        "operationId": "Garage_CreateService",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateGarageServiceCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageServiceItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/CreateEmployee": {
-      "post": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_CreateEmployee",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateGarageEmployeeCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageEmployeeItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/UpdateSettings": {
-      "put": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_UpdateSettings",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGarageSettingsCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/UpdateService": {
-      "put": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_UpdateService",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGarageServiceCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageServiceItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/UpdateEmployee": {
-      "put": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_UpdateEmployee",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateGarageEmployeeCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageEmployeeItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/DeleteService/{id}": {
-      "put": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_DeleteService",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageServiceItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/DeleteEmployee/{id}": {
-      "put": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_DeleteEmployee",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageEmployeeItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/GarageRegister/Create": {
-      "post": {
-        "tags": [
-          "GarageRegister"
-        ],
-        "operationId": "GarageRegister_Create",
+        "operationId": "GarageAccount_Create",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -468,12 +174,306 @@
         }
       }
     },
-    "/api/GarageSearch/SearchGarages/{licensePlate}/{latitude}/{longitude}": {
+    "/api/GarageAccount/CreateService": {
+      "post": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_CreateService",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageServiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/CreateEmployee": {
+      "post": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_CreateEmployee",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageEmployeeCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageEmployeeItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/UpdateSettings": {
+      "put": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_UpdateSettings",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGarageSettingsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/UpdateService": {
+      "put": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_UpdateService",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGarageServiceCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/UpdateEmployee": {
+      "put": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_UpdateEmployee",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGarageEmployeeCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageEmployeeItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/DeleteService/{id}": {
+      "put": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_DeleteService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageServiceItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/DeleteEmployee/{id}": {
+      "put": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_DeleteEmployee",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageEmployeeItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/SearchGarages/{licensePlate}/{latitude}/{longitude}": {
       "get": {
         "tags": [
-          "GarageSearch"
+          "Garage"
         ],
-        "operationId": "GarageSearch_SearchGarages",
+        "operationId": "Garage_SearchGarages",
         "parameters": [
           {
             "name": "licensePlate",
@@ -565,7 +565,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedListOfGarageLookupDto"
+                  "$ref": "#/components/schemas/PaginatedListOfGarageLookupBriefDto"
                 }
               }
             }
@@ -583,12 +583,12 @@
         }
       }
     },
-    "/api/GarageSearch/GetGarageServiceTypesByLicensePlate/{licensePlate}": {
+    "/api/Garage/GetGarageServiceTypesByLicensePlate/{licensePlate}": {
       "get": {
         "tags": [
-          "GarageSearch"
+          "Garage"
         ],
-        "operationId": "GarageSearch_GetGarageServiceTypesByLicensePlate",
+        "operationId": "Garage_GetGarageServiceTypesByLicensePlate",
         "parameters": [
           {
             "name": "licensePlate",
@@ -611,6 +611,130 @@
                   "items": {
                     "$ref": "#/components/schemas/GarageServiceType"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/GetLookup/{identifier}": {
+      "get": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_GetLookup",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageLookupDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageSync/AnalyzeGarageLookupData": {
+      "get": {
+        "tags": [
+          "GarageSync"
+        ],
+        "operationId": "GarageSync_AnalyzeGarageLookupData",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageSync/UpsertGarageLookups": {
+      "put": {
+        "tags": [
+          "GarageSync"
+        ],
+        "operationId": "GarageSync_UpsertGarageLookups",
+        "parameters": [
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
                 }
               }
             }
@@ -1451,67 +1575,6 @@
           }
         ]
       },
-      "CreateGarageServiceCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "description": {
-            "type": "string"
-          },
-          "durationInMinutes": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          }
-        }
-      },
-      "GarageEmployeeItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "garageId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "garage": {
-                "$ref": "#/components/schemas/GarageItem"
-              },
-              "isActive": {
-                "type": "boolean"
-              },
-              "contact": {
-                "$ref": "#/components/schemas/ContactItem"
-              },
-              "workSchema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
-                }
-              },
-              "workExperiences": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
-                }
-              }
-            }
-          }
-        ]
-      },
       "GarageItem": {
         "allOf": [
           {
@@ -1554,6 +1617,135 @@
             }
           }
         ]
+      },
+      "GarageEmployeeItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "userId": {
+                "type": "string"
+              },
+              "garageId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "garage": {
+                "$ref": "#/components/schemas/GarageItem"
+              },
+              "isActive": {
+                "type": "boolean"
+              },
+              "contact": {
+                "$ref": "#/components/schemas/ContactItem"
+              },
+              "workSchema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+                }
+              },
+              "workExperiences": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CreateGarageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/BriefLocationDto"
+          },
+          "bankingDetails": {
+            "$ref": "#/components/schemas/BriefBankingDetailsDto"
+          }
+        }
+      },
+      "BriefLocationDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "float"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "BriefBankingDetailsDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "bankName": {
+            "type": "string"
+          },
+          "kvKNumber": {
+            "type": "string"
+          },
+          "accountHolderName": {
+            "type": "string"
+          },
+          "iban": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateGarageServiceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "description": {
+            "type": "string"
+          },
+          "durationInMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          }
+        }
       },
       "CreateGarageEmployeeCommand": {
         "type": "object",
@@ -1711,82 +1903,14 @@
           }
         }
       },
-      "CreateGarageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "whatsAppNumber": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "location": {
-            "$ref": "#/components/schemas/BriefLocationDto"
-          },
-          "bankingDetails": {
-            "$ref": "#/components/schemas/BriefBankingDetailsDto"
-          }
-        }
-      },
-      "BriefLocationDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "address": {
-            "type": "string"
-          },
-          "postalCode": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          },
-          "country": {
-            "type": "string"
-          },
-          "longitude": {
-            "type": "number",
-            "format": "float"
-          },
-          "latitude": {
-            "type": "number",
-            "format": "float"
-          }
-        }
-      },
-      "BriefBankingDetailsDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "bankName": {
-            "type": "string"
-          },
-          "kvKNumber": {
-            "type": "string"
-          },
-          "accountHolderName": {
-            "type": "string"
-          },
-          "iban": {
-            "type": "string"
-          }
-        }
-      },
-      "PaginatedListOfGarageLookupDto": {
+      "PaginatedListOfGarageLookupBriefDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "items": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GarageLookupDto"
+              "$ref": "#/components/schemas/GarageLookupBriefDto"
             }
           },
           "pageNumber": {
@@ -1809,7 +1933,7 @@
           }
         }
       },
-      "GarageLookupDto": {
+      "GarageLookupBriefDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1817,6 +1941,9 @@
             "type": "string",
             "format": "guid",
             "nullable": true
+          },
+          "identifier": {
+            "type": "string"
           },
           "name": {
             "type": "string"
@@ -1836,6 +1963,12 @@
             "items": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          "knownServices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageServiceType"
             }
           },
           "rating": {
@@ -1859,6 +1992,102 @@
             "type": "boolean"
           }
         }
+      },
+      "GarageLookupDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "garageId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "largeData": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GarageLookupLargeItem"
+              }
+            ]
+          },
+          "knownServices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageServiceType"
+            }
+          },
+          "daysOfWeek": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "userRatingsTotal": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "hasPickupService": {
+            "type": "boolean"
+          },
+          "hasReplacementTransportService": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GarageLookupLargeItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "googleApiDetailsJson": {
+                "type": "string"
+              },
+              "firstPlacePhoto": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
       },
       "VehicleBriefInfoItemDto": {
         "type": "object",
