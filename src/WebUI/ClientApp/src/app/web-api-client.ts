@@ -584,11 +584,15 @@ export class GarageAccountClient implements IGarageAccountClient {
 
 export interface IGarageClient {
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto>;
+    getServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]>;
 
-    getGarageServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]>;
+    searchLookups(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto>;
 
     getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDto>;
+
+    getLookupsStatus(): Promise<GarageLookupsStatusDto>;
+
+    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string>;
 }
 
 export class GarageClient implements IGarageClient {
@@ -601,8 +605,59 @@ export class GarageClient implements IGarageClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchGarages(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto> {
-        let url_ = this.baseUrl + "/api/Garage/SearchGarages/{licensePlate}/{latitude}/{longitude}?";
+    getServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]> {
+        let url_ = this.baseUrl + "/api/Garage/GetServiceTypesByLicensePlate/{licensePlate}";
+        if (licensePlate === undefined || licensePlate === null)
+            throw new Error("The parameter 'licensePlate' must be defined.");
+        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetServiceTypesByLicensePlate(_response);
+        });
+    }
+
+    protected processGetServiceTypesByLicensePlate(response: Response): Promise<GarageServiceType[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceType[]>(null as any);
+    }
+
+    searchLookups(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto> {
+        let url_ = this.baseUrl + "/api/Garage/SearchLookups/{licensePlate}/{latitude}/{longitude}?";
         if (licensePlate === undefined || licensePlate === null)
             throw new Error("The parameter 'licensePlate' must be defined.");
         url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
@@ -638,11 +693,11 @@ export class GarageClient implements IGarageClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSearchGarages(_response);
+            return this.processSearchLookups(_response);
         });
     }
 
-    protected processSearchGarages(response: Response): Promise<PaginatedListOfGarageLookupBriefDto> {
+    protected processSearchLookups(response: Response): Promise<PaginatedListOfGarageLookupBriefDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -665,57 +720,6 @@ export class GarageClient implements IGarageClient {
             });
         }
         return Promise.resolve<PaginatedListOfGarageLookupBriefDto>(null as any);
-    }
-
-    getGarageServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]> {
-        let url_ = this.baseUrl + "/api/Garage/GetGarageServiceTypesByLicensePlate/{licensePlate}";
-        if (licensePlate === undefined || licensePlate === null)
-            throw new Error("The parameter 'licensePlate' must be defined.");
-        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetGarageServiceTypesByLicensePlate(_response);
-        });
-    }
-
-    protected processGetGarageServiceTypesByLicensePlate(response: Response): Promise<GarageServiceType[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(item);
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<GarageServiceType[]>(null as any);
     }
 
     getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDto> {
@@ -763,27 +767,9 @@ export class GarageClient implements IGarageClient {
         }
         return Promise.resolve<GarageLookupDto>(null as any);
     }
-}
 
-export interface IGarageSyncClient {
-
-    analyzeGarageLookupData(): Promise<number>;
-
-    upsertGarageLookups(maxInsertAmount: number | undefined): Promise<boolean>;
-}
-
-export class GarageSyncClient implements IGarageSyncClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    analyzeGarageLookupData(): Promise<number> {
-        let url_ = this.baseUrl + "/api/GarageSync/AnalyzeGarageLookupData";
+    getLookupsStatus(): Promise<GarageLookupsStatusDto> {
+        let url_ = this.baseUrl + "/api/Garage/GetLookupsStatus";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -794,19 +780,18 @@ export class GarageSyncClient implements IGarageSyncClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAnalyzeGarageLookupData(_response);
+            return this.processGetLookupsStatus(_response);
         });
     }
 
-    protected processAnalyzeGarageLookupData(response: Response): Promise<number> {
+    protected processGetLookupsStatus(response: Response): Promise<GarageLookupsStatusDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = GarageLookupsStatusDto.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -821,15 +806,19 @@ export class GarageSyncClient implements IGarageSyncClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<number>(null as any);
+        return Promise.resolve<GarageLookupsStatusDto>(null as any);
     }
 
-    upsertGarageLookups(maxInsertAmount: number | undefined): Promise<boolean> {
-        let url_ = this.baseUrl + "/api/GarageSync/UpsertGarageLookups?";
+    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Garage/UpsertLookups?";
         if (maxInsertAmount === null)
             throw new Error("The parameter 'maxInsertAmount' cannot be null.");
         else if (maxInsertAmount !== undefined)
             url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -840,11 +829,11 @@ export class GarageSyncClient implements IGarageSyncClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertGarageLookups(_response);
+            return this.processUpsertLookups(_response);
         });
     }
 
-    protected processUpsertGarageLookups(response: Response): Promise<boolean> {
+    protected processUpsertLookups(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -867,7 +856,7 @@ export class GarageSyncClient implements IGarageSyncClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<boolean>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 }
 
@@ -3134,6 +3123,54 @@ export class GarageLookupLargeItem extends BaseEntity implements IGarageLookupLa
 export interface IGarageLookupLargeItem extends IBaseEntity {
     googleApiDetailsJson?: string;
     firstPlacePhoto?: string | undefined;
+}
+
+export class GarageLookupsStatusDto implements IGarageLookupsStatusDto {
+    ableToInsert?: number;
+    ableToUpdate?: number;
+    upToDate?: number;
+    total?: number;
+
+    constructor(data?: IGarageLookupsStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.ableToInsert = _data["ableToInsert"];
+            this.ableToUpdate = _data["ableToUpdate"];
+            this.upToDate = _data["upToDate"];
+            this.total = _data["total"];
+        }
+    }
+
+    static fromJS(data: any): GarageLookupsStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageLookupsStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["ableToInsert"] = this.ableToInsert;
+        data["ableToUpdate"] = this.ableToUpdate;
+        data["upToDate"] = this.upToDate;
+        data["total"] = this.total;
+        return data;
+    }
+}
+
+export interface IGarageLookupsStatusDto {
+    ableToInsert?: number;
+    ableToUpdate?: number;
+    upToDate?: number;
+    total?: number;
 }
 
 export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {

@@ -58,6 +58,7 @@ internal class GarageInfoService : IGarageInfoService
 
             // Has no services to offer, invalid garage
             if (
+                rdwCompany.Volgnummer == 0 ||
                 services.Length == 0 ||
                 string.IsNullOrWhiteSpace(rdwCompany.Naambedrijf) ||
                 string.IsNullOrWhiteSpace(rdwCompany.Plaats) ||

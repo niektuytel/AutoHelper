@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.SyncGarageLookups;
 using AutoHelper.Infrastructure.Common;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Hangfire;
@@ -10,6 +9,7 @@ using MediatR;
 using WebUI.Extensions;
 using Microsoft.Extensions.Configuration;
 using AutoHelper.Hangfire.MediatR;
+using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHangfireServices(builder.Configuration);
@@ -23,21 +23,5 @@ var app = builder.Build();
 using var scope = app.Services.CreateScope();
 app.UseHangfireServices(scope);
 app.UseWebUIServices();
-
-
-// Define Recurring jobs, TODO: move to a separate file insite UseHangfireServices
-var mediator = app.Services.GetRequiredService<IMediator>();
-var enableRecurringjobs = app.Configuration["Hangfire:EnableRecurringJobs"];
-_ = bool.TryParse(enableRecurringjobs, out var isRecurring);
-
-if (mediator != null)
-{
-    if (bool.Parse(app.Configuration["Hangfire:EnableGarageRecurringSyncJob"]!) == true)
-    {
-        mediator.RecurringJobWeekly($"{nameof(SyncGarageLookupsCommand)}", new SyncGarageLookupsCommand(), isRecurring);
-    }
-}
-
-
 
 app.Run();

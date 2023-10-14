@@ -1,7 +1,6 @@
 ﻿using App.Authorization;
 using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.SyncGarageLookups;
 using AutoHelper.Hangfire;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Infrastructure.Persistence;

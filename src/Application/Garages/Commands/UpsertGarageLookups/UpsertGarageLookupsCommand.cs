@@ -13,27 +13,35 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Commands.SyncGarageLookups;
+namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 
-public record SyncGarageLookupsCommand : IRequest
+public record UpsertGarageLookupsCommand : IRequest
 {
+    public UpsertGarageLookupsCommand(int maxInsertAmount = -1, int maxUpdateAmount = -1)
+    {
+        MaxInsertAmount = maxInsertAmount;
+        MaxUpdateAmount = maxUpdateAmount;
+    }
+
+    public int MaxInsertAmount { get; set;}
+    public int MaxUpdateAmount { get; set;}
 }
 
-public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookupsCommand>
+public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLookupsCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IGarageInfoService _garageInfoService;
 
-    public SyncGarageLookupsCommandHandler(IApplicationDbContext context, IMapper mapper, IGarageInfoService garageInfoService)
+    public UpsertGarageLookupsCommandHandler(IApplicationDbContext context, IMapper mapper, IGarageInfoService garageInfoService)
     {
         _context = context;
         _mapper = mapper;
         _garageInfoService = garageInfoService;
     }
 
-    public async Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         var briefLookups = await _garageInfoService.GetBriefGarageLookups();
 
@@ -45,30 +53,33 @@ public class SyncGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookups
         for (int i = 0; i < newLookups.Length; i++)
         {
             var newLookup = newLookups[i];
-
-            // not valid when having no name, city or address
-            if(string.IsNullOrWhiteSpace(newLookup.Name) || string.IsNullOrWhiteSpace(newLookup.City) || string.IsNullOrWhiteSpace(newLookup.Address))
-            {
-                continue;
-            }
-
             var currentLookup = _context.GarageLookups
                 .Include(x => x.LargeData)
                 .FirstOrDefault(x => x.Identifier == newLookup.Identifier.ToString());
 
-            if (currentLookup == null)
+            if (request.MaxInsertAmount != 0 && currentLookup == null)
             {
                 newLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
 
                 _context.GarageLookups.Add(newLookup);
 
                 await _context.SaveChangesAsync(cancellationToken);
+                request.MaxInsertAmount--;
             }
-            else if (currentLookup.Address != newLookup.Address)
+            else if (request.MaxUpdateAmount != 0 && currentLookup != null && currentLookup.Address != newLookup.Address)
             {
+                currentLookup.Address = newLookup.Address;
                 currentLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
 
                 await _context.SaveChangesAsync(cancellationToken);
+                request.MaxUpdateAmount--;
+            }
+
+            if (request.MaxInsertAmount == 0 && request.MaxUpdateAmount == 0)
+            {
+                //TODO: log not showing to hangfre
+                Console.WriteLine($"Given MaxInsertAmount({request.MaxInsertAmount})/MaxUpdateAmount({request.MaxUpdateAmount}) reached");
+                break;
             }
         }
 

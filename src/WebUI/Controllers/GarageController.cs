@@ -26,6 +26,9 @@ using WebUI.Models.Response;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
+using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
+using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
+using AutoHelper.Hangfire.MediatR;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -40,10 +43,19 @@ public class GarageController : ApiControllerBase
         _identityService = identityService;
     }
 
-    [HttpGet($"{nameof(SearchGarages)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
+    [HttpGet($"{nameof(GetServiceTypesByLicensePlate)}/{{licensePlate}}")]
+    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<GarageServiceType>> GetServiceTypesByLicensePlate([FromRoute] string licensePlate)
+    {
+        var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
+        return await Mediator.Send(query);
+    }
+
+    [HttpGet($"{nameof(SearchLookups)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
     [ProducesResponseType(typeof(PaginatedList<GarageLookupBriefDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<PaginatedList<GarageLookupBriefDto>> SearchGarages(
+    public async Task<PaginatedList<GarageLookupBriefDto>> SearchLookups(
         [FromRoute] string licensePlate,
         [FromRoute] float latitude,
         [FromRoute] float longitude,
@@ -69,16 +81,6 @@ public class GarageController : ApiControllerBase
         return await Mediator.Send(query, cancellationToken);
     }
 
-    [HttpGet($"{nameof(GetGarageServiceTypesByLicensePlate)}/{{licensePlate}}")]
-    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetGarageServiceTypesByLicensePlate([FromRoute] string licensePlate)
-    {
-        var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
-        return await Mediator.Send(query);
-    }
-
-
     [HttpGet($"{nameof(GetLookup)}/{{identifier}}")]
     [ProducesResponseType(typeof(GarageLookupDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -87,4 +89,30 @@ public class GarageController : ApiControllerBase
         var request = new GetGarageLookupQuery(identifier, licensePlate);
         return await Mediator.Send(request);
     }
+
+    [Authorize]// TODO: (Policy="Admin")
+    [HttpGet($"{nameof(GetLookupsStatus)}")]
+    [ProducesResponseType(typeof(GarageLookupsStatusDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<GarageLookupsStatusDto> GetLookupsStatus(CancellationToken cancellationToken)
+    {
+        var query = new GetGarageLookupsStatusQuery();
+        var response = await Mediator.Send(query, cancellationToken);
+
+        return response;
+    }
+
+    [Authorize]// TODO: (Policy="Admin")
+    [HttpPut($"{nameof(UpsertLookups)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public string UpsertLookups([FromQuery] int maxInsertAmount, [FromQuery] int maxUpdateAmount)
+    {
+        var jobId = $"{nameof(UpsertGarageLookupsCommand)}:maxInsert({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
+        var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
+        Mediator.Enqueue(jobId, command);
+
+        return $"Successfully start hangfire job: {jobId}";
+    }
+
 }

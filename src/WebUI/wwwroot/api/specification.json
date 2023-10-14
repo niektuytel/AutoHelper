@@ -468,12 +468,57 @@
         }
       }
     },
-    "/api/Garage/SearchGarages/{licensePlate}/{latitude}/{longitude}": {
+    "/api/Garage/GetServiceTypesByLicensePlate/{licensePlate}": {
       "get": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_SearchGarages",
+        "operationId": "Garage_GetServiceTypesByLicensePlate",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GarageServiceType"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/SearchLookups/{licensePlate}/{latitude}/{longitude}": {
+      "get": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_SearchLookups",
         "parameters": [
           {
             "name": "licensePlate",
@@ -583,51 +628,6 @@
         }
       }
     },
-    "/api/Garage/GetGarageServiceTypesByLicensePlate/{licensePlate}": {
-      "get": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_GetGarageServiceTypesByLicensePlate",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GarageServiceType"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Garage/GetLookup/{identifier}": {
       "get": {
         "tags": [
@@ -679,20 +679,19 @@
         }
       }
     },
-    "/api/GarageSync/AnalyzeGarageLookupData": {
+    "/api/Garage/GetLookupsStatus": {
       "get": {
         "tags": [
-          "GarageSync"
+          "Garage"
         ],
-        "operationId": "GarageSync_AnalyzeGarageLookupData",
+        "operationId": "Garage_GetLookupsStatus",
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/GarageLookupsStatusDto"
                 }
               }
             }
@@ -710,22 +709,30 @@
         }
       }
     },
-    "/api/GarageSync/UpsertGarageLookups": {
+    "/api/Garage/UpsertLookups": {
       "put": {
         "tags": [
-          "GarageSync"
+          "Garage"
         ],
-        "operationId": "GarageSync_UpsertGarageLookups",
+        "operationId": "Garage_UpsertLookups",
         "parameters": [
           {
             "name": "maxInsertAmount",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "default": 1000
+              "format": "int32"
             },
             "x-position": 1
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
           }
         ],
         "responses": {
@@ -734,7 +741,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "type": "string"
                 }
               }
             }
@@ -2088,6 +2095,28 @@
             }
           }
         ]
+      },
+      "GarageLookupsStatusDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ableToInsert": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ableToUpdate": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "upToDate": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       },
       "VehicleBriefInfoItemDto": {
         "type": "object",

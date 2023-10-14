@@ -3,6 +3,8 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
+using Hangfire.Console;
+using Hangfire.Console.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +28,7 @@ public static class ConfigureServices
                 .UseRecommendedSerializerSettings()
                 .UseSqlServerStorage(hangfireConnection);
         });
-
+        services.AddHangfireConsoleExtensions();
         services.AddHangfireServer();
         services.AddTransient<IQueueingJobService, HangfireJobService>();
     }
