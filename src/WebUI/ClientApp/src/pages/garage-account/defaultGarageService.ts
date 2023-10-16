@@ -1,7 +1,8 @@
 ﻿import { TFunction, useTranslation } from "react-i18next";
-import { CreateGarageServiceCommand, GarageServiceType } from "../../app/web-api-client";
+import { enumToKeyValueArray } from "../../app/utils";
+import { CreateGarageServiceCommand, GarageServiceItem, GarageServiceItemDto, GarageServiceType } from "../../app/web-api-client";
 
-
+// TODO: Check at this file and remove unused code, or modify it as wel l on the readme to edit it wehn changing services
 export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceType, altValue: string = "")
 {
     switch (serviceType)
@@ -25,6 +26,16 @@ export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceT
     }
 
     return altValue;
+}
+
+export function getDefaultGarageServicesInfo(t: TFunction) {
+    return enumToKeyValueArray(GarageServiceType).slice(1).map(({ key, value }) => // Display all enum items except the first one (None)
+        ({
+            type: key,
+            title: t(`${value}.Title`),
+            description: t(`${value}.Description`)
+        })
+    );
 }
 
 export function getDefaultCreateGarageServices(t: TFunction) {

@@ -4,6 +4,7 @@ using AutoHelper.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231016183426_Change lookup dataset")]
+    partial class Changelookupdataset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -412,7 +415,7 @@ namespace AutoHelper.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("LargeDataId")
+                    b.Property<Guid>("LargeDataId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Geometry>("Location")
@@ -1146,7 +1149,9 @@ namespace AutoHelper.Infrastructure.Migrations
                 {
                     b.HasOne("AutoHelper.Domain.Entities.Garages.GarageLookupLargeItem", "LargeData")
                         .WithMany()
-                        .HasForeignKey("LargeDataId");
+                        .HasForeignKey("LargeDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LargeData");
                 });

@@ -11,7 +11,7 @@ function useGarageSearchServiceTypes(licensePlate: string) {
 
     const fetchGarageServiceTypesOnLicense = async (licensePlate: string) => {
         try {
-            const response = await garageSearchClient.getGarageServiceTypesByLicensePlate(licensePlate);
+            const response = await garageSearchClient.getServiceTypesByLicensePlate(licensePlate);
             return response;
         } catch (response: any) {
             throw response;

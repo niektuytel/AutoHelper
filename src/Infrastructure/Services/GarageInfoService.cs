@@ -142,7 +142,7 @@ internal class GarageInfoService : IGarageInfoService
             GoogleApiDetailsJson = placeDetailsJson
         };
 
-        // Set small first photo (if exist)
+        // TODO: Set small first photo (if exist)
         var reference = details.result.photos?[0].photo_reference;
         if (!string.IsNullOrEmpty(reference))
         {

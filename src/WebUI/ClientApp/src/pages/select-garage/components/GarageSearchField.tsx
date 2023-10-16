@@ -49,7 +49,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
 
     const fetchGaragesData = async (autocomplete: string, filterValues: string[]): Promise<PaginatedListOfGarageLookupBriefDto> => {
         try {
-            const response = await useGarageClient.searchGarages(
+            const response = await useGarageClient.searchLookups(
                 license_plate,
                 latitude,
                 longitude,

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Server;
 using MediatR;
 
 namespace AutoHelper.Hangfire.MediatR;
@@ -26,7 +27,7 @@ public static class MediatorExtensions
     public static void Enqueue(this IMediator mediator, IRequest request)
     {
         var client = new BackgroundJobClient();
-        client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(request));
+        client.Enqueue<MediatorHangfireBridge>((bridge) => bridge.Send(request));
     }
 
     public static void RecurringJobWeekly(this IMediator mediator, string jobId, IRequest request, bool enabled)

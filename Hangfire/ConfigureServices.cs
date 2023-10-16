@@ -4,12 +4,14 @@ using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
 using Hangfire.Console;
-using Hangfire.Console.Extensions;
+using Hangfire.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace AutoHelper.Hangfire;
 
@@ -22,15 +24,15 @@ public static class ConfigureServices
         services.AddHangfire(configuration =>
         {
             configuration.UseSqlServerStorage(hangfireConnection);
+            configuration.UseConsole();
             configuration.UseMediatR();
             configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseSqlServerStorage(hangfireConnection);
         });
-        services.AddHangfireConsoleExtensions();
         services.AddHangfireServer();
-        services.AddTransient<IQueueingJobService, HangfireJobService>();
+        services.AddTransient<IQueueingService, HangfireJobService>();
     }
 
     public static void UseMediatR(this IGlobalConfiguration configuration)

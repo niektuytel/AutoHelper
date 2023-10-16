@@ -29,6 +29,7 @@ using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
 using AutoHelper.Hangfire.MediatR;
+using Hangfire.Server;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -36,6 +37,7 @@ public class GarageController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
+
 
     public GarageController(ICurrentUserService currentUser, IIdentityService identityService)
     {
@@ -102,11 +104,13 @@ public class GarageController : ApiControllerBase
         return response;
     }
 
+    /// <param name="maxInsertAmount">-1 is all of them</param>
+    /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize]// TODO: (Policy="Admin")
     [HttpPut($"{nameof(UpsertLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string UpsertLookups([FromQuery] int maxInsertAmount, [FromQuery] int maxUpdateAmount)
+    public string UpsertLookups([FromQuery] int maxInsertAmount=0, [FromQuery] int maxUpdateAmount=0)
     {
         var jobId = $"{nameof(UpsertGarageLookupsCommand)}:maxInsert({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
         var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);

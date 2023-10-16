@@ -4,29 +4,19 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using System.Linq.Expressions;
 using AutoHelper.Application.Common.Interfaces;
+using Hangfire.Server;
 
 namespace AutoHelper.Hangfire.Services;
 
-internal class HangfireJobService : IQueueingJobService
+internal class HangfireJobService : IQueueingService
 {
-    private readonly ILogger<HangfireJobService> _logger;
-
-    public HangfireJobService(
-        IConfiguration configuration,
-        ILogger<HangfireJobService> logger
-    )
+    public HangfireJobService()
     {
-        _logger = logger
-            ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public void RunJob<T>(
-        string jobId, 
-        Expression<Func<T, Task>> methodCall, 
-        bool enabled
-    )
+    public void LogInformation(string value)
     {
-        throw new NotImplementedException();
+        // TODO: set logging on Hangfire dashboard
+        Console.WriteLine(value);
     }
-
 }

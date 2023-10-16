@@ -19,9 +19,6 @@ public class GarageLookupItem : BaseEntity
     public Guid? GarageId { get; set; }
 
     [Required]
-    public GarageLookupLargeItem LargeData { get; set; }
-
-    [Required]
     public string Identifier { get; set; }
 
     [Required]
@@ -49,6 +46,14 @@ public class GarageLookupItem : BaseEntity
 
     [Required]
     public string KnownServicesString { get; set; } = "";
+
+    [Required]
+    public string Address { get; set; }
+
+    [Required]
+    public string City { get; set; }
+
+    public Geometry? Location { get; set; }
 
     public string? Status { get; set; }
 
@@ -82,16 +87,10 @@ public class GarageLookupItem : BaseEntity
 
     public int? UserRatingsTotal { get; set; }
 
-    [Required]
-    public string Address { get; set; }
-
-    [Required]
-    public string City { get; set; }
-
-    public Geometry? Location { get; set; }
-
     public bool HasPickupService { get; set; } = false;// TODO: Implement pickup service
 
     public bool HasReplacementTransportService { get; set; } = false;// TODO: Implement replacement transport service
+
+    public GarageLookupLargeItem? LargeData { get; set; } = null;
 
 }

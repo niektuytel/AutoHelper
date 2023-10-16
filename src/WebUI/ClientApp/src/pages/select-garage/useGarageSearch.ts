@@ -30,7 +30,7 @@ function useGarageSearch(
         autoCompleteGarageName: string | null = null,
         filters: string[] | null = null
     ) => {
-        const response = await garageSearchClient.searchGarages(
+        const response = await garageSearchClient.searchLookups(
             license_plate,
             latitude,
             longitude,

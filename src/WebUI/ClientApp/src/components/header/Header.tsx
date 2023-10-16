@@ -89,7 +89,6 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                                         sx={{
                                             color: "black",
                                             fontFamily: "Dubai light",
-                                            cursor: "pointer",
                                             marginTop: "5px",
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
@@ -103,44 +102,18 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                             </Grid>
                         }
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
-                            {garageLookup ?
-                                <>
-                                    <Hidden mdDown>
-                                        <Button
-                                            style={{ color: 'black', fontWeight: focusedButton === '#aboutUs' ? 'bold' : 'normal' }}
-                                            onClick={() => handleButtonClick('#aboutUs')}
-                                        >
-                                            About Us
-                                        </Button>
-                                        <Button
-                                            style={{ color: 'black', fontWeight: focusedButton === '#services' ? 'bold' : 'normal' }}
-                                            onClick={() => handleButtonClick('#services')}
-                                        >
-                                            Services
-                                        </Button>
-                                    </Hidden>
-                                    <Hidden mdUp>
-                                        <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
-                                            <MenuIcon />
-                                        </StyledIconButton>
-                                    </Hidden>
-                                </>
-                                :
-                                <>
-                                    <Hidden xsDown>
-                                        {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
-                                            <StyledIconButton onClick={() => setCartOpen(true)}>
-                                                <StyledBadge badgeContent={badgeContent} color="error">
-                                                    <ShoppingCartOutlinedIcon />
-                                                </StyledBadge>
-                                            </StyledIconButton>
-                                        }
-                                    </Hidden>
-                                    <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
-                                        <MenuIcon />
+                            <Hidden xsDown>
+                                {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
+                                    <StyledIconButton onClick={() => setCartOpen(true)}>
+                                        <StyledBadge badgeContent={badgeContent} color="error">
+                                            <ShoppingCartOutlinedIcon />
+                                        </StyledBadge>
                                     </StyledIconButton>
-                                </>
-                            }
+                                }
+                            </Hidden>
+                            <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
+                                <MenuIcon />
+                            </StyledIconButton>
                         </Grid>
                     </Grid>
                 </StyledToolbar>

@@ -10,15 +10,23 @@ using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Events;
 using AutoMapper;
+using Hangfire.Server;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 
 public record UpsertGarageLookupsCommand : IRequest
 {
-    public UpsertGarageLookupsCommand(int maxInsertAmount = -1, int maxUpdateAmount = -1)
+    public UpsertGarageLookupsCommand()
+    {
+        MaxInsertAmount = 0;
+        MaxUpdateAmount = 0;
+    }
+
+    public UpsertGarageLookupsCommand(int maxInsertAmount, int maxUpdateAmount)
     {
         MaxInsertAmount = maxInsertAmount;
         MaxUpdateAmount = maxUpdateAmount;
@@ -30,19 +38,23 @@ public record UpsertGarageLookupsCommand : IRequest
 
 public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLookupsCommand>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IGarageInfoService _garageInfoService;
+    private readonly IQueueingService _queueingService;
 
-    public UpsertGarageLookupsCommandHandler(IApplicationDbContext context, IMapper mapper, IGarageInfoService garageInfoService)
+    public UpsertGarageLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IGarageInfoService garageInfoService, IQueueingService queueingService)
     {
-        _context = context;
+        _dbContext = dbContext;
         _mapper = mapper;
         _garageInfoService = garageInfoService;
+        _queueingService = queueingService;
     }
 
     public async Task<Unit> Handle(UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
     {
+        var startMaxInsertAmount = request.MaxInsertAmount;
+        var startMaxUpdateAmount = request.MaxUpdateAmount;
         var briefLookups = await _garageInfoService.GetBriefGarageLookups();
 
         // only keep lookups with known services
@@ -53,32 +65,41 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
         for (int i = 0; i < newLookups.Length; i++)
         {
             var newLookup = newLookups[i];
-            var currentLookup = _context.GarageLookups
+            var currentLookups = _dbContext.GarageLookups
                 .Include(x => x.LargeData)
-                .FirstOrDefault(x => x.Identifier == newLookup.Identifier.ToString());
+                .Where(x => x.Identifier == newLookup.Identifier.ToString());
 
+            if(currentLookups.Count() > 1)
+            {
+                await Console.Out.WriteLineAsync(   );
+            }
+
+            var currentLookup = await currentLookups.FirstOrDefaultAsync(cancellationToken);
             if (request.MaxInsertAmount != 0 && currentLookup == null)
             {
                 newLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
 
-                _context.GarageLookups.Add(newLookup);
+                _dbContext.GarageLookups.Add(newLookup);
 
-                await _context.SaveChangesAsync(cancellationToken);
+                await _dbContext.SaveChangesAsync(cancellationToken);
                 request.MaxInsertAmount--;
             }
             else if (request.MaxUpdateAmount != 0 && currentLookup != null && currentLookup.Address != newLookup.Address)
             {
+                currentLookup.Name = newLookup.Name;
+                currentLookup.KnownServicesString = newLookup.KnownServicesString;
                 currentLookup.Address = newLookup.Address;
+                currentLookup.City = newLookup.City;
+
                 currentLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
 
-                await _context.SaveChangesAsync(cancellationToken);
+                await _dbContext.SaveChangesAsync(cancellationToken);
                 request.MaxUpdateAmount--;
             }
 
             if (request.MaxInsertAmount == 0 && request.MaxUpdateAmount == 0)
             {
-                //TODO: log not showing to hangfre
-                Console.WriteLine($"Given MaxInsertAmount({request.MaxInsertAmount})/MaxUpdateAmount({request.MaxUpdateAmount}) reached");
+                _queueingService.LogInformation($"Given MaxInsertAmount:{startMaxInsertAmount} MaxUpdateAmount:{startMaxUpdateAmount} reached");
                 break;
             }
         }
