@@ -2,8 +2,14 @@
 import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, Container, Divider, Grid, IconButton, Pagination, Paper, Skeleton, TextField, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import PhoneIcon from '@mui/icons-material/Phone';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 // local
 import { HashValues } from "../../i18n/HashValues";
@@ -17,6 +23,7 @@ import Header from "../../components/header/Header";
 import GarageServiceInfoCard from "./components/GarageServiceInfoCard";
 import { showOnError, showOnSuccess } from "../../redux/slices/statusSnackbarSlice";
 import { useDispatch } from "react-redux";
+import GarageDailySchedule from "./components/GarageDailySchedule";
 
 interface IProps {
 }
@@ -26,6 +33,7 @@ export default ({ }: IProps) => {
     const location = useLocation();
     const theme = useTheme();
     const dispatch = useDispatch();
+    const [hoveredContact, setHoveredContact] = useState<string | null>(null);
     const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto|null>(null);
     const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -44,6 +52,13 @@ export default ({ }: IProps) => {
         //setDialogMode("create");
         //setDialogOpen(true);
     }
+
+    const copyToClipboard = (data: string) => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(data);
+            // You can display a toast message or some feedback here
+        }
+    };
 
     const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
         if (cartItems.some(cartItem => cartItem.id === itemToAdd.id)) {
@@ -84,15 +99,11 @@ export default ({ }: IProps) => {
                 <Grid item xs={12} md={8} pr={isMobile ? 0 : 2}>
                     <Typography variant="h4" gutterBottom display="flex" alignItems="center">
                         {t("Services")}
-                        {loading ?
-                            <CircularProgress size={20} style={{ marginLeft: '10px' }} />
-                            :
-                            <Tooltip title={t("Services.Description")}>
-                                <IconButton size="small">
-                                    <InfoOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        }
+                        <Tooltip title={t("Services.Description")}>
+                            <IconButton size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>
                     </Typography>
                     {!loading && garageLookup?.knownServices && garageLookup.knownServices.map((item) =>
                         <GarageServiceInfoCard
@@ -108,32 +119,101 @@ export default ({ }: IProps) => {
                 <Grid item xs={12} md={4}>
                     <Typography variant="h4" gutterBottom display="flex" alignItems="center">
                         {t("Contact")}
+                        <Tooltip title={t("Contact.Description")}>
+                            <IconButton size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>
+                    </Typography>
+                    <Typography
+                        variant="subtitle1"
+                        display="flex"
+                        alignItems="center"
+                        onMouseEnter={() => setHoveredContact('address')}
+                        onMouseLeave={() => setHoveredContact(null)}
+                        
+                    >
+                        <LocationOnIcon style={{ marginRight: '8px', marginTop: "8px", marginBottom: "8px" }} fontSize='small' />
                         {loading ?
-                            <CircularProgress size={20} style={{ marginLeft: '10px' }} />
+                            <Skeleton width="50%" />
                             :
-                            <Tooltip title={t("Contact.Description")}>
-                                <IconButton size="small">
-                                    <InfoOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
+                            <>
+                                {garageLookup?.address}, {garageLookup?.city}
+                                {hoveredContact === 'address' && !isMobile &&
+                                    <IconButton onClick={() => copyToClipboard(`${garageLookup?.address}, ${garageLookup?.city}`)}>
+                                        <ContentCopyIcon fontSize="small" />
+                                    </IconButton>
+                                }
+                            </>
                         }
                     </Typography>
-                    <Typography variant="subtitle1">
-                        {garageLookup?.address}, {garageLookup?.city}
+                    <Typography
+                        variant="subtitle1"
+                        display="flex"
+                        alignItems="center"
+                        onMouseEnter={() => setHoveredContact('email')}
+                        onMouseLeave={() => setHoveredContact(null)}
+                    >
+                        <MailOutlineIcon style={{ marginRight: '8px', marginTop: "8px", marginBottom: "8px" }} fontSize='small' />
+                        {loading ?
+                            <Skeleton width="50%" />
+                            :
+                            <>
+                                <Link to={`mailto:${garageLookup?.emailAddress}`}>
+                                    {garageLookup?.emailAddress}
+                                </Link>
+                                {hoveredContact === 'email' &&
+                                    <IconButton onClick={() => copyToClipboard(garageLookup?.emailAddress || '')}>
+                                        <ContentCopyIcon fontSize="small" />
+                                    </IconButton>
+                                }
+                            </>
+                        }
                     </Typography>
-                    <Typography variant="subtitle1">
-                        {garageLookup?.daysOfWeek}
+                    <Typography
+                        variant="subtitle1"
+                        display="flex"
+                        alignItems="center"
+                        onMouseEnter={() => setHoveredContact('phone')}
+                        onMouseLeave={() => setHoveredContact(null)}
+                    >
+                        <PhoneIcon style={{ marginRight: '8px', marginTop: "8px", marginBottom: "8px" }} fontSize='small' />
+                        {loading ?
+                            <Skeleton width="50%" />
+                            :
+                            <>
+                                <Link to={`tel:${garageLookup?.phoneNumber}`}>
+                                    {garageLookup?.phoneNumber}
+                                </Link>
+                                {hoveredContact === 'phone' &&
+                                    <IconButton onClick={() => copyToClipboard(garageLookup?.phoneNumber || '')}>
+                                        <ContentCopyIcon fontSize="small" />
+                                    </IconButton>
+                                }
+                            </>
+                        }
                     </Typography>
-                    <Typography variant="subtitle1">
-                        {garageLookup?.phoneNumber}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                        {garageLookup?.whatsappNumber}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                        {garageLookup?.emailAddress}
-                    </Typography>
-                </Grid> 
+                    { garageLookup?.whatsappNumber &&
+                        <Typography
+                            variant="subtitle1"
+                            display="flex"
+                            alignItems="center"
+                            onMouseEnter={() => setHoveredContact('whatsapp')}
+                            onMouseLeave={() => setHoveredContact(null)}
+                        >
+                            <WhatsAppIcon style={{ marginRight: '8px', marginTop: "8px", marginBottom: "8px" }} fontSize='small' />
+                            <Link to={`https://wa.me/${garageLookup?.whatsappNumber}`}>
+                                {garageLookup?.whatsappNumber}
+                            </Link>
+                            {hoveredContact === 'whatsapp' &&
+                                <IconButton onClick={() => copyToClipboard(garageLookup?.whatsappNumber || '')}>
+                                    <ContentCopyIcon fontSize="small" />
+                                </IconButton>
+                            }
+                        </Typography>
+                    }
+                    {garageLookup?.daysOfWeek && <GarageDailySchedule openDaysOfWeek={garageLookup?.daysOfWeek!} />}
+                </Grid>  
             </Grid>
         </Container>
     </>;
