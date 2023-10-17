@@ -32,11 +32,11 @@ export default ({ }: IProps) => {
     const { t } = useTranslation();
     const location = useLocation();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const dispatch = useDispatch();
     const [hoveredContact, setHoveredContact] = useState<string | null>(null);
     const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto|null>(null);
     const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const queryParams = new URLSearchParams(location.search);
     const { identifier } = useParams();
     const licensePlate = queryParams.get('licensePlate');
@@ -82,7 +82,7 @@ export default ({ }: IProps) => {
 
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} />
-        <Container>
+        <Container sx={{ mb: 5 }}>
             <Box pt={1} pb={2}>
                 <Paper
                     style={{
@@ -105,16 +105,25 @@ export default ({ }: IProps) => {
                             </IconButton>
                         </Tooltip>
                     </Typography>
-                    {!loading && garageLookup?.knownServices && garageLookup.knownServices.map((item) =>
-                        <GarageServiceInfoCard
-                            key={`service-card-${item}`}
-                            serviceType={item}
-                            selectedItem={selectedItem}
-                            setSelectedItem={setSelectedItem}
-                            addCartItem={tryAddCartItem}
-                            hasQuestionItem={hasQuestionItem}
-                        />
-                    )}
+
+                    {loading ?
+                        <>
+                            <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }}  />
+                            <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
+                            <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
+                        </>
+                        :
+                        garageLookup?.knownServices?.map((item) =>
+                            <GarageServiceInfoCard
+                                key={`service-card-${item}`}
+                                serviceType={item}
+                                selectedItem={selectedItem}
+                                setSelectedItem={setSelectedItem}
+                                addCartItem={tryAddCartItem}
+                                hasQuestionItem={hasQuestionItem}
+                            />
+                        )
+                    }
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <Typography variant="h4" gutterBottom display="flex" alignItems="center">
@@ -212,7 +221,7 @@ export default ({ }: IProps) => {
                             }
                         </Typography>
                     }
-                    {garageLookup?.daysOfWeek && <GarageDailySchedule openDaysOfWeek={garageLookup?.daysOfWeek!} />}
+                    <GarageDailySchedule openDaysOfWeek={garageLookup?.daysOfWeek} />
                 </Grid>  
             </Grid>
         </Container>

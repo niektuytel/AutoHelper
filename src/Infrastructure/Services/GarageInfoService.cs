@@ -193,6 +193,10 @@ internal class GarageInfoService : IGarageInfoService
             // ignore errors, website is not always available
         }
 
+        // TODO: Get opening hours from website
+        // TODO: store photos in blob and store url inside here
+        // TODO: Validate Email* and phone numbers that really has valid value
+
         return item;
     }
 

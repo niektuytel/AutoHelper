@@ -28,7 +28,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const navigate = useNavigate();
     const theme = useTheme();
     const queryParams = new URLSearchParams(window.location.search);
-    const { t } = useTranslation();
+    const { t } = useTranslation(["translations", "serviceTypes"]);
 
     const [isFocused, setIsFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -171,7 +171,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                     garageServiceTypes!.map(service =>
                         <Chip
                             key={service}
-                            label={t(`${GarageServiceType[service]}.Filter`)}
+                            label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}
                             variant={filters.includes(String(service)) ? "filled" : "outlined"}
                             sx={{ mr: 1, mt: 1 }}
                             onClick={() => handleChipClick(String(service))}

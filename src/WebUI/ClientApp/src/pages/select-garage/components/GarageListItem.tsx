@@ -22,7 +22,7 @@ interface IProps {
 }
 
 export default ({ garage, licensePlate, lat, lng }: IProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(["translations", "serviceTypes"]);
     const navigate = useNavigate();
 
     // Local state for hover effect
@@ -115,7 +115,7 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                         {garage.knownServices && garage.knownServices.map(service => service !== GarageServiceType.Other &&
                             <Chip
                                 key={service}
-                                label={t(`${GarageServiceType[service]}.Filter`)}
+                                label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}
                                 sx={{ mr: 1, mt: 1 }}
                                 variant="outlined"
                                 size="small"

@@ -40,7 +40,7 @@ interface IProps {
 }
 
 export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation('serviceTypes');
 
     const defaultAvailableServices = getDefaultGarageServicesInfo(t);
     const service = defaultAvailableServices.find(item => item.type === serviceType) as any;
@@ -57,7 +57,6 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
                 cursor: "pointer",
                 border: selectedItem === service ? `1px solid black` : `1px solid ${COLORS.BORDER_GRAY}`
             }}
-            title={service.description}
             onClick={() => setSelectedItem(service)}
         >
             <CardHeader

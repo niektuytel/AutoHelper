@@ -1,21 +1,27 @@
 ﻿import {
     Paper,
+    Skeleton,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Typography
+    Typography,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { DAYSINWEEK } from '../../../constants/days';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
-    openDaysOfWeek: number[];
+    openDaysOfWeek: number[] | undefined;
 }
 
-const DailySchedule = ({ openDaysOfWeek }:IProps) => {
+const DailySchedule = ({ openDaysOfWeek }: IProps) => {
+    const { t } = useTranslation();
+
     // TODO: also show the time range for each day
     return (
         <Paper elevation={3} sx={{ marginTop: '16px', padding: 1 }}>
@@ -33,9 +39,13 @@ const DailySchedule = ({ openDaysOfWeek }:IProps) => {
                     <TableBody>
                         {DAYSINWEEK.map((day, index) => (
                             <TableRow key={index}>
-                                <TableCell>{day}</TableCell>
+                                <TableCell>{t(day)}</TableCell>
                                 <TableCell>
-                                    {openDaysOfWeek.includes(index) ? "Open" : "Closed"}
+                                    {openDaysOfWeek ?
+                                        openDaysOfWeek.includes(index) ? t("Open") : t("Closed")
+                                        :
+                                        <Skeleton />
+                                    }
                                 </TableCell>
                             </TableRow>
                         ))}

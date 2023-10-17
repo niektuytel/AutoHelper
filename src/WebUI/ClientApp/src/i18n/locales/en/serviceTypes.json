@@ -1,0 +1,72 @@
+﻿{
+  "Other": "Other",
+  "Other.Description": "Still want to handle a service that is not described",
+
+  "CompanyStockService.Title": "Company Stock Service",
+  "CompanyStockService.Description": "Assist traders in managing, buying, and selling their company stocks efficiently.",
+  "CompanyStockService.Filter": "Trader",
+
+  "RegistrationService.Title": "Vehicle Registration",
+  "RegistrationService.Description": "Facilitate the official registration process of vehicles, ensuring all legal requirements are met.",
+  "RegistrationService.Filter": "Registration",
+
+  "AcceleratedRegistrationService.Title": "Accelerated Vehicle Registration",
+  "AcceleratedRegistrationService.Description": "A quick and efficient registration service for those who need their vehicles registered promptly.",
+  "AcceleratedRegistrationService.Filter": "Quick Registration",
+
+  "MOTServiceLightVehicle.Title": "MOT service",
+  "MOTServiceLightVehicle.Description": "A legally required inspection to check and guarantee the road safety, environmental aspects and registration of your vehicle.",
+  "MOTServiceLightVehicle.Filter": "MOT Inspection",
+
+  "MOTServiceHeavyVehicle.Title": "MOT service",
+  "MOTServiceHeavyVehicle.Description": "A legally required inspection to check and guarantee the road safety, environmental aspects and registration of your vehicle.",
+  "MOTServiceHeavyVehicle.Filter": "MOT Inspection",
+
+  "MOTServiceAgriculture.Title": "MOT service",
+  "MOTServiceAgriculture.Description": "A legally required inspection to check and guarantee the road safety, environmental aspects and registration of agricultural vehicles.",
+  "MOTServiceAgriculture.Filter": "MOT Inspection",
+
+  "ControlDeviceService.Title": "Control Device Service",
+  "ControlDeviceService.Description": "Installation, maintenance, and repair of vehicle control devices to ensure optimal functionality.",
+  "ControlDeviceService.Filter": "Control Device",
+
+  "GasInstallationService.Title": "Gas Installation Service",
+  "GasInstallationService.Description": "Expert installation and servicing of gas systems in vehicles, ensuring safety and compliance with regulations.",
+  "GasInstallationService.Filter": "Gas Installation",
+
+  "MopedConversionService.Title": "Moped Conversion Service",
+  "MopedConversionService.Description": "Convert your standard moped to meet specific requirements or enhance its features.",
+  "MopedConversionService.Filter": "Moped Conversion",
+
+  "DismantlingService.Title": "Vehicle Dismantling Service",
+  "DismantlingService.Description": "Professional dismantling of vehicles for parts reuse, recycling, or disposal while ensuring environmental safety.",
+  "DismantlingService.Filter": "Vehicle Dismantling",
+
+  "TaxiComputerService.Title": "Taxi Computer Service",
+  "TaxiComputerService.Description": "Installation and maintenance of computer systems specifically designed for taxis, enhancing operational efficiency.",
+  "TaxiComputerService.Filter": "Taxi Computer",
+
+  "LicensePlateManufactureService.Title": "License Plate Manufacturing",
+  "LicensePlateManufactureService.Description": "Custom manufacture of license plates, adhering to local regulations and specifications.",
+  "LicensePlateManufactureService.Filter": "License Plate Manufacturing",
+
+  "Inspection.Title": "Inspection",
+  "Inspection.Description": "We check essential parts of your vehicle, such as brakes, tires and fluids, to ensure your journey is safe and uninterrupted.",
+  "Inspection.Filter": "Inspection",
+
+  "SmallMaintenance.Title": "Small maintenance",
+  "SmallMaintenance.Description": "Basic maintenance services to ensure your vehicle remains in optimal condition, covering essential checks and minor repairs.",
+  "SmallMaintenance.Filter": "Small maintenance",
+
+  "GreatMaintenance.Title": "Great maintenance",
+  "GreatMaintenance.Description": "Comprehensive maintenance services covering a wide range of checks and repairs, ensuring longevity and performance of your vehicle.",
+  "GreatMaintenance.Filter": "Great maintenance",
+
+  "AirConditioningMaintenance.Title": "AirConditioning maintenance",
+  "AirConditioningMaintenance.Description": "Servicing and repairing vehicle air conditioning systems, ensuring optimal cooling and comfort.",
+  "AirConditioningMaintenance.Filter": "Airco maintenance",
+
+  "SeasonalTireChange.Title": "Seasonal tire change",
+  "SeasonalTireChange.Description": "Replace and fit tires appropriate for the upcoming season, ensuring safety and optimal performance.",
+  "SeasonalTireChange.Filter": "Seasonal tyres"
+}
