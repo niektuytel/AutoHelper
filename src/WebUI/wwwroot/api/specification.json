@@ -761,6 +761,48 @@
         }
       }
     },
+    "/api/Garage/StartConversation": {
+      "post": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_StartConversation",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartConversationCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/search": {
       "get": {
         "tags": [
@@ -2117,6 +2159,101 @@
           "total": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "ConversationItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relatedGarageLookupId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "relatedVehicleLookupId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "senderWhatsAppNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "senderEmail": {
+                "type": "string",
+                "nullable": true
+              },
+              "receiverWhatsAppNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "receiverEmail": {
+                "type": "string",
+                "nullable": true
+              },
+              "messageType": {
+                "$ref": "#/components/schemas/ConversationMessageType"
+              },
+              "messageContent": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ConversationMessageType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Price",
+          "Appointment",
+          "Technical"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "StartConversationCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relatedGarageLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "relatedVehicleLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "senderWhatsAppNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverWhatsAppNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/ConversationMessageType"
+          },
+          "messageContent": {
+            "type": "string"
           }
         }
       },

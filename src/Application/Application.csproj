@@ -30,6 +30,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Conversations\Commands\SendMessageToCustomer\" />
+      <Folder Include="Conversations\Commands\SendMessageToGarage\" />
       <Folder Include="Garages\Queries\GetGarageAvailableWorkSlots\" />
     </ItemGroup>
 

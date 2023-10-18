@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
+using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
@@ -32,6 +33,9 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         _mediator = mediator;
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
+
+    public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
+
 
     public DbSet<GarageItem> Garages => Set<GarageItem>();
     public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();

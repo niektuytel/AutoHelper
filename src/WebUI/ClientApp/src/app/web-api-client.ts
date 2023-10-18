@@ -593,6 +593,8 @@ export interface IGarageClient {
     getLookupsStatus(): Promise<GarageLookupsStatusDto>;
 
     upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string>;
+
+    startConversation(command: StartConversationCommand): Promise<ConversationItem>;
 }
 
 export class GarageClient implements IGarageClient {
@@ -857,6 +859,51 @@ export class GarageClient implements IGarageClient {
             });
         }
         return Promise.resolve<string>(null as any);
+    }
+
+    startConversation(command: StartConversationCommand): Promise<ConversationItem> {
+        let url_ = this.baseUrl + "/api/Garage/StartConversation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processStartConversation(_response);
+        });
+    }
+
+    protected processStartConversation(response: Response): Promise<ConversationItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ConversationItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ConversationItem>(null as any);
     }
 }
 
@@ -3171,6 +3218,138 @@ export interface IGarageLookupsStatusDto {
     ableToUpdate?: number;
     upToDate?: number;
     total?: number;
+}
+
+export class ConversationItem extends BaseAuditableEntity implements IConversationItem {
+    relatedGarageLookupId?: string;
+    relatedVehicleLookupId?: string;
+    senderWhatsAppNumber?: string | undefined;
+    senderEmail?: string | undefined;
+    receiverWhatsAppNumber?: string | undefined;
+    receiverEmail?: string | undefined;
+    messageType?: ConversationMessageType;
+    messageContent?: string;
+
+    constructor(data?: IConversationItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
+            this.relatedVehicleLookupId = _data["relatedVehicleLookupId"];
+            this.senderWhatsAppNumber = _data["senderWhatsAppNumber"];
+            this.senderEmail = _data["senderEmail"];
+            this.receiverWhatsAppNumber = _data["receiverWhatsAppNumber"];
+            this.receiverEmail = _data["receiverEmail"];
+            this.messageType = _data["messageType"];
+            this.messageContent = _data["messageContent"];
+        }
+    }
+
+    static fromJS(data: any): ConversationItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConversationItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
+        data["relatedVehicleLookupId"] = this.relatedVehicleLookupId;
+        data["senderWhatsAppNumber"] = this.senderWhatsAppNumber;
+        data["senderEmail"] = this.senderEmail;
+        data["receiverWhatsAppNumber"] = this.receiverWhatsAppNumber;
+        data["receiverEmail"] = this.receiverEmail;
+        data["messageType"] = this.messageType;
+        data["messageContent"] = this.messageContent;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IConversationItem extends IBaseAuditableEntity {
+    relatedGarageLookupId?: string;
+    relatedVehicleLookupId?: string;
+    senderWhatsAppNumber?: string | undefined;
+    senderEmail?: string | undefined;
+    receiverWhatsAppNumber?: string | undefined;
+    receiverEmail?: string | undefined;
+    messageType?: ConversationMessageType;
+    messageContent?: string;
+}
+
+export enum ConversationMessageType {
+    Other = 0,
+    Price = 1,
+    Appointment = 2,
+    Technical = 3,
+}
+
+export class StartConversationCommand implements IStartConversationCommand {
+    relatedGarageLookupId?: string;
+    relatedVehicleLookupId?: string;
+    senderWhatsAppNumber?: string | undefined;
+    senderEmail?: string | undefined;
+    receiverWhatsAppNumber?: string | undefined;
+    receiverEmail?: string | undefined;
+    messageType?: ConversationMessageType;
+    messageContent?: string;
+
+    constructor(data?: IStartConversationCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
+            this.relatedVehicleLookupId = _data["relatedVehicleLookupId"];
+            this.senderWhatsAppNumber = _data["senderWhatsAppNumber"];
+            this.senderEmail = _data["senderEmail"];
+            this.receiverWhatsAppNumber = _data["receiverWhatsAppNumber"];
+            this.receiverEmail = _data["receiverEmail"];
+            this.messageType = _data["messageType"];
+            this.messageContent = _data["messageContent"];
+        }
+    }
+
+    static fromJS(data: any): StartConversationCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartConversationCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
+        data["relatedVehicleLookupId"] = this.relatedVehicleLookupId;
+        data["senderWhatsAppNumber"] = this.senderWhatsAppNumber;
+        data["senderEmail"] = this.senderEmail;
+        data["receiverWhatsAppNumber"] = this.receiverWhatsAppNumber;
+        data["receiverEmail"] = this.receiverEmail;
+        data["messageType"] = this.messageType;
+        data["messageContent"] = this.messageContent;
+        return data;
+    }
+}
+
+export interface IStartConversationCommand {
+    relatedGarageLookupId?: string;
+    relatedVehicleLookupId?: string;
+    senderWhatsAppNumber?: string | undefined;
+    senderEmail?: string | undefined;
+    receiverWhatsAppNumber?: string | undefined;
+    receiverEmail?: string | undefined;
+    messageType?: ConversationMessageType;
+    messageContent?: string;
 }
 
 export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {

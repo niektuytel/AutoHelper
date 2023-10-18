@@ -30,6 +30,8 @@ using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
 using AutoHelper.Hangfire.MediatR;
 using Hangfire.Server;
+using AutoHelper.Application.Conversations.Commands.StartConversation;
+using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -117,6 +119,20 @@ public class GarageController : ApiControllerBase
         Mediator.Enqueue(jobId, command);
 
         return $"Successfully start hangfire job: {jobId}";
+    }
+
+    [Authorize]
+    [HttpPost($"{nameof(StartConversation)}")]
+    [ProducesResponseType(typeof(ConversationItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public ConversationItem StartConversation([FromBody] StartConversationCommand command)
+    {
+        //var jobId = $"{nameof(StartConversationCommand)}[>>] from({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
+        //var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
+        //Mediator.Enqueue(jobId, command);
+
+        //return $"Successfully start hangfire job: {jobId}";
+        return null;
     }
 
 }

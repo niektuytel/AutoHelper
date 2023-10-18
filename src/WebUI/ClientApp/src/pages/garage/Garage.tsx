@@ -25,6 +25,7 @@ import { showOnError, showOnSuccess } from "../../redux/slices/statusSnackbarSli
 import { useDispatch } from "react-redux";
 import GarageDailySchedule from "./components/GarageDailySchedule";
 import GarageContactSection from "./components/GarageContactSection";
+import GarageQuestionDialog from "./components/GarageQuestionDialog";
 
 interface IProps {
 }
@@ -35,6 +36,7 @@ export default ({ }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const dispatch = useDispatch();
+    const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto|null>(null);
     const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
     const queryParams = new URLSearchParams(location.search);
@@ -45,15 +47,6 @@ export default ({ }: IProps) => {
 
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
 
-    const handleContactClick = () => {
-        console.log("handleContactClick");
-
-        //setSelectedItem(undefined);
-        //setDialogMode("create");
-        //setDialogOpen(true);
-    }
-
-
     const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
         if (cartItems.some(cartItem => cartItem.id === itemToAdd.id)) {
             dispatch(showOnError(t("Cart item already exist")));
@@ -63,11 +56,15 @@ export default ({ }: IProps) => {
         setCartItems([...cartItems, itemToAdd]);
     }
 
-    const hasQuestionItem = (serviceItem: any) => {
+    const handleQuestionSubmit = (data: { emailOrPhone: string; explanation: string; message: string; }) => {
+        // Handle sending the message, e.g., make an API call
+        console.log(data);
         dispatch(showOnSuccess(t("Conversation.Started")));
-    }
+    };
 
-    hasQuestionItem
+    const hasQuestionItem = (serviceItem: any) => {
+        setDialogOpen(true);
+    };
 
     if (!loading && garageLookup?.garageId)
     {
@@ -127,5 +124,10 @@ export default ({ }: IProps) => {
                 </Grid>  
             </Grid>
         </Container>
+        <GarageQuestionDialog
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+            onSubmit={handleQuestionSubmit}
+        />
     </>;
 }
