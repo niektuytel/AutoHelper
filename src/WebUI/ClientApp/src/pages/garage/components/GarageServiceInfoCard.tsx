@@ -54,7 +54,6 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
             style={{
                 marginBottom: "10px",
                 padding: "8px",
-                cursor: "pointer",
                 border: selectedItem === service ? `1px solid black` : `1px solid ${COLORS.BORDER_GRAY}`
             }}
             onClick={() => setSelectedItem(service)}

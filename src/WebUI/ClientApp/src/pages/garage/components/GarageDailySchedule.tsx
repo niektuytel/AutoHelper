@@ -19,7 +19,7 @@ interface IProps {
     openDaysOfWeek: number[] | undefined;
 }
 
-const DailySchedule = ({ openDaysOfWeek }: IProps) => {
+export default ({ openDaysOfWeek }: IProps) => {
     const { t } = useTranslation();
 
     // TODO: also show the time range for each day
@@ -55,5 +55,3 @@ const DailySchedule = ({ openDaysOfWeek }: IProps) => {
         </Paper>
     );
 };
-
-export default DailySchedule;
