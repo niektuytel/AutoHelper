@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using AutoHelper.Domain.Entities.Deprecated;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -15,7 +14,7 @@ public class GarageEmployeeItem : BaseAuditableEntity
     /// </summary>
     public Guid GarageId { get; set; }
 
-    [ForeignKey("GarageId")]
+    [ForeignKey(nameof(GarageId))]
     public virtual GarageItem Garage { get; set; }
 
     /// <summary>
@@ -26,7 +25,7 @@ public class GarageEmployeeItem : BaseAuditableEntity
     /// <summary>
     /// Man power contact information
     /// </summary>
-    public ContactItem Contact { get; set; }
+    public GarageEmployeeContactItem Contact { get; set; }
 
     /// <summary>
     /// Working schema for this user

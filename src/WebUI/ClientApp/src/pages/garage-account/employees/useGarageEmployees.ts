@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { ContactItem, CreateGarageEmployeeCommand, GarageClient, GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, UpdateGarageEmployeeCommand } from "../../../app/web-api-client";
+import { GarageEmployeeContactItem, CreateGarageEmployeeCommand, GarageClient, GarageEmployeeWorkExperienceItemDto, GarageEmployeeWorkSchemaItemDto, UpdateGarageEmployeeCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -128,7 +128,7 @@ function useGarageEmployees(onResponse: (data: any) => void) {
     const createEmployee = (data: any) => {
         var command = new CreateGarageEmployeeCommand({
             isActive: data.isActive,
-            contact: new ContactItem(),
+            contact: new GarageEmployeeContactItem(),
             workSchema: data.WorkSchema ? data.WorkSchema.map((item: any) => {
                 return new GarageEmployeeWorkSchemaItemDto({
                     dayOfWeek: item.dayOfWeek,
@@ -155,7 +155,7 @@ function useGarageEmployees(onResponse: (data: any) => void) {
         var command = new UpdateGarageEmployeeCommand({
             id: data.id,
             isActive: data.isActive,
-            contact: new ContactItem(),
+            contact: new GarageEmployeeContactItem(),
             workSchema: data.WorkSchema ? data.WorkSchema.map((item: any) => {
                 return new GarageEmployeeWorkSchemaItemDto({
                     dayOfWeek: item.dayOfWeek,

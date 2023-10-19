@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 
@@ -25,7 +24,5 @@ public class GarageItemDto : IMapFrom<GarageItem>
     public GarageLocationItem Location { get; set; } = new GarageLocationItem();
 
     public GarageBankingDetailsItem BankingDetails { get; set; } = new GarageBankingDetailsItem();
-
-    public GarageServicesSettingsItem ServicesSettings { get; set; } = new GarageServicesSettingsItem();
 
 }

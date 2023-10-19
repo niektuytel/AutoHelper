@@ -1,5 +1,4 @@
 ﻿import { CSSProperties } from "react"
-import { colorOnIndex } from "../../i18n/ColorValues"
 
 // import bgImage from "../../assets/images/bg-presentation.jpg";
 

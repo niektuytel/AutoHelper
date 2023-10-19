@@ -6,6 +6,48 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Conversation/StartConversation": {
+      "post": {
+        "tags": [
+          "Conversation"
+        ],
+        "operationId": "Conversation_StartConversation",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartConversationCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GarageAccount/GetSettings": {
       "get": {
         "tags": [
@@ -761,48 +803,6 @@
         }
       }
     },
-    "/api/Garage/StartConversation": {
-      "post": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_StartConversation",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartConversationCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConversationItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Vehicle/search": {
       "get": {
         "tags": [
@@ -897,22 +897,41 @@
         }
       }
     },
-    "/api/WeatherForecast": {
-      "get": {
+    "/api/Vehicle/CreateVehicleLookup": {
+      "post": {
         "tags": [
-          "WeatherForecast"
+          "Vehicle"
         ],
-        "operationId": "WeatherForecast_Get",
+        "operationId": "Vehicle_CreateVehicleLookup",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleLookupCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
+                  "$ref": "#/components/schemas/VehicleLookupItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
                 }
               }
             }
@@ -923,200 +942,68 @@
   },
   "components": {
     "schemas": {
-      "GarageItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "whatsAppNumber": {
-            "type": "string"
-          },
-          "location": {
-            "$ref": "#/components/schemas/GarageLocationItem"
-          },
-          "bankingDetails": {
-            "$ref": "#/components/schemas/GarageBankingDetailsItem"
-          },
-          "servicesSettings": {
-            "$ref": "#/components/schemas/GarageServicesSettingsItem"
-          }
-        }
-      },
-      "GarageLocationItem": {
+      "ConversationItem": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseEntity"
+            "$ref": "#/components/schemas/BaseAuditableEntity"
           },
           {
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "address",
-              "city",
-              "postalCode",
-              "country",
-              "longitude",
-              "latitude"
+              "relatedVehicleLookupId",
+              "relatedGarageLookupId",
+              "messageType",
+              "messageContent"
             ],
             "properties": {
-              "address": {
+              "relatedVehicleLookupId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
+              "relatedVehicleLookup": {
+                "$ref": "#/components/schemas/VehicleLookupItem"
+              },
+              "relatedGarageLookupId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
+              "relatedGarageLookup": {
+                "$ref": "#/components/schemas/GarageLookupItem"
+              },
+              "fromWhatsappNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "fromEmailAddress": {
+                "type": "string",
+                "nullable": true
+              },
+              "toWhatsappNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "toEmailAddress": {
+                "type": "string",
+                "nullable": true
+              },
+              "messageType": {
+                "$ref": "#/components/schemas/ConversationMessageType"
+              },
+              "messageContent": {
                 "type": "string",
                 "minLength": 1
               },
-              "city": {
-                "type": "string",
-                "minLength": 1
-              },
-              "postalCode": {
-                "type": "string",
-                "minLength": 1
-              },
-              "country": {
-                "type": "string",
-                "minLength": 1
-              },
-              "longitude": {
-                "type": "number",
-                "format": "float"
-              },
-              "latitude": {
-                "type": "number",
-                "format": "float"
+              "priority": {
+                "$ref": "#/components/schemas/PriorityLevel"
               }
             }
           }
         ]
       },
-      "BaseEntity": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "domainEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BaseEvent"
-            }
-          }
-        }
-      },
-      "BaseEvent": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
-      "GarageBankingDetailsItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "bankName": {
-                "type": "string"
-              },
-              "kvKNumber": {
-                "type": "string"
-              },
-              "accountHolderName": {
-                "type": "string"
-              },
-              "iban": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "GarageServicesSettingsItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "maxAutomaticPlannedOrders": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "trySendMailOnNewOrders": {
-                "type": "boolean"
-              },
-              "trySendWhatsappMessagOnNewOrders": {
-                "type": "boolean"
-              },
-              "isDeliveryEnabled": {
-                "type": "boolean"
-              },
-              "isAuthohelperDeliveryEnabled": {
-                "type": "boolean"
-              },
-              "deliveryPrice": {
-                "type": "number",
-                "format": "decimal"
-              },
-              "maxAutomaticPlannedDeliveries": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          }
-        ]
-      },
-      "BadRequestResponse": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "type": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "GarageOverview": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "vehicles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VehicleItem"
-            }
-          }
-        }
-      },
-      "VehicleItem": {
+      "VehicleLookupItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -1127,7 +1014,8 @@
             "required": [
               "licensePlate",
               "motExpiryDate",
-              "lastLocation",
+              "location",
+              "conversations",
               "serviceLogs"
             ],
             "properties": {
@@ -1140,16 +1028,26 @@
                 "format": "date-time",
                 "minLength": 1
               },
-              "lastLocation": {
-                "$ref": "#/components/schemas/VehicleLocationItem"
+              "location": {
+                "$ref": "#/components/schemas/Geometry"
               },
-              "lastVehicleOwner": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/VehicleOwnerItem"
-                  }
-                ]
+              "phoneNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "whatsappNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "emailAddress": {
+                "type": "string",
+                "nullable": true
+              },
+              "conversations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ConversationItem"
+                }
               },
               "serviceLogs": {
                 "type": "array",
@@ -1161,157 +1059,634 @@
           }
         ]
       },
-      "VehicleLocationItem": {
+      "Geometry": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "factory": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GeometryFactory"
+              }
+            ]
+          },
+          "userData": {
+            "nullable": true
+          },
+          "srid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "precisionModel": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PrecisionModel"
+              }
+            ]
+          },
+          "numGeometries": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isSimple": {
+            "type": "boolean"
+          },
+          "isValid": {
+            "type": "boolean"
+          },
+          "area": {
+            "type": "number",
+            "format": "double"
+          },
+          "length": {
+            "type": "number",
+            "format": "double"
+          },
+          "centroid": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              }
+            ]
+          },
+          "interiorPoint": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              }
+            ]
+          },
+          "pointOnSurface": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              }
+            ]
+          },
+          "envelope": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Geometry"
+              }
+            ]
+          },
+          "envelopeInternal": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Envelope"
+              }
+            ]
+          },
+          "isRectangle": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GeometryFactory": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "precisionModel": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PrecisionModel"
+              }
+            ]
+          },
+          "coordinateSequenceFactory": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CoordinateSequenceFactory"
+              }
+            ]
+          },
+          "srid": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "geometryServices": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/NtsGeometryServices"
+              }
+            ]
+          }
+        }
+      },
+      "PrecisionModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isFloating": {
+            "type": "boolean"
+          },
+          "maximumSignificantDigits": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "scale": {
+            "type": "number",
+            "format": "double"
+          },
+          "gridSize": {
+            "type": "number",
+            "format": "double"
+          },
+          "precisionModelType": {
+            "$ref": "#/components/schemas/PrecisionModels"
+          }
+        }
+      },
+      "PrecisionModels": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Floating",
+          "FloatingSingle",
+          "Fixed"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "CoordinateSequenceFactory": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "ordinates": {
+            "$ref": "#/components/schemas/Ordinates"
+          }
+        }
+      },
+      "Ordinates": {
+        "type": "integer",
+        "description": "",
+        "x-enumFlags": true,
+        "x-enumNames": [
+          "None",
+          "X",
+          "Spatial1",
+          "Y",
+          "Spatial2",
+          "XY",
+          "Spatial3",
+          "Z",
+          "XYZ",
+          "Spatial4",
+          "Spatial5",
+          "Spatial6",
+          "Spatial7",
+          "Spatial8",
+          "Spatial9",
+          "Spatial10",
+          "Spatial11",
+          "Spatial12",
+          "Spatial13",
+          "Spatial14",
+          "Spatial15",
+          "Spatial16",
+          "AllSpatialOrdinates",
+          "Measure1",
+          "M",
+          "XYM",
+          "XYZM",
+          "Measure2",
+          "Measure3",
+          "Measure4",
+          "Measure5",
+          "Measure6",
+          "Measure7",
+          "Measure8",
+          "Measure9",
+          "Measure10",
+          "Measure11",
+          "Measure12",
+          "Measure13",
+          "Measure14",
+          "Measure15",
+          "Measure16",
+          "AllMeasureOrdinates",
+          "AllOrdinates"
+        ],
+        "enum": [
+          0,
+          1,
+          1,
+          2,
+          2,
+          3,
+          4,
+          4,
+          7,
+          8,
+          16,
+          32,
+          64,
+          128,
+          256,
+          512,
+          1024,
+          2048,
+          4096,
+          8192,
+          16384,
+          32768,
+          65535,
+          65536,
+          65536,
+          65539,
+          65543,
+          131072,
+          262144,
+          524288,
+          1048576,
+          2097152,
+          4194304,
+          8388608,
+          16777216,
+          33554432,
+          67108864,
+          134217728,
+          268435456,
+          536870912,
+          1073741824,
+          -2147483648,
+          -65536,
+          -1
+        ]
+      },
+      "NtsGeometryServices": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "geometryOverlay": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GeometryOverlay"
+              }
+            ]
+          },
+          "coordinateEqualityComparer": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CoordinateEqualityComparer"
+              }
+            ]
+          },
+          "defaultSRID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "defaultCoordinateSequenceFactory": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CoordinateSequenceFactory"
+              }
+            ]
+          },
+          "defaultPrecisionModel": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PrecisionModel"
+              }
+            ]
+          }
+        }
+      },
+      "GeometryOverlay": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "CoordinateEqualityComparer": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseEntity"
+            "$ref": "#/components/schemas/EqualityComparerOfCoordinate"
           },
           {
             "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "longitude",
-              "latitude"
-            ],
-            "properties": {
-              "address": {
-                "type": "string",
-                "nullable": true
-              },
-              "city": {
-                "type": "string",
-                "nullable": true
-              },
-              "postalCode": {
-                "type": "string",
-                "nullable": true
-              },
-              "country": {
-                "type": "string",
-                "nullable": true
-              },
-              "longitude": {
-                "type": "number",
-                "format": "float"
-              },
-              "latitude": {
-                "type": "number",
-                "format": "float"
-              }
-            }
+            "additionalProperties": false
           }
         ]
       },
-      "VehicleOwnerItem": {
+      "EqualityComparerOfCoordinate": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "Point": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
+            "$ref": "#/components/schemas/Geometry"
           },
           {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "fullName",
-              "email"
-            ],
             "properties": {
-              "fullName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "email": {
-                "type": "string",
-                "minLength": 1
-              },
-              "phoneNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "vehicleOwnerLocation": {
+              "coordinateSequence": {
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/VehicleOwnerLocationItem"
+                    "$ref": "#/components/schemas/CoordinateSequence"
                   }
                 ]
+              },
+              "coordinates": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "$ref": "#/components/schemas/Coordinate"
+                }
+              },
+              "numPoints": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "isEmpty": {
+                "type": "boolean"
+              },
+              "dimension": {
+                "$ref": "#/components/schemas/Dimension"
+              },
+              "boundaryDimension": {
+                "$ref": "#/components/schemas/Dimension"
+              },
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "coordinate": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Coordinate"
+                  }
+                ]
+              },
+              "geometryType": {
+                "type": "string",
+                "nullable": true
+              },
+              "ogcGeometryType": {
+                "$ref": "#/components/schemas/OgcGeometryType"
+              },
+              "boundary": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Geometry"
+                  }
+                ]
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              },
+              "m": {
+                "type": "number",
+                "format": "double"
               }
             }
           }
         ]
       },
-      "VehicleOwnerLocationItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
+      "CoordinateSequence": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "dimension": {
+            "type": "integer",
+            "format": "int32"
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "address",
-              "city"
-            ],
-            "properties": {
-              "address": {
-                "type": "string",
-                "minLength": 1
-              },
-              "city": {
-                "type": "string",
-                "minLength": 1
-              },
-              "postalCode": {
-                "type": "string",
-                "nullable": true
-              },
-              "country": {
-                "type": "string",
-                "nullable": true
-              },
-              "longitude": {
-                "type": "number",
-                "format": "float",
-                "nullable": true
-              },
-              "latitude": {
-                "type": "number",
-                "format": "float",
-                "nullable": true
+          "measures": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "spatial": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ordinates": {
+            "$ref": "#/components/schemas/Ordinates"
+          },
+          "hasZ": {
+            "type": "boolean"
+          },
+          "hasM": {
+            "type": "boolean"
+          },
+          "zOrdinateIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "mOrdinateIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Coordinate"
               }
-            }
+            ]
+          },
+          "last": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Coordinate"
+              }
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32"
           }
+        }
+      },
+      "Coordinate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "type": "number",
+            "format": "double"
+          },
+          "z": {
+            "type": "number",
+            "format": "double"
+          },
+          "m": {
+            "type": "number",
+            "format": "double"
+          },
+          "coordinateValue": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Coordinate"
+              }
+            ]
+          },
+          "isValid": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Dimension": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "P",
+          "Point",
+          "Curve",
+          "L",
+          "A",
+          "Surface",
+          "Collapse",
+          "Dontcare",
+          "True",
+          "Unknown",
+          "False"
+        ],
+        "enum": [
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          3,
+          -3,
+          -2,
+          -1,
+          -1
         ]
       },
-      "BaseAuditableEntity": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "x-abstract": true,
-            "additionalProperties": false,
-            "properties": {
-              "created": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "createdBy": {
-                "type": "string",
-                "nullable": true
-              },
-              "lastModified": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "lastModifiedBy": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
+      "OgcGeometryType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Point",
+          "LineString",
+          "Polygon",
+          "MultiPoint",
+          "MultiLineString",
+          "MultiPolygon",
+          "GeometryCollection",
+          "CircularString",
+          "CompoundCurve",
+          "CurvePolygon",
+          "MultiCurve",
+          "MultiSurface",
+          "Curve",
+          "Surface",
+          "PolyhedralSurface",
+          "TIN"
+        ],
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
         ]
+      },
+      "Envelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "isNull": {
+            "type": "boolean"
+          },
+          "width": {
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "type": "number",
+            "format": "double"
+          },
+          "diameter": {
+            "type": "number",
+            "format": "double"
+          },
+          "minX": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxX": {
+            "type": "number",
+            "format": "double"
+          },
+          "minY": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxY": {
+            "type": "number",
+            "format": "double"
+          },
+          "area": {
+            "type": "number",
+            "format": "double"
+          },
+          "minExtent": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxExtent": {
+            "type": "number",
+            "format": "double"
+          },
+          "centre": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Coordinate"
+              }
+            ]
+          }
+        }
       },
       "VehicleServiceLogItem": {
         "allOf": [
@@ -1322,29 +1697,20 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "ownerId",
-              "vehicleId",
+              "vehicleLookupId",
               "date",
               "mileage",
               "totalPrice",
               "serviceItems"
             ],
             "properties": {
-              "ownerId": {
+              "vehicleLookupId": {
                 "type": "string",
                 "format": "guid",
                 "minLength": 1
               },
-              "owner": {
-                "$ref": "#/components/schemas/VehicleOwnerItem"
-              },
-              "vehicleId": {
-                "type": "string",
-                "format": "guid",
-                "minLength": 1
-              },
-              "vehicle": {
-                "$ref": "#/components/schemas/VehicleItem"
+              "vehicleLookup": {
+                "$ref": "#/components/schemas/VehicleLookupItem"
               },
               "date": {
                 "type": "string",
@@ -1458,6 +1824,399 @@
           135
         ]
       },
+      "BaseAuditableEntity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "lastModified": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "domainEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseEvent"
+            }
+          }
+        }
+      },
+      "BaseEvent": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "GarageLookupItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identifier",
+              "name",
+              "knownServicesString",
+              "address",
+              "city",
+              "conversations"
+            ],
+            "properties": {
+              "garageId": {
+                "type": "string",
+                "format": "guid",
+                "nullable": true
+              },
+              "identifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "knownServices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageServiceType"
+                }
+              },
+              "knownServicesString": {
+                "type": "string",
+                "minLength": 1
+              },
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "city": {
+                "type": "string",
+                "minLength": 1
+              },
+              "location": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Geometry"
+                  }
+                ]
+              },
+              "status": {
+                "type": "string",
+                "nullable": true
+              },
+              "daysOfWeek": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "daysOfWeekString": {
+                "type": "string"
+              },
+              "phoneNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "whatsappNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "emailAddress": {
+                "type": "string",
+                "nullable": true
+              },
+              "website": {
+                "type": "string",
+                "nullable": true
+              },
+              "rating": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
+              },
+              "userRatingsTotal": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "hasPickupService": {
+                "type": "boolean"
+              },
+              "hasReplacementTransportService": {
+                "type": "boolean"
+              },
+              "largeData": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/GarageLookupLargeItem"
+                  }
+                ]
+              },
+              "conversations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ConversationItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "GarageLookupLargeItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "googleApiDetailsJson": {
+                "type": "string"
+              },
+              "firstPlacePhoto": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ConversationMessageType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Price",
+          "Appointment",
+          "Technical"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "PriorityLevel": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "Low",
+          "Medium",
+          "High"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "BadRequestResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "StartConversationCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relatedGarageLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "relatedVehicleLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "senderWhatsAppNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverWhatsAppNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/ConversationMessageType"
+          },
+          "messageContent": {
+            "type": "string"
+          }
+        }
+      },
+      "GarageItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GarageLocationItem"
+          },
+          "bankingDetails": {
+            "$ref": "#/components/schemas/GarageBankingDetailsItem"
+          }
+        }
+      },
+      "GarageLocationItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "address",
+              "city",
+              "postalCode",
+              "country",
+              "longitude",
+              "latitude"
+            ],
+            "properties": {
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "city": {
+                "type": "string",
+                "minLength": 1
+              },
+              "postalCode": {
+                "type": "string",
+                "minLength": 1
+              },
+              "country": {
+                "type": "string",
+                "minLength": 1
+              },
+              "longitude": {
+                "type": "number",
+                "format": "float"
+              },
+              "latitude": {
+                "type": "number",
+                "format": "float"
+              }
+            }
+          }
+        ]
+      },
+      "GarageBankingDetailsItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "bankName": {
+                "type": "string"
+              },
+              "kvKNumber": {
+                "type": "string"
+              },
+              "accountHolderName": {
+                "type": "string"
+              },
+              "iban": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "GarageOverview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleLookupItem"
+            }
+          }
+        }
+      },
       "GarageServiceItemDto": {
         "type": "object",
         "additionalProperties": false,
@@ -1498,7 +2257,7 @@
             "type": "boolean"
           },
           "contact": {
-            "$ref": "#/components/schemas/ContactItem"
+            "$ref": "#/components/schemas/GarageEmployeeContactItem"
           },
           "workSchema": {
             "type": "array",
@@ -1514,7 +2273,7 @@
           }
         }
       },
-      "ContactItem": {
+      "GarageEmployeeContactItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseEntity"
@@ -1656,9 +2415,6 @@
               "bankingDetails": {
                 "$ref": "#/components/schemas/GarageBankingDetailsItem"
               },
-              "servicesSettings": {
-                "$ref": "#/components/schemas/GarageServicesSettingsItem"
-              },
               "employees": {
                 "type": "array",
                 "items": {
@@ -1692,7 +2448,7 @@
                 "type": "boolean"
               },
               "contact": {
-                "$ref": "#/components/schemas/ContactItem"
+                "$ref": "#/components/schemas/GarageEmployeeContactItem"
               },
               "workSchema": {
                 "type": "array",
@@ -1806,7 +2562,7 @@
             "type": "boolean"
           },
           "contact": {
-            "$ref": "#/components/schemas/ContactItem"
+            "$ref": "#/components/schemas/GarageEmployeeContactItem"
           },
           "workSchema": {
             "type": "array",
@@ -1896,9 +2652,6 @@
           },
           "bankingDetails": {
             "$ref": "#/components/schemas/GarageBankingDetailsItem"
-          },
-          "servicesSettings": {
-            "$ref": "#/components/schemas/GarageServicesSettingsItem"
           }
         }
       },
@@ -1938,7 +2691,7 @@
             "type": "boolean"
           },
           "contact": {
-            "$ref": "#/components/schemas/ContactItem"
+            "$ref": "#/components/schemas/GarageEmployeeContactItem"
           },
           "workSchema": {
             "type": "array",
@@ -2120,26 +2873,6 @@
           }
         }
       },
-      "GarageLookupLargeItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "googleApiDetailsJson": {
-                "type": "string"
-              },
-              "firstPlacePhoto": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
       "GarageLookupsStatusDto": {
         "type": "object",
         "additionalProperties": false,
@@ -2159,101 +2892,6 @@
           "total": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "ConversationItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "relatedGarageLookupId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "relatedVehicleLookupId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "senderWhatsAppNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "senderEmail": {
-                "type": "string",
-                "nullable": true
-              },
-              "receiverWhatsAppNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "receiverEmail": {
-                "type": "string",
-                "nullable": true
-              },
-              "messageType": {
-                "$ref": "#/components/schemas/ConversationMessageType"
-              },
-              "messageContent": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "ConversationMessageType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "Price",
-          "Appointment",
-          "Technical"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "StartConversationCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "relatedGarageLookupId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "relatedVehicleLookupId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "senderWhatsAppNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "senderEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "receiverWhatsAppNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "receiverEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "messageType": {
-            "$ref": "#/components/schemas/ConversationMessageType"
-          },
-          "messageContent": {
-            "type": "string"
           }
         }
       },
@@ -2308,23 +2946,42 @@
           }
         }
       },
-      "WeatherForecast": {
+      "CreateVehicleLookupCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "licensePlate",
+          "motExpiryDate",
+          "latitude",
+          "longitude"
+        ],
         "properties": {
-          "date": {
+          "licensePlate": {
             "type": "string",
-            "format": "date-time"
+            "minLength": 1
           },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
+          "motExpiryDate": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
           },
-          "temperatureF": {
-            "type": "integer",
-            "format": "int32"
+          "latitude": {
+            "type": "string",
+            "minLength": 1
           },
-          "summary": {
+          "longitude": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailAddress": {
             "type": "string",
             "nullable": true
           }

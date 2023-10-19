@@ -9,6 +9,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Files\**" />
+      <Compile Remove="Persistence\Configurations\**" />
+      <EmbeddedResource Remove="Files\**" />
+      <EmbeddedResource Remove="Persistence\Configurations\**" />
+      <EntityDeploy Remove="Files\**" />
+      <EntityDeploy Remove="Persistence\Configurations\**" />
+      <None Remove="Files\**" />
+      <None Remove="Persistence\Configurations\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="CsvHelper" Version="30.0.1" />
         <PackageReference Include="GoogleApi" Version="5.2.1" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
@@ -23,6 +34,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

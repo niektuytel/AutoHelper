@@ -204,8 +204,6 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         command.bankingDetails.accountHolderName = data.accountHolderName;
         command.bankingDetails.iban = data.iban;
 
-        command.servicesSettings = garageSettings?.servicesSettings;
-
         console.log(command.toJSON());
         updateMutation.mutate(command);
     }

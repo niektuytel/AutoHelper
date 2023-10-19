@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
-using AutoHelper.Application.TodoLists.Queries.GetTodos;
-using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 
@@ -24,7 +22,7 @@ public class GarageEmployeeItemDto : IMapFrom<GarageEmployeeItem>
     /// <summary>
     /// Man power contact information
     /// </summary>
-    public ContactItem Contact { get; set; }
+    public GarageEmployeeContactItem Contact { get; set; }
 
     /// <summary>
     /// Working schema for this user

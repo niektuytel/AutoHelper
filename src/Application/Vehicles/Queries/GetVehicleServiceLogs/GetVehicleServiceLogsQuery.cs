@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
-using AutoHelper.Application.TodoItems.Queries.GetTodoItemsWithPagination;
-using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using AutoHelper.Domain.Entities;
 using AutoMapper;
 using MediatR;
@@ -43,7 +41,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
         //    .Include(x => x.ServiceLogs)
         //    .ThenInclude(x => x.ServiceItems)
         //    .FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
-        var entity = await _context.Vehicles
+        var entity = await _context.VehicleLookups
             .AsNoTracking()
             .Where(v => v.LicensePlate == request.LicensePlate)
             .Select(v => new

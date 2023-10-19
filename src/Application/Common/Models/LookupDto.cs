@@ -1,5 +1,4 @@
 ﻿using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Domain.Entities.Deprecated;
 
 namespace AutoHelper.Application.Common.Models;
 

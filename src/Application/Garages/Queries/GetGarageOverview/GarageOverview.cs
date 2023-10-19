@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Domain.Entities.Deprecated;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 
@@ -14,7 +14,7 @@ public class GarageOverview : IMapFrom<GarageItem>
 {
     public string Name { get; set; }
 
-    public IEnumerable<VehicleItem> Vehicles { get; set; }
+    public IEnumerable<VehicleLookupItem> Vehicles { get; set; }
 
     //public IEnumerable<CreateGarageEmployeeDto> Employees { get; set; }
 

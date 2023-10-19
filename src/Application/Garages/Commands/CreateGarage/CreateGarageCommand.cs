@@ -5,9 +5,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Events;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -67,8 +65,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
                 KvKNumber = request.BankingDetails.KvKNumber,
                 AccountHolderName = request.BankingDetails.AccountHolderName,
                 IBAN = request.BankingDetails.IBAN
-            },
-            ServicesSettings = new GarageServicesSettingsItem()
+            }
         };
 
         // If you wish to use domain events, then you can add them here:

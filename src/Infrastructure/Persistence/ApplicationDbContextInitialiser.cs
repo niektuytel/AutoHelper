@@ -1,5 +1,4 @@
 ﻿using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +71,8 @@ public class ApplicationDbContextInitialiser
             await _roleManager.CreateAsync(userRole);
         }
 
+        await _context.SaveChangesAsync();
+
         //// Default users
         //var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
 
@@ -103,6 +104,5 @@ public class ApplicationDbContextInitialiser
         //    await _context.SaveChangesAsync();
         //}
 
-        await _context.SaveChangesAsync();
     }
 }

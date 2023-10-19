@@ -8,8 +8,6 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Common.Models;
-using AutoHelper.Application.TodoItems.Queries.GetTodoItemsWithPagination;
-using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;

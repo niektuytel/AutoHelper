@@ -9,8 +9,24 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Entities\Deprecated\**" />
+      <EmbeddedResource Remove="Entities\Deprecated\**" />
+      <None Remove="Entities\Deprecated\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Events\TodoItemCompletedEvent.cs" />
+      <Compile Remove="Events\TodoItemCreatedEvent.cs" />
+      <Compile Remove="Events\TodoItemDeletedEvent.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="MediatR" Version="11.1.0" />
       <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Events\" />
     </ItemGroup>
 
 </Project>

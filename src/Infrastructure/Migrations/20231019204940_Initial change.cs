@@ -7,7 +7,7 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Initialchange : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,20 +52,6 @@ namespace AutoHelper.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ContactItem",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ContactItem", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DeviceCodes",
                 columns: table => new
                 {
@@ -100,6 +86,20 @@ namespace AutoHelper.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GarageEmployeeContactItem",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GarageEmployeeContactItem", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GarageLocationItem",
                 columns: table => new
                 {
@@ -121,29 +121,12 @@ namespace AutoHelper.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GoogleApiDetailsJson = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    GoogleApiDetailsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstPlacePhoto = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GarageLookupLargeItem", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GarageServicesSettingsItem",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MaxAutomaticPlannedOrders = table.Column<int>(type: "int", nullable: false),
-                    TrySendMailOnNewOrders = table.Column<bool>(type: "bit", nullable: false),
-                    TrySendWhatsappMessagOnNewOrders = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeliveryEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    IsAuthohelperDeliveryEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    DeliveryPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MaxAutomaticPlannedDeliveries = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GarageServicesSettingsItem", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,12 +168,16 @@ namespace AutoHelper.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TodoList",
+                name: "VehicleLookups",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ColourCode = table.Column<string>(name: "Colour_Code", type: "nvarchar(max)", nullable: false),
+                    LicensePlate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MOTExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Location = table.Column<Geometry>(type: "geography", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WhatsappNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -198,41 +185,7 @@ namespace AutoHelper.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TodoList", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "VehicleLocationItem",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Longitude = table.Column<float>(type: "real", nullable: false),
-                    Latitude = table.Column<float>(type: "real", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VehicleLocationItem", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "VehicleOwnerLocationItem",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Longitude = table.Column<float>(type: "real", nullable: true),
-                    Latitude = table.Column<float>(type: "real", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VehicleOwnerLocationItem", x => x.Id);
+                    table.PrimaryKey("PK_VehicleLookups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -342,43 +295,6 @@ namespace AutoHelper.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GarageLookups",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GarageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LargeDataId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Identifier = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KnownServicesString = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FirstPlacePhoto = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DaysOfWeekString = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WhatsappNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Rating = table.Column<float>(type: "real", nullable: true),
-                    UserRatingsTotal = table.Column<int>(type: "int", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<Point>(type: "geography", nullable: true),
-                    HasPickupService = table.Column<bool>(type: "bit", nullable: false),
-                    HasReplacementTransportService = table.Column<bool>(type: "bit", nullable: false),
-                    HasBestPrice = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GarageLookups", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GarageLookups_GarageLookupLargeItem_LargeDataId",
-                        column: x => x.LargeDataId,
-                        principalTable: "GarageLookupLargeItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Garages",
                 columns: table => new
                 {
@@ -390,7 +306,6 @@ namespace AutoHelper.Infrastructure.Migrations
                     WhatsAppNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BankingDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServicesSettingsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -411,50 +326,53 @@ namespace AutoHelper.Infrastructure.Migrations
                         principalTable: "GarageLocationItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Garages_GarageServicesSettingsItem_ServicesSettingsId",
-                        column: x => x.ServicesSettingsId,
-                        principalTable: "GarageServicesSettingsItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TodoItem",
+                name: "GarageLookups",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Priority = table.Column<int>(type: "int", nullable: false),
-                    Reminder = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Done = table.Column<bool>(type: "bit", nullable: false),
-                    ListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TodoItem", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TodoItem_TodoList_ListId",
-                        column: x => x.ListId,
-                        principalTable: "TodoList",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "VehicleOwnerItem",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GarageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Identifier = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KnownServicesString = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<Geometry>(type: "geography", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DaysOfWeekString = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VehicleOwnerLocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    WhatsappNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Rating = table.Column<float>(type: "real", nullable: true),
+                    UserRatingsTotal = table.Column<int>(type: "int", nullable: true),
+                    HasPickupService = table.Column<bool>(type: "bit", nullable: false),
+                    HasReplacementTransportService = table.Column<bool>(type: "bit", nullable: false),
+                    LargeDataId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GarageLookups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GarageLookups_GarageLookupLargeItem_LargeDataId",
+                        column: x => x.LargeDataId,
+                        principalTable: "GarageLookupLargeItem",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VehicleServiceLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VehicleLookupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Mileage = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MetaData = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -462,12 +380,13 @@ namespace AutoHelper.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleOwnerItem", x => x.Id);
+                    table.PrimaryKey("PK_VehicleServiceLogs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VehicleOwnerItem_VehicleOwnerLocationItem_VehicleOwnerLocationId",
-                        column: x => x.VehicleOwnerLocationId,
-                        principalTable: "VehicleOwnerLocationItem",
-                        principalColumn: "Id");
+                        name: "FK_VehicleServiceLogs_VehicleLookups_VehicleLookupId",
+                        column: x => x.VehicleLookupId,
+                        principalTable: "VehicleLookups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -488,9 +407,9 @@ namespace AutoHelper.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_GarageEmployees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GarageEmployees_ContactItem_ContactId",
+                        name: "FK_GarageEmployees_GarageEmployeeContactItem_ContactId",
                         column: x => x.ContactId,
-                        principalTable: "ContactItem",
+                        principalTable: "GarageEmployeeContactItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -502,14 +421,20 @@ namespace AutoHelper.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vehicles",
+                name: "Conversations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LicensePlate = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MOTExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastLocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LastVehicleOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    RelatedVehicleLookupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RelatedGarageLookupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FromWhatsappNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FromEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ToWhatsappNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ToEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MessageType = table.Column<int>(type: "int", nullable: false),
+                    MessageContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    GarageLookupItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -517,17 +442,39 @@ namespace AutoHelper.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vehicles", x => x.Id);
+                    table.PrimaryKey("PK_Conversations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicles_VehicleLocationItem_LastLocationId",
-                        column: x => x.LastLocationId,
-                        principalTable: "VehicleLocationItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Conversations_GarageLookups_GarageLookupItemId",
+                        column: x => x.GarageLookupItemId,
+                        principalTable: "GarageLookups",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GarageServices",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GarageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DurationInMinutes = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    VehicleServiceLogItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GarageServices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicles_VehicleOwnerItem_LastVehicleOwnerId",
-                        column: x => x.LastVehicleOwnerId,
-                        principalTable: "VehicleOwnerItem",
+                        name: "FK_GarageServices_VehicleServiceLogs_VehicleServiceLogItemId",
+                        column: x => x.VehicleServiceLogItemId,
+                        principalTable: "VehicleServiceLogs",
                         principalColumn: "Id");
                 });
 
@@ -575,68 +522,6 @@ namespace AutoHelper.Infrastructure.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "VehicleServiceLogs",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    VehicleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Mileage = table.Column<int>(type: "int", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MetaData = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_VehicleServiceLogs", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_VehicleServiceLogs_VehicleOwnerItem_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "VehicleOwnerItem",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_VehicleServiceLogs_Vehicles_VehicleId",
-                        column: x => x.VehicleId,
-                        principalTable: "Vehicles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GarageServices",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GarageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DurationInMinutes = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    VehicleServiceLogItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GarageServices", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_GarageServices_VehicleServiceLogs_VehicleServiceLogItemId",
-                        column: x => x.VehicleServiceLogItemId,
-                        principalTable: "VehicleServiceLogs",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -675,6 +560,11 @@ namespace AutoHelper.Infrastructure.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_GarageLookupItemId",
+                table: "Conversations",
+                column: "GarageLookupItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
@@ -723,11 +613,6 @@ namespace AutoHelper.Infrastructure.Migrations
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Garages_ServicesSettingsId",
-                table: "Garages",
-                column: "ServicesSettingsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GarageServices_VehicleServiceLogItemId",
                 table: "GarageServices",
                 column: "VehicleServiceLogItemId");
@@ -758,34 +643,9 @@ namespace AutoHelper.Infrastructure.Migrations
                 columns: new[] { "SubjectId", "SessionId", "Type" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TodoItem_ListId",
-                table: "TodoItem",
-                column: "ListId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VehicleOwnerItem_VehicleOwnerLocationId",
-                table: "VehicleOwnerItem",
-                column: "VehicleOwnerLocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vehicles_LastLocationId",
-                table: "Vehicles",
-                column: "LastLocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vehicles_LastVehicleOwnerId",
-                table: "Vehicles",
-                column: "LastVehicleOwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VehicleServiceLogs_OwnerId",
+                name: "IX_VehicleServiceLogs_VehicleLookupId",
                 table: "VehicleServiceLogs",
-                column: "OwnerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VehicleServiceLogs_VehicleId",
-                table: "VehicleServiceLogs",
-                column: "VehicleId");
+                column: "VehicleLookupId");
         }
 
         /// <inheritdoc />
@@ -807,6 +667,9 @@ namespace AutoHelper.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Conversations");
+
+            migrationBuilder.DropTable(
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
@@ -814,9 +677,6 @@ namespace AutoHelper.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "GarageEmployeeWorkSchemaItems");
-
-            migrationBuilder.DropTable(
-                name: "GarageLookups");
 
             migrationBuilder.DropTable(
                 name: "GarageServices");
@@ -828,52 +688,37 @@ namespace AutoHelper.Infrastructure.Migrations
                 name: "PersistedGrants");
 
             migrationBuilder.DropTable(
-                name: "TodoItem");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "GarageEmployees");
+                name: "GarageLookups");
 
             migrationBuilder.DropTable(
-                name: "GarageLookupLargeItem");
+                name: "GarageEmployees");
 
             migrationBuilder.DropTable(
                 name: "VehicleServiceLogs");
 
             migrationBuilder.DropTable(
-                name: "TodoList");
+                name: "GarageLookupLargeItem");
 
             migrationBuilder.DropTable(
-                name: "ContactItem");
+                name: "GarageEmployeeContactItem");
 
             migrationBuilder.DropTable(
                 name: "Garages");
 
             migrationBuilder.DropTable(
-                name: "Vehicles");
+                name: "VehicleLookups");
 
             migrationBuilder.DropTable(
                 name: "GarageBankingDetailsItem");
 
             migrationBuilder.DropTable(
                 name: "GarageLocationItem");
-
-            migrationBuilder.DropTable(
-                name: "GarageServicesSettingsItem");
-
-            migrationBuilder.DropTable(
-                name: "VehicleLocationItem");
-
-            migrationBuilder.DropTable(
-                name: "VehicleOwnerItem");
-
-            migrationBuilder.DropTable(
-                name: "VehicleOwnerLocationItem");
         }
     }
 }

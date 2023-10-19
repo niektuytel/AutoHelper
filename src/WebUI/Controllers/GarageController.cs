@@ -13,11 +13,6 @@ using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using AutoHelper.Application.TodoItems.Commands.CreateTodoItem;
-using AutoHelper.Application.Vehicles.Queries;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
-using AutoHelper.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using AutoHelper.Domain.Entities.Garages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -39,7 +34,6 @@ public class GarageController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
-
 
     public GarageController(ICurrentUserService currentUser, IIdentityService identityService)
     {
@@ -119,20 +113,6 @@ public class GarageController : ApiControllerBase
         Mediator.Enqueue(jobId, command);
 
         return $"Successfully start hangfire job: {jobId}";
-    }
-
-    [Authorize]
-    [HttpPost($"{nameof(StartConversation)}")]
-    [ProducesResponseType(typeof(ConversationItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public ConversationItem StartConversation([FromBody] StartConversationCommand command)
-    {
-        //var jobId = $"{nameof(StartConversationCommand)}[>>] from({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
-        //var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
-        //Mediator.Enqueue(jobId, command);
-
-        //return $"Successfully start hangfire job: {jobId}";
-        return null;
     }
 
 }

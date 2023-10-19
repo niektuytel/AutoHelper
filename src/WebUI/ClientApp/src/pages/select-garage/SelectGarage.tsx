@@ -4,9 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
 // local
-import { HashValues } from "../../i18n/HashValues";
 import ImageLogo from "../../components/logo/ImageLogo";
-import { colorOnIndex } from "../../i18n/ColorValues";
 import useGarageSearch from "./useGarageSearch";
 import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";

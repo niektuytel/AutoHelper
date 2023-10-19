@@ -12,16 +12,10 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     }
 
     [Required]
-    public Guid? OwnerId { get; set; }
-
-    [ForeignKey("OwnerId")]
-    public VehicleOwnerItem Owner { get; set; }
-
-    [Required]
-    public Guid VehicleId { get; set; }
+    public Guid VehicleLookupId { get; set; }
     
-    [ForeignKey("VehicleId")]
-    public VehicleItem Vehicle { get; set; }
+    [ForeignKey(nameof(VehicleLookupId))]
+    public VehicleLookupItem VehicleLookup { get; set; }
     
     [Required]
     public DateTime Date { get; set; }

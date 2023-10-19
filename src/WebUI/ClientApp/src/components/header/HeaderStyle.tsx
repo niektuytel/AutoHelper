@@ -1,6 +1,5 @@
 import { styled } from '@mui/material/styles';
 import { AppBar, IconButton, Toolbar, Badge, Chip, Container } from "@mui/material";
-import { colorOnIndex } from "../../i18n/ColorValues";
 
 export const StyledDivMarginLeft16 = styled('div')({
     marginLeft: "16px"
@@ -48,7 +47,7 @@ export const StyledIconButton = styled(IconButton)({
 
 export const StyledBadge = styled(Badge)({
     '.MuiBadge-badge': {
-        backgroundColor: colorOnIndex(0),
+        backgroundColor: 'red',
         color: "white"
     }
 });

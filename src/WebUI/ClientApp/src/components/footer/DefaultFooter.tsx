@@ -4,7 +4,6 @@ import { SxProps, Theme } from "@mui/system";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
-import { HashValues } from "../../i18n/HashValues";
 import CopyRight from "./components/CopyRight";
 import useCookies from "react-cookie/cjs/useCookies";
 import { NL, EN } from "../../i18n/LanguageKeys";
@@ -99,7 +98,7 @@ const Footer = () => {
                         <Grid container spacing={5}>
                             <Grid item xs={12} sm={4}>
                                 <Typography variant="h6" component="h6">
-                                    <Link style={styles.contactTitle} to={`/${HashValues.contact}`}>
+                                    <Link style={styles.contactTitle} to={`/#contact`}>
                                         {t("contact")}
                                     </Link>
                                 </Typography>
@@ -134,17 +133,17 @@ const Footer = () => {
                                     {t("information")}
                                 </Typography>
                                 <Box>
-                                    <Link to={`/about${HashValues.about}`}>
+                                    <Link to={`/about`}>
                                         {t("our_company")}
                                     </Link>
                                 </Box>
                                 <Box>
-                                    <Link to={`/about${HashValues.info}`}>
+                                    <Link to={`/about#info`}>
                                         {t("development")}
                                     </Link>
                                 </Box>
                                 <Box>
-                                    <Link to={`/about${HashValues.about_conditions}`}>
+                                    <Link to={`/about#conditions`}>
                                         {t("our_conditions")}
                                     </Link>
                                 </Box>

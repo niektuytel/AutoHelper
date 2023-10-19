@@ -4,12 +4,10 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Garages.Commands.DTOs;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
-using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Events;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +18,7 @@ public record CreateGarageEmployeeCommand : IRequest<GarageEmployeeItem>
 {
     public bool IsActive { get; set; } = false;
 
-    public ContactItem Contact { get; set; }
+    public GarageEmployeeContactItem Contact { get; set; }
 
     public IEnumerable<GarageEmployeeWorkSchemaItemDto> WorkSchema { get; set; } = new List<GarageEmployeeWorkSchemaItemDto>();
 

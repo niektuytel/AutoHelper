@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Domain.Entities.Deprecated;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -25,8 +24,6 @@ public class GarageItem : BaseAuditableEntity
     public GarageLocationItem Location { get; set; } = new GarageLocationItem();
 
     public GarageBankingDetailsItem BankingDetails { get; set; } = new GarageBankingDetailsItem();
-
-    public GarageServicesSettingsItem ServicesSettings { get; set; } = new GarageServicesSettingsItem();
 
     public ICollection<GarageEmployeeItem> Employees { get; set; } = new List<GarageEmployeeItem>();
 

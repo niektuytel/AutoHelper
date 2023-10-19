@@ -9,6 +9,23 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="TodoItems\**" />
+      <Compile Remove="TodoLists\**" />
+      <Compile Remove="WeatherForecasts\**" />
+      <EmbeddedResource Remove="TodoItems\**" />
+      <EmbeddedResource Remove="TodoLists\**" />
+      <EmbeddedResource Remove="WeatherForecasts\**" />
+      <EntityDeploy Remove="TodoItems\**" />
+      <EntityDeploy Remove="TodoLists\**" />
+      <EntityDeploy Remove="WeatherForecasts\**" />
+      <None Remove="TodoItems\**" />
+      <None Remove="TodoLists\**" />
+      <None Remove="WeatherForecasts\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Common\Interfaces\ICsvFileBuilder.cs" />
+      <Compile Remove="Common\Models\LookupDto.cs" />
       <Compile Remove="Garages\Queries\GetGarageLookups\GarageEmployeeItemSearchDto.cs" />
     </ItemGroup>
 

@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Infrastructure.Common;
-using AutoHelper.Infrastructure.Files;
 using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
@@ -63,7 +62,7 @@ public static class ConfigureServices
 
         services.AddTransient<IDateTime, DateTimeService>();
         services.AddTransient<IIdentityService, IdentityService>();
-        services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
+        //services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
         services.AddAuthentication()
             .AddIdentityServerJwt();

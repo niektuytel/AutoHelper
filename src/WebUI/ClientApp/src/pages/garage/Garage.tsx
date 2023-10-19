@@ -12,9 +12,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 // local
-import { HashValues } from "../../i18n/HashValues";
 import ImageLogo from "../../components/logo/ImageLogo";
-import { colorOnIndex } from "../../i18n/ColorValues";
 import { COLORS } from "../../constants/colors";
 import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
 import { useQueryClient } from "react-query";
@@ -46,6 +44,7 @@ export default ({ }: IProps) => {
     const lng = queryParams.get('lng');
 
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
+    const { startConversatrion } = useConversation();
 
     const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
         if (cartItems.some(cartItem => cartItem.id === itemToAdd.id)) {

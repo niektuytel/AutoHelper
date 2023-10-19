@@ -3,9 +3,6 @@ import clsx from "clsx";
 import { StepIconProps } from "@mui/material/StepIcon";
 import Check from "@mui/icons-material/Check";
 
-//import CustomStepIconStyle from "./CustomStepIconStyle";
-import { colorOnIndex } from "../../i18n/ColorValues";
-
 const styles = {
     root: {
         color: '#eaeaf0',
@@ -42,10 +39,10 @@ export default ({props, index}:IProps) => {
             {completed ? 
                 <Check 
                     sx={styles.completed} 
-                    style={{color:colorOnIndex(index)}} 
+                    style={{ color: 'red' }} 
                 /> 
             :   
-                <div style={{ ...styles.circle, color:colorOnIndex(index)}}/>
+                <div style={{ ...styles.circle, color:'red'}}/>
             }
         </div>
     </>

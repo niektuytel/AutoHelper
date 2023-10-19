@@ -6,14 +6,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import MenuDrawer from "./components/MenuDrawer";
-import CartDrawer from "../cart/CartDrawer";
-import { colorOnIndex } from "../../i18n/ColorValues";
-//import CartState from "../../store/cart/CartState";
 import ImageLogo from "../logo/ImageLogo";
 
 // own imports
 import { StyledAppBar, StyledToolbar, StyledIconButton, StyledBadge } from "./HeaderStyle";
-import { ICookieProduct } from "../../interfaces/ICookieProduct";
 import LoginButton from "./components/LoginButton";
 import { BorderBottom } from "@mui/icons-material";
 import { COLORS } from "../../constants/colors";
@@ -34,11 +30,11 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
     const [onMenu, setOnMenu] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
     //const { items }:CartState = useSelector((state:any) => state.cart);
-    const items: ICookieProduct[] = [];
+    //const items: ICookieProduct[] = [];
 
-    // set cart total quantity
-    var badgeContent = 0;
-    items.forEach(item => badgeContent += item.quantity);
+    //// set cart total quantity
+    //var badgeContent = 0;
+    //items.forEach(item => badgeContent += item.quantity);
 
     // 1. State to track the currently focused button
     const [focusedButton, setFocusedButton] = useState<string | null>("#services");
@@ -103,13 +99,13 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                         }
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingRight: "24px", textAlign: "right" } : { textAlign: "right" }}>
                             <Hidden xsDown>
-                                {badgeContent > 0 && !location.pathname.startsWith("/cart") &&
-                                    <StyledIconButton onClick={() => setCartOpen(true)}>
-                                        <StyledBadge badgeContent={badgeContent} color="error">
-                                            <ShoppingCartOutlinedIcon />
-                                        </StyledBadge>
-                                    </StyledIconButton>
-                                }
+                                {/*{badgeContent > 0 && !location.pathname.startsWith("/cart") &&*/}
+                                {/*    <StyledIconButton onClick={() => setCartOpen(true)}>*/}
+                                {/*        <StyledBadge badgeContent={badgeContent} color="error">*/}
+                                {/*            <ShoppingCartOutlinedIcon />*/}
+                                {/*        </StyledBadge>*/}
+                                {/*    </StyledIconButton>*/}
+                                {/*}*/}
                             </Hidden>
                             <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
                                 <MenuIcon />
@@ -119,8 +115,8 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                 </StyledToolbar>
             </StyledAppBar>
             <MenuDrawer onMenu={onMenu} setOnMenu={setOnMenu} />
-            <CartDrawer cartOpen={cartOpen} setCartOpen={setCartOpen} />
         </>
+        //<CartDrawer cartOpen={cartOpen} setCartOpen={setCartOpen} />
     );
 }
 

@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Domain.Entities.Deprecated;
+namespace AutoHelper.Domain.Entities.Garages;
 
-public class ContactItem : BaseEntity
+public class GarageEmployeeContactItem : BaseEntity
 {
     [Required]
     public string FullName { get; set; }

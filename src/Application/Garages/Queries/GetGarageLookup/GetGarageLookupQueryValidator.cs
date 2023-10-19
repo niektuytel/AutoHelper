@@ -1,6 +1,4 @@
-﻿using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
-using AutoHelper.Application.TodoItems.Queries.GetTodoItemsWithPagination;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageLookup;
 

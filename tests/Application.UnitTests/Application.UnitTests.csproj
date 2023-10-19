@@ -11,6 +11,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Common\Behaviours\RequestLoggerTests.cs" />
+      <Compile Remove="Common\Mappings\MappingTests.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
         <PackageReference Include="nunit" Version="3.13.3" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.3.1">
@@ -24,6 +29,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\Application\Application.csproj" />
         <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Common\Behaviours\" />
+      <Folder Include="Common\Mappings\" />
     </ItemGroup>
 
 </Project>

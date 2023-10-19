@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 // own imports
-import { HashValues } from "../../../i18n/HashValues";
 import { GarageLookupDto, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
 import useGarageSearchServiceTypes from "../useGarageSearchServiceTypes";
 
@@ -24,7 +23,6 @@ interface IProps
 }
 
 export default ({ license_plate, latitude, longitude, in_km_range, page_size, onSearchExecuted }: IProps) => {
-    var hash = window.location.hash.length == 0 ? HashValues.default : window.location.hash;
     const navigate = useNavigate();
     const theme = useTheme();
     const queryParams = new URLSearchParams(window.location.search);

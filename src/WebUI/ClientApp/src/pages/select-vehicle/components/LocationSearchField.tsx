@@ -18,7 +18,6 @@ import useOnclickOutside from "react-cool-onclickoutside";
 
 
 // own imports
-import { HashValues } from "../../../i18n/HashValues";
 import { useDispatch } from "react-redux";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 
@@ -29,12 +28,10 @@ interface IProps {
 }
 
 export default ({ licence_plate }: IProps) => {
-    var hash = window.location.hash.length == 0 ? HashValues.default : window.location.hash;
     const navigate = useNavigate();
     const theme = useTheme();
     const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const splitted_hash = hash.split("_")[0];
     const { t } = useTranslation();
 
     const {

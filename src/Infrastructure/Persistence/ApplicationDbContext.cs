@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Deprecated;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
@@ -44,7 +44,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems => Set<GarageEmployeeWorkSchemaItem>();
     public DbSet<GarageEmployeeWorkExperienceItem> GarageEmployeeWorkExperienceItems => Set<GarageEmployeeWorkExperienceItem>();
 
-    public DbSet<VehicleItem> Vehicles => Set<VehicleItem>();
+    public DbSet<VehicleLookupItem> VehicleLookups => Set<VehicleLookupItem>();
     public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
 
 
@@ -57,19 +57,35 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
                .Property(p => p.Price)
                .HasColumnType("decimal(18,2)");
 
-        builder.Entity<GarageServicesSettingsItem>()
-               .Property(p => p.DeliveryPrice)
-               .HasColumnType("decimal(18,2)");
-
         builder.Entity<VehicleServiceLogItem>()
                .Property(p => p.TotalPrice)
                .HasColumnType("decimal(18,2)");
 
-        // Configuring the relationship between GarageItem and GarageEmployeeItem
+        // Configuring the deep relationships
         builder.Entity<GarageEmployeeItem>()
             .HasOne(e => e.Garage)
             .WithMany(g => g.Employees)
             .HasForeignKey(e => e.GarageId);
+
+        builder.Entity<ConversationItem>()
+            .HasOne(e => e.RelatedVehicleLookup)
+            .WithMany(g => g.Conversations)
+            .HasForeignKey(e => e.RelatedVehicleLookupId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<ConversationItem>()
+            .HasOne(e => e.RelatedGarageLookup)
+            .WithMany(g => g.Conversations)
+            .HasForeignKey(e => e.RelatedGarageLookupId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<VehicleServiceLogItem>()
+            .HasOne(e => e.VehicleLookup)
+            .WithMany(g => g.ServiceLogs)
+            .HasForeignKey(e => e.VehicleLookupId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
 
     }
 

@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Domain.Entities.Deprecated;
 using NetTopologySuite.Geometries;
+using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -92,5 +92,8 @@ public class GarageLookupItem : BaseEntity
     public bool HasReplacementTransportService { get; set; } = false;// TODO: Implement replacement transport service
 
     public GarageLookupLargeItem? LargeData { get; set; } = null;
+
+    [Required]
+    public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
 
 }

@@ -67,6 +67,7 @@
       <Compile Remove="Controllers\GarageSearchController.cs" />
       <Compile Remove="Controllers\TodoItemsController.cs" />
       <Compile Remove="Controllers\TodoListsController.cs" />
+      <Compile Remove="Controllers\WeatherForecastController.cs" />
       <Compile Remove="Models\Response\VehicleInformationResponse.cs" />
       <Compile Remove="Services\IRDWService.cs" />
       <Compile Remove="Services\IVehicleInformationService.cs" />

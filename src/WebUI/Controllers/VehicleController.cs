@@ -1,16 +1,15 @@
 ﻿using System.Diagnostics.Metrics;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.TodoLists.Commands.CreateTodoList;
-using AutoHelper.Application.TodoLists.Commands.DeleteTodoList;
-using AutoHelper.Application.TodoLists.Commands.UpdateTodoList;
-using AutoHelper.Application.TodoLists.Queries.ExportTodos;
-using AutoHelper.Application.TodoLists.Queries.GetTodos;
+using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleLookup;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -67,6 +66,15 @@ public class VehicleController : ApiControllerBase
     public async Task<VehicleInfoItemDto> GetVehicleInfo([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleInfoQuery(licensePlate));
+    }
+
+    [HttpPost($"{nameof(CreateVehicleLookup)}")]
+    [ProducesResponseType(typeof(VehicleLookupItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleLookupDtoItem> CreateVehicleLookup([FromBody] CreateVehicleLookupCommand command)
+    {
+        var response = await Mediator.Send(command);
+        return response;
     }
 
 }

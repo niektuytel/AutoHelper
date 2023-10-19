@@ -119,6 +119,8 @@ public static class ConfigureServices
 
     public static WebApplication UseWebUIServices(this WebApplication app)
     {
+        UseCommonWebUIServices(app);
+
         if (app.Environment.IsDevelopment())
         {
             UseDevelopmentServices(app);
@@ -127,8 +129,6 @@ public static class ConfigureServices
         {
             UseProductionServices(app);
         }
-
-        UseCommonWebUIServices(app);
 
         return app;
     }
