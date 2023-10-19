@@ -1,8 +1,8 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
@@ -26,7 +26,7 @@ internal class VehicleInfoService : IVehicleInfoService
         return await _rdwService.VehicleExist(licensePlate);
     }
 
-    public async Task<VehicleBriefInfoItemDto?> GetVehicleBriefInfo(string licensePlate)
+    public async Task<VehicleBriefDtoItem?> GetVehicleBriefInfo(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
         if (data?.HasValues != true)
@@ -39,7 +39,7 @@ internal class VehicleInfoService : IVehicleInfoService
         var brandText = $"{data.GetSafeValue("merk")} ({data.GetSafeValue("handelsbenaming")}){fromText}";
         var motExpirydate = data.GetSafeDateValue("vervaldatum_apk_dt");
         var mileage = data.GetSafeValue("tellerstandoordeel");
-        var response = new VehicleBriefInfoItemDto
+        var response = new VehicleBriefDtoItem
         {
             LicensePlate = licensePlate,
             Brand = brandText,
@@ -61,9 +61,9 @@ internal class VehicleInfoService : IVehicleInfoService
         return response;
     }
 
-    public async Task<VehicleInfoItemDto> GetVehicleInfoQuery(string licensePlate)
+    public async Task<VehicleSpecsDtoItem> GetVehicleInfoQuery(string licensePlate)
     {
-        var response = new VehicleInfoItemDto();
+        var response = new VehicleSpecsDtoItem();
         var data = await _rdwService.GetVehicle(licensePlate);
 
         if (!data.HasValues)

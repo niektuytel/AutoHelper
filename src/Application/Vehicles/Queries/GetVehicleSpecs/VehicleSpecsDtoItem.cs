@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
+namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 
 
-public class VehicleInfoItemDto
+public class VehicleSpecsDtoItem
 {
     public List<VehicleInfoSectionItem> Data { get; set; } = new List<VehicleInfoSectionItem>();
 }

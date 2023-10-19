@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace WebUI.Models.Response;
+namespace WebUI.Models;
 
 public class BadRequestResponse
 {

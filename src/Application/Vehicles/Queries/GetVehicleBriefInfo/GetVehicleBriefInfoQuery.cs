@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 
-public record GetVehicleBriefInfoQuery : IRequest<VehicleBriefInfoItemDto>
+public record GetVehicleBriefInfoQuery : IRequest<VehicleBriefDtoItem>
 {
     public GetVehicleBriefInfoQuery(string licensePlate)
     {
@@ -22,7 +22,7 @@ public record GetVehicleBriefInfoQuery : IRequest<VehicleBriefInfoItemDto>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefInfoQuery, VehicleBriefInfoItemDto>
+public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefInfoQuery, VehicleBriefDtoItem>
 {
     private readonly IVehicleInfoService _vehicleService;
 
@@ -31,12 +31,12 @@ public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefIn
         _vehicleService = vehicleService;
     }
 
-    public async Task<VehicleBriefInfoItemDto> Handle(GetVehicleBriefInfoQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleBriefDtoItem> Handle(GetVehicleBriefInfoQuery request, CancellationToken cancellationToken)
     {
         var info = await _vehicleService.GetVehicleBriefInfo(request.LicensePlate);
         if (info == null)
         {
-            throw new NotFoundException(nameof(VehicleBriefInfoItemDto), request.LicensePlate);
+            throw new NotFoundException(nameof(VehicleBriefDtoItem), request.LicensePlate);
         }
 
         return info;

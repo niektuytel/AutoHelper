@@ -6,12 +6,12 @@ import {
     PaginatedListOfGarageLookupBriefDto,
 } from "../../app/web-api-client";
 
-function useGarageSearchServiceTypes(licensePlate: string) {
+function useGarageServiceTypes(licensePlate: string) {
     const garageSearchClient = new GarageClient(process.env.PUBLIC_URL);
 
-    const fetchGarageServiceTypesOnLicense = async (licensePlate: string) => {
+    const fetchGarageServiceTypes = async (licensePlate: string) => {
         try {
-            const response = await garageSearchClient.getServiceTypesByLicensePlate(licensePlate);
+            const response = await garageSearchClient.getServiceTypes(licensePlate);
             return response;
         } catch (response: any) {
             throw response;
@@ -20,7 +20,7 @@ function useGarageSearchServiceTypes(licensePlate: string) {
 
     const { data: garageServiceTypes, isLoading, isError } = useQuery(
         [`garageServiceTypes-${licensePlate}`],
-        () => fetchGarageServiceTypesOnLicense(licensePlate),
+        () => fetchGarageServiceTypes(licensePlate),
         {
             enabled: true,
             retry: 1,
@@ -37,4 +37,4 @@ function useGarageSearchServiceTypes(licensePlate: string) {
     };
 }
 
-export default useGarageSearchServiceTypes;
+export default useGarageServiceTypes;

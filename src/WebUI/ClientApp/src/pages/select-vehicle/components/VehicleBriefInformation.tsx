@@ -1,8 +1,9 @@
 ﻿import React, { useEffect } from "react";
 import { Box, Card, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import LicensePlateTextField from "./LicensePlateTextField";
-import useVehicle from "../useVehicle";
 import { CSSProperties } from "react";
+import useSearchVehicle from "../useSearchVehicle";
+import { useQuery } from "react-query";
 
 interface IProps {
     isMobile: boolean;
@@ -10,7 +11,19 @@ interface IProps {
 }
 
 export default ({ isMobile, license_plate }: IProps) => {
-    const { loading, vehicleBriefInfo } = useVehicle(license_plate);
+    const { loading, fetchVehicleByPlate } = useSearchVehicle();
+    const { data: vehicleBriefInfo } = useQuery(
+        [`vehicleBriefInfo-${license_plate}`],
+        () => fetchVehicleByPlate(license_plate),
+        {
+            enabled: true,
+            retry: 1,
+            refetchOnWindowFocus: false,
+            cacheTime: 30 * 60 * 1000,  // 30 minutes
+            staleTime: 60 * 60 * 1000, // 1 hour
+        }
+    );
+
     const cellStyle: CSSProperties = isMobile ? { textAlign: 'left' } : { textAlign: 'left', paddingRight: '0' };
     return <>
         <Box sx={{ margin: "auto", maxWidth: "600px" }}>

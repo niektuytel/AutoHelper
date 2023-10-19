@@ -10,11 +10,11 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Vehicles.Queries.GetVehicleInfo;
+namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 
-public record GetVehicleInfoQuery : IRequest<VehicleInfoItemDto>
+public record GetVehicleSpecsQuery : IRequest<VehicleSpecsDtoItem>
 {
-    public GetVehicleInfoQuery(string licensePlate)
+    public GetVehicleSpecsQuery(string licensePlate)
     {
         LicensePlate = licensePlate;
     }
@@ -22,7 +22,7 @@ public record GetVehicleInfoQuery : IRequest<VehicleInfoItemDto>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleInfoQueryQueryHandler : IRequestHandler<GetVehicleInfoQuery, VehicleInfoItemDto>
+public class GetVehicleInfoQueryQueryHandler : IRequestHandler<GetVehicleSpecsQuery, VehicleSpecsDtoItem>
 {
     private readonly IVehicleInfoService _vehicleService;
 
@@ -31,12 +31,12 @@ public class GetVehicleInfoQueryQueryHandler : IRequestHandler<GetVehicleInfoQue
         _vehicleService = vehicleService;
     }
 
-    public async Task<VehicleInfoItemDto> Handle(GetVehicleInfoQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleSpecsDtoItem> Handle(GetVehicleSpecsQuery request, CancellationToken cancellationToken)
     {
         var info = await _vehicleService.GetVehicleInfoQuery(request.LicensePlate);
         if (info == null)
         {
-            throw new NotFoundException(nameof(VehicleInfoItemDto), request.LicensePlate);
+            throw new NotFoundException(nameof(VehicleSpecsDtoItem), request.LicensePlate);
         }
 
         return info;

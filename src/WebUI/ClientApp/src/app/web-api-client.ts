@@ -645,7 +645,7 @@ export class GarageAccountClient implements IGarageAccountClient {
 
 export interface IGarageClient {
 
-    getServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]>;
+    getServiceTypes(licensePlate: string | null): Promise<GarageServiceType[]>;
 
     searchLookups(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto>;
 
@@ -666,8 +666,8 @@ export class GarageClient implements IGarageClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getServiceTypesByLicensePlate(licensePlate: string | null): Promise<GarageServiceType[]> {
-        let url_ = this.baseUrl + "/api/Garage/GetServiceTypesByLicensePlate/{licensePlate}";
+    getServiceTypes(licensePlate: string | null): Promise<GarageServiceType[]> {
+        let url_ = this.baseUrl + "/api/Garage/GetServiceTypes/{licensePlate}";
         if (licensePlate === undefined || licensePlate === null)
             throw new Error("The parameter 'licensePlate' must be defined.");
         url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
@@ -681,11 +681,11 @@ export class GarageClient implements IGarageClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetServiceTypesByLicensePlate(_response);
+            return this.processGetServiceTypes(_response);
         });
     }
 
-    protected processGetServiceTypesByLicensePlate(response: Response): Promise<GarageServiceType[]> {
+    protected processGetServiceTypes(response: Response): Promise<GarageServiceType[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -923,13 +923,11 @@ export class GarageClient implements IGarageClient {
 
 export interface IVehicleClient {
 
-    searchVehicle(licensePlate: string | null | undefined): Promise<FileResponse>;
+    searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
 
-    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto>;
+    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
 
-    getVehicleInfo(licensePlate: string | null | undefined): Promise<VehicleInfoItemDto>;
-
-    createVehicleLookup(command: CreateVehicleLookupCommand): Promise<VehicleLookupItem>;
+    createLookup(command: CreateVehicleLookupCommand): Promise<VehicleLookupItem>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -942,48 +940,8 @@ export class VehicleClient implements IVehicleClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchVehicle(licensePlate: string | null | undefined): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/api/Vehicle/search?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/octet-stream"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSearchVehicle(_response);
-        });
-    }
-
-    protected processSearchVehicle(response: Response): Promise<FileResponse> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
-            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
-            if (fileName) {
-                fileName = decodeURIComponent(fileName);
-            } else {
-                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            }
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FileResponse>(null as any);
-    }
-
-    getVehicleBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefInfoItemDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetVehicleBriefInfo?";
+    searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/SearchByLicensePlate?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -996,30 +954,37 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetVehicleBriefInfo(_response);
+            return this.processSearchByLicensePlate(_response);
         });
     }
 
-    protected processGetVehicleBriefInfo(response: Response): Promise<VehicleBriefInfoItemDto> {
+    protected processSearchByLicensePlate(response: Response): Promise<VehicleBriefDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleBriefInfoItemDto.fromJS(resultData200);
+            result200 = VehicleBriefDtoItem.fromJS(resultData200);
             return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleBriefInfoItemDto>(null as any);
+        return Promise.resolve<VehicleBriefDtoItem>(null as any);
     }
 
-    getVehicleInfo(licensePlate: string | null | undefined): Promise<VehicleInfoItemDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetVehicleInfo?";
+    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetSpecifications?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -1032,30 +997,37 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetVehicleInfo(_response);
+            return this.processGetSpecifications(_response);
         });
     }
 
-    protected processGetVehicleInfo(response: Response): Promise<VehicleInfoItemDto> {
+    protected processGetSpecifications(response: Response): Promise<VehicleSpecsDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleInfoItemDto.fromJS(resultData200);
+            result200 = VehicleSpecsDtoItem.fromJS(resultData200);
             return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleInfoItemDto>(null as any);
+        return Promise.resolve<VehicleSpecsDtoItem>(null as any);
     }
 
-    createVehicleLookup(command: CreateVehicleLookupCommand): Promise<VehicleLookupItem> {
-        let url_ = this.baseUrl + "/api/Vehicle/CreateVehicleLookup";
+    createLookup(command: CreateVehicleLookupCommand): Promise<VehicleLookupItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/CreateLookup";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1070,11 +1042,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateVehicleLookup(_response);
+            return this.processCreateLookup(_response);
         });
     }
 
-    protected processCreateVehicleLookup(response: Response): Promise<VehicleLookupItem> {
+    protected processCreateLookup(response: Response): Promise<VehicleLookupItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -4055,14 +4027,14 @@ export interface IGarageLookupsStatusDto {
     total?: number;
 }
 
-export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {
+export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     licensePlate?: string;
     brand?: string;
     consumption?: string;
     motExpiryDate?: string;
     mileage?: string;
 
-    constructor(data?: IVehicleBriefInfoItemDto) {
+    constructor(data?: IVehicleBriefDtoItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4081,9 +4053,9 @@ export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {
         }
     }
 
-    static fromJS(data: any): VehicleBriefInfoItemDto {
+    static fromJS(data: any): VehicleBriefDtoItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleBriefInfoItemDto();
+        let result = new VehicleBriefDtoItem();
         result.init(data);
         return result;
     }
@@ -4099,7 +4071,7 @@ export class VehicleBriefInfoItemDto implements IVehicleBriefInfoItemDto {
     }
 }
 
-export interface IVehicleBriefInfoItemDto {
+export interface IVehicleBriefDtoItem {
     licensePlate?: string;
     brand?: string;
     consumption?: string;
@@ -4107,10 +4079,10 @@ export interface IVehicleBriefInfoItemDto {
     mileage?: string;
 }
 
-export class VehicleInfoItemDto implements IVehicleInfoItemDto {
+export class VehicleSpecsDtoItem implements IVehicleSpecsDtoItem {
     data?: VehicleInfoSectionItem[];
 
-    constructor(data?: IVehicleInfoItemDto) {
+    constructor(data?: IVehicleSpecsDtoItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4129,9 +4101,9 @@ export class VehicleInfoItemDto implements IVehicleInfoItemDto {
         }
     }
 
-    static fromJS(data: any): VehicleInfoItemDto {
+    static fromJS(data: any): VehicleSpecsDtoItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleInfoItemDto();
+        let result = new VehicleSpecsDtoItem();
         result.init(data);
         return result;
     }
@@ -4147,7 +4119,7 @@ export class VehicleInfoItemDto implements IVehicleInfoItemDto {
     }
 }
 
-export interface IVehicleInfoItemDto {
+export interface IVehicleSpecsDtoItem {
     data?: VehicleInfoSectionItem[];
 }
 
@@ -4257,13 +4229,6 @@ export interface ICreateVehicleLookupCommand {
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
-}
-
-export interface FileResponse {
-    data: Blob;
-    status: number;
-    fileName?: string;
-    headers?: { [name: string]: any };
 }
 
 export class SwaggerException extends Error {

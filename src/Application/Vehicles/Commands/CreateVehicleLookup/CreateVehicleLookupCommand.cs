@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
@@ -18,11 +19,24 @@ namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleLookup;
 
 public class CreateVehicleLookupCommand : IRequest<VehicleLookupDtoItem>
 {
-    [Required]
-    public string LicensePlate { get; set; } = null!;
+    public CreateVehicleLookupCommand(
+        string licensePlate, 
+        string latitude, 
+        string longitude, 
+        string? phoneNumber, 
+        string? whatsappNumber, 
+        string? emailAddress
+    ){
+        LicensePlate = licensePlate;
+        Latitude = latitude;
+        Longitude = longitude;
+        PhoneNumber = phoneNumber;
+        WhatsappNumber = whatsappNumber;
+        EmailAddress = emailAddress;
+    }
 
     [Required]
-    public DateTime MOTExpiryDate { get; set; }
+    public string LicensePlate { get; set; } = null!;
 
     [Required]
     public string Latitude { get; set; } = null!;
@@ -55,6 +69,9 @@ public class CreateVehicleLookupCommandHandler : IRequestHandler<CreateVehicleLo
         {
             throw new ArgumentException("Invalid latitude or longitude format");
         }
+
+        // TODO: Validate license plate format
+        //MOTExpiryDate = motExpiryDate;
 
         // SRID 4326 for WGS84 coordinate system
         var location = new Point(longitude, latitude) { SRID = 4326 }; 

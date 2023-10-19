@@ -7,7 +7,7 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
-public class VehicleBriefInfoItemDto
+public class VehicleBriefDtoItem
 {
     public string LicensePlate { get; set; }
 

@@ -12,26 +12,32 @@ using MediatR;
 
 namespace AutoHelper.Application.Conversations.Commands.StartConversation;
 
-public record StartConversationCommand : IRequest<ConversationItem>
+public record StartConversationCommand : IRequest
 {
     public Guid RelatedGarageLookupId { get; set; }
 
-    public Guid RelatedVehicleLookupId { get; set; }
+    public string VehicleLicensePlate { get; set; }
 
-    public string? SenderWhatsAppNumber { get; set; }
+    public string VehicleLongitude { get; set; }
 
-    public string? SenderEmail { get; set; }
+    public string VehicleLatitude { get; set; }
 
-    public string? ReceiverWhatsAppNumber { get; set; }
+    public string? VehiclePhoneNumber { get; set; }
 
-    public string? ReceiverEmail { get; set; }
+    public string? VehicleWhatsappNumber { get; set; }
+
+    public string? VehicleEmailAddress { get; set; }
+
+    public string? SenderWhatsAppNumberOrEmail { get; set; }
+
+    public string? ReceiverWhatsAppNumberOrEmail { get; set; }
 
     public ConversationMessageType MessageType { get; set; }
 
     public string MessageContent { get; set; }
 }
 
-public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand, ConversationItem>
+public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -42,7 +48,7 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
         _mapper = mapper;
     }
 
-    public async Task<ConversationItem> Handle(StartConversationCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(StartConversationCommand request, CancellationToken cancellationToken)
     {
         //var entity = new GarageItem
         //{
@@ -76,6 +82,6 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
         //_context.Garages.Add(entity);
         //await _context.SaveChangesAsync(cancellationToken);
         //return entity;
-        return null;
+        return Unit.Value;
     }
 }

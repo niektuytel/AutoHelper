@@ -15,7 +15,7 @@ function useVehicleInformation(license_plate: string) {
 
     const fetchVehicleInfoData = async (licensePlate: string) => {
         try {
-            const response = await vehicleClient.getVehicleInfo(licensePlate);
+            const response = await vehicleClient.getSpecifications(licensePlate);
             return response;
         } catch (response: any) {
             throw response;

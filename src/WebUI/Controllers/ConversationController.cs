@@ -17,7 +17,6 @@ using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models.Response;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
@@ -27,6 +26,10 @@ using AutoHelper.Hangfire.MediatR;
 using Hangfire.Server;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Domain.Entities.Conversations;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleLookup;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleLookup;
+using AutoHelper.Application.Common.Exceptions;
+using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -43,16 +46,15 @@ public class ConversationController : ApiControllerBase
     }
 
     [HttpPost($"{nameof(StartConversation)}")]
-    [ProducesResponseType(typeof(ConversationItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public ConversationItem StartConversation([FromBody] StartConversationCommand command)
+    public async Task<string> StartConversation([FromBody] StartConversationCommand command)
     {
-        //var jobId = $"{nameof(StartConversationCommand)}[>>] from({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
-        //var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
-        //Mediator.Enqueue(jobId, command);
+        var jobType = command.MessageType.ToString();
+        var jobName = $"{nameof(StartConversationCommand)}[{command.SenderWhatsAppNumberOrEmail}] >{jobType}> [{command.ReceiverWhatsAppNumberOrEmail}]";
+        Mediator.Enqueue(jobName, command);
 
-        //return $"Successfully start hangfire job: {jobId}";
-        return null;
+        return jobName;
     }
 
 }

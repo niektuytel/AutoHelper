@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 // own imports
 import { GarageLookupDto, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
-import useGarageSearchServiceTypes from "../useGarageSearchServiceTypes";
+import useGarageServiceTypes from "../useGarageSearchServiceTypes";
 
 
 
@@ -34,7 +34,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [filters, setFilters] = useState<string[]>([]);
     const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDto[]>([]);
 
-    const { loading, garageServiceTypes } = useGarageSearchServiceTypes(license_plate!);
+    const { loading, garageServiceTypes } = useGarageServiceTypes(license_plate!);
     const useGarageClient = new GarageClient(process.env.PUBLIC_URL);
 
     useEffect(() => {

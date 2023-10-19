@@ -17,7 +17,6 @@ using AutoHelper.Domain.Entities.Garages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models.Response;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
@@ -27,6 +26,7 @@ using AutoHelper.Hangfire.MediatR;
 using Hangfire.Server;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Domain.Entities.Conversations;
+using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -41,10 +41,10 @@ public class GarageController : ApiControllerBase
         _identityService = identityService;
     }
 
-    [HttpGet($"{nameof(GetServiceTypesByLicensePlate)}/{{licensePlate}}")]
+    [HttpGet($"{nameof(GetServiceTypes)}/{{licensePlate}}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetServiceTypesByLicensePlate([FromRoute] string licensePlate)
+    public async Task<IEnumerable<GarageServiceType>> GetServiceTypes([FromRoute] string licensePlate)
     {
         var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
         return await Mediator.Send(query);

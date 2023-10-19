@@ -18,7 +18,7 @@ using AutoHelper.Domain.Entities.Garages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models.Response;
+using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 

@@ -510,12 +510,12 @@
         }
       }
     },
-    "/api/Garage/GetServiceTypesByLicensePlate/{licensePlate}": {
+    "/api/Garage/GetServiceTypes/{licensePlate}": {
       "get": {
         "tags": [
           "Garage"
         ],
-        "operationId": "Garage_GetServiceTypesByLicensePlate",
+        "operationId": "Garage_GetServiceTypes",
         "parameters": [
           {
             "name": "licensePlate",
@@ -803,44 +803,12 @@
         }
       }
     },
-    "/api/Vehicle/search": {
+    "/api/Vehicle/SearchByLicensePlate": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_SearchVehicle",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/GetVehicleBriefInfo": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetVehicleBriefInfo",
+        "operationId": "Vehicle_SearchByLicensePlate",
         "parameters": [
           {
             "name": "licensePlate",
@@ -858,7 +826,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleBriefInfoItemDto"
+                  "$ref": "#/components/schemas/VehicleBriefDtoItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
                 }
               }
             }
@@ -866,12 +844,12 @@
         }
       }
     },
-    "/api/Vehicle/GetVehicleInfo": {
+    "/api/Vehicle/GetSpecifications": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetVehicleInfo",
+        "operationId": "Vehicle_GetSpecifications",
         "parameters": [
           {
             "name": "licensePlate",
@@ -889,7 +867,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleInfoItemDto"
+                  "$ref": "#/components/schemas/VehicleSpecsDtoItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
                 }
               }
             }
@@ -897,12 +885,12 @@
         }
       }
     },
-    "/api/Vehicle/CreateVehicleLookup": {
+    "/api/Vehicle/CreateLookup": {
       "post": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_CreateVehicleLookup",
+        "operationId": "Vehicle_CreateLookup",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -2895,7 +2883,7 @@
           }
         }
       },
-      "VehicleBriefInfoItemDto": {
+      "VehicleBriefDtoItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -2916,7 +2904,7 @@
           }
         }
       },
-      "VehicleInfoItemDto": {
+      "VehicleSpecsDtoItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

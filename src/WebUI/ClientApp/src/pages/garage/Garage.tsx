@@ -44,7 +44,7 @@ export default ({ }: IProps) => {
     const lng = queryParams.get('lng');
 
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
-    const { startConversatrion } = useConversation();
+    //const { startConversatrion } = useConversation();
 
     const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
         if (cartItems.some(cartItem => cartItem.id === itemToAdd.id)) {

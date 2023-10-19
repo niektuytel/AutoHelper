@@ -4,35 +4,29 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { VehicleClient } from "../../app/web-api-client";
+import { VehicleBriefDtoItem, VehicleClient } from "../../app/web-api-client";
+import { useState } from "react";
 
-function useVehicle(license_plate: string) {
+function useSearchVehicle() {
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    const [loading, setLoading] = useState(false);
+
     const fetchVehicleBriefInfoData = async (licensePlate: string) => {
+        setLoading(true);
         try {
-            const response = await vehicleClient.getVehicleBriefInfo(licensePlate);
+            const response = await vehicleClient.searchByLicensePlate(licensePlate);
+            setLoading(false);
             return response;
         } catch (response: any) {
+            setLoading(false);
             throw response;
         }
     }
-
-    const { data: vehicleBriefInfo, isLoading, isError } = useQuery(
-        [`vehicleBriefInfo-${license_plate}`],
-        () => fetchVehicleBriefInfoData(license_plate),
-        {
-            enabled: true,
-            retry: 1,
-            refetchOnWindowFocus: false,
-            cacheTime: 30 * 60 * 1000,  // 30 minutes
-            staleTime: 60 * 60 * 1000, // 1 hour
-        }
-    );
 
     const fetchVehicleByPlate = async (licensePlate: string) => {
         // Check if data exists in cache first
@@ -41,18 +35,19 @@ function useVehicle(license_plate: string) {
         );
 
         if (cachedData) {
-            return cachedData;
+            return cachedData as VehicleBriefDtoItem;
         }
 
-        return fetchVehicleBriefInfoData(licensePlate);
+        const response = await fetchVehicleBriefInfoData(licensePlate);
+        queryClient.setQueryData([`vehicleBriefInfo-${licensePlate}`], response);
+
+        return response;
     }
 
-
-    // only reset the form when the data is loaded
-    const loading = isLoading;
     return {
-        loading, isError, vehicleBriefInfo, fetchVehicleByPlate
+        loading,
+        fetchVehicleByPlate
     }
 }
 
-export default useVehicle;
+export default useSearchVehicle;

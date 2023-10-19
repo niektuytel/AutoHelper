@@ -12,6 +12,19 @@ export default ({ open, onClose, onSubmit }: QuestionDialogProps) => {
     const [messageType, setMessageType] = useState<string>('prijs aanvraag');
     const [message, setMessage] = useState<string>('');
 
+
+    const startConversation = async (command: StartConversationCommand) => {
+        setLoading(true);
+        try {
+            const response = await conversationClient.startConversation(command);
+            setLoading(false);
+            return response;
+        } catch (response: any) {
+            setLoading(false);
+            throw response;
+        }
+    }
+
     const messageTemplates: { [key: string]: string } = {
         'prijs aanvraag': 'Vraag over prijs voor mijn voertuig...',
         'technische vraag': 'Technische vraag over mijn voertuig...',
