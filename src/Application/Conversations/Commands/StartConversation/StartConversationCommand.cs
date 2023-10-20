@@ -7,6 +7,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 
@@ -14,19 +15,31 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation;
 
 public record StartConversationCommand : IRequest
 {
+    public StartConversationCommand(
+        Guid relatedGarageLookupId, 
+        Guid relatedVehicleLookupId, 
+        GarageServiceType[] relatedServiceTypes,
+        string? senderWhatsAppNumberOrEmail, 
+        string? receiverWhatsAppNumberOrEmail, 
+        ConversationMessageType messageType, 
+        string messageContent
+    ) {
+        RelatedGarageLookupId = relatedGarageLookupId;
+        RelatedVehicleLookupId = relatedVehicleLookupId;
+        RelatedServiceTypes = relatedServiceTypes;
+        SenderWhatsAppNumberOrEmail = senderWhatsAppNumberOrEmail;
+        ReceiverWhatsAppNumberOrEmail = receiverWhatsAppNumberOrEmail;
+        MessageType = messageType;
+        MessageContent = messageContent;
+    }
+
     public Guid RelatedGarageLookupId { get; set; }
+    public GarageLookupItem RelatedGarage { get; internal set; }
 
-    public string VehicleLicensePlate { get; set; }
+    public Guid RelatedVehicleLookupId { get; set; }
+    public VehicleLookupItem RelatedVehicle { get; internal set; }
 
-    public string VehicleLongitude { get; set; }
-
-    public string VehicleLatitude { get; set; }
-
-    public string? VehiclePhoneNumber { get; set; }
-
-    public string? VehicleWhatsappNumber { get; set; }
-
-    public string? VehicleEmailAddress { get; set; }
+    public GarageServiceType[] RelatedServiceTypes { get; set; }
 
     public string? SenderWhatsAppNumberOrEmail { get; set; }
 
@@ -50,38 +63,29 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
 
     public async Task<Unit> Handle(StartConversationCommand request, CancellationToken cancellationToken)
     {
-        //var entity = new GarageItem
-        //{
-        //    UserId = request.UserId,
-        //    Name = request.Name,
-        //    PhoneNumber = request.PhoneNumber,
-        //    WhatsAppNumber = request.WhatsAppNumber,
-        //    Email = request.Email,
-        //    Location = new GarageLocationItem
-        //    {
-        //        Address = request.Location.Address,
-        //        PostalCode = request.Location.PostalCode,
-        //        City = request.Location.City,
-        //        Country = request.Location.Country,
-        //        Longitude = request.Location.Longitude,
-        //        Latitude = request.Location.Latitude
-        //    },
-        //    BankingDetails = new GarageBankingDetailsItem
-        //    {
-        //        BankName = request.BankingDetails.BankName,
-        //        KvKNumber = request.BankingDetails.KvKNumber,
-        //        AccountHolderName = request.BankingDetails.AccountHolderName,
-        //        IBAN = request.BankingDetails.IBAN
-        //    },
-        //    ServicesSettings = new GarageServicesSettingsItem()
-        //};
+        var entity = new ConversationItem
+        {
+            RelatedGarageLookupId = request.RelatedGarageLookupId,
+            RelatedVehicleLookupId = request.RelatedVehicleLookupId,
+            RelatedServiceTypes = request.RelatedServiceTypes,
+            MessageType = request.MessageType,
+            MessageContent = request.MessageContent
+        };
 
-        //// If you wish to use domain events, then you can add them here:
-        //// entity.AddDomainEvent(new SomeDomainEvent(entity));
+        // If you wish to use domain events, then you can add them here:
+        // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        //_context.Garages.Add(entity);
-        //await _context.SaveChangesAsync(cancellationToken);
-        //return entity;
+        _context.Conversations.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
+
+        // Detect using whatsapp or email
+
+
+
+        // Send message to receiver
+        // Send confirmation message to sender
+
         return Unit.Value;
     }
 }

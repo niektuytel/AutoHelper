@@ -19,7 +19,6 @@ using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using WebUI.Extensions;
-using WebUI.Models.Response;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

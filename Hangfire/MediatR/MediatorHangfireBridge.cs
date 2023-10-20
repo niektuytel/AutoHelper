@@ -13,13 +13,13 @@ public class MediatorHangfireBridge
         _mediator = mediator;
     }
 
-    public async Task Send(IRequest command)
+    public async Task Send(IBaseRequest command)
     {
         await _mediator.Send(command);
     }
 
     [DisplayName("{0}")]
-    public async Task Send(string jobName, IRequest command)
+    public async Task Send(string jobName, IBaseRequest command)
     {
         await _mediator.Send(command);
     }

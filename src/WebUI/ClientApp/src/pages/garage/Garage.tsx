@@ -14,7 +14,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 // local
 import ImageLogo from "../../components/logo/ImageLogo";
 import { COLORS } from "../../constants/colors";
-import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
+import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
 import { useQueryClient } from "react-query";
 import useGarage from "./useGarage";
 import Header from "../../components/header/Header";
@@ -35,7 +35,8 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto|null>(null);
+    const [relatedServiceTypes, setRelatedServiceTypes] = useState<GarageServiceType[]>([]);
+    const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto | null>(null);
     const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
     const queryParams = new URLSearchParams(location.search);
     const { identifier } = useParams();
@@ -55,13 +56,8 @@ export default ({ }: IProps) => {
         setCartItems([...cartItems, itemToAdd]);
     }
 
-    const handleQuestionSubmit = (data: { emailOrPhone: string; explanation: string; message: string; }) => {
-        // Handle sending the message, e.g., make an API call
-        console.log(data);
-        dispatch(showOnSuccess(t("Conversation.Started")));
-    };
-
-    const hasQuestionItem = (serviceItem: any) => {
+    const hasQuestionItem = (serviceType: GarageServiceType) => {
+        setRelatedServiceTypes([ serviceType ]);
         setDialogOpen(true);
     };
 
@@ -123,10 +119,17 @@ export default ({ }: IProps) => {
                 </Grid>  
             </Grid>
         </Container>
-        <GarageQuestionDialog
-            open={dialogOpen}
-            onClose={() => setDialogOpen(false)}
-            onSubmit={handleQuestionSubmit}
-        />
+        {garageLookup && relatedServiceTypes &&
+            <GarageQuestionDialog
+                garageLookupId={garageLookup?.id!}
+                garageWhatsAppNumberOrEmail={garageLookup?.whatsappNumber! || garageLookup?.emailAddress!}
+                relatedServiceTypes={relatedServiceTypes!}
+                licensePlate={licensePlate!}
+                longitude={lng!}
+                latitude={lat!}
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+            />
+        }
     </>;
 }

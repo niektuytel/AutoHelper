@@ -49,6 +49,7 @@
     <ItemGroup>
       <Folder Include="Conversations\Commands\SendMessageToCustomer\" />
       <Folder Include="Conversations\Commands\SendMessageToGarage\" />
+      <Folder Include="Conversations\_DTOs\" />
       <Folder Include="Garages\Queries\GetGarageAvailableWorkSlots\" />
     </ItemGroup>
 

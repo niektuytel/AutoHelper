@@ -9,6 +9,8 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageLookup;
 
 public class GarageLookupDto: IMapFrom<GarageLookupItem>
 {
+    public Guid Id { get; set; }
+
     /// <summary>
     /// Provide a reference to the GarageItem that this GarageSearchableItem is associated with.
     /// When null this GarageSearchableItem is not associated with any GarageItem.

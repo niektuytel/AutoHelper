@@ -23,20 +23,21 @@ import {
 import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
+import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceType } from "../../../app/web-api-client";
+import { GarageServiceItemDto, GarageServiceType } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
 import { getDefaultCreateGarageServices, getDefaultGarageServicesInfo, getTitleForServiceType } from "../../garage-account/defaultGarageService";
 
 // own imports
 
 interface IProps {
-    serviceType: any;
+    serviceType: GarageServiceType;
     selectedItem: any | null;
     setSelectedItem: (serviceType: any) => void;
     addCartItem: (serviceType: any) => void;
-    hasQuestionItem: (serviceType: any) => void;
+    hasQuestionItem: (serviceType: GarageServiceType) => void;
 }
 
 export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
@@ -64,10 +65,10 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
                         <IconButton
                             onClick={(e) => {
                                 e.stopPropagation();
-                                hasQuestionItem(service);
+                                hasQuestionItem(serviceType);
                             }}
                         >
-                            <LiveHelpIcon color="primary" />
+                            <HelpCenterOutlinedIcon sx={{ color: "black" }} />
                         </IconButton>
                         <IconButton
                             onClick={(e) => {
@@ -75,7 +76,7 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
                                 addCartItem(service);
                             }}
                         >
-                            <AddIcon />
+                            <AddIcon sx={{ color: "black"}} />
                         </IconButton>
                     </>
                 }

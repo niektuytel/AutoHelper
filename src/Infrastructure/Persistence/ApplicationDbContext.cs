@@ -34,8 +34,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
-    public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
-
 
     public DbSet<GarageItem> Garages => Set<GarageItem>();
     public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();
@@ -46,6 +44,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<VehicleLookupItem> VehicleLookups => Set<VehicleLookupItem>();
     public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
+
+    public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
 
 
     protected override void OnModelCreating(ModelBuilder builder)

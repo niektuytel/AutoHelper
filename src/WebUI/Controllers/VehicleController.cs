@@ -3,7 +3,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleLookup;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
@@ -48,7 +48,7 @@ public class VehicleController : ApiControllerBase
     [HttpPost($"{nameof(CreateLookup)}")]
     [ProducesResponseType(typeof(VehicleLookupItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleLookupDtoItem> CreateLookup([FromBody] CreateVehicleLookupCommand command)
+    public async Task<VehicleLookupDtoItem> CreateLookup([FromBody] UpsertVehicleLookupCommand command)
     {
         var response = await Mediator.Send(command);
         return response;

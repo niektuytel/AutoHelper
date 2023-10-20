@@ -12,6 +12,8 @@ namespace AutoHelper.Domain.Entities.Conversations;
 
 public class ConversationItem : BaseAuditableEntity
 {
+    public PriorityLevel Priority { get; set; } = PriorityLevel.Low;
+
     [Required]
     public Guid RelatedVehicleLookupId { get; set; }
 
@@ -24,13 +26,28 @@ public class ConversationItem : BaseAuditableEntity
     [ForeignKey(nameof(RelatedGarageLookupId))]
     public GarageLookupItem RelatedGarageLookup { get; set; } = null!;
 
-    public string? FromWhatsappNumber { get; set; }
+    [NotMapped]
+    public GarageServiceType[] RelatedServiceTypes
+    {
+        get
+        {
+            if (RelatedServiceTypesString == null)
+            {
+                return new GarageServiceType[0];
+            }
+            return RelatedServiceTypesString
+                .Split(';')
+                .Select(x => (GarageServiceType)int.Parse(x))
+                .ToArray();
+        }
+        set
+        {
+            RelatedServiceTypesString = value == null ? "" : string.Join(";", value.Select(v => ((int)v).ToString()));
+        }
+    }
 
-    public string? FromEmailAddress { get; set; }
-
-    public string? ToWhatsappNumber { get; set; }
-
-    public string? ToEmailAddress { get; set; }
+    [Required]
+    public string RelatedServiceTypesString { get; set; } = "";
 
     [Required]
     public ConversationMessageType MessageType { get; set; }
@@ -38,5 +55,4 @@ public class ConversationItem : BaseAuditableEntity
     [Required]
     public string MessageContent { get; set; } = null!;
 
-    public PriorityLevel Priority { get; set; } = PriorityLevel.Low;
 }

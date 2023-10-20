@@ -107,10 +107,28 @@
   "Opening hours": "Openings tijden",
   "Open": "Open",
   "Closed": "Gesloten",
+  "subject": "Onderwerp",
+  "Send": "Versturen",
+  "Cancel": "Annuleren",
 
 
-
-
+  "Ask a Question": "Een vraag stellen",
+  "Ask a Question.Tooltip": "Een vraag stellen gerelateerd aan je geselecteerde dienst en auto",
+  "Ask a Question.Description": "Wij sturen uw vraag door naar de garage, met bijhoorende gegevens van uw voertuig. U ontvangt een bericht zodra de garage uw vraag heeft beantwoord.",
+  "Ask a Question.WhatsappOrEmail.Label": "Whatsapp of email",
+  "Ask a Question.WhatsappOrEmail.Required": "Hoe kunnen wij u bereiken?",
+  "Ask a Question.WhatsappOrEmail.Invalid": "Ongeldige Whatsapp of email",
+  "Ask a Question.MessageType.Label": "Onderwerp",
+  "Ask a Question.MessageType.Required": "We hebben een gerelateerd onderwerp nodig",
+  "Ask a Question.Message.Label": "Bericht",
+  "ConversationMessageType.Other": "Anders",
+  "ConversationMessageType.Other.SampleMessage": "Kunt u mij meer informatie geven?",
+  "ConversationMessageType.Price": "Prijs",
+  "ConversationMessageType.Price.SampleMessage": "Wat zijn de verwachte kosten voor dit?",
+  "ConversationMessageType.Appointment": "Afspraak",
+  "ConversationMessageType.Appointment.SampleMessage": "Is er spoedig een tijdstip beschikbaar?",
+  "ConversationMessageType.Technical": "Technisch",
+  "ConversationMessageType.Technical.SampleMessage": "Zijn er bekende problemen die ik moet weten?",
 
 
 
@@ -219,7 +237,6 @@
   "send": "Verstuur",
   "message": "Bericht...",
   "micrograms": "micrograms",
-  "subject": "Onderwerp",
   "situation": "Situatie",
   "start_filter": "Start Filter",
   "next": "Volgende",

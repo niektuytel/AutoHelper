@@ -1,34 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.Text;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Security;
-using AutoHelper.Application.Garages.Commands.CreateGarageEmployee;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
-using AutoHelper.Application.Garages.Commands.DeleteGarageEmployee;
-using AutoHelper.Application.Garages.Commands.DeleteGarageService;
-using AutoHelper.Application.Garages.Commands.UpdateGarageEmployee;
-using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
-using AutoHelper.Application.Garages.Commands.UpdateGarageService;
-using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
-using AutoHelper.Application.Garages.Queries.GetGarageOverview;
-using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
-using AutoHelper.Application.Garages.Queries.GetGarageServices;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using AutoHelper.Application.Garages.Queries.GetGarageLookup;
-using AutoHelper.Application.Common.Models;
-using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
-using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
-using AutoHelper.Hangfire.MediatR;
-using Hangfire.Server;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleLookup;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleLookup;
-using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+using AutoHelper.Hangfire.MediatR;
+using HtmlAgilityPack;
+using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
@@ -48,12 +24,39 @@ public class ConversationController : ApiControllerBase
     [HttpPost($"{nameof(StartConversation)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<string> StartConversation([FromBody] StartConversationCommand command)
+    public async Task<string> StartConversation([FromBody] StartConversationBody conversation, CancellationToken cancellationToken)
     {
-        var jobType = command.MessageType.ToString();
-        var jobName = $"{nameof(StartConversationCommand)}[{command.SenderWhatsAppNumberOrEmail}] >{jobType}> [{command.ReceiverWhatsAppNumberOrEmail}]";
-        Mediator.Enqueue(jobName, command);
+        var upsertVehicle = new UpsertVehicleLookupCommand(
+            conversation.VehicleLicensePlate,
+            conversation.VehicleLatitude,
+            conversation.VehicleLongitude,
+            conversation.VehiclePhoneNumber,
+            conversation.VehicleWhatsappNumber,
+            conversation.VehicleEmailAddress
+        );
+        var vehicleLookup = await Mediator.Send(upsertVehicle, cancellationToken);
 
+        var command = new StartConversationCommand(
+            conversation.RelatedGarageLookupId,
+            vehicleLookup.Id,
+            conversation.RelatedServiceTypes,
+            conversation.SenderWhatsAppNumberOrEmail,
+            conversation.ReceiverWhatsAppNumberOrEmail,
+            conversation.MessageType,
+            conversation.MessageContent
+        );
+
+        var jobName = this.EnqueueConversation(command);
+        return jobName;
+    }
+
+    [HttpPost($"{nameof(EnqueueConversation)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public string EnqueueConversation([FromBody] StartConversationCommand command)
+    {
+        var jobName = $"{nameof(StartConversationCommand)}[{command.SenderWhatsAppNumberOrEmail}] >> [{command.ReceiverWhatsAppNumberOrEmail}]";
+        Mediator.Enqueue(jobName, command);
         return jobName;
     }
 
