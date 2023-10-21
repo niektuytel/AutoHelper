@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
@@ -41,9 +42,9 @@ public record StartConversationCommand : IRequest
 
     public GarageServiceType[] RelatedServiceTypes { get; set; }
 
-    public string? SenderWhatsAppNumberOrEmail { get; set; }
+    public string SenderWhatsAppNumberOrEmail { get; set; }
 
-    public string? ReceiverWhatsAppNumberOrEmail { get; set; }
+    public string ReceiverWhatsAppNumberOrEmail { get; set; }
 
     public ConversationMessageType MessageType { get; set; }
 
@@ -78,9 +79,12 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
         _context.Conversations.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-
-        // Detect using whatsapp or email
-
+        // Detect using whatsapp or email and set on enum, crerate the enum
+        var senderUseWhatsApp = true;
+        if (Regex.IsMatch(request.SenderWhatsAppNumberOrEmail, StartConversationCommandValidator.EmailPattern))
+        {
+            senderUseWhatsApp = false;
+        }
 
 
         // Send message to receiver

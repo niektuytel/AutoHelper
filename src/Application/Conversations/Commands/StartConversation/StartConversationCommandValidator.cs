@@ -8,8 +8,8 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
 {
     public class StartConversationCommandValidator : AbstractValidator<StartConversationCommand>
     {
-        private const string EmailPattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
-        private const string WhatsAppNumberPattern = @"^\+[1-9]{1}[0-9]{3,14}$"; // Simple E.164 format check
+        public const string EmailPattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+        public const string WhatsAppNumberPattern = @"^\+[1-9]{1}[0-9]{3,14}$"; // Simple E.164 format check
 
         private readonly IApplicationDbContext _context;
 
@@ -56,7 +56,7 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
         
         private async Task<bool> BeValidGarage(StartConversationCommand command, Guid garageId, CancellationToken cancellationToken)
         {
-            var garage = await _context.GarageLookups.FindAsync(garageId, cancellationToken);
+            var garage = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Id == garageId, cancellationToken);
             if (garage != null)
             {
                 command.RelatedGarage = garage;
@@ -67,7 +67,7 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
 
         private async Task<bool> BeValidVehicle(StartConversationCommand command, Guid vehicleId, CancellationToken cancellationToken)
         {
-            var vehicle = await _context.VehicleLookups.FindAsync(vehicleId, cancellationToken);
+            var vehicle = await _context.VehicleLookups.FirstOrDefaultAsync(x => x.Id == vehicleId, cancellationToken);
             if (vehicle != null)
             {
                 command.RelatedVehicle = vehicle;

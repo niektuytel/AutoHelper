@@ -20,6 +20,7 @@ import {
     Select,
     MenuItem,
 } from "@mui/material";
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
@@ -76,7 +77,7 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
                                 addCartItem(service);
                             }}
                         >
-                            <AddIcon sx={{ color: "black"}} />
+                            <AddBoxOutlinedIcon sx={{ color: "black"}} />
                         </IconButton>
                     </>
                 }

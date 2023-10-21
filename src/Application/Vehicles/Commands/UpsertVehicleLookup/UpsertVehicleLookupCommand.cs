@@ -13,7 +13,9 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
+using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Index.HPRtree;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 
@@ -72,6 +74,7 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
         var entity = _context.VehicleLookups.FirstOrDefault(v => v.LicensePlate == request.LicensePlate);
         if (entity == null)
         {
+
             entity = new VehicleLookupItem()
             {
                 LicensePlate = request.LicensePlate,
@@ -86,11 +89,13 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
         }
         else
         {
-            entity.MOTExpiryDate = request.MOTExpiryDate,
-            entity.Location = request.Location,
+            entity.MOTExpiryDate = request.MOTExpiryDate;
+            entity.Location = request.Location;
             entity.PhoneNumber = request.PhoneNumber;
             entity.WhatsappNumber = request.WhatsappNumber;
             entity.EmailAddress = request.EmailAddress;
+
+            _context.VehicleLookups.Update(entity);
         }
 
         await _context.SaveChangesAsync(cancellationToken);

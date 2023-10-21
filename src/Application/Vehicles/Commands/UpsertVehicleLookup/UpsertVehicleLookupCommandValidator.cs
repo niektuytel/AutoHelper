@@ -1,5 +1,8 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.Drawing;
+using System.Globalization;
+using AutoHelper.Application.Common.Interfaces;
 using FluentValidation;
+using NetTopologySuite;
 using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
@@ -14,11 +17,11 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
 
             RuleFor(v => v.Latitude)
                 .NotEmpty().WithMessage("Location Latitude is required.")
-                .Must(lat => double.TryParse(lat, out _)).WithMessage("Invalid Latitude format.");
+                .Must(lat => float.TryParse(lat, out _)).WithMessage("Invalid Latitude format.");
 
             RuleFor(v => v.Longitude)
                 .NotEmpty().WithMessage("Location Longitude is required.")
-                .Must(lon => double.TryParse(lon, out _)).WithMessage("Invalid Longitude format.");
+                .Must(lon => float.TryParse(lon, out _)).WithMessage("Invalid Longitude format.");
 
             RuleFor(v => v.PhoneNumber)
                 .MaximumLength(15).WithMessage("PhoneNumber must not exceed 15 characters.")
@@ -35,18 +38,10 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
             RuleFor(v => v)
                 .Must(HaveAtLeastOneContactMethod)
                 .WithMessage("At least one of Email, PhoneNumber, or WhatsappNumber must be set.");
-            
-            RuleFor(v => v.Latitude)
-                .NotEmpty().WithMessage("Location Latitude is required.")
-                .Must((cmd, lat) => TryParsePoint(lat, cmd.Longitude, out var point))
-                .WithMessage("Invalid Latitude or Longitude format.")
-                .Custom((lat, context) => {
-                    var cmd = (UpsertVehicleLookupCommand)context.InstanceToValidate;
-                    if (TryParsePoint(lat, cmd.Longitude, out var point))
-                    {
-                        cmd.Location = point;
-                    }
-                });
+
+            RuleFor(v => v)
+                .Must(HaveValidLocation)
+                .WithMessage("Invalid Latitude or Longitude format.");
 
             RuleFor(v => v.LicensePlate)
                 .NotEmpty().WithMessage("LicensePlate is required.")
@@ -75,14 +70,19 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
 
         }
 
-        private bool TryParsePoint(string latitude, string longitude, out Point point)
+        private bool HaveValidLocation(UpsertVehicleLookupCommand command)
         {
-            if (double.TryParse(latitude, out double lat) && double.TryParse(longitude, out double lon))
-            {
-                point = new Point(lon, lat) { SRID = 4326 };
+            if(
+                double.TryParse(command.Latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat) && 
+                double.TryParse(command.Longitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double lon)
+            ) {
+                var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+                command.Location = geometryFactory.CreatePoint(new Coordinate(lon, lat));
+                
                 return true;
             }
-            point = null!;
+
+            command.Location = null!;
             return false;
         }
         private bool HaveAtLeastOneContactMethod(UpsertVehicleLookupCommand command)
