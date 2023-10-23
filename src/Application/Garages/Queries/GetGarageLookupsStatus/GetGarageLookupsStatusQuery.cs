@@ -18,9 +18,9 @@ public class GetGarageLookupsStatusQuery : IRequest<GarageLookupsStatusDto>
 public class GetGarageLookupsStatusQueryHandler : IRequestHandler<GetGarageLookupsStatusQuery, GarageLookupsStatusDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IGarageInfoService _garageInfoService;
+    private readonly IGarageService _garageInfoService;
 
-    public GetGarageLookupsStatusQueryHandler(IApplicationDbContext context, IGarageInfoService garageInfoService)
+    public GetGarageLookupsStatusQueryHandler(IApplicationDbContext context, IGarageService garageInfoService)
     {
         _context = context;
         _garageInfoService = garageInfoService;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,8 +9,9 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
 {
     public class StartConversationCommandValidator : AbstractValidator<StartConversationCommand>
     {
-        public const string EmailPattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
-        public const string WhatsAppNumberPattern = @"^\+[1-9]{1}[0-9]{3,14}$"; // Simple E.164 format check
+        private const string EmailPattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
+        private const string WhatsappPattern = @"^(\+?[1-9]{1}[0-9]{3,14}|[0-9]{9,10})$";
+
 
         private readonly IApplicationDbContext _context;
 
@@ -36,16 +38,16 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
             RuleFor(x => x.SenderWhatsAppNumberOrEmail)
                 .NotEmpty()
                 .WithMessage("SenderWhatsAppNumberOrEmail is required.")
-                .Must(BeValidEmailOrWhatsApp)
+                .Must(BeValidSenderIdentifier)
                 .WithMessage("SenderWhatsAppNumberOrEmail should be a valid email or WhatsApp number.");
 
             RuleFor(x => x.ReceiverWhatsAppNumberOrEmail)
                 .NotEmpty()
                 .WithMessage("ReceiverWhatsAppNumberOrEmail is required.")
-                .Must(BeValidEmailOrWhatsApp)
+                .Must(BeValidReceiverIdentifier)
                 .WithMessage("ReceiverWhatsAppNumberOrEmail should be a valid email or WhatsApp number.");
 
-            RuleFor(x => x.MessageType)
+            RuleFor(x => x.ConversationType)
                 .NotEmpty()
                 .WithMessage("MessageType is required.");
 
@@ -53,7 +55,7 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
                 .NotEmpty()
                 .WithMessage("MessageContent is required.");
         }
-        
+
         private async Task<bool> BeValidGarage(StartConversationCommand command, Guid garageId, CancellationToken cancellationToken)
         {
             var garage = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Id == garageId, cancellationToken);
@@ -76,24 +78,58 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
             return false;
         }
 
-        private bool BeValidEmailOrWhatsApp(string input)
+        private bool BeValidSenderIdentifier(StartConversationCommand command, string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
                 return false;
             }
 
-            if (Regex.IsMatch(input, EmailPattern))
+            try
             {
+                command.SenderContactType = GetContactType(input);
                 return true;
             }
-
-            if (Regex.IsMatch(input, WhatsAppNumberPattern))
+            catch (Exception)
             {
-                return true;
+
+                return false;
+            }
+        }
+
+        private bool BeValidReceiverIdentifier(StartConversationCommand command, string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return false;
             }
 
-            return false;
+            try
+            {
+                command.ReceiverContactType = GetContactType(input);
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+        }
+
+        private ContactType GetContactType(string senderWhatsAppNumberOrEmail)
+        {
+            if (Regex.IsMatch(senderWhatsAppNumberOrEmail, EmailPattern))
+            {
+                return ContactType.Email;
+            }
+            else if (Regex.IsMatch(senderWhatsAppNumberOrEmail, WhatsappPattern))
+            {
+                return ContactType.WhatsApp;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid sender contact type");
+            }
         }
     }
 }

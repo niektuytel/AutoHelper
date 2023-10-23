@@ -6,7 +6,7 @@ using AutoHelper.Domain.Entities.Vehicles;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
-public interface IVehicleInfoService
+public interface IVehicleService
 {
     Task<bool> ValidVehicle(string licensePlate);
     Task<VehicleBriefDtoItem?> GetVehicleBriefInfo(string licensePlate);

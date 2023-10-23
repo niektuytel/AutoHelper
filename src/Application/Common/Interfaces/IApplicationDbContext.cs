@@ -20,6 +20,7 @@ public interface IApplicationDbContext
     DbSet<VehicleServiceLogItem> VehicleServiceLogs { get; }
 
     DbSet<ConversationItem> Conversations { get; }
+    DbSet<ConversationMessageItem> ConversationMessages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     void SetQueryTrackingBehavior(QueryTrackingBehavior behavior);

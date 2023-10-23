@@ -1,4 +1,4 @@
-﻿using AutoHelper.Domain.Entities.Conversations;
+﻿using AutoHelper.Domain.Entities.Conversations.Enums;
 using AutoHelper.Domain.Entities.Garages;
 
 namespace WebUI.Models;
@@ -25,7 +25,7 @@ public class StartConversationBody
 
     public string? ReceiverWhatsAppNumberOrEmail { get; set; }
 
-    public ConversationMessageType MessageType { get; set; }
+    public ConversationType MessageType { get; set; }
 
     public string MessageContent { get; set; }
 }

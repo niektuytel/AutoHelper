@@ -61,9 +61,9 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly IVehicleInfoService _vehicleInfoService;
+    private readonly IVehicleService _vehicleInfoService;
 
-    public UpsertVehicleLookupCommandHandler(IApplicationDbContext context, IMapper mapper, IVehicleInfoService vehicleInfoService)
+    public UpsertVehicleLookupCommandHandler(IApplicationDbContext context, IMapper mapper, IVehicleService vehicleInfoService)
     {
         _context = context;
         _mapper = mapper;

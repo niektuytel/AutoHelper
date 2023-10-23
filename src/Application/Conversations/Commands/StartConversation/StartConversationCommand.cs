@@ -5,32 +5,35 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities.Conversations;
+using AutoHelper.Domain.Entities.Conversations.Enums;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
+using AutoHelper.Application.Messages.SendConversationMessage;
+using AutoHelper.Application.Messages.SendConfirmationMessage;
 
 namespace AutoHelper.Application.Conversations.Commands.StartConversation;
 
-public record StartConversationCommand : IRequest
+public record StartConversationCommand : IRequest<SendConversationMessageCommand?>
 {
     public StartConversationCommand(
-        Guid relatedGarageLookupId, 
-        Guid relatedVehicleLookupId, 
+        Guid relatedGarageLookupId,
+        Guid relatedVehicleLookupId,
         GarageServiceType[] relatedServiceTypes,
-        string? senderWhatsAppNumberOrEmail, 
-        string? receiverWhatsAppNumberOrEmail, 
-        ConversationMessageType messageType, 
+        string? senderWhatsAppNumberOrEmail,
+        string? receiverWhatsAppNumberOrEmail,
+        ConversationType messageType,
         string messageContent
-    ) {
+    )
+    {
         RelatedGarageLookupId = relatedGarageLookupId;
         RelatedVehicleLookupId = relatedVehicleLookupId;
         RelatedServiceTypes = relatedServiceTypes;
         SenderWhatsAppNumberOrEmail = senderWhatsAppNumberOrEmail;
         ReceiverWhatsAppNumberOrEmail = receiverWhatsAppNumberOrEmail;
-        MessageType = messageType;
+        ConversationType = messageType;
         MessageContent = messageContent;
     }
 
@@ -43,53 +46,56 @@ public record StartConversationCommand : IRequest
     public GarageServiceType[] RelatedServiceTypes { get; set; }
 
     public string SenderWhatsAppNumberOrEmail { get; set; }
+    public ContactType SenderContactType { get; internal set; }
 
     public string ReceiverWhatsAppNumberOrEmail { get; set; }
+    public ContactType ReceiverContactType { get; internal set; }
 
-    public ConversationMessageType MessageType { get; set; }
+    public ConversationType ConversationType { get; set; }
 
     public string MessageContent { get; set; }
 }
 
-public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand>
+public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand, SendConversationMessageCommand?>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ISender _mediator;
 
-    public StartConversationCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public StartConversationCommandHandler(IApplicationDbContext context, IMapper mapper, ISender mediator)
     {
         _context = context;
         _mapper = mapper;
+        _mediator = mediator;
     }
 
-    public async Task<Unit> Handle(StartConversationCommand request, CancellationToken cancellationToken)
+    public async Task<SendConversationMessageCommand?> Handle(StartConversationCommand request, CancellationToken cancellationToken)
     {
-        var entity = new ConversationItem
+        var conversation = new ConversationItem
         {
             RelatedGarageLookupId = request.RelatedGarageLookupId,
             RelatedVehicleLookupId = request.RelatedVehicleLookupId,
             RelatedServiceTypes = request.RelatedServiceTypes,
-            MessageType = request.MessageType,
-            MessageContent = request.MessageContent
+            ConversationType = request.ConversationType,
         };
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        _context.Conversations.Add(entity);
+        _context.Conversations.Add(conversation);
         await _context.SaveChangesAsync(cancellationToken);
 
-        // Detect using whatsapp or email and set on enum, crerate the enum
-        var senderUseWhatsApp = true;
-        if (Regex.IsMatch(request.SenderWhatsAppNumberOrEmail, StartConversationCommandValidator.EmailPattern))
-        {
-            senderUseWhatsApp = false;
-        }
+        // send message to the receiver
+        var messageCommand = new SendConversationMessageCommand(
+            conversation.Id,
+            request.SenderContactType,
+            request.SenderWhatsAppNumberOrEmail,
+            request.ReceiverContactType,
+            request.ReceiverWhatsAppNumberOrEmail,
+            request.MessageContent
+        );
 
-
-        // Send message to receiver
-        // Send confirmation message to sender
-
-        return Unit.Value;
+        return messageCommand;
     }
+
 }

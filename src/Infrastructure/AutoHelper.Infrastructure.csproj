@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Application\Application.csproj" />
+        <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
     </ItemGroup>
 
     <ItemGroup>

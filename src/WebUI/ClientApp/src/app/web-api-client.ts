@@ -1192,7 +1192,7 @@ export class StartConversationBody implements IStartConversationBody {
     vehicleEmailAddress?: string | undefined;
     senderWhatsAppNumberOrEmail?: string | undefined;
     receiverWhatsAppNumberOrEmail?: string | undefined;
-    messageType?: ConversationMessageType;
+    messageType?: ConversationType;
     messageContent?: string;
 
     constructor(data?: IStartConversationBody) {
@@ -1265,7 +1265,7 @@ export interface IStartConversationBody {
     vehicleEmailAddress?: string | undefined;
     senderWhatsAppNumberOrEmail?: string | undefined;
     receiverWhatsAppNumberOrEmail?: string | undefined;
-    messageType?: ConversationMessageType;
+    messageType?: ConversationType;
     messageContent?: string;
 }
 
@@ -1290,7 +1290,7 @@ export enum GarageServiceType {
     SeasonalTireChange = 135,
 }
 
-export enum ConversationMessageType {
+export enum ConversationType {
     Other = 0,
     Price = 1,
     Appointment = 2,
@@ -1303,9 +1303,11 @@ export class StartConversationCommand implements IStartConversationCommand {
     relatedVehicleLookupId?: string;
     relatedVehicle?: VehicleLookupItem;
     relatedServiceTypes?: GarageServiceType[];
-    senderWhatsAppNumberOrEmail?: string | undefined;
-    receiverWhatsAppNumberOrEmail?: string | undefined;
-    messageType?: ConversationMessageType;
+    senderWhatsAppNumberOrEmail?: string;
+    senderContactType?: ContactType;
+    receiverWhatsAppNumberOrEmail?: string;
+    receiverContactType?: ContactType;
+    conversationType?: ConversationType;
     messageContent?: string;
 
     constructor(data?: IStartConversationCommand) {
@@ -1329,8 +1331,10 @@ export class StartConversationCommand implements IStartConversationCommand {
                     this.relatedServiceTypes!.push(item);
             }
             this.senderWhatsAppNumberOrEmail = _data["senderWhatsAppNumberOrEmail"];
+            this.senderContactType = _data["senderContactType"];
             this.receiverWhatsAppNumberOrEmail = _data["receiverWhatsAppNumberOrEmail"];
-            this.messageType = _data["messageType"];
+            this.receiverContactType = _data["receiverContactType"];
+            this.conversationType = _data["conversationType"];
             this.messageContent = _data["messageContent"];
         }
     }
@@ -1354,8 +1358,10 @@ export class StartConversationCommand implements IStartConversationCommand {
                 data["relatedServiceTypes"].push(item);
         }
         data["senderWhatsAppNumberOrEmail"] = this.senderWhatsAppNumberOrEmail;
+        data["senderContactType"] = this.senderContactType;
         data["receiverWhatsAppNumberOrEmail"] = this.receiverWhatsAppNumberOrEmail;
-        data["messageType"] = this.messageType;
+        data["receiverContactType"] = this.receiverContactType;
+        data["conversationType"] = this.conversationType;
         data["messageContent"] = this.messageContent;
         return data;
     }
@@ -1367,9 +1373,11 @@ export interface IStartConversationCommand {
     relatedVehicleLookupId?: string;
     relatedVehicle?: VehicleLookupItem;
     relatedServiceTypes?: GarageServiceType[];
-    senderWhatsAppNumberOrEmail?: string | undefined;
-    receiverWhatsAppNumberOrEmail?: string | undefined;
-    messageType?: ConversationMessageType;
+    senderWhatsAppNumberOrEmail?: string;
+    senderContactType?: ContactType;
+    receiverWhatsAppNumberOrEmail?: string;
+    receiverContactType?: ContactType;
+    conversationType?: ConversationType;
     messageContent?: string;
 }
 
@@ -2423,8 +2431,8 @@ export class ConversationItem extends BaseAuditableEntity implements IConversati
     relatedGarageLookup?: GarageLookupItem;
     relatedServiceTypes?: GarageServiceType[];
     relatedServiceTypesString!: string;
-    messageType!: ConversationMessageType;
-    messageContent!: string;
+    conversationType!: ConversationType;
+    messages?: ConversationMessageItem[];
 
     constructor(data?: IConversationItem) {
         super(data);
@@ -2444,8 +2452,12 @@ export class ConversationItem extends BaseAuditableEntity implements IConversati
                     this.relatedServiceTypes!.push(item);
             }
             this.relatedServiceTypesString = _data["relatedServiceTypesString"];
-            this.messageType = _data["messageType"];
-            this.messageContent = _data["messageContent"];
+            this.conversationType = _data["conversationType"];
+            if (Array.isArray(_data["messages"])) {
+                this.messages = [] as any;
+                for (let item of _data["messages"])
+                    this.messages!.push(ConversationMessageItem.fromJS(item));
+            }
         }
     }
 
@@ -2469,8 +2481,12 @@ export class ConversationItem extends BaseAuditableEntity implements IConversati
                 data["relatedServiceTypes"].push(item);
         }
         data["relatedServiceTypesString"] = this.relatedServiceTypesString;
-        data["messageType"] = this.messageType;
-        data["messageContent"] = this.messageContent;
+        data["conversationType"] = this.conversationType;
+        if (Array.isArray(this.messages)) {
+            data["messages"] = [];
+            for (let item of this.messages)
+                data["messages"].push(item.toJSON());
+        }
         super.toJSON(data);
         return data;
     }
@@ -2484,8 +2500,8 @@ export interface IConversationItem extends IBaseAuditableEntity {
     relatedGarageLookup?: GarageLookupItem;
     relatedServiceTypes?: GarageServiceType[];
     relatedServiceTypesString: string;
-    messageType: ConversationMessageType;
-    messageContent: string;
+    conversationType: ConversationType;
+    messages?: ConversationMessageItem[];
 }
 
 export enum PriorityLevel {
@@ -2703,6 +2719,84 @@ export interface IGarageServiceItem extends IBaseAuditableEntity {
     durationInMinutes?: number;
     price?: number;
     status?: number;
+}
+
+export class ConversationMessageItem extends BaseAuditableEntity implements IConversationMessageItem {
+    conversationId!: string;
+    conversation?: ConversationItem;
+    senderContactType!: ContactType;
+    senderContactIdentifier!: string;
+    receiverContactType!: ContactType;
+    receiverContactIdentifier!: string;
+    status!: MessageStatus;
+    messageContent!: string;
+    errorMessage?: string | undefined;
+
+    constructor(data?: IConversationMessageItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.conversationId = _data["conversationId"];
+            this.conversation = _data["conversation"] ? ConversationItem.fromJS(_data["conversation"]) : <any>undefined;
+            this.senderContactType = _data["senderContactType"];
+            this.senderContactIdentifier = _data["senderContactIdentifier"];
+            this.receiverContactType = _data["receiverContactType"];
+            this.receiverContactIdentifier = _data["receiverContactIdentifier"];
+            this.status = _data["status"];
+            this.messageContent = _data["messageContent"];
+            this.errorMessage = _data["errorMessage"];
+        }
+    }
+
+    static fromJS(data: any): ConversationMessageItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConversationMessageItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["conversationId"] = this.conversationId;
+        data["conversation"] = this.conversation ? this.conversation.toJSON() : <any>undefined;
+        data["senderContactType"] = this.senderContactType;
+        data["senderContactIdentifier"] = this.senderContactIdentifier;
+        data["receiverContactType"] = this.receiverContactType;
+        data["receiverContactIdentifier"] = this.receiverContactIdentifier;
+        data["status"] = this.status;
+        data["messageContent"] = this.messageContent;
+        data["errorMessage"] = this.errorMessage;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IConversationMessageItem extends IBaseAuditableEntity {
+    conversationId: string;
+    conversation?: ConversationItem;
+    senderContactType: ContactType;
+    senderContactIdentifier: string;
+    receiverContactType: ContactType;
+    receiverContactIdentifier: string;
+    status: MessageStatus;
+    messageContent: string;
+    errorMessage?: string | undefined;
+}
+
+export enum ContactType {
+    Email = 0,
+    WhatsApp = 1,
+    PhoneNumber = 2,
+}
+
+export enum MessageStatus {
+    Pending = 0,
+    Sent = 1,
+    Delivered = 2,
+    Failed = 3,
 }
 
 export class GarageItemDto implements IGarageItemDto {

@@ -38,10 +38,10 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly IGarageInfoService _garageInfoService;
+    private readonly IGarageService _garageInfoService;
     private readonly IQueueingService _queueingService;
 
-    public UpsertGarageLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IGarageInfoService garageInfoService, IQueueingService queueingService)
+    public UpsertGarageLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IGarageService garageInfoService, IQueueingService queueingService)
     {
         _dbContext = dbContext;
         _mapper = mapper;

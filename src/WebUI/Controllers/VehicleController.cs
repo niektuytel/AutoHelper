@@ -22,9 +22,9 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class VehicleController : ApiControllerBase
 {
-    private readonly IVehicleInfoService _vehicleService;
+    private readonly IVehicleService _vehicleService;
 
-    public VehicleController(IVehicleInfoService vehicleService)
+    public VehicleController(IVehicleService vehicleService)
     {
         _vehicleService = vehicleService;
     }

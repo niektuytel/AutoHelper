@@ -12,9 +12,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Hangfire\Hangfire.csproj" />
-        <ProjectReference Include="..\Application\Application.csproj" />
-        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+        <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
+        <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
+        <ProjectReference Include="..\Whatsapp\AutoHelper.Whatsapp.csproj" />
+        <ProjectReference Include="..\Mailing\AutoHelper.Mailing.csproj" />
+        <ProjectReference Include="..\Infrastructure\AutoHelper.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>

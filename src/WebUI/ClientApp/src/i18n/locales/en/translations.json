@@ -122,14 +122,14 @@
   "Ask a Question.MessageType.Label": "Subject",
   "Ask a Question.MessageType.Required": "We need an related subject",
   "Ask a Question.Message.Label": "Message",
-  "ConversationMessageType.Other": "Other",
-  "ConversationMessageType.Other.SampleMessage": "Can you provide more information?",
-  "ConversationMessageType.Price": "Price",
-  "ConversationMessageType.Price.SampleMessage": "What are the expected costs for this?",
-  "ConversationMessageType.Appointment": "Appointment",
-  "ConversationMessageType.Appointment.SampleMessage": "Is there an available slot soon?",
-  "ConversationMessageType.Technical": "Technical",
-  "ConversationMessageType.Technical.SampleMessage": "Are there any known issues I should be aware of?",
+  "ConversationType.Other": "Other",
+  "ConversationType.Other.SampleMessage": "Can you provide more information?",
+  "ConversationType.Price": "Price",
+  "ConversationType.Price.SampleMessage": "What are the expected costs for this?",
+  "ConversationType.Appointment": "Appointment",
+  "ConversationType.Appointment.SampleMessage": "Is there an available slot soon?",
+  "ConversationType.Technical": "Technical",
+  "ConversationType.Technical.SampleMessage": "Are there any known issues I should be aware of?",
 
 
 

@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using AutoHelper.Domain.Entities.Conversations.Enums;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
+using MediatR;
 
 namespace AutoHelper.Domain.Entities.Conversations;
 
@@ -50,9 +53,8 @@ public class ConversationItem : BaseAuditableEntity
     public string RelatedServiceTypesString { get; set; } = "";
 
     [Required]
-    public ConversationMessageType MessageType { get; set; }
+    public ConversationType ConversationType { get; set; }
 
-    [Required]
-    public string MessageContent { get; set; } = null!;
+    public ICollection<ConversationMessageItem> Messages { get; set; } = new List<ConversationMessageItem>();
 
 }

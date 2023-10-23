@@ -1038,7 +1038,7 @@
             "nullable": true
           },
           "messageType": {
-            "$ref": "#/components/schemas/ConversationMessageType"
+            "$ref": "#/components/schemas/ConversationType"
           },
           "messageContent": {
             "type": "string"
@@ -1089,7 +1089,7 @@
           135
         ]
       },
-      "ConversationMessageType": {
+      "ConversationType": {
         "type": "integer",
         "description": "",
         "x-enumNames": [
@@ -1130,15 +1130,19 @@
             }
           },
           "senderWhatsAppNumberOrEmail": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
+          },
+          "senderContactType": {
+            "$ref": "#/components/schemas/ContactType"
           },
           "receiverWhatsAppNumberOrEmail": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
-          "messageType": {
-            "$ref": "#/components/schemas/ConversationMessageType"
+          "receiverContactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "conversationType": {
+            "$ref": "#/components/schemas/ConversationType"
           },
           "messageContent": {
             "type": "string"
@@ -1949,8 +1953,7 @@
               "relatedVehicleLookupId",
               "relatedGarageLookupId",
               "relatedServiceTypesString",
-              "messageType",
-              "messageContent"
+              "conversationType"
             ],
             "properties": {
               "priority": {
@@ -1982,12 +1985,14 @@
                 "type": "string",
                 "minLength": 1
               },
-              "messageType": {
-                "$ref": "#/components/schemas/ConversationMessageType"
+              "conversationType": {
+                "$ref": "#/components/schemas/ConversationType"
               },
-              "messageContent": {
-                "type": "string",
-                "minLength": 1
+              "messages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ConversationMessageItem"
+                }
               }
             }
           }
@@ -2186,6 +2191,91 @@
               }
             }
           }
+        ]
+      },
+      "ConversationMessageItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "conversationId",
+              "senderContactType",
+              "senderContactIdentifier",
+              "receiverContactType",
+              "receiverContactIdentifier",
+              "status",
+              "messageContent"
+            ],
+            "properties": {
+              "conversationId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
+              "conversation": {
+                "$ref": "#/components/schemas/ConversationItem"
+              },
+              "senderContactType": {
+                "$ref": "#/components/schemas/ContactType"
+              },
+              "senderContactIdentifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "receiverContactType": {
+                "$ref": "#/components/schemas/ContactType"
+              },
+              "receiverContactIdentifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "$ref": "#/components/schemas/MessageStatus"
+              },
+              "messageContent": {
+                "type": "string",
+                "minLength": 1
+              },
+              "errorMessage": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ContactType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Email",
+          "WhatsApp",
+          "PhoneNumber"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "MessageStatus": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Pending",
+          "Sent",
+          "Delivered",
+          "Failed"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
         ]
       },
       "GarageItemDto": {

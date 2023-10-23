@@ -6,7 +6,7 @@ using MediatR;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
-public interface IGarageInfoService
+public interface IGarageService
 {
     int CalculateDistanceInKm(float garageLatitude, float garageLongitude, float latitude, float longitude);
     Task<GarageLookupItem[]> GetBriefGarageLookups();

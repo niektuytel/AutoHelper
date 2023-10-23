@@ -55,12 +55,12 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupBriefDt
 
 public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQuery, PaginatedList<GarageLookupBriefDto>>
 {
-    private readonly IVehicleInfoService _vehicleInfoService;
-    private readonly IGarageInfoService _garageInfoService;
+    private readonly IVehicleService _vehicleInfoService;
+    private readonly IGarageService _garageInfoService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetGaragesBySearchQueryHandler(IVehicleInfoService vehicleInfoService, IGarageInfoService garageInfoService, IApplicationDbContext context, IMapper mapper)
+    public GetGaragesBySearchQueryHandler(IVehicleService vehicleInfoService, IGarageService garageInfoService, IApplicationDbContext context, IMapper mapper)
     {
         _vehicleInfoService = vehicleInfoService;
         _garageInfoService = garageInfoService;

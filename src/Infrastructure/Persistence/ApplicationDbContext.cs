@@ -46,6 +46,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
 
     public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
+    public DbSet<ConversationMessageItem> ConversationMessages => Set<ConversationMessageItem>();
 
 
     protected override void OnModelCreating(ModelBuilder builder)

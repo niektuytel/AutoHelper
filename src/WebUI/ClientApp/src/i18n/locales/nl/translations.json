@@ -121,14 +121,14 @@
   "Ask a Question.MessageType.Label": "Onderwerp",
   "Ask a Question.MessageType.Required": "We hebben een gerelateerd onderwerp nodig",
   "Ask a Question.Message.Label": "Bericht",
-  "ConversationMessageType.Other": "Anders",
-  "ConversationMessageType.Other.SampleMessage": "Kunt u mij meer informatie geven?",
-  "ConversationMessageType.Price": "Prijs",
-  "ConversationMessageType.Price.SampleMessage": "Wat zijn de verwachte kosten voor dit?",
-  "ConversationMessageType.Appointment": "Afspraak",
-  "ConversationMessageType.Appointment.SampleMessage": "Is er spoedig een tijdstip beschikbaar?",
-  "ConversationMessageType.Technical": "Technisch",
-  "ConversationMessageType.Technical.SampleMessage": "Zijn er bekende problemen die ik moet weten?",
+  "ConversationType.Other": "Anders",
+  "ConversationType.Other.SampleMessage": "Kunt u mij meer informatie geven?",
+  "ConversationType.Price": "Prijs",
+  "ConversationType.Price.SampleMessage": "Wat zijn de verwachte kosten voor dit?",
+  "ConversationType.Appointment": "Afspraak",
+  "ConversationType.Appointment.SampleMessage": "Is er spoedig een tijdstip beschikbaar?",
+  "ConversationType.Technical": "Technisch",
+  "ConversationType.Technical.SampleMessage": "Zijn er bekende problemen die ik moet weten?",
 
 
 

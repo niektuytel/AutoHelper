@@ -25,7 +25,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal class GarageInfoService : IGarageInfoService
+internal class GarageInfoService : IGarageService
 {
     private readonly WebScraperClient _webScraperClient;
     private readonly GoogleApiClient _googleApiClient;

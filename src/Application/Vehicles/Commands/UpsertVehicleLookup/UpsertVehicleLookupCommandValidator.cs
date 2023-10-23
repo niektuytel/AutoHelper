@@ -9,7 +9,7 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
 {
     public class UpsertVehicleLookupCommandValidator : AbstractValidator<UpsertVehicleLookupCommand>
     {
-        public UpsertVehicleLookupCommandValidator(IVehicleInfoService vehicleInfoService)
+        public UpsertVehicleLookupCommandValidator(IVehicleService vehicleInfoService)
         {
             RuleFor(v => v.LicensePlate)
                 .NotEmpty().WithMessage("LicensePlate is required.")

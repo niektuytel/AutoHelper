@@ -25,10 +25,10 @@ public record GetGarageServiceTypesByLicensePlateQuery : IRequest<IEnumerable<Ga
 
 public class GetGarageServiceTypesByLicensePlateQueryHandler : IRequestHandler<GetGarageServiceTypesByLicensePlateQuery, IEnumerable<GarageServiceType>>
 {
-    private readonly IVehicleInfoService _vehicleInfoService;
-    private readonly IGarageInfoService _garageInfoService;
+    private readonly IVehicleService _vehicleInfoService;
+    private readonly IGarageService _garageInfoService;
 
-    public GetGarageServiceTypesByLicensePlateQueryHandler(IVehicleInfoService vehicleInfoService, IGarageInfoService garageInfoService)
+    public GetGarageServiceTypesByLicensePlateQueryHandler(IVehicleService vehicleInfoService, IGarageService garageInfoService)
     {
         _vehicleInfoService = vehicleInfoService;
         _garageInfoService = garageInfoService;

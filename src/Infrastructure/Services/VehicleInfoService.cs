@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal class VehicleInfoService : IVehicleInfoService
+internal class VehicleInfoService : IVehicleService
 {
     private readonly RDWApiClient _rdwService;
 

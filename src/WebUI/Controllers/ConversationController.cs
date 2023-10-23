@@ -46,7 +46,7 @@ public class ConversationController : ApiControllerBase
             conversation.MessageContent
         );
 
-        var jobName = this.EnqueueConversation(command);
+        var jobName = EnqueueConversation(command);
         return jobName;
     }
 
@@ -55,9 +55,21 @@ public class ConversationController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public string EnqueueConversation([FromBody] StartConversationCommand command)
     {
-        var jobName = $"{nameof(StartConversationCommand)}[{command.SenderWhatsAppNumberOrEmail}] >> [{command.ReceiverWhatsAppNumberOrEmail}]";
-        Mediator.Enqueue(jobName, command);
+        var sender = SanitizeForQueueName(command.SenderWhatsAppNumberOrEmail);
+        var receiver = SanitizeForQueueName(command.ReceiverWhatsAppNumberOrEmail);
+        var jobName = $"{nameof(StartConversationCommand).ToLower()}_{sender}_to_{receiver}";
+
+        Mediator.Enqueue(jobName, command, isRecursive: true);
         return jobName;
+    }
+
+    private string SanitizeForQueueName(string input)
+    {
+        // Only allow lowercase letters, digits, underscores, and dashes
+        return new string(input
+            .Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-')
+            .Select(c => char.IsUpper(c) ? char.ToLower(c) : c)
+            .ToArray());
     }
 
 }

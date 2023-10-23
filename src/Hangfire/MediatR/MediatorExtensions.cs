@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using AutoHelper.Application.Conversations.Commands.StartConversation;
 using Hangfire;
 using Hangfire.Server;
 using MediatR;
@@ -12,10 +13,18 @@ namespace AutoHelper.Hangfire.MediatR;
 
 public static class MediatorExtensions
 {
-    public static void Enqueue(this ISender mediator, string jobName, IBaseRequest request)
+    /// <param name="isRecursive">Enqueue response until repsonse is not MediatR.IBaseRequest</param>
+    public static void Enqueue(this ISender mediator, string queue, IBaseRequest request, bool isRecursive = false)
     {
         var client = new BackgroundJobClient();
-        client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(jobName, request));
+        if (isRecursive)
+        {
+            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(request));
+        }
+        else
+        {
+            client.Enqueue<MediatorHangfireBridge>(queue, bridge => bridge.Send(request));
+        }
     }
 
     public static void RecurringJobWeekly(this IMediator mediator, string jobId, IRequest request, bool enabled)

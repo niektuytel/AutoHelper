@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { ConversationClient, ConversationMessageType, GarageServiceType, StartConversationBody } from '../../../app/web-api-client';
+import { ConversationClient, ConversationType, GarageServiceType, StartConversationBody } from '../../../app/web-api-client';
 import { showOnSuccess } from '../../../redux/slices/statusSnackbarSlice';
 import { EnumValues } from 'enum-values';
 
@@ -16,12 +16,12 @@ const isValidEmail = (input: string): boolean => {
 
 const isValidPhoneNumber = (input: string): boolean => {
     // Basic regex for phone number validation (can be adjusted based on specific needs)
-    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    const phoneRegex = /^(\+?[1-9]\d{1,14}|[0-9]{9,10})$/;
     return phoneRegex.test(input);
 }
 
 function convertToEnumValue(type: string): number | undefined {
-    return ConversationMessageType[type as keyof typeof ConversationMessageType];
+    return ConversationType[type as keyof typeof ConversationType];
 }
 
 interface FormInput {
@@ -68,7 +68,7 @@ export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTyp
         if (watchedMessageType) {
             const watchedMessage = watch('message');
             if (!watchedMessage) {
-                setValue('message', t(`ConversationMessageType.${watchedMessageType}.SampleMessage`));
+                setValue('message', t(`ConversationType.${watchedMessageType}.SampleMessage`));
             }
         }
     }, [watchedMessageType, setValue]);
@@ -117,7 +117,7 @@ export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTyp
         onClose();
     }
 
-    // TODO: use ConversationMessageType
+    // TODO: use ConversationType
 
     return (
         <Dialog open={open} onClose={onClose}>
@@ -163,8 +163,8 @@ export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTyp
                             <InputLabel htmlFor="select-title">{t("Ask a Question.MessageType.Label")}</InputLabel>
                             <Select {...field} label={t("Ask a Question.MessageType.Label")}>
                                 {
-                                    EnumValues.getNames(ConversationMessageType).map((type) => (
-                                        <MenuItem key={type} value={type}>{t(`ConversationMessageType.${type}`)}</MenuItem>
+                                    EnumValues.getNames(ConversationType).map((type) => (
+                                        <MenuItem key={type} value={type}>{t(`ConversationType.${type}`)}</MenuItem>
                                     ))
                                 }
                             </Select>
