@@ -16,13 +16,23 @@ internal class WhatsappService : IWhatsappService
 
     public async Task SendConfirmationAsync(string phoneNumber, string message)
     {
-        TextMessageRequest textMessageRequest = new TextMessageRequest();
-        textMessageRequest.To = phoneNumber;
-        textMessageRequest.Text = new WhatsAppText();
-        textMessageRequest.Text.Body = "Message Body";
-        textMessageRequest.Text.PreviewUrl = false;
 
-        var results = await _whatsAppBusinessClient.SendTextMessageAsync(textMessageRequest);
+        TextTemplateMessageRequest textTemplateMessage = new TextTemplateMessageRequest();
+        textTemplateMessage.To = phoneNumber;
+        textTemplateMessage.Template = new TextMessageTemplate();
+        textTemplateMessage.Template.Name = "hello_world";
+        textTemplateMessage.Template.Language = new TextMessageLanguage();
+        textTemplateMessage.Template.Language.Code = "en_US";
+
+        var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(textTemplateMessage);
+
+        //TextMessageRequest textMessageRequest = new TextMessageRequest();
+        //textMessageRequest.To = phoneNumber;
+        //textMessageRequest.Text = new WhatsAppText();
+        //textMessageRequest.Text.Body = "Message Body";
+        //textMessageRequest.Text.PreviewUrl = false;
+
+        //var results = await _whatsAppBusinessClient.SendTextMessageAsync(textMessageRequest);
     }
 
     public Task SendMessageAsync(string phoneNumber, string message)
