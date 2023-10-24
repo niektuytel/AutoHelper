@@ -14,6 +14,7 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Messages.SendConversationMessage;
 
@@ -95,16 +96,51 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
 
     public async Task<SendConfirmationMessageCommand?> Handle(SendConversationMessageCommand request, CancellationToken cancellationToken)
     {
+        var conversation = _context.Conversations
+            .Include(x => x.RelatedGarageLookup)
+            .Include(x => x.RelatedVehicleLookup)
+            .FirstOrDefault(x => x.Id == request.ConversationId);
 
+        if (conversation == null)
+        {
+            throw new InvalidDataException("Conversation not found");
+        }
+
+        var sendToName = conversation.RelatedGarageLookup.Name;
+        if(IdentifierDidMatchVehicle(request.ReceiverContactIdentifier, conversation.RelatedVehicleLookup))
+        {
+            sendToName = conversation.RelatedVehicleLookup.LicensePlate;
+        }
 
         // send confirmation message to the sender
         var confirmSendingCommand = new SendConfirmationMessageCommand(
             request.ConversationId,
+            sendToName,
             request.SenderContactType,
             request.SenderContactIdentifier,
             request.MessageContent
         );
 
         return confirmSendingCommand;
+    }
+
+    private static bool IdentifierDidMatchVehicle(string identifier, VehicleLookupItem vehicleLookupItem)
+    {
+        if (vehicleLookupItem.PhoneNumber == identifier)
+        {
+            return true;
+        }
+
+        if (vehicleLookupItem.WhatsappNumber == identifier)
+        {
+            return true;
+        }
+
+        if (vehicleLookupItem.EmailAddress == identifier)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

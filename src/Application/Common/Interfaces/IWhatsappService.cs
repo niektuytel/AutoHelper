@@ -8,8 +8,6 @@ namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IWhatsappService
 {
-    Task SendConfirmationAsync(string phoneNumber, string message);
-    Task SendMessageAsync(string phoneNumber, string message);
-
-    Task SendMessageAsync(IEnumerable<string> phoneNumbers, string message);
+    Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string companyName);
+    Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromIdentifier, string content);
 }

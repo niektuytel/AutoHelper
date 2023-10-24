@@ -9,16 +9,21 @@ public class SendConfirmationMessageCommand : IRequest<bool?>
 {
     public SendConfirmationMessageCommand(
         Guid conversationId,
+        string sendToName,
         ContactType contactType, 
         string contactIdentifier, 
         string messageContent
     ) {
+        ConversationId = conversationId;
+        SendToName = sendToName;
         ContactType = contactType;
         ContactIdentifier = contactIdentifier;
         MessageContent = messageContent;
     }
 
     public Guid ConversationId { get; set; }
+
+    public string SendToName { get; set; }
 
     public ContactType ContactType { get; private set; }
 
@@ -57,7 +62,7 @@ public class SendConfirmationMessageCommandHandler : IRequestHandler<SendConfirm
         }
         else if(request.ContactType == ContactType.WhatsApp)
         {
-            await _whatsappService.SendConfirmationAsync(request.ContactIdentifier, message);
+            await _whatsappService.SendConfirmationMessageAsync(request.ContactIdentifier, request.ConversationId, request.SendToName);
         }
         else
         {
