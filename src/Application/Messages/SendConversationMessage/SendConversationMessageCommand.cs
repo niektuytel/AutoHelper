@@ -87,11 +87,20 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IWhatsappService _whatsappService;
+    private readonly IMailingService _mailingService;
 
-    public StartConversationCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public StartConversationCommandHandler(
+        IApplicationDbContext context,
+        IMapper mapper,
+        IWhatsappService whatsappService,
+        IMailingService mailingService
+    )
     {
         _context = context;
         _mapper = mapper;
+        _whatsappService = whatsappService;
+        _mailingService = mailingService;
     }
 
     public async Task<SendConfirmationMessageCommand?> Handle(SendConversationMessageCommand request, CancellationToken cancellationToken)
@@ -106,13 +115,30 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
             throw new InvalidDataException("Conversation not found");
         }
 
+        // send message to receiver
+        if (request.ReceiverContactType == ContactType.Email)
+        {
+            var subject = $"AutoHelper - {conversation.RelatedGarageLookup.Name} - {conversation.RelatedVehicleLookup.LicensePlate}";
+            await _mailingService.SendEmailAsync(request.ReceiverContactIdentifier, subject, request.MessageContent);
+        }
+        else if (request.ReceiverContactType == ContactType.WhatsApp)
+        {
+            // TODO: Send with vehicle information or not?
+
+            await _whatsappService.SendConfirmationMessageAsync(request.ReceiverContactIdentifier, request.ConversationId, request.SendToName);
+        }
+        else
+        {
+            throw new Exception($"Invalid contact type: {request.ReceiverContactType}");
+        }
+
+        // send confirm message to the sender
         var sendToName = conversation.RelatedGarageLookup.Name;
         if(IdentifierDidMatchVehicle(request.ReceiverContactIdentifier, conversation.RelatedVehicleLookup))
         {
             sendToName = conversation.RelatedVehicleLookup.LicensePlate;
         }
 
-        // send confirmation message to the sender
         var confirmSendingCommand = new SendConfirmationMessageCommand(
             request.ConversationId,
             sendToName,
