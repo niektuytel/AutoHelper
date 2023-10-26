@@ -14,13 +14,17 @@ public static class ConfigureService
 
     public static void AddWhatsappServices(this IServiceCollection services, IConfiguration configuration)
     {
-        WhatsAppBusinessCloudApiConfig whatsAppConfig = new WhatsAppBusinessCloudApiConfig();
-        whatsAppConfig.WhatsAppBusinessPhoneNumberId = configuration["WhatsAppBusinessCloudApiConfiguration:WhatsAppBusinessPhoneNumberId"] ?? throw new ArgumentNullException(nameof(whatsAppConfig.WhatsAppBusinessPhoneNumberId));
-        whatsAppConfig.WhatsAppBusinessAccountId = configuration["WhatsAppBusinessCloudApiConfiguration:WhatsAppBusinessAccountId"] ?? throw new ArgumentNullException(nameof(whatsAppConfig.WhatsAppBusinessAccountId));
-        whatsAppConfig.WhatsAppBusinessId = configuration["WhatsAppBusinessCloudApiConfiguration:WhatsAppBusinessId"] ?? throw new ArgumentNullException(nameof(whatsAppConfig.WhatsAppBusinessId));
-        whatsAppConfig.AccessToken = configuration["WhatsAppBusinessCloudApiConfiguration:AccessToken"] ?? throw new ArgumentNullException(nameof(whatsAppConfig.AccessToken));
+        var whatsAppBusinessApiConfiguration = new WhatsAppBusinessCloudApiConfig();
+        whatsAppBusinessApiConfiguration.WhatsAppBusinessPhoneNumberId = configuration["WhatsApp:WhatsAppBusinessPhoneNumberId"]
+            ?? throw new ArgumentNullException(nameof(whatsAppBusinessApiConfiguration.WhatsAppBusinessPhoneNumberId));
+        whatsAppBusinessApiConfiguration.WhatsAppBusinessAccountId = configuration["WhatsApp:WhatsAppBusinessAccountId"]
+            ?? throw new ArgumentNullException(nameof(whatsAppBusinessApiConfiguration.WhatsAppBusinessAccountId));
+        whatsAppBusinessApiConfiguration.WhatsAppBusinessId = configuration["WhatsApp:WhatsAppBusinessId"]
+            ?? throw new ArgumentNullException(nameof(whatsAppBusinessApiConfiguration.WhatsAppBusinessId));
+        whatsAppBusinessApiConfiguration.AccessToken = configuration["WhatsApp:AccessToken"]
+            ?? throw new ArgumentNullException(nameof(whatsAppBusinessApiConfiguration.AccessToken));
 
-        services.AddWhatsAppBusinessCloudApiService(whatsAppConfig);
+        services.AddWhatsAppBusinessCloudApiService(whatsAppBusinessApiConfiguration);
         services.AddScoped<IWhatsappService, WhatsappService>();
     }
 

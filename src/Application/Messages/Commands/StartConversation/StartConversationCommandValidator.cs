@@ -5,7 +5,7 @@ using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.StartConversation
+namespace AutoHelper.Application.Messages.Commands.StartConversation
 {
     public class StartConversationCommandValidator : AbstractValidator<StartConversationCommand>
     {

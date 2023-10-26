@@ -1,6 +1,9 @@
 ﻿using System.Net.Http;
+using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Vehicles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Exceptions;
@@ -12,13 +15,19 @@ namespace AutoHelper.Whatsapp.Services;
 internal class WhatsappService : IWhatsappService
 {
     private readonly IWhatsAppBusinessClient _whatsAppBusinessClient;
+    private readonly IConfiguration _configuration;
+    private readonly bool _isDevelopment;
+    private readonly string _developPhoneNumberId;
 
-    public WhatsappService(IWhatsAppBusinessClient whatsAppBusinessClient)
+    public WhatsappService(IWhatsAppBusinessClient whatsAppBusinessClient, IConfiguration configuration)
     {
-        _whatsAppBusinessClient = whatsAppBusinessClient;
+        _whatsAppBusinessClient = whatsAppBusinessClient ?? throw new ArgumentNullException(nameof(whatsAppBusinessClient));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _isDevelopment = _configuration["Environment"] == "Development";
+        _developPhoneNumberId = _configuration["WhatsApp:TestPhoneNumberId"]!;
     }
 
-    public async Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string fromIdentifier)
+    public async Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string fromContactName)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
         var template = new TextTemplateMessageRequest
@@ -41,7 +50,7 @@ internal class WhatsappService : IWhatsappService
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = fromIdentifier
+                                Text = fromContactName
                             }
                         }
                     },
@@ -73,7 +82,7 @@ internal class WhatsappService : IWhatsappService
         }
     }
 
-    public async Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromIdentifier, string content)
+    public async Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromContactName, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
         var template = new TextTemplateMessageRequest
@@ -96,7 +105,7 @@ internal class WhatsappService : IWhatsappService
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = fromIdentifier
+                                Text = fromContactName
                             }
                         }
                     },
@@ -133,7 +142,7 @@ internal class WhatsappService : IWhatsappService
         }
     }
 
-    public async Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleLookupItem vehicle, string content)
+    public async Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleTechnicalBriefDtoItem vehicle, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
         var template = new TextTemplateMessageRequest
@@ -173,45 +182,38 @@ internal class WhatsappService : IWhatsappService
                             new TextMessageParameter
                             {
                                 Type = "text",
+                                Text = vehicle.LicensePlate// 87-GRN-6
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.FuelType.ToCamelCase()// Benzine
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = $"{vehicle.Brand.ToCamelCase()} {vehicle.Model.ToCamelCase()}({vehicle.YearOfFirstAdmission})"// Dacia Sandero (2008)
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.MOTExpiryDate// 10-05-2024
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.Mileage.ToCamelCase()// Logisch
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
                                 Text = conversationId.ToString().Split('-')[0]// c8e7d5b8
                             },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = ""//TODO: DACIA
-                            },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = ""//TODO: Sandero
-                            },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = ""//TODO: 2008
-                            },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = ""//TODO: 0,00KM op 1 liter benzine
-                            },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = vehicle.MOTExpiryDate.ToShortDateString()// 10-05-2024
-                            },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = ""//TODO: Logisch
-                            },
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = vehicle.LicensePlate// 87-GRN-6
-                            }
                         }
                     },
+
+                    // TODO: Add "Meer info:   https://"
+                    // TODO: Remove "Antwoorden kan door middel van antwoord geven op dit bericht."
                 }
             }
         };
@@ -228,15 +230,20 @@ internal class WhatsappService : IWhatsappService
         }
     }
 
-    private static string GetPhoneNumberId(string phoneNumber)
+    private string GetPhoneNumberId(string phoneNumber)
     {
+        if (_isDevelopment)
+        {
+            return _developPhoneNumberId;
+        }
+
         phoneNumber = phoneNumber
             .Replace(" ", "")
             .Replace("-", "")
             .Replace("(", "")
             .Replace(")", "")
             .Replace("+", "");
-        
+
         // Removing any leading "0" and adding "31" (Netherlands country code) if not present
         if (phoneNumber.StartsWith("0"))
             phoneNumber = "31" + phoneNumber[1..];

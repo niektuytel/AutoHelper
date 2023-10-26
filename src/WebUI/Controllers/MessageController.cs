@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.StartConversation;
+using AutoHelper.Application.Messages.Commands.StartConversation;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Hangfire.MediatR;
 using HtmlAgilityPack;
@@ -9,13 +9,13 @@ using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
-public class ConversationController : ApiControllerBase
+public class MessageController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
 
 
-    public ConversationController(ICurrentUserService currentUser, IIdentityService identityService)
+    public MessageController(ICurrentUserService currentUser, IIdentityService identityService)
     {
         _currentUser = currentUser;
         _identityService = identityService;
@@ -63,7 +63,7 @@ public class ConversationController : ApiControllerBase
         return jobName;
     }
 
-    private string SanitizeForQueueName(string input)
+    private static string SanitizeForQueueName(string input)
     {
         // Only allow lowercase letters, digits, underscores, and dashes
         return new string(input

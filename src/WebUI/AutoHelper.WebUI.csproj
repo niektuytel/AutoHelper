@@ -14,8 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
         <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
-        <ProjectReference Include="..\Whatsapp\AutoHelper.Whatsapp.csproj" />
-        <ProjectReference Include="..\Mailing\AutoHelper.Mailing.csproj" />
+        <ProjectReference Include="..\Whatsapp\AutoHelper.Messaging.csproj" />
         <ProjectReference Include="..\Infrastructure\AutoHelper.Infrastructure.csproj" />
     </ItemGroup>
 

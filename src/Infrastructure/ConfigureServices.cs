@@ -74,8 +74,8 @@ public static class ConfigureServices
         services.AddTransient<WebScraperClient>();
         services.AddTransient<RDWApiClient>();
         services.AddTransient<GoogleApiClient>();
-        services.AddTransient<IVehicleService, VehicleInfoService>();
-        services.AddTransient<IGarageService, GarageInfoService>();
+        services.AddTransient<IVehicleService, VehicleService>();
+        services.AddTransient<IGarageService, GarageService>();
 
         return services;
     }

@@ -47,7 +47,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Conversations\_DTOs\" />
       <Folder Include="Garages\Queries\GetGarageAvailableWorkSlots\" />
     </ItemGroup>
 

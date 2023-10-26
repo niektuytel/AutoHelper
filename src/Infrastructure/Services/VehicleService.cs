@@ -1,5 +1,6 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
@@ -12,11 +13,11 @@ using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal class VehicleInfoService : IVehicleService
+internal class VehicleService : IVehicleService
 {
     private readonly RDWApiClient _rdwService;
 
-    public VehicleInfoService(RDWApiClient rdwService)
+    public VehicleService(RDWApiClient rdwService)
     {
         _rdwService = rdwService;
     }
@@ -61,6 +62,49 @@ internal class VehicleInfoService : IVehicleService
         return response;
     }
 
+    public async Task<VehicleTechnicalBriefDtoItem?> GetVehicleTechnicalBriefInfo(string licensePlate)
+    {
+        var vehicleData = await _rdwService.GetVehicle(licensePlate);
+        if (vehicleData?.HasValues != true)
+        {
+            throw new NotFoundException("Vehicle data not found.");
+        }
+
+        var vehicleBrief = MapToVehicleTechnicalBriefDtoItem(licensePlate, vehicleData);
+        await PopulateFuelInformation(vehicleBrief);
+
+        return vehicleBrief;
+    }
+
+    private VehicleTechnicalBriefDtoItem MapToVehicleTechnicalBriefDtoItem(string licensePlate, JToken vehicleData)
+    {
+        return new VehicleTechnicalBriefDtoItem
+        {
+            LicensePlate = licensePlate,
+            Brand = vehicleData.GetSafeValue("merk"),
+            Model = vehicleData.GetSafeValue("handelsbenaming"),
+            YearOfFirstAdmission = vehicleData.GetSafeDateYearValue("datum_eerste_toelating_dt"),
+            MOTExpiryDate = vehicleData.GetSafeDateValue("vervaldatum_apk_dt"),
+            Mileage = vehicleData.GetSafeValue("tellerstandoordeel")
+        };
+    }
+
+    private async Task PopulateFuelInformation(VehicleTechnicalBriefDtoItem vehicleBrief)
+    {
+        var fuelInfo = await _rdwService.GetVehicleFuel(vehicleBrief.LicensePlate);
+        if (fuelInfo?.HasValues == true)
+        {
+            var combinedFuelConsumption = fuelInfo.GetSafeDecimalValue("brandstofverbruik_gecombineerd");
+            vehicleBrief.FuelType = fuelInfo.GetSafeValue("brandstof_omschrijving");
+            vehicleBrief.CombinedFuelConsumption = combinedFuelConsumption;
+
+            if (combinedFuelConsumption != 0)
+            {
+                vehicleBrief.FuelEfficiency = 100M / (combinedFuelConsumption * 100M);
+            }
+        }
+    }
+
     public async Task<VehicleSpecsDtoItem> GetVehicleInfoQuery(string licensePlate)
     {
         var response = new VehicleSpecsDtoItem();
@@ -93,6 +137,76 @@ internal class VehicleInfoService : IVehicleService
         response.Data.Add(GetFiscalData(data));
         return response;
     }
+
+    // TODO: Need better investigation
+    // can add more cases based on other vehicle kinds present in the RDW data.
+    public async Task<VehicleType> GetVehicleType(string licensePlate)
+    {
+        var data = await _rdwService.GetVehicle(licensePlate);
+
+        // Check "voertuigsoort" field for various types
+        var vehicleKind = data?["voertuigsoort"]?.ToString();
+
+        // Check weight for HeavyCar
+        if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
+        {
+            return VehicleType.HeavyCar;
+        }
+
+        switch (vehicleKind)
+        {
+            case "Personenauto":
+                return VehicleType.LightCar;
+            case "Driewielig motorrijtuig":
+                return VehicleType.Motorcycle;
+            case "Land- of bosbouwtrekker":
+                return VehicleType.Tractor;
+            case "Land- of bosb aanhw of getr uitr stuk":
+                return VehicleType.Tractor;
+
+            default:
+                break;
+        }
+
+        // Check Taxi
+        if (data?["taxi_indicator"]?.ToString() == "Ja")
+        {
+            return VehicleType.Taxi;
+        }
+
+
+        // If no matches, return Other
+        return VehicleType.Other;
+    }
+
+    //public async Task<IEnumerable<VehicleServiceLogDtoItem>> GetVehicleServiceLogs(string licensePlate)
+    //{
+    //    var data = await _rdwService.GetVehicleServiceLogs(licensePlate);
+    //    if (data?.HasValues != true)
+    //    {
+    //        throw new NotFoundException("Vehicle data not found.");
+    //    }
+
+    //    var response = new List<VehicleServiceLogDtoItem>();
+    //    foreach (var item in data)
+    //    {
+    //        var date = item.GetSafeDateValue("datum_keuring");
+    //        var mileage = item.GetSafeValue("tellerstand");
+    //        var result = item.GetSafeValue("resultaat");
+    //        var remarks = item.GetSafeValue("opmerkingen");
+    //        var serviceLog = new VehicleServiceLogDtoItem
+    //        {
+    //            Date = date,
+    //            Mileage = mileage,
+    //            Result = result,
+    //            Remarks = remarks
+    //        };
+
+    //        response.Add(serviceLog);
+    //    }
+
+    //    return response;
+    //}
 
     private VehicleInfoSectionItem GetFiscalData(JToken data)
     {
@@ -327,47 +441,6 @@ internal class VehicleInfoService : IVehicleService
             //new(){"Aantal eigenaren privé / zakelijk", "Niet geregistreerd"},
         }
         };
-    }
-
-    // TODO: Need better investigation
-    // can add more cases based on other vehicle kinds present in the RDW data.
-    public async Task<VehicleType> GetVehicleType(string licensePlate)
-    {
-        var data = await _rdwService.GetVehicle(licensePlate);
-
-        // Check "voertuigsoort" field for various types
-        var vehicleKind = data?["voertuigsoort"]?.ToString();
-
-        // Check weight for HeavyCar
-        if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
-        {
-            return VehicleType.HeavyCar;
-        }
-
-        switch (vehicleKind)
-        {
-            case "Personenauto":
-                return VehicleType.LightCar;
-            case "Driewielig motorrijtuig":
-                return VehicleType.Motorcycle;
-            case "Land- of bosbouwtrekker":
-                return VehicleType.Tractor;
-            case "Land- of bosb aanhw of getr uitr stuk":
-                return VehicleType.Tractor;
-
-            default:
-                break;
-        }
-
-        // Check Taxi
-        if (data?["taxi_indicator"]?.ToString() == "Ja")
-        {
-            return VehicleType.Taxi;
-        }
-
-
-        // If no matches, return Other
-        return VehicleType.Other;
     }
 
 }

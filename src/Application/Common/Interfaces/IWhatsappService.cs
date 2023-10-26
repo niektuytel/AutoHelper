@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoHelper.Application.Vehicles._DTOs;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IWhatsappService
 {
-    Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string companyName);
-    Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromIdentifier, string content);
+    Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string fromContactName);
+    Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromContactName, string content);
+    Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleTechnicalBriefDtoItem vehicle, string content);
 }

@@ -11,10 +11,10 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using AutoHelper.Application.Messages.SendConversationMessage;
 using AutoHelper.Application.Messages.SendConfirmationMessage;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
-namespace AutoHelper.Application.Conversations.Commands.StartConversation;
+namespace AutoHelper.Application.Messages.Commands.StartConversation;
 
 public record StartConversationCommand : IRequest<SendConversationMessageCommand?>
 {

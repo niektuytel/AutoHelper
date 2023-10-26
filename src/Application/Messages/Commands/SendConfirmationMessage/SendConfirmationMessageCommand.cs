@@ -3,17 +3,18 @@ using AutoHelper.Domain.Entities.Conversations.Enums;
 using AutoMapper;
 using MediatR;
 
-namespace AutoHelper.Application.Messages.SendConfirmationMessage;
+namespace AutoHelper.Application.Messages.Commands.SendConfirmationMessage;
 
 public class SendConfirmationMessageCommand : IRequest<bool?>
 {
     public SendConfirmationMessageCommand(
         Guid conversationId,
         string sendToName,
-        ContactType contactType, 
-        string contactIdentifier, 
+        ContactType contactType,
+        string contactIdentifier,
         string messageContent
-    ) {
+    )
+    {
         ConversationId = conversationId;
         SendToName = sendToName;
         ContactType = contactType;
@@ -40,11 +41,12 @@ public class SendConfirmationMessageCommandHandler : IRequestHandler<SendConfirm
     private readonly IMailingService _mailingService;
 
     public SendConfirmationMessageCommandHandler(
-        IApplicationDbContext context, 
-        IMapper mapper, 
-        IWhatsappService whatsappService, 
+        IApplicationDbContext context,
+        IMapper mapper,
+        IWhatsappService whatsappService,
         IMailingService mailingService
-    ){
+    )
+    {
         _context = context;
         _mapper = mapper;
         _whatsappService = whatsappService;
@@ -53,14 +55,11 @@ public class SendConfirmationMessageCommandHandler : IRequestHandler<SendConfirm
 
     public async Task<bool?> Handle(SendConfirmationMessageCommand request, CancellationToken cancellationToken)
     {
-        var subject = "AutoHelper - Je bericht is successvol gestuurd naar de garage.";
-        var message = $"Hallo, We hebben je bericht verstuurd en hopen op zo snel mogelijk een antwoord te hebben.\n\n Het gaat om het bericht: \n'{request.MessageContent}'";
-
         if (request.ContactType == ContactType.Email)
         {
-            await _mailingService.SendEmailAsync(request.ContactIdentifier, subject, message);
+            await _mailingService.SendConfirmationEmailAsync(request.ContactIdentifier, request.ConversationId, request.SendToName);
         }
-        else if(request.ContactType == ContactType.WhatsApp)
+        else if (request.ContactType == ContactType.WhatsApp)
         {
             await _whatsappService.SendConfirmationMessageAsync(request.ContactIdentifier, request.ConversationId, request.SendToName);
         }
