@@ -66,6 +66,7 @@ export default ({ }: IProps) => {
         // TODO: handle garage specific page
     }
 
+
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} />
         <Container sx={{ mb: 5 }}>

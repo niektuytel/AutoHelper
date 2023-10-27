@@ -38,6 +38,8 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { license_plate } = useParams();
 
+    // TODO: Change search icon
+
     return (
         <>
             <GradientBox>

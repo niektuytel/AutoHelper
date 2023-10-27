@@ -33,6 +33,8 @@ export default ({ }: IProps) => {
         setGaragesData(data);
     };
 
+    // Batch locations that is faster search?
+
     return <>
         <Container maxWidth="lg" sx={{ minHeight: "70vh" }}>
             <Box sx={{ marginBottom: "75px" }}>
