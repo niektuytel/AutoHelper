@@ -24,7 +24,6 @@ using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
 using AutoHelper.Hangfire.MediatR;
 using Hangfire.Server;
-using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Domain.Entities.Conversations;
 using WebUI.Models;
 

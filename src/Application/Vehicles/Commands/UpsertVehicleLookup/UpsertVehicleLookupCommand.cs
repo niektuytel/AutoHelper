@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Conversations;

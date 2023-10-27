@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { ConversationClient, ConversationType, GarageServiceType, StartConversationBody } from '../../../app/web-api-client';
+import { MessageClient, ConversationType, GarageServiceType, StartConversationBody } from '../../../app/web-api-client';
 import { showOnSuccess } from '../../../redux/slices/statusSnackbarSlice';
 import { EnumValues } from 'enum-values';
 
@@ -46,8 +46,9 @@ export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTyp
     const { t } = useTranslation();
     const { control, handleSubmit, setValue, getValues, register, formState: { errors }, watch } = useForm<FormInput>();
 
+
     const [loading, setLoading] = useState<boolean>(false);
-    const conversationClient = new ConversationClient(process.env.PUBLIC_URL);
+    const conversationClient = new MessageClient(process.env.PUBLIC_URL);
     const startConversation = async (command: StartConversationBody) => {
         setLoading(true);
         try {

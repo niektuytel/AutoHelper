@@ -6,90 +6,6 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Conversation/StartConversation": {
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_StartConversation",
-        "requestBody": {
-          "x-name": "conversation",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartConversationBody"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Conversation/EnqueueConversation": {
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_EnqueueConversation",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartConversationCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/GarageAccount/GetSettings": {
       "get": {
         "tags": [
@@ -845,6 +761,90 @@
         }
       }
     },
+    "/api/Message/StartConversation": {
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_StartConversation",
+        "requestBody": {
+          "x-name": "conversation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartConversationBody"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Message/EnqueueConversation": {
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_EnqueueConversation",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartConversationCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/SearchByLicensePlate": {
       "get": {
         "tags": [
@@ -968,10 +968,209 @@
           }
         }
       }
+    },
+    "/api/Webhook/ConfigureWhatsAppMessageWebhook": {
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "operationId": "Webhook_ConfigureWhatsAppMessageWebhook",
+        "parameters": [
+          {
+            "name": "hub.mode",
+            "x-originalName": "hubMode",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "hub.challenge",
+            "x-originalName": "hubChallenge",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "hub.verify_token",
+            "x-originalName": "hubVerifyToken",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Webhook/ReceiveWhatsAppTextMessage": {
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "operationId": "Webhook_ReceiveWhatsAppTextMessage",
+        "requestBody": {
+          "x-name": "messageReceived",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "GarageItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "whatsAppNumber": {
+            "type": "string"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GarageLocationItem"
+          },
+          "bankingDetails": {
+            "$ref": "#/components/schemas/GarageBankingDetailsItem"
+          }
+        }
+      },
+      "GarageLocationItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "address",
+              "city",
+              "postalCode",
+              "country",
+              "longitude",
+              "latitude"
+            ],
+            "properties": {
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "city": {
+                "type": "string",
+                "minLength": 1
+              },
+              "postalCode": {
+                "type": "string",
+                "minLength": 1
+              },
+              "country": {
+                "type": "string",
+                "minLength": 1
+              },
+              "longitude": {
+                "type": "number",
+                "format": "float"
+              },
+              "latitude": {
+                "type": "number",
+                "format": "float"
+              }
+            }
+          }
+        ]
+      },
+      "BaseEntity": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "domainEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseEvent"
+            }
+          }
+        }
+      },
+      "BaseEvent": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
+      },
+      "GarageBankingDetailsItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "bankName": {
+                "type": "string"
+              },
+              "kvKNumber": {
+                "type": "string"
+              },
+              "accountHolderName": {
+                "type": "string"
+              },
+              "iban": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
       "BadRequestResponse": {
         "type": "object",
         "additionalProperties": false,
@@ -994,231 +1193,48 @@
           }
         }
       },
-      "StartConversationBody": {
+      "GarageOverview": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "relatedGarageLookupId": {
-            "type": "string",
-            "format": "guid"
+          "name": {
+            "type": "string"
           },
-          "relatedServiceTypes": {
+          "vehicles": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
+              "$ref": "#/components/schemas/VehicleLookupItem"
             }
-          },
-          "vehicleLicensePlate": {
-            "type": "string"
-          },
-          "vehicleLongitude": {
-            "type": "string"
-          },
-          "vehicleLatitude": {
-            "type": "string"
-          },
-          "vehiclePhoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "vehicleWhatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "vehicleEmailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "senderWhatsAppNumberOrEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "receiverWhatsAppNumberOrEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "messageType": {
-            "$ref": "#/components/schemas/ConversationType"
-          },
-          "messageContent": {
-            "type": "string"
           }
         }
       },
-      "GarageServiceType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "CompanyStockService",
-          "RegistrationService",
-          "AcceleratedRegistrationService",
-          "MOTServiceLightVehicle",
-          "MOTServiceHeavyVehicle",
-          "MOTServiceAgriculture",
-          "ControlDeviceService",
-          "GasInstallationService",
-          "MopedConversionService",
-          "DismantlingService",
-          "TaxiComputerService",
-          "LicensePlateManufactureService",
-          "Inspection",
-          "SmallMaintenance",
-          "GreatMaintenance",
-          "AirConditioningMaintenance",
-          "SeasonalTireChange"
-        ],
-        "enum": [
-          0,
-          30,
-          40,
-          50,
-          60,
-          61,
-          62,
-          70,
-          80,
-          90,
-          100,
-          110,
-          120,
-          131,
-          132,
-          133,
-          134,
-          135
-        ]
-      },
-      "ConversationType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "Price",
-          "Appointment",
-          "Technical"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "StartConversationCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "relatedGarageLookupId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "relatedGarage": {
-            "$ref": "#/components/schemas/GarageLookupItem"
-          },
-          "relatedVehicleLookupId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "relatedVehicle": {
-            "$ref": "#/components/schemas/VehicleLookupItem"
-          },
-          "relatedServiceTypes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
-            }
-          },
-          "senderWhatsAppNumberOrEmail": {
-            "type": "string"
-          },
-          "senderContactType": {
-            "$ref": "#/components/schemas/ContactType"
-          },
-          "receiverWhatsAppNumberOrEmail": {
-            "type": "string"
-          },
-          "receiverContactType": {
-            "$ref": "#/components/schemas/ContactType"
-          },
-          "conversationType": {
-            "$ref": "#/components/schemas/ConversationType"
-          },
-          "messageContent": {
-            "type": "string"
-          }
-        }
-      },
-      "GarageLookupItem": {
+      "VehicleLookupItem": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseEntity"
+            "$ref": "#/components/schemas/BaseAuditableEntity"
           },
           {
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "identifier",
-              "name",
-              "knownServicesString",
-              "address",
-              "city",
-              "conversations"
+              "licensePlate",
+              "motExpiryDate",
+              "location",
+              "conversations",
+              "serviceLogs"
             ],
             "properties": {
-              "garageId": {
-                "type": "string",
-                "format": "guid",
-                "nullable": true
-              },
-              "identifier": {
+              "licensePlate": {
                 "type": "string",
                 "minLength": 1
               },
-              "name": {
+              "motExpiryDate": {
                 "type": "string",
-                "minLength": 1
-              },
-              "knownServices": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageServiceType"
-                }
-              },
-              "knownServicesString": {
-                "type": "string",
-                "minLength": 1
-              },
-              "address": {
-                "type": "string",
-                "minLength": 1
-              },
-              "city": {
-                "type": "string",
+                "format": "date-time",
                 "minLength": 1
               },
               "location": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Geometry"
-                  }
-                ]
-              },
-              "status": {
-                "type": "string",
-                "nullable": true
-              },
-              "daysOfWeek": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "daysOfWeekString": {
-                "type": "string"
+                "$ref": "#/components/schemas/Geometry"
               },
               "phoneNumber": {
                 "type": "string",
@@ -1232,38 +1248,16 @@
                 "type": "string",
                 "nullable": true
               },
-              "website": {
-                "type": "string",
-                "nullable": true
-              },
-              "rating": {
-                "type": "number",
-                "format": "float",
-                "nullable": true
-              },
-              "userRatingsTotal": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "hasPickupService": {
-                "type": "boolean"
-              },
-              "hasReplacementTransportService": {
-                "type": "boolean"
-              },
-              "largeData": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/GarageLookupLargeItem"
-                  }
-                ]
-              },
               "conversations": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/ConversationItem"
+                }
+              },
+              "serviceLogs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/VehicleServiceLogItem"
                 }
               }
             }
@@ -1899,48 +1893,6 @@
           }
         }
       },
-      "GarageLookupLargeItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "googleApiDetailsJson": {
-                "type": "string"
-              },
-              "firstPlacePhoto": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "BaseEntity": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "domainEvents": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BaseEvent"
-            }
-          }
-        }
-      },
-      "BaseEvent": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
       "ConversationItem": {
         "allOf": [
           {
@@ -2014,33 +1966,76 @@
           3
         ]
       },
-      "VehicleLookupItem": {
+      "GarageLookupItem": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
+            "$ref": "#/components/schemas/BaseEntity"
           },
           {
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "licensePlate",
-              "motExpiryDate",
-              "location",
-              "conversations",
-              "serviceLogs"
+              "identifier",
+              "name",
+              "knownServicesString",
+              "address",
+              "city",
+              "conversations"
             ],
             "properties": {
-              "licensePlate": {
+              "garageId": {
+                "type": "string",
+                "format": "guid",
+                "nullable": true
+              },
+              "identifier": {
                 "type": "string",
                 "minLength": 1
               },
-              "motExpiryDate": {
+              "name": {
                 "type": "string",
-                "format": "date-time",
+                "minLength": 1
+              },
+              "knownServices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageServiceType"
+                }
+              },
+              "knownServicesString": {
+                "type": "string",
+                "minLength": 1
+              },
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "city": {
+                "type": "string",
                 "minLength": 1
               },
               "location": {
-                "$ref": "#/components/schemas/Geometry"
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/Geometry"
+                  }
+                ]
+              },
+              "status": {
+                "type": "string",
+                "nullable": true
+              },
+              "daysOfWeek": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "daysOfWeekString": {
+                "type": "string"
               },
               "phoneNumber": {
                 "type": "string",
@@ -2054,17 +2049,235 @@
                 "type": "string",
                 "nullable": true
               },
+              "website": {
+                "type": "string",
+                "nullable": true
+              },
+              "rating": {
+                "type": "number",
+                "format": "float",
+                "nullable": true
+              },
+              "userRatingsTotal": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "hasPickupService": {
+                "type": "boolean"
+              },
+              "hasReplacementTransportService": {
+                "type": "boolean"
+              },
+              "largeData": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/GarageLookupLargeItem"
+                  }
+                ]
+              },
               "conversations": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/ConversationItem"
                 }
+              }
+            }
+          }
+        ]
+      },
+      "GarageServiceType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "CompanyStockService",
+          "RegistrationService",
+          "AcceleratedRegistrationService",
+          "MOTServiceLightVehicle",
+          "MOTServiceHeavyVehicle",
+          "MOTServiceAgriculture",
+          "ControlDeviceService",
+          "GasInstallationService",
+          "MopedConversionService",
+          "DismantlingService",
+          "TaxiComputerService",
+          "LicensePlateManufactureService",
+          "Inspection",
+          "SmallMaintenance",
+          "GreatMaintenance",
+          "AirConditioningMaintenance",
+          "SeasonalTireChange"
+        ],
+        "enum": [
+          0,
+          30,
+          40,
+          50,
+          60,
+          61,
+          62,
+          70,
+          80,
+          90,
+          100,
+          110,
+          120,
+          131,
+          132,
+          133,
+          134,
+          135
+        ]
+      },
+      "GarageLookupLargeItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "googleApiDetailsJson": {
+                "type": "string"
               },
-              "serviceLogs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/VehicleServiceLogItem"
-                }
+              "firstPlacePhoto": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ConversationType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Price",
+          "Appointment",
+          "Technical"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ConversationMessageItem": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseAuditableEntity"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "conversationId",
+              "senderContactType",
+              "senderContactIdentifier",
+              "receiverContactType",
+              "receiverContactIdentifier",
+              "status",
+              "messageContent"
+            ],
+            "properties": {
+              "conversationId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
+              },
+              "conversation": {
+                "$ref": "#/components/schemas/ConversationItem"
+              },
+              "senderContactType": {
+                "$ref": "#/components/schemas/ContactType"
+              },
+              "senderContactIdentifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "receiverContactType": {
+                "$ref": "#/components/schemas/ContactType"
+              },
+              "receiverContactIdentifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "$ref": "#/components/schemas/MessageStatus"
+              },
+              "messageContent": {
+                "type": "string",
+                "minLength": 1
+              },
+              "errorMessage": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "ContactType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Email",
+          "WhatsApp",
+          "PhoneNumber"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "MessageStatus": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Pending",
+          "Sent",
+          "Delivered",
+          "Failed"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "BaseAuditableEntity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseEntity"
+          },
+          {
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "properties": {
+              "created": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "createdBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "lastModified": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "nullable": true
               }
             }
           }
@@ -2161,231 +2374,6 @@
             }
           }
         ]
-      },
-      "BaseAuditableEntity": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "x-abstract": true,
-            "additionalProperties": false,
-            "properties": {
-              "created": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "createdBy": {
-                "type": "string",
-                "nullable": true
-              },
-              "lastModified": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "lastModifiedBy": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "ConversationMessageItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "conversationId",
-              "senderContactType",
-              "senderContactIdentifier",
-              "receiverContactType",
-              "receiverContactIdentifier",
-              "status",
-              "messageContent"
-            ],
-            "properties": {
-              "conversationId": {
-                "type": "string",
-                "format": "guid",
-                "minLength": 1
-              },
-              "conversation": {
-                "$ref": "#/components/schemas/ConversationItem"
-              },
-              "senderContactType": {
-                "$ref": "#/components/schemas/ContactType"
-              },
-              "senderContactIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "receiverContactType": {
-                "$ref": "#/components/schemas/ContactType"
-              },
-              "receiverContactIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "status": {
-                "$ref": "#/components/schemas/MessageStatus"
-              },
-              "messageContent": {
-                "type": "string",
-                "minLength": 1
-              },
-              "errorMessage": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "ContactType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Email",
-          "WhatsApp",
-          "PhoneNumber"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
-      },
-      "MessageStatus": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Pending",
-          "Sent",
-          "Delivered",
-          "Failed"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "GarageItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "phoneNumber": {
-            "type": "string"
-          },
-          "whatsAppNumber": {
-            "type": "string"
-          },
-          "location": {
-            "$ref": "#/components/schemas/GarageLocationItem"
-          },
-          "bankingDetails": {
-            "$ref": "#/components/schemas/GarageBankingDetailsItem"
-          }
-        }
-      },
-      "GarageLocationItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "address",
-              "city",
-              "postalCode",
-              "country",
-              "longitude",
-              "latitude"
-            ],
-            "properties": {
-              "address": {
-                "type": "string",
-                "minLength": 1
-              },
-              "city": {
-                "type": "string",
-                "minLength": 1
-              },
-              "postalCode": {
-                "type": "string",
-                "minLength": 1
-              },
-              "country": {
-                "type": "string",
-                "minLength": 1
-              },
-              "longitude": {
-                "type": "number",
-                "format": "float"
-              },
-              "latitude": {
-                "type": "number",
-                "format": "float"
-              }
-            }
-          }
-        ]
-      },
-      "GarageBankingDetailsItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "bankName": {
-                "type": "string"
-              },
-              "kvKNumber": {
-                "type": "string"
-              },
-              "accountHolderName": {
-                "type": "string"
-              },
-              "iban": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "GarageOverview": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "vehicles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VehicleLookupItem"
-            }
-          }
-        }
       },
       "GarageServiceItemDto": {
         "type": "object",
@@ -3066,6 +3054,101 @@
           "total": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "StartConversationBody": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relatedGarageLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "relatedServiceTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageServiceType"
+            }
+          },
+          "vehicleLicensePlate": {
+            "type": "string"
+          },
+          "vehicleLongitude": {
+            "type": "string"
+          },
+          "vehicleLatitude": {
+            "type": "string"
+          },
+          "vehiclePhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleWhatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleEmailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderWhatsAppNumberOrEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "receiverWhatsAppNumberOrEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/ConversationType"
+          },
+          "messageContent": {
+            "type": "string"
+          }
+        }
+      },
+      "StartConversationCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relatedGarageLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "relatedGarage": {
+            "$ref": "#/components/schemas/GarageLookupItem"
+          },
+          "relatedVehicleLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "relatedVehicle": {
+            "$ref": "#/components/schemas/VehicleLookupItem"
+          },
+          "relatedServiceTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageServiceType"
+            }
+          },
+          "senderWhatsAppNumberOrEmail": {
+            "type": "string"
+          },
+          "senderContactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "receiverWhatsAppNumberOrEmail": {
+            "type": "string"
+          },
+          "receiverContactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "conversationType": {
+            "$ref": "#/components/schemas/ConversationType"
+          },
+          "messageContent": {
+            "type": "string"
           }
         }
       },

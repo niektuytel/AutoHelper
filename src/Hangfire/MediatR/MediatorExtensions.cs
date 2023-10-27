@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using AutoHelper.Application.Conversations.Commands.StartConversation;
 using Hangfire;
 using Hangfire.Server;
 using MediatR;

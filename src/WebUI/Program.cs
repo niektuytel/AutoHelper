@@ -4,7 +4,6 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Infrastructure.Common;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Hangfire;
-using AutoHelper.Mailing;
 using AutoHelper.Whatsapp;
 using Hangfire;
 using MediatR;
@@ -14,8 +13,7 @@ using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMailingServices(builder.Configuration);
-builder.Services.AddWhatsappServices(builder.Configuration);
+builder.Services.AddMessagingServices(builder.Configuration);
 builder.Services.AddHangfireServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);

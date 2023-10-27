@@ -6,13 +6,14 @@ using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Configurations;
 using WhatsappBusiness.CloudApi.Extensions;
+using AutoHelper.Messaging.Services;
 
 namespace AutoHelper.Whatsapp;
 
 public static class ConfigureService
 {
 
-    public static void AddWhatsappServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddMessagingServices(this IServiceCollection services, IConfiguration configuration)
     {
         var whatsAppBusinessApiConfiguration = new WhatsAppBusinessCloudApiConfig();
         whatsAppBusinessApiConfiguration.WhatsAppBusinessPhoneNumberId = configuration["WhatsApp:WhatsAppBusinessPhoneNumberId"]
@@ -26,6 +27,7 @@ public static class ConfigureService
 
         services.AddWhatsAppBusinessCloudApiService(whatsAppBusinessApiConfiguration);
         services.AddScoped<IWhatsappService, WhatsappService>();
+        services.AddScoped<IMailingService, SparkpostService>();
     }
 
 }

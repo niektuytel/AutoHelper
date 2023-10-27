@@ -40,7 +40,7 @@ export default ({ isMobile, license_plate }: IProps) => {
     return (
         <>
             <Box sx={{ marginBottom: "40px" }}>
-                <Paper elevation={3} variant="outlined" sx={{ borderRadius: 1, overflow: "hidden", margin: 1 }}>
+                <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden", margin: 1 }}>
                     <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example">
                         {tabsConfig.map((tab, index) => (
                             <Tab

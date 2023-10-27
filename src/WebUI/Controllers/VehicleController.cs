@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;

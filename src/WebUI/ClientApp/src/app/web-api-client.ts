@@ -8,116 +8,6 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export interface IConversationClient {
-
-    startConversation(conversation: StartConversationBody): Promise<string>;
-
-    enqueueConversation(command: StartConversationCommand): Promise<string>;
-}
-
-export class ConversationClient implements IConversationClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    startConversation(conversation: StartConversationBody): Promise<string> {
-        let url_ = this.baseUrl + "/api/Conversation/StartConversation";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(conversation);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processStartConversation(_response);
-        });
-    }
-
-    protected processStartConversation(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    enqueueConversation(command: StartConversationCommand): Promise<string> {
-        let url_ = this.baseUrl + "/api/Conversation/EnqueueConversation";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processEnqueueConversation(_response);
-        });
-    }
-
-    protected processEnqueueConversation(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-}
-
 export interface IGarageAccountClient {
 
     getSettings(): Promise<GarageItemDto>;
@@ -970,6 +860,116 @@ export class GarageClient implements IGarageClient {
     }
 }
 
+export interface IMessageClient {
+
+    startConversation(conversation: StartConversationBody): Promise<string>;
+
+    enqueueConversation(command: StartConversationCommand): Promise<string>;
+}
+
+export class MessageClient implements IMessageClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    startConversation(conversation: StartConversationBody): Promise<string> {
+        let url_ = this.baseUrl + "/api/Message/StartConversation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(conversation);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processStartConversation(_response);
+        });
+    }
+
+    protected processStartConversation(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    enqueueConversation(command: StartConversationCommand): Promise<string> {
+        let url_ = this.baseUrl + "/api/Message/EnqueueConversation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processEnqueueConversation(_response);
+        });
+    }
+
+    protected processEnqueueConversation(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+}
+
 export interface IVehicleClient {
 
     searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
@@ -1121,6 +1121,337 @@ export class VehicleClient implements IVehicleClient {
     }
 }
 
+export interface IWebhookClient {
+
+    configureWhatsAppMessageWebhook(hubMode: string | null | undefined, hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string>;
+
+    receiveWhatsAppTextMessage(messageReceived: any): Promise<FileResponse>;
+}
+
+export class WebhookClient implements IWebhookClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    configureWhatsAppMessageWebhook(hubMode: string | null | undefined, hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Webhook/ConfigureWhatsAppMessageWebhook?";
+        if (hubMode !== undefined && hubMode !== null)
+            url_ += "hub.mode=" + encodeURIComponent("" + hubMode) + "&";
+        if (hubChallenge === null)
+            throw new Error("The parameter 'hubChallenge' cannot be null.");
+        else if (hubChallenge !== undefined)
+            url_ += "hub.challenge=" + encodeURIComponent("" + hubChallenge) + "&";
+        if (hubVerifyToken !== undefined && hubVerifyToken !== null)
+            url_ += "hub.verify_token=" + encodeURIComponent("" + hubVerifyToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processConfigureWhatsAppMessageWebhook(_response);
+        });
+    }
+
+    protected processConfigureWhatsAppMessageWebhook(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    receiveWhatsAppTextMessage(messageReceived: any): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/Webhook/ReceiveWhatsAppTextMessage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(messageReceived);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processReceiveWhatsAppTextMessage(_response);
+        });
+    }
+
+    protected processReceiveWhatsAppTextMessage(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+}
+
+export class GarageItemDto implements IGarageItemDto {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+
+    constructor(data?: IGarageItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsAppNumber = _data["whatsAppNumber"];
+            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
+            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GarageItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsAppNumber"] = this.whatsAppNumber;
+        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGarageItemDto {
+    name?: string;
+    email?: string;
+    phoneNumber?: string;
+    whatsAppNumber?: string;
+    location?: GarageLocationItem;
+    bankingDetails?: GarageBankingDetailsItem;
+}
+
+export abstract class BaseEntity implements IBaseEntity {
+    id?: string;
+    domainEvents?: BaseEvent[];
+
+    constructor(data?: IBaseEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["domainEvents"])) {
+                this.domainEvents = [] as any;
+                for (let item of _data["domainEvents"])
+                    this.domainEvents!.push(BaseEvent.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BaseEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.domainEvents)) {
+            data["domainEvents"] = [];
+            for (let item of this.domainEvents)
+                data["domainEvents"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBaseEntity {
+    id?: string;
+    domainEvents?: BaseEvent[];
+}
+
+export class GarageLocationItem extends BaseEntity implements IGarageLocationItem {
+    address!: string;
+    city!: string;
+    postalCode!: string;
+    country!: string;
+    longitude!: number;
+    latitude!: number;
+
+    constructor(data?: IGarageLocationItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.postalCode = _data["postalCode"];
+            this.country = _data["country"];
+            this.longitude = _data["longitude"];
+            this.latitude = _data["latitude"];
+        }
+    }
+
+    static fromJS(data: any): GarageLocationItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageLocationItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["postalCode"] = this.postalCode;
+        data["country"] = this.country;
+        data["longitude"] = this.longitude;
+        data["latitude"] = this.latitude;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageLocationItem extends IBaseEntity {
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    longitude: number;
+    latitude: number;
+}
+
+export abstract class BaseEvent implements IBaseEvent {
+
+    constructor(data?: IBaseEvent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): BaseEvent {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IBaseEvent {
+}
+
+export class GarageBankingDetailsItem extends BaseEntity implements IGarageBankingDetailsItem {
+    bankName?: string;
+    kvKNumber?: string;
+    accountHolderName?: string;
+    iban?: string;
+
+    constructor(data?: IGarageBankingDetailsItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.bankName = _data["bankName"];
+            this.kvKNumber = _data["kvKNumber"];
+            this.accountHolderName = _data["accountHolderName"];
+            this.iban = _data["iban"];
+        }
+    }
+
+    static fromJS(data: any): GarageBankingDetailsItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageBankingDetailsItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bankName"] = this.bankName;
+        data["kvKNumber"] = this.kvKNumber;
+        data["accountHolderName"] = this.accountHolderName;
+        data["iban"] = this.iban;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageBankingDetailsItem extends IBaseEntity {
+    bankName?: string;
+    kvKNumber?: string;
+    accountHolderName?: string;
+    iban?: string;
+}
+
 export class BadRequestResponse implements IBadRequestResponse {
     type?: string;
     title?: string;
@@ -1181,21 +1512,11 @@ export interface IBadRequestResponse {
     errors?: { [key: string]: string; };
 }
 
-export class StartConversationBody implements IStartConversationBody {
-    relatedGarageLookupId?: string;
-    relatedServiceTypes?: GarageServiceType[];
-    vehicleLicensePlate?: string;
-    vehicleLongitude?: string;
-    vehicleLatitude?: string;
-    vehiclePhoneNumber?: string | undefined;
-    vehicleWhatsappNumber?: string | undefined;
-    vehicleEmailAddress?: string | undefined;
-    senderWhatsAppNumberOrEmail?: string | undefined;
-    receiverWhatsAppNumberOrEmail?: string | undefined;
-    messageType?: ConversationType;
-    messageContent?: string;
+export class GarageOverview implements IGarageOverview {
+    name?: string;
+    vehicles?: VehicleLookupItem[];
 
-    constructor(data?: IStartConversationBody) {
+    constructor(data?: IGarageOverview) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1206,365 +1527,161 @@ export class StartConversationBody implements IStartConversationBody {
 
     init(_data?: any) {
         if (_data) {
-            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
-            if (Array.isArray(_data["relatedServiceTypes"])) {
-                this.relatedServiceTypes = [] as any;
-                for (let item of _data["relatedServiceTypes"])
-                    this.relatedServiceTypes!.push(item);
+            this.name = _data["name"];
+            if (Array.isArray(_data["vehicles"])) {
+                this.vehicles = [] as any;
+                for (let item of _data["vehicles"])
+                    this.vehicles!.push(VehicleLookupItem.fromJS(item));
             }
-            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-            this.vehicleLongitude = _data["vehicleLongitude"];
-            this.vehicleLatitude = _data["vehicleLatitude"];
-            this.vehiclePhoneNumber = _data["vehiclePhoneNumber"];
-            this.vehicleWhatsappNumber = _data["vehicleWhatsappNumber"];
-            this.vehicleEmailAddress = _data["vehicleEmailAddress"];
-            this.senderWhatsAppNumberOrEmail = _data["senderWhatsAppNumberOrEmail"];
-            this.receiverWhatsAppNumberOrEmail = _data["receiverWhatsAppNumberOrEmail"];
-            this.messageType = _data["messageType"];
-            this.messageContent = _data["messageContent"];
         }
     }
 
-    static fromJS(data: any): StartConversationBody {
+    static fromJS(data: any): GarageOverview {
         data = typeof data === 'object' ? data : {};
-        let result = new StartConversationBody();
+        let result = new GarageOverview();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
-        if (Array.isArray(this.relatedServiceTypes)) {
-            data["relatedServiceTypes"] = [];
-            for (let item of this.relatedServiceTypes)
-                data["relatedServiceTypes"].push(item);
+        data["name"] = this.name;
+        if (Array.isArray(this.vehicles)) {
+            data["vehicles"] = [];
+            for (let item of this.vehicles)
+                data["vehicles"].push(item.toJSON());
         }
-        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        data["vehicleLongitude"] = this.vehicleLongitude;
-        data["vehicleLatitude"] = this.vehicleLatitude;
-        data["vehiclePhoneNumber"] = this.vehiclePhoneNumber;
-        data["vehicleWhatsappNumber"] = this.vehicleWhatsappNumber;
-        data["vehicleEmailAddress"] = this.vehicleEmailAddress;
-        data["senderWhatsAppNumberOrEmail"] = this.senderWhatsAppNumberOrEmail;
-        data["receiverWhatsAppNumberOrEmail"] = this.receiverWhatsAppNumberOrEmail;
-        data["messageType"] = this.messageType;
-        data["messageContent"] = this.messageContent;
         return data;
     }
 }
 
-export interface IStartConversationBody {
-    relatedGarageLookupId?: string;
-    relatedServiceTypes?: GarageServiceType[];
-    vehicleLicensePlate?: string;
-    vehicleLongitude?: string;
-    vehicleLatitude?: string;
-    vehiclePhoneNumber?: string | undefined;
-    vehicleWhatsappNumber?: string | undefined;
-    vehicleEmailAddress?: string | undefined;
-    senderWhatsAppNumberOrEmail?: string | undefined;
-    receiverWhatsAppNumberOrEmail?: string | undefined;
-    messageType?: ConversationType;
-    messageContent?: string;
+export interface IGarageOverview {
+    name?: string;
+    vehicles?: VehicleLookupItem[];
 }
 
-export enum GarageServiceType {
-    Other = 0,
-    CompanyStockService = 30,
-    RegistrationService = 40,
-    AcceleratedRegistrationService = 50,
-    MOTServiceLightVehicle = 60,
-    MOTServiceHeavyVehicle = 61,
-    MOTServiceAgriculture = 62,
-    ControlDeviceService = 70,
-    GasInstallationService = 80,
-    MopedConversionService = 90,
-    DismantlingService = 100,
-    TaxiComputerService = 110,
-    LicensePlateManufactureService = 120,
-    Inspection = 131,
-    SmallMaintenance = 132,
-    GreatMaintenance = 133,
-    AirConditioningMaintenance = 134,
-    SeasonalTireChange = 135,
-}
+export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
 
-export enum ConversationType {
-    Other = 0,
-    Price = 1,
-    Appointment = 2,
-    Technical = 3,
-}
-
-export class StartConversationCommand implements IStartConversationCommand {
-    relatedGarageLookupId?: string;
-    relatedGarage?: GarageLookupItem;
-    relatedVehicleLookupId?: string;
-    relatedVehicle?: VehicleLookupItem;
-    relatedServiceTypes?: GarageServiceType[];
-    senderWhatsAppNumberOrEmail?: string;
-    senderContactType?: ContactType;
-    receiverWhatsAppNumberOrEmail?: string;
-    receiverContactType?: ContactType;
-    conversationType?: ConversationType;
-    messageContent?: string;
-
-    constructor(data?: IStartConversationCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+    constructor(data?: IBaseAuditableEntity) {
+        super(data);
     }
 
     init(_data?: any) {
+        super.init(_data);
         if (_data) {
-            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
-            this.relatedGarage = _data["relatedGarage"] ? GarageLookupItem.fromJS(_data["relatedGarage"]) : <any>undefined;
-            this.relatedVehicleLookupId = _data["relatedVehicleLookupId"];
-            this.relatedVehicle = _data["relatedVehicle"] ? VehicleLookupItem.fromJS(_data["relatedVehicle"]) : <any>undefined;
-            if (Array.isArray(_data["relatedServiceTypes"])) {
-                this.relatedServiceTypes = [] as any;
-                for (let item of _data["relatedServiceTypes"])
-                    this.relatedServiceTypes!.push(item);
-            }
-            this.senderWhatsAppNumberOrEmail = _data["senderWhatsAppNumberOrEmail"];
-            this.senderContactType = _data["senderContactType"];
-            this.receiverWhatsAppNumberOrEmail = _data["receiverWhatsAppNumberOrEmail"];
-            this.receiverContactType = _data["receiverContactType"];
-            this.conversationType = _data["conversationType"];
-            this.messageContent = _data["messageContent"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
         }
     }
 
-    static fromJS(data: any): StartConversationCommand {
+    static fromJS(data: any): BaseAuditableEntity {
         data = typeof data === 'object' ? data : {};
-        let result = new StartConversationCommand();
-        result.init(data);
-        return result;
+        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
-        data["relatedGarage"] = this.relatedGarage ? this.relatedGarage.toJSON() : <any>undefined;
-        data["relatedVehicleLookupId"] = this.relatedVehicleLookupId;
-        data["relatedVehicle"] = this.relatedVehicle ? this.relatedVehicle.toJSON() : <any>undefined;
-        if (Array.isArray(this.relatedServiceTypes)) {
-            data["relatedServiceTypes"] = [];
-            for (let item of this.relatedServiceTypes)
-                data["relatedServiceTypes"].push(item);
-        }
-        data["senderWhatsAppNumberOrEmail"] = this.senderWhatsAppNumberOrEmail;
-        data["senderContactType"] = this.senderContactType;
-        data["receiverWhatsAppNumberOrEmail"] = this.receiverWhatsAppNumberOrEmail;
-        data["receiverContactType"] = this.receiverContactType;
-        data["conversationType"] = this.conversationType;
-        data["messageContent"] = this.messageContent;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface IStartConversationCommand {
-    relatedGarageLookupId?: string;
-    relatedGarage?: GarageLookupItem;
-    relatedVehicleLookupId?: string;
-    relatedVehicle?: VehicleLookupItem;
-    relatedServiceTypes?: GarageServiceType[];
-    senderWhatsAppNumberOrEmail?: string;
-    senderContactType?: ContactType;
-    receiverWhatsAppNumberOrEmail?: string;
-    receiverContactType?: ContactType;
-    conversationType?: ConversationType;
-    messageContent?: string;
+export interface IBaseAuditableEntity extends IBaseEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
 }
 
-export abstract class BaseEntity implements IBaseEntity {
-    id?: string;
-    domainEvents?: BaseEvent[];
-
-    constructor(data?: IBaseEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            if (Array.isArray(_data["domainEvents"])) {
-                this.domainEvents = [] as any;
-                for (let item of _data["domainEvents"])
-                    this.domainEvents!.push(BaseEvent.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): BaseEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        if (Array.isArray(this.domainEvents)) {
-            data["domainEvents"] = [];
-            for (let item of this.domainEvents)
-                data["domainEvents"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IBaseEntity {
-    id?: string;
-    domainEvents?: BaseEvent[];
-}
-
-export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
-    garageId?: string | undefined;
-    identifier!: string;
-    name!: string;
-    knownServices?: GarageServiceType[];
-    knownServicesString!: string;
-    address!: string;
-    city!: string;
-    location?: Geometry | undefined;
-    status?: string | undefined;
-    daysOfWeek?: number[] | undefined;
-    daysOfWeekString?: string;
+export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLookupItem {
+    licensePlate!: string;
+    motExpiryDate!: Date;
+    location!: Geometry;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
-    website?: string | undefined;
-    rating?: number | undefined;
-    userRatingsTotal?: number | undefined;
-    hasPickupService?: boolean;
-    hasReplacementTransportService?: boolean;
-    largeData?: GarageLookupLargeItem | undefined;
     conversations!: ConversationItem[];
+    serviceLogs!: VehicleServiceLogItem[];
 
-    constructor(data?: IGarageLookupItem) {
+    constructor(data?: IVehicleLookupItem) {
         super(data);
         if (!data) {
             this.conversations = [];
+            this.serviceLogs = [];
         }
     }
 
     init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.garageId = _data["garageId"];
-            this.identifier = _data["identifier"];
-            this.name = _data["name"];
-            if (Array.isArray(_data["knownServices"])) {
-                this.knownServices = [] as any;
-                for (let item of _data["knownServices"])
-                    this.knownServices!.push(item);
-            }
-            this.knownServicesString = _data["knownServicesString"];
-            this.address = _data["address"];
-            this.city = _data["city"];
+            this.licensePlate = _data["licensePlate"];
+            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
             this.location = _data["location"] ? Geometry.fromJS(_data["location"]) : <any>undefined;
-            this.status = _data["status"];
-            if (Array.isArray(_data["daysOfWeek"])) {
-                this.daysOfWeek = [] as any;
-                for (let item of _data["daysOfWeek"])
-                    this.daysOfWeek!.push(item);
-            }
-            this.daysOfWeekString = _data["daysOfWeekString"];
             this.phoneNumber = _data["phoneNumber"];
             this.whatsappNumber = _data["whatsappNumber"];
             this.emailAddress = _data["emailAddress"];
-            this.website = _data["website"];
-            this.rating = _data["rating"];
-            this.userRatingsTotal = _data["userRatingsTotal"];
-            this.hasPickupService = _data["hasPickupService"];
-            this.hasReplacementTransportService = _data["hasReplacementTransportService"];
-            this.largeData = _data["largeData"] ? GarageLookupLargeItem.fromJS(_data["largeData"]) : <any>undefined;
             if (Array.isArray(_data["conversations"])) {
                 this.conversations = [] as any;
                 for (let item of _data["conversations"])
                     this.conversations!.push(ConversationItem.fromJS(item));
             }
+            if (Array.isArray(_data["serviceLogs"])) {
+                this.serviceLogs = [] as any;
+                for (let item of _data["serviceLogs"])
+                    this.serviceLogs!.push(VehicleServiceLogItem.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): GarageLookupItem {
+    static fromJS(data: any): VehicleLookupItem {
         data = typeof data === 'object' ? data : {};
-        let result = new GarageLookupItem();
+        let result = new VehicleLookupItem();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["garageId"] = this.garageId;
-        data["identifier"] = this.identifier;
-        data["name"] = this.name;
-        if (Array.isArray(this.knownServices)) {
-            data["knownServices"] = [];
-            for (let item of this.knownServices)
-                data["knownServices"].push(item);
-        }
-        data["knownServicesString"] = this.knownServicesString;
-        data["address"] = this.address;
-        data["city"] = this.city;
+        data["licensePlate"] = this.licensePlate;
+        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["status"] = this.status;
-        if (Array.isArray(this.daysOfWeek)) {
-            data["daysOfWeek"] = [];
-            for (let item of this.daysOfWeek)
-                data["daysOfWeek"].push(item);
-        }
-        data["daysOfWeekString"] = this.daysOfWeekString;
         data["phoneNumber"] = this.phoneNumber;
         data["whatsappNumber"] = this.whatsappNumber;
         data["emailAddress"] = this.emailAddress;
-        data["website"] = this.website;
-        data["rating"] = this.rating;
-        data["userRatingsTotal"] = this.userRatingsTotal;
-        data["hasPickupService"] = this.hasPickupService;
-        data["hasReplacementTransportService"] = this.hasReplacementTransportService;
-        data["largeData"] = this.largeData ? this.largeData.toJSON() : <any>undefined;
         if (Array.isArray(this.conversations)) {
             data["conversations"] = [];
             for (let item of this.conversations)
                 data["conversations"].push(item.toJSON());
+        }
+        if (Array.isArray(this.serviceLogs)) {
+            data["serviceLogs"] = [];
+            for (let item of this.serviceLogs)
+                data["serviceLogs"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IGarageLookupItem extends IBaseEntity {
-    garageId?: string | undefined;
-    identifier: string;
-    name: string;
-    knownServices?: GarageServiceType[];
-    knownServicesString: string;
-    address: string;
-    city: string;
-    location?: Geometry | undefined;
-    status?: string | undefined;
-    daysOfWeek?: number[] | undefined;
-    daysOfWeekString?: string;
+export interface IVehicleLookupItem extends IBaseAuditableEntity {
+    licensePlate: string;
+    motExpiryDate: Date;
+    location: Geometry;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
-    website?: string | undefined;
-    rating?: number | undefined;
-    userRatingsTotal?: number | undefined;
-    hasPickupService?: boolean;
-    hasReplacementTransportService?: boolean;
-    largeData?: GarageLookupLargeItem | undefined;
     conversations: ConversationItem[];
+    serviceLogs: VehicleServiceLogItem[];
 }
 
 export abstract class Geometry implements IGeometry {
@@ -2315,114 +2432,6 @@ export interface IEnvelope {
     centre?: Coordinate | undefined;
 }
 
-export class GarageLookupLargeItem extends BaseEntity implements IGarageLookupLargeItem {
-    googleApiDetailsJson?: string;
-    firstPlacePhoto?: string | undefined;
-
-    constructor(data?: IGarageLookupLargeItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.googleApiDetailsJson = _data["googleApiDetailsJson"];
-            this.firstPlacePhoto = _data["firstPlacePhoto"];
-        }
-    }
-
-    static fromJS(data: any): GarageLookupLargeItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageLookupLargeItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["googleApiDetailsJson"] = this.googleApiDetailsJson;
-        data["firstPlacePhoto"] = this.firstPlacePhoto;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageLookupLargeItem extends IBaseEntity {
-    googleApiDetailsJson?: string;
-    firstPlacePhoto?: string | undefined;
-}
-
-export abstract class BaseEvent implements IBaseEvent {
-
-    constructor(data?: IBaseEvent) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-    }
-
-    static fromJS(data: any): BaseEvent {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseEvent' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        return data;
-    }
-}
-
-export interface IBaseEvent {
-}
-
-export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
-    created?: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-
-    constructor(data?: IBaseAuditableEntity) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.createdBy = _data["createdBy"];
-            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
-            this.lastModifiedBy = _data["lastModifiedBy"];
-        }
-    }
-
-    static fromJS(data: any): BaseAuditableEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["createdBy"] = this.createdBy;
-        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
-        data["lastModifiedBy"] = this.lastModifiedBy;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IBaseAuditableEntity extends IBaseEntity {
-    created?: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-}
-
 export class ConversationItem extends BaseAuditableEntity implements IConversationItem {
     priority?: PriorityLevel;
     relatedVehicleLookupId!: string;
@@ -2511,85 +2520,287 @@ export enum PriorityLevel {
     High = 3,
 }
 
-export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLookupItem {
-    licensePlate!: string;
-    motExpiryDate!: Date;
-    location!: Geometry;
+export class GarageLookupItem extends BaseEntity implements IGarageLookupItem {
+    garageId?: string | undefined;
+    identifier!: string;
+    name!: string;
+    knownServices?: GarageServiceType[];
+    knownServicesString!: string;
+    address!: string;
+    city!: string;
+    location?: Geometry | undefined;
+    status?: string | undefined;
+    daysOfWeek?: number[] | undefined;
+    daysOfWeekString?: string;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+    website?: string | undefined;
+    rating?: number | undefined;
+    userRatingsTotal?: number | undefined;
+    hasPickupService?: boolean;
+    hasReplacementTransportService?: boolean;
+    largeData?: GarageLookupLargeItem | undefined;
     conversations!: ConversationItem[];
-    serviceLogs!: VehicleServiceLogItem[];
 
-    constructor(data?: IVehicleLookupItem) {
+    constructor(data?: IGarageLookupItem) {
         super(data);
         if (!data) {
             this.conversations = [];
-            this.serviceLogs = [];
         }
     }
 
     init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.licensePlate = _data["licensePlate"];
-            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
+            this.garageId = _data["garageId"];
+            this.identifier = _data["identifier"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["knownServices"])) {
+                this.knownServices = [] as any;
+                for (let item of _data["knownServices"])
+                    this.knownServices!.push(item);
+            }
+            this.knownServicesString = _data["knownServicesString"];
+            this.address = _data["address"];
+            this.city = _data["city"];
             this.location = _data["location"] ? Geometry.fromJS(_data["location"]) : <any>undefined;
+            this.status = _data["status"];
+            if (Array.isArray(_data["daysOfWeek"])) {
+                this.daysOfWeek = [] as any;
+                for (let item of _data["daysOfWeek"])
+                    this.daysOfWeek!.push(item);
+            }
+            this.daysOfWeekString = _data["daysOfWeekString"];
             this.phoneNumber = _data["phoneNumber"];
             this.whatsappNumber = _data["whatsappNumber"];
             this.emailAddress = _data["emailAddress"];
+            this.website = _data["website"];
+            this.rating = _data["rating"];
+            this.userRatingsTotal = _data["userRatingsTotal"];
+            this.hasPickupService = _data["hasPickupService"];
+            this.hasReplacementTransportService = _data["hasReplacementTransportService"];
+            this.largeData = _data["largeData"] ? GarageLookupLargeItem.fromJS(_data["largeData"]) : <any>undefined;
             if (Array.isArray(_data["conversations"])) {
                 this.conversations = [] as any;
                 for (let item of _data["conversations"])
                     this.conversations!.push(ConversationItem.fromJS(item));
             }
-            if (Array.isArray(_data["serviceLogs"])) {
-                this.serviceLogs = [] as any;
-                for (let item of _data["serviceLogs"])
-                    this.serviceLogs!.push(VehicleServiceLogItem.fromJS(item));
-            }
         }
     }
 
-    static fromJS(data: any): VehicleLookupItem {
+    static fromJS(data: any): GarageLookupItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleLookupItem();
+        let result = new GarageLookupItem();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["licensePlate"] = this.licensePlate;
-        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
+        data["garageId"] = this.garageId;
+        data["identifier"] = this.identifier;
+        data["name"] = this.name;
+        if (Array.isArray(this.knownServices)) {
+            data["knownServices"] = [];
+            for (let item of this.knownServices)
+                data["knownServices"].push(item);
+        }
+        data["knownServicesString"] = this.knownServicesString;
+        data["address"] = this.address;
+        data["city"] = this.city;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
+        data["status"] = this.status;
+        if (Array.isArray(this.daysOfWeek)) {
+            data["daysOfWeek"] = [];
+            for (let item of this.daysOfWeek)
+                data["daysOfWeek"].push(item);
+        }
+        data["daysOfWeekString"] = this.daysOfWeekString;
         data["phoneNumber"] = this.phoneNumber;
         data["whatsappNumber"] = this.whatsappNumber;
         data["emailAddress"] = this.emailAddress;
+        data["website"] = this.website;
+        data["rating"] = this.rating;
+        data["userRatingsTotal"] = this.userRatingsTotal;
+        data["hasPickupService"] = this.hasPickupService;
+        data["hasReplacementTransportService"] = this.hasReplacementTransportService;
+        data["largeData"] = this.largeData ? this.largeData.toJSON() : <any>undefined;
         if (Array.isArray(this.conversations)) {
             data["conversations"] = [];
             for (let item of this.conversations)
                 data["conversations"].push(item.toJSON());
-        }
-        if (Array.isArray(this.serviceLogs)) {
-            data["serviceLogs"] = [];
-            for (let item of this.serviceLogs)
-                data["serviceLogs"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
     }
 }
 
-export interface IVehicleLookupItem extends IBaseAuditableEntity {
-    licensePlate: string;
-    motExpiryDate: Date;
-    location: Geometry;
+export interface IGarageLookupItem extends IBaseEntity {
+    garageId?: string | undefined;
+    identifier: string;
+    name: string;
+    knownServices?: GarageServiceType[];
+    knownServicesString: string;
+    address: string;
+    city: string;
+    location?: Geometry | undefined;
+    status?: string | undefined;
+    daysOfWeek?: number[] | undefined;
+    daysOfWeekString?: string;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+    website?: string | undefined;
+    rating?: number | undefined;
+    userRatingsTotal?: number | undefined;
+    hasPickupService?: boolean;
+    hasReplacementTransportService?: boolean;
+    largeData?: GarageLookupLargeItem | undefined;
     conversations: ConversationItem[];
-    serviceLogs: VehicleServiceLogItem[];
+}
+
+export enum GarageServiceType {
+    Other = 0,
+    CompanyStockService = 30,
+    RegistrationService = 40,
+    AcceleratedRegistrationService = 50,
+    MOTServiceLightVehicle = 60,
+    MOTServiceHeavyVehicle = 61,
+    MOTServiceAgriculture = 62,
+    ControlDeviceService = 70,
+    GasInstallationService = 80,
+    MopedConversionService = 90,
+    DismantlingService = 100,
+    TaxiComputerService = 110,
+    LicensePlateManufactureService = 120,
+    Inspection = 131,
+    SmallMaintenance = 132,
+    GreatMaintenance = 133,
+    AirConditioningMaintenance = 134,
+    SeasonalTireChange = 135,
+}
+
+export class GarageLookupLargeItem extends BaseEntity implements IGarageLookupLargeItem {
+    googleApiDetailsJson?: string;
+    firstPlacePhoto?: string | undefined;
+
+    constructor(data?: IGarageLookupLargeItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.googleApiDetailsJson = _data["googleApiDetailsJson"];
+            this.firstPlacePhoto = _data["firstPlacePhoto"];
+        }
+    }
+
+    static fromJS(data: any): GarageLookupLargeItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageLookupLargeItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["googleApiDetailsJson"] = this.googleApiDetailsJson;
+        data["firstPlacePhoto"] = this.firstPlacePhoto;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGarageLookupLargeItem extends IBaseEntity {
+    googleApiDetailsJson?: string;
+    firstPlacePhoto?: string | undefined;
+}
+
+export enum ConversationType {
+    Other = 0,
+    Price = 1,
+    Appointment = 2,
+    Technical = 3,
+}
+
+export class ConversationMessageItem extends BaseAuditableEntity implements IConversationMessageItem {
+    conversationId!: string;
+    conversation?: ConversationItem;
+    senderContactType!: ContactType;
+    senderContactIdentifier!: string;
+    receiverContactType!: ContactType;
+    receiverContactIdentifier!: string;
+    status!: MessageStatus;
+    messageContent!: string;
+    errorMessage?: string | undefined;
+
+    constructor(data?: IConversationMessageItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.conversationId = _data["conversationId"];
+            this.conversation = _data["conversation"] ? ConversationItem.fromJS(_data["conversation"]) : <any>undefined;
+            this.senderContactType = _data["senderContactType"];
+            this.senderContactIdentifier = _data["senderContactIdentifier"];
+            this.receiverContactType = _data["receiverContactType"];
+            this.receiverContactIdentifier = _data["receiverContactIdentifier"];
+            this.status = _data["status"];
+            this.messageContent = _data["messageContent"];
+            this.errorMessage = _data["errorMessage"];
+        }
+    }
+
+    static fromJS(data: any): ConversationMessageItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConversationMessageItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["conversationId"] = this.conversationId;
+        data["conversation"] = this.conversation ? this.conversation.toJSON() : <any>undefined;
+        data["senderContactType"] = this.senderContactType;
+        data["senderContactIdentifier"] = this.senderContactIdentifier;
+        data["receiverContactType"] = this.receiverContactType;
+        data["receiverContactIdentifier"] = this.receiverContactIdentifier;
+        data["status"] = this.status;
+        data["messageContent"] = this.messageContent;
+        data["errorMessage"] = this.errorMessage;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IConversationMessageItem extends IBaseAuditableEntity {
+    conversationId: string;
+    conversation?: ConversationItem;
+    senderContactType: ContactType;
+    senderContactIdentifier: string;
+    receiverContactType: ContactType;
+    receiverContactIdentifier: string;
+    status: MessageStatus;
+    messageContent: string;
+    errorMessage?: string | undefined;
+}
+
+export enum ContactType {
+    Email = 0,
+    WhatsApp = 1,
+    PhoneNumber = 2,
+}
+
+export enum MessageStatus {
+    Pending = 0,
+    Sent = 1,
+    Delivered = 2,
+    Failed = 3,
 }
 
 export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehicleServiceLogItem {
@@ -2719,286 +2930,6 @@ export interface IGarageServiceItem extends IBaseAuditableEntity {
     durationInMinutes?: number;
     price?: number;
     status?: number;
-}
-
-export class ConversationMessageItem extends BaseAuditableEntity implements IConversationMessageItem {
-    conversationId!: string;
-    conversation?: ConversationItem;
-    senderContactType!: ContactType;
-    senderContactIdentifier!: string;
-    receiverContactType!: ContactType;
-    receiverContactIdentifier!: string;
-    status!: MessageStatus;
-    messageContent!: string;
-    errorMessage?: string | undefined;
-
-    constructor(data?: IConversationMessageItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.conversationId = _data["conversationId"];
-            this.conversation = _data["conversation"] ? ConversationItem.fromJS(_data["conversation"]) : <any>undefined;
-            this.senderContactType = _data["senderContactType"];
-            this.senderContactIdentifier = _data["senderContactIdentifier"];
-            this.receiverContactType = _data["receiverContactType"];
-            this.receiverContactIdentifier = _data["receiverContactIdentifier"];
-            this.status = _data["status"];
-            this.messageContent = _data["messageContent"];
-            this.errorMessage = _data["errorMessage"];
-        }
-    }
-
-    static fromJS(data: any): ConversationMessageItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConversationMessageItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["conversationId"] = this.conversationId;
-        data["conversation"] = this.conversation ? this.conversation.toJSON() : <any>undefined;
-        data["senderContactType"] = this.senderContactType;
-        data["senderContactIdentifier"] = this.senderContactIdentifier;
-        data["receiverContactType"] = this.receiverContactType;
-        data["receiverContactIdentifier"] = this.receiverContactIdentifier;
-        data["status"] = this.status;
-        data["messageContent"] = this.messageContent;
-        data["errorMessage"] = this.errorMessage;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IConversationMessageItem extends IBaseAuditableEntity {
-    conversationId: string;
-    conversation?: ConversationItem;
-    senderContactType: ContactType;
-    senderContactIdentifier: string;
-    receiverContactType: ContactType;
-    receiverContactIdentifier: string;
-    status: MessageStatus;
-    messageContent: string;
-    errorMessage?: string | undefined;
-}
-
-export enum ContactType {
-    Email = 0,
-    WhatsApp = 1,
-    PhoneNumber = 2,
-}
-
-export enum MessageStatus {
-    Pending = 0,
-    Sent = 1,
-    Delivered = 2,
-    Failed = 3,
-}
-
-export class GarageItemDto implements IGarageItemDto {
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    location?: GarageLocationItem;
-    bankingDetails?: GarageBankingDetailsItem;
-
-    constructor(data?: IGarageItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            this.email = _data["email"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsAppNumber = _data["whatsAppNumber"];
-            this.location = _data["location"] ? GarageLocationItem.fromJS(_data["location"]) : <any>undefined;
-            this.bankingDetails = _data["bankingDetails"] ? GarageBankingDetailsItem.fromJS(_data["bankingDetails"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): GarageItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageItemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        data["email"] = this.email;
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsAppNumber"] = this.whatsAppNumber;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["bankingDetails"] = this.bankingDetails ? this.bankingDetails.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IGarageItemDto {
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    whatsAppNumber?: string;
-    location?: GarageLocationItem;
-    bankingDetails?: GarageBankingDetailsItem;
-}
-
-export class GarageLocationItem extends BaseEntity implements IGarageLocationItem {
-    address!: string;
-    city!: string;
-    postalCode!: string;
-    country!: string;
-    longitude!: number;
-    latitude!: number;
-
-    constructor(data?: IGarageLocationItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.address = _data["address"];
-            this.city = _data["city"];
-            this.postalCode = _data["postalCode"];
-            this.country = _data["country"];
-            this.longitude = _data["longitude"];
-            this.latitude = _data["latitude"];
-        }
-    }
-
-    static fromJS(data: any): GarageLocationItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageLocationItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["address"] = this.address;
-        data["city"] = this.city;
-        data["postalCode"] = this.postalCode;
-        data["country"] = this.country;
-        data["longitude"] = this.longitude;
-        data["latitude"] = this.latitude;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageLocationItem extends IBaseEntity {
-    address: string;
-    city: string;
-    postalCode: string;
-    country: string;
-    longitude: number;
-    latitude: number;
-}
-
-export class GarageBankingDetailsItem extends BaseEntity implements IGarageBankingDetailsItem {
-    bankName?: string;
-    kvKNumber?: string;
-    accountHolderName?: string;
-    iban?: string;
-
-    constructor(data?: IGarageBankingDetailsItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.bankName = _data["bankName"];
-            this.kvKNumber = _data["kvKNumber"];
-            this.accountHolderName = _data["accountHolderName"];
-            this.iban = _data["iban"];
-        }
-    }
-
-    static fromJS(data: any): GarageBankingDetailsItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageBankingDetailsItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["bankName"] = this.bankName;
-        data["kvKNumber"] = this.kvKNumber;
-        data["accountHolderName"] = this.accountHolderName;
-        data["iban"] = this.iban;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageBankingDetailsItem extends IBaseEntity {
-    bankName?: string;
-    kvKNumber?: string;
-    accountHolderName?: string;
-    iban?: string;
-}
-
-export class GarageOverview implements IGarageOverview {
-    name?: string;
-    vehicles?: VehicleLookupItem[];
-
-    constructor(data?: IGarageOverview) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.name = _data["name"];
-            if (Array.isArray(_data["vehicles"])) {
-                this.vehicles = [] as any;
-                for (let item of _data["vehicles"])
-                    this.vehicles!.push(VehicleLookupItem.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): GarageOverview {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageOverview();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["name"] = this.name;
-        if (Array.isArray(this.vehicles)) {
-            data["vehicles"] = [];
-            for (let item of this.vehicles)
-                data["vehicles"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IGarageOverview {
-    name?: string;
-    vehicles?: VehicleLookupItem[];
 }
 
 export class GarageServiceItemDto implements IGarageServiceItemDto {
@@ -4274,6 +4205,178 @@ export interface IGarageLookupsStatusDto {
     total?: number;
 }
 
+export class StartConversationBody implements IStartConversationBody {
+    relatedGarageLookupId?: string;
+    relatedServiceTypes?: GarageServiceType[];
+    vehicleLicensePlate?: string;
+    vehicleLongitude?: string;
+    vehicleLatitude?: string;
+    vehiclePhoneNumber?: string | undefined;
+    vehicleWhatsappNumber?: string | undefined;
+    vehicleEmailAddress?: string | undefined;
+    senderWhatsAppNumberOrEmail?: string | undefined;
+    receiverWhatsAppNumberOrEmail?: string | undefined;
+    messageType?: ConversationType;
+    messageContent?: string;
+
+    constructor(data?: IStartConversationBody) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
+            if (Array.isArray(_data["relatedServiceTypes"])) {
+                this.relatedServiceTypes = [] as any;
+                for (let item of _data["relatedServiceTypes"])
+                    this.relatedServiceTypes!.push(item);
+            }
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
+            this.vehicleLongitude = _data["vehicleLongitude"];
+            this.vehicleLatitude = _data["vehicleLatitude"];
+            this.vehiclePhoneNumber = _data["vehiclePhoneNumber"];
+            this.vehicleWhatsappNumber = _data["vehicleWhatsappNumber"];
+            this.vehicleEmailAddress = _data["vehicleEmailAddress"];
+            this.senderWhatsAppNumberOrEmail = _data["senderWhatsAppNumberOrEmail"];
+            this.receiverWhatsAppNumberOrEmail = _data["receiverWhatsAppNumberOrEmail"];
+            this.messageType = _data["messageType"];
+            this.messageContent = _data["messageContent"];
+        }
+    }
+
+    static fromJS(data: any): StartConversationBody {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartConversationBody();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
+        if (Array.isArray(this.relatedServiceTypes)) {
+            data["relatedServiceTypes"] = [];
+            for (let item of this.relatedServiceTypes)
+                data["relatedServiceTypes"].push(item);
+        }
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
+        data["vehicleLongitude"] = this.vehicleLongitude;
+        data["vehicleLatitude"] = this.vehicleLatitude;
+        data["vehiclePhoneNumber"] = this.vehiclePhoneNumber;
+        data["vehicleWhatsappNumber"] = this.vehicleWhatsappNumber;
+        data["vehicleEmailAddress"] = this.vehicleEmailAddress;
+        data["senderWhatsAppNumberOrEmail"] = this.senderWhatsAppNumberOrEmail;
+        data["receiverWhatsAppNumberOrEmail"] = this.receiverWhatsAppNumberOrEmail;
+        data["messageType"] = this.messageType;
+        data["messageContent"] = this.messageContent;
+        return data;
+    }
+}
+
+export interface IStartConversationBody {
+    relatedGarageLookupId?: string;
+    relatedServiceTypes?: GarageServiceType[];
+    vehicleLicensePlate?: string;
+    vehicleLongitude?: string;
+    vehicleLatitude?: string;
+    vehiclePhoneNumber?: string | undefined;
+    vehicleWhatsappNumber?: string | undefined;
+    vehicleEmailAddress?: string | undefined;
+    senderWhatsAppNumberOrEmail?: string | undefined;
+    receiverWhatsAppNumberOrEmail?: string | undefined;
+    messageType?: ConversationType;
+    messageContent?: string;
+}
+
+export class StartConversationCommand implements IStartConversationCommand {
+    relatedGarageLookupId?: string;
+    relatedGarage?: GarageLookupItem;
+    relatedVehicleLookupId?: string;
+    relatedVehicle?: VehicleLookupItem;
+    relatedServiceTypes?: GarageServiceType[];
+    senderWhatsAppNumberOrEmail?: string;
+    senderContactType?: ContactType;
+    receiverWhatsAppNumberOrEmail?: string;
+    receiverContactType?: ContactType;
+    conversationType?: ConversationType;
+    messageContent?: string;
+
+    constructor(data?: IStartConversationCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
+            this.relatedGarage = _data["relatedGarage"] ? GarageLookupItem.fromJS(_data["relatedGarage"]) : <any>undefined;
+            this.relatedVehicleLookupId = _data["relatedVehicleLookupId"];
+            this.relatedVehicle = _data["relatedVehicle"] ? VehicleLookupItem.fromJS(_data["relatedVehicle"]) : <any>undefined;
+            if (Array.isArray(_data["relatedServiceTypes"])) {
+                this.relatedServiceTypes = [] as any;
+                for (let item of _data["relatedServiceTypes"])
+                    this.relatedServiceTypes!.push(item);
+            }
+            this.senderWhatsAppNumberOrEmail = _data["senderWhatsAppNumberOrEmail"];
+            this.senderContactType = _data["senderContactType"];
+            this.receiverWhatsAppNumberOrEmail = _data["receiverWhatsAppNumberOrEmail"];
+            this.receiverContactType = _data["receiverContactType"];
+            this.conversationType = _data["conversationType"];
+            this.messageContent = _data["messageContent"];
+        }
+    }
+
+    static fromJS(data: any): StartConversationCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartConversationCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
+        data["relatedGarage"] = this.relatedGarage ? this.relatedGarage.toJSON() : <any>undefined;
+        data["relatedVehicleLookupId"] = this.relatedVehicleLookupId;
+        data["relatedVehicle"] = this.relatedVehicle ? this.relatedVehicle.toJSON() : <any>undefined;
+        if (Array.isArray(this.relatedServiceTypes)) {
+            data["relatedServiceTypes"] = [];
+            for (let item of this.relatedServiceTypes)
+                data["relatedServiceTypes"].push(item);
+        }
+        data["senderWhatsAppNumberOrEmail"] = this.senderWhatsAppNumberOrEmail;
+        data["senderContactType"] = this.senderContactType;
+        data["receiverWhatsAppNumberOrEmail"] = this.receiverWhatsAppNumberOrEmail;
+        data["receiverContactType"] = this.receiverContactType;
+        data["conversationType"] = this.conversationType;
+        data["messageContent"] = this.messageContent;
+        return data;
+    }
+}
+
+export interface IStartConversationCommand {
+    relatedGarageLookupId?: string;
+    relatedGarage?: GarageLookupItem;
+    relatedVehicleLookupId?: string;
+    relatedVehicle?: VehicleLookupItem;
+    relatedServiceTypes?: GarageServiceType[];
+    senderWhatsAppNumberOrEmail?: string;
+    senderContactType?: ContactType;
+    receiverWhatsAppNumberOrEmail?: string;
+    receiverContactType?: ContactType;
+    conversationType?: ConversationType;
+    messageContent?: string;
+}
+
 export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     licensePlate?: string;
     brand?: string;
@@ -4480,6 +4583,13 @@ export interface IUpsertVehicleLookupCommand {
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+}
+
+export interface FileResponse {
+    data: Blob;
+    status: number;
+    fileName?: string;
+    headers?: { [name: string]: any };
 }
 
 export class SwaggerException extends Error {
