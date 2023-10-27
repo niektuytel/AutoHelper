@@ -1,4 +1,4 @@
-﻿import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Typography, FormHelperText, Tooltip, IconButton } from '@mui/material';
+﻿import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Select, MenuItem, FormControl, InputLabel, Typography, FormHelperText, Tooltip, IconButton, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -44,8 +44,13 @@ interface QuestionDialogProps {
 export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTypes, licensePlate, longitude, latitude, open, onClose }: QuestionDialogProps) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const { control, handleSubmit, setValue, getValues, register, formState: { errors }, watch } = useForm<FormInput>();
-
+    const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormInput>({
+        defaultValues: {
+            whatsappOrEmail: '',
+            messageType: '',
+            message: '',
+        }
+    });
 
     const [loading, setLoading] = useState<boolean>(false);
     const conversationClient = new MessageClient(process.env.PUBLIC_URL);
@@ -63,16 +68,14 @@ export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTyp
         }
     }
 
-    // Use watch to observe changes to messageType field
-    const watchedMessageType = watch('messageType');
+    const watchedMessageType = watch('messageType', '');
+
     useEffect(() => {
         if (watchedMessageType) {
-            const watchedMessage = watch('message');
-            if (!watchedMessage) {
-                setValue('message', t(`ConversationType.${watchedMessageType}.SampleMessage`));
-            }
+            const sampleMessage = t(`ConversationType.${watchedMessageType}.SampleMessage`);
+            setValue('message', sampleMessage);
         }
-    }, [watchedMessageType, setValue]);
+    }, [watchedMessageType, setValue, t]);
 
     const onSubmit = async (data: FormInput) => {
         let { whatsappOrEmail, messageType, message } = data;
@@ -134,25 +137,38 @@ export default ({ garageLookupId, garageWhatsAppNumberOrEmail, relatedServiceTyp
                 <Typography variant="body2" paragraph>
                     {t("Ask a Question.Description")}
                 </Typography>
-                <Controller
-                    name="whatsappOrEmail"
-                    control={control}
-                    defaultValue=""
-                    rules={{
-                        required: t("Ask a Question.WhatsappOrEmail.Required"),
-                        validate: value => isValidEmail(value) || isValidPhoneNumber(value) || t("Ask a Question.WhatsappOrEmail.Invalid")
-                    }}
-                    render={({ field }) => (
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <Controller
+                            name="whatsappOrEmail"
+                            control={control}
+                            defaultValue=""
+                            rules={{
+                                required: t("Ask a Question.WhatsappOrEmail.Required"),
+                                validate: value => isValidEmail(value) || isValidPhoneNumber(value) || t("Ask a Question.WhatsappOrEmail.Invalid")
+                            }}
+                            render={({ field }) => (
+                                <TextField
+                                    fullWidth
+                                    label={t("Ask a Question.WhatsappOrEmail.Label")}
+                                    {...field}
+                                    error={!!errors.whatsappOrEmail}
+                                    helperText={errors.whatsappOrEmail?.message}
+                                    sx={{ marginBottom: 2 }}
+                                />
+                            )}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
                         <TextField
                             fullWidth
-                            label={t("Ask a Question.WhatsappOrEmail.Label")}
-                            {...field}
-                            error={!!errors.whatsappOrEmail}
-                            helperText={errors.whatsappOrEmail?.message}
+                            label="To: whatsapp/email"
+                            value={garageWhatsAppNumberOrEmail}
+                            disabled
                             sx={{ marginBottom: 2 }}
                         />
-                    )}
-                />
+                    </Grid>
+                </Grid>
                 <Controller
                     name="messageType"
                     control={control}

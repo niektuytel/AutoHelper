@@ -115,7 +115,7 @@
   "Ask a Question": "Een vraag stellen",
   "Ask a Question.Tooltip": "Een vraag stellen gerelateerd aan je geselecteerde dienst en auto",
   "Ask a Question.Description": "Wij sturen uw vraag door naar de garage, met bijhoorende gegevens van uw voertuig. U ontvangt een bericht zodra de garage uw vraag heeft beantwoord.",
-  "Ask a Question.WhatsappOrEmail.Label": "Whatsapp of email",
+  "Ask a Question.WhatsappOrEmail.Label": "From: whatsapp/email",
   "Ask a Question.WhatsappOrEmail.Required": "Hoe kunnen wij u bereiken?",
   "Ask a Question.WhatsappOrEmail.Invalid": "Ongeldige Whatsapp of email",
   "Ask a Question.MessageType.Label": "Onderwerp",

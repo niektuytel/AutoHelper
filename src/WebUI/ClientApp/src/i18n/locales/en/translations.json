@@ -116,7 +116,7 @@
   "Ask a Question": "Ask a question",
   "Ask a Question.Tooltip": "Ask a question related to your selected service and car",
   "Ask a Question.Description": "We will forward your question to the garage, with associated details of your vehicle. You will receive a message as soon as the garage has answered your question.",
-  "Ask a Question.WhatsappOrEmail.Label": "Whatsapp or email",
+  "Ask a Question.WhatsappOrEmail.Label": "From: whatsapp/email",
   "Ask a Question.WhatsappOrEmail.Required": "How can we reach you?",
   "Ask a Question.WhatsappOrEmail.Invalid": "Invalid WhatsApp or email",
   "Ask a Question.MessageType.Label": "Subject",
