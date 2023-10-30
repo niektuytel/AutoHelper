@@ -4,6 +4,7 @@ import { createBrowserHistory } from "history";
 
 // own imports 
 import statusSnackbarReducer from "./slices/statusSnackbarSlice";
+import storedServicesReducer from "./slices/storedServicesSlice";
 
 
 const {
@@ -18,6 +19,7 @@ const {
 const rootReducer = combineReducers({
     router: routerReducer,
     statusSnackbar: statusSnackbarReducer,
+    storedServices: storedServicesReducer
 });
 
 export const store = configureStore({

@@ -1,39 +1,146 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
+using Microsoft.Extensions.Configuration;
+using SparkPost;
+using WhatsappBusiness.CloudApi.Exceptions;
+using WhatsappBusiness.CloudApi;
+using WhatsappBusiness.CloudApi.Interfaces;
+using WhatsappBusiness.CloudApi.Webhook;
+using System.Net.Mail;
 
 namespace AutoHelper.Messaging.Services;
 
 internal class SparkpostService : IMailingService
 {
-    public Task SendConfirmationEmailAsync(string receiverContactIdentifier, Guid conversationId, string senderContactName)
+    private const string TemplateConfirmationId = "send-message-with-confirmation";
+    private const string TemplateBasicId = "send_message_with_basic_content";
+    private const string TemplateVehicleInfoId = "send_message_with_vehicle_information";
+
+    private readonly IConfiguration _configuration;
+    private readonly bool _isDevelopment;
+    private readonly string _developEmailAddress;
+    private readonly Client _sparkPostClient;
+
+    public SparkpostService(IConfiguration configuration)
     {
-        var templateId = "send-message-with-confirmation";
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _isDevelopment = _configuration["Environment"] == "Development";
+        _developEmailAddress = _configuration["SparkPost:TestEmailAddress"]!;
 
-        // hello world
-        //var client = new HttpClient();
-        //var request = new HttpRequestMessage(HttpMethod.Post, "https://api.sparkpost.com/api/v1/transmissions?num_rcpt_errors=3");
-        //request.Headers.Add("Accept", "application/json");
-        //request.Headers.Add("Authorization", "70c81fa20ce8aabb07242251e79633675f89c054");
-        //var content = new StringContent("{\n  \"campaign_id\": \"postman_template_example\",\n  \"recipients\": [\n    {\n      \"address\": \"n.tuytel@dutchgrit.nl\"\n    }\n  ],\n  \"content\": {\n    \"template_id\": \"my-first-email\"\n  }\n}\n", null, "application/json");
-        //request.Content = content;
-        //var response = await client.SendAsync(request);
-        //response.EnsureSuccessStatusCode();
-        //Console.WriteLine(await response.Content.ReadAsStringAsync());
-
-
-        var subject = "AutoHelper - Je bericht is successvol gestuurd naar de garage.";
-        var message = $"Hallo, We hebben je bericht verstuurd en hopen op zo snel mogelijk een antwoord te hebben.\n\n Het gaat om het bericht: \n''";
-
-        throw new NotImplementedException();
+        var apiKey = _configuration["SparkPost:ApiKey"]!;
+        _sparkPostClient = new Client(apiKey, "https://api.eu.sparkpost.com");
     }
 
-    public Task SendBasicMailAsync(string receiverContactIdentifier, Guid conversationId, string senderContactName, string subject, string messageContent)
+    /// <summary>
+    /// https://app.eu.sparkpost.com/templates/edit/send-message-with-confirmation
+    /// </summary>
+    public async Task SendConfirmationEmailAsync(string receiverContactIdentifier, Guid conversationId, string receiverContactName)
     {
-        throw new NotImplementedException();
+        var transmission = new Transmission();
+        transmission.Content.TemplateId = TemplateConfirmationId;
+        transmission.SubstitutionData["receiver_name"] = receiverContactName;
+        transmission.SubstitutionData["conversation_id"] = conversationId.ToString().Split('-')[0];
+
+        var recipient = new Recipient
+        {
+            Address = new SparkPost.Address { Email = GetSecuredEmailAddress(receiverContactIdentifier) }
+        };
+        transmission.Recipients.Add(recipient);
+
+        try
+        {
+            var response = await _sparkPostClient.Transmissions.Send(transmission);
+            if(response.TotalRejectedRecipients > 0)
+            {
+                throw new SmtpFailedRecipientException($"Failed to {nameof(SendConfirmationEmailAsync)} email to: {receiverContactIdentifier} with conversationId:{conversationId}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
 
-    public Task SendVehicleRelatedEmailAsync(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalBriefDtoItem vehicleInfo, string subject, string messageContent)
+    /// <summary>
+    /// https://app.eu.sparkpost.com/templates/edit/send_message_with_basic_content/
+    /// </summary>
+    public async Task SendBasicMailAsync(string receiverContactIdentifier, Guid conversationId, string senderContactName, string messageContent)
     {
-        throw new NotImplementedException();
+        var transmission = new Transmission();
+        transmission.Content.TemplateId = TemplateBasicId;
+        transmission.SubstitutionData["sender_name"] = senderContactName;
+        transmission.SubstitutionData["content"] = messageContent;
+        transmission.SubstitutionData["conversation_id"] = conversationId.ToString().Split('-')[0];
+
+        var recipient = new Recipient
+        {
+            Address = new SparkPost.Address { Email = GetSecuredEmailAddress(receiverContactIdentifier) }
+        };
+        transmission.Recipients.Add(recipient);
+
+        try
+        {
+            var response = await _sparkPostClient.Transmissions.Send(transmission);
+            if (response.TotalRejectedRecipients > 0)
+            {
+                throw new SmtpFailedRecipientException($"Failed to {nameof(SendBasicMailAsync)} email to: {receiverContactIdentifier} with conversationId:{conversationId}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
+
+    /// <summary>
+    /// https://app.eu.sparkpost.com/templates/edit/send_message_with_vehicle_information
+    /// </summary>
+    public async Task SendVehicleRelatedEmailAsync(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalBriefDtoItem vehicleInfo, string messageContent)
+    {
+        var transmission = new Transmission();
+        transmission.Content.TemplateId = TemplateVehicleInfoId;
+        transmission.SubstitutionData["license_plate"] = vehicleInfo.LicensePlate;
+        transmission.SubstitutionData["content"] = messageContent;
+        transmission.SubstitutionData["feul"] = vehicleInfo.FuelType;
+        transmission.SubstitutionData["model"] = $"{vehicleInfo.Brand} {vehicleInfo.Model}({vehicleInfo.YearOfFirstAdmission})";// Dacia Sandero (2008);
+        transmission.SubstitutionData["mot"] = vehicleInfo.MOTExpiryDate;
+        transmission.SubstitutionData["nap"] = vehicleInfo.Mileage;
+        transmission.SubstitutionData["conversation_id"] = conversationId.ToString().Split('-')[0];
+
+        var recipient = new Recipient
+        {
+            Address = new SparkPost.Address { Email = GetSecuredEmailAddress(receiverContactIdentifier) }
+        };
+        transmission.Recipients.Add(recipient);
+
+        try
+        {
+            var response = await _sparkPostClient.Transmissions.Send(transmission);
+            if (response.TotalRejectedRecipients > 0)
+            {
+                throw new SmtpFailedRecipientException($"Failed to {nameof(SendBasicMailAsync)} email to: {receiverContactIdentifier} with conversationId:{conversationId}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    private string GetSecuredEmailAddress(string address)
+    {
+        if (_isDevelopment)
+        {
+            return _developEmailAddress;
+        }
+
+        return address;
+    }
+
 }

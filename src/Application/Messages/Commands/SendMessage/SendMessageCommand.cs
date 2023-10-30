@@ -19,9 +19,9 @@ using Microsoft.VisualBasic;
 
 namespace AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
-public record SendConversationMessageCommand : IRequest<SendConfirmationMessageCommand?>
+public record SendMessageCommand : IRequest<SendConfirmationMessageCommand?>
 {
-    public SendConversationMessageCommand(
+    public SendMessageCommand(
         Guid conversationId,
         ContactType senderContactType,
         string senderContactIdentifier,
@@ -42,7 +42,7 @@ public record SendConversationMessageCommand : IRequest<SendConfirmationMessageC
         MessageContent = messageContent;
     }
 
-    public SendConversationMessageCommand(
+    public SendMessageCommand(
         Guid conversationId,
         ContactType senderContactType,
         string senderContactIdentifier,
@@ -84,7 +84,7 @@ public record SendConversationMessageCommand : IRequest<SendConfirmationMessageC
 
 }
 
-public class StartConversationCommandHandler : IRequestHandler<SendConversationMessageCommand, SendConfirmationMessageCommand?>
+public class StartConversationCommandHandler : IRequestHandler<SendMessageCommand, SendConfirmationMessageCommand?>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -107,7 +107,7 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
         _vehicleService = vehicleService;
     }
 
-    public async Task<SendConfirmationMessageCommand?> Handle(SendConversationMessageCommand request, CancellationToken cancellationToken)
+    public async Task<SendConfirmationMessageCommand?> Handle(SendMessageCommand request, CancellationToken cancellationToken)
     {
         var conversation = _context.Conversations
             .Include(x => x.RelatedGarageLookup)
@@ -124,6 +124,20 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
 
         await SendMessage(request, conversation, sendToGarage, senderContactName);
 
+        // Add set message to conversation
+        var conversationMessage = new ConversationMessageItem()
+        {
+            ConversationId = conversation.Id,
+            SenderContactType = request.SenderContactType,
+            SenderContactIdentifier = request.SenderContactIdentifier,
+            ReceiverContactType = request.ReceiverContactType,
+            ReceiverContactIdentifier = request.ReceiverContactIdentifier,
+            Status = MessageStatus.Sent,
+            MessageContent = request.MessageContent,
+        };
+        _context.ConversationMessages.Add(conversationMessage);
+        await _context.SaveChangesAsync(cancellationToken);
+
         return new SendConfirmationMessageCommand(
             request.ConversationId,
             senderContactName,
@@ -133,7 +147,7 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
         );
     }
 
-    private async Task SendMessage(SendConversationMessageCommand request, ConversationItem conversation, bool sendToGarage, string senderContactName)
+    private async Task SendMessage(SendMessageCommand request, ConversationItem conversation, bool sendToGarage, string senderContactName)
     {
         switch (request.ReceiverContactType)
         {
@@ -148,9 +162,8 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
         }
     }
 
-    private async Task SendEmail(SendConversationMessageCommand request, ConversationItem conversation, bool sendToGarage, string senderContactName)
+    private async Task SendEmail(SendMessageCommand request, ConversationItem conversation, bool sendToGarage, string senderContactName)
     {
-        var subject = $"AutoHelper - {conversation.RelatedGarageLookup.Name} - {conversation.RelatedVehicleLookup.LicensePlate}";
         if (sendToGarage)
         {
             var licensePlate = conversation.RelatedVehicleLookup.LicensePlate;
@@ -164,7 +177,6 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
                 request.ReceiverContactIdentifier,
                 request.ConversationId,
                 vehicleInfo,
-                subject,
                 request.MessageContent
             );
         }
@@ -174,13 +186,12 @@ public class StartConversationCommandHandler : IRequestHandler<SendConversationM
                 request.ReceiverContactIdentifier,
                 request.ConversationId,
                 senderContactName,
-                subject,
                 request.MessageContent
             );
         }
     }
 
-    private async Task SendWhatsAppMessage(SendConversationMessageCommand request, ConversationItem conversation, bool sendToGarage, string senderContactName)
+    private async Task SendWhatsAppMessage(SendMessageCommand request, ConversationItem conversation, bool sendToGarage, string senderContactName)
     {
         if (sendToGarage)
         {

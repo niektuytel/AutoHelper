@@ -15,7 +15,7 @@ using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
 namespace AutoHelper.Application.Messages.Commands.StartConversation;
 
-public record StartConversationCommand : IRequest<SendConversationMessageCommand?>
+public record StartConversationCommand : IRequest<SendMessageCommand?>
 {
     public StartConversationCommand(
         Guid relatedGarageLookupId,
@@ -55,7 +55,7 @@ public record StartConversationCommand : IRequest<SendConversationMessageCommand
     public string MessageContent { get; set; }
 }
 
-public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand, SendConversationMessageCommand?>
+public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand, SendMessageCommand?>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -68,7 +68,7 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
         _mediator = mediator;
     }
 
-    public async Task<SendConversationMessageCommand?> Handle(StartConversationCommand request, CancellationToken cancellationToken)
+    public async Task<SendMessageCommand?> Handle(StartConversationCommand request, CancellationToken cancellationToken)
     {
         var conversation = new ConversationItem
         {
@@ -85,7 +85,7 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
         await _context.SaveChangesAsync(cancellationToken);
 
         // send message to the receiver
-        var messageCommand = new SendConversationMessageCommand(
+        var messageCommand = new SendMessageCommand(
             conversation.Id,
             request.SenderContactType,
             request.SenderWhatsAppNumberOrEmail,

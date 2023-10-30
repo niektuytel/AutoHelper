@@ -46,7 +46,7 @@
   "add": "add",
   "edit": "edit",
   "delete": "delete",
-  "Cart item already exist": "Cart item already exist",
+  "Cart item already exist": "Selected service already been selected",
   "Service_description": "Description, e.g. Repairing the gearbox",
   "Duration_explained": "Time duration (How much time does it take?)",
   "Price_explained": "Price (How much is it?)",

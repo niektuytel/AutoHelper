@@ -864,6 +864,8 @@ export interface IMessageClient {
 
     startConversation(conversation: StartConversationBody): Promise<string>;
 
+    startConversations(selectedServices: SelectedServices): Promise<string>;
+
     enqueueConversation(command: StartConversationCommand): Promise<string>;
 }
 
@@ -898,6 +900,52 @@ export class MessageClient implements IMessageClient {
     }
 
     protected processStartConversation(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    startConversations(selectedServices: SelectedServices): Promise<string> {
+        let url_ = this.baseUrl + "/api/Message/StartConversations";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(selectedServices);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processStartConversations(_response);
+        });
+    }
+
+    protected processStartConversations(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -4291,6 +4339,126 @@ export interface IStartConversationBody {
     receiverWhatsAppNumberOrEmail?: string | undefined;
     messageType?: ConversationType;
     messageContent?: string;
+}
+
+export class SelectedServices implements ISelectedServices {
+    senderPhoneNumber?: string | undefined;
+    senderWhatsappNumber?: string | undefined;
+    senderEmailAddress?: string | undefined;
+    messageType?: ConversationType;
+    messageContent?: string;
+    services?: SelectedService[];
+
+    constructor(data?: ISelectedServices) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.senderPhoneNumber = _data["senderPhoneNumber"];
+            this.senderWhatsappNumber = _data["senderWhatsappNumber"];
+            this.senderEmailAddress = _data["senderEmailAddress"];
+            this.messageType = _data["messageType"];
+            this.messageContent = _data["messageContent"];
+            if (Array.isArray(_data["services"])) {
+                this.services = [] as any;
+                for (let item of _data["services"])
+                    this.services!.push(SelectedService.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SelectedServices {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectedServices();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["senderPhoneNumber"] = this.senderPhoneNumber;
+        data["senderWhatsappNumber"] = this.senderWhatsappNumber;
+        data["senderEmailAddress"] = this.senderEmailAddress;
+        data["messageType"] = this.messageType;
+        data["messageContent"] = this.messageContent;
+        if (Array.isArray(this.services)) {
+            data["services"] = [];
+            for (let item of this.services)
+                data["services"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISelectedServices {
+    senderPhoneNumber?: string | undefined;
+    senderWhatsappNumber?: string | undefined;
+    senderEmailAddress?: string | undefined;
+    messageType?: ConversationType;
+    messageContent?: string;
+    services?: SelectedService[];
+}
+
+export class SelectedService implements ISelectedService {
+    relatedGarageLookupId?: string;
+    relatedServiceType?: GarageServiceType;
+    vehicleLicensePlate?: string;
+    vehicleLongitude?: string;
+    vehicleLatitude?: string;
+    receiverWhatsAppNumberOrEmail?: string | undefined;
+
+    constructor(data?: ISelectedService) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.relatedGarageLookupId = _data["relatedGarageLookupId"];
+            this.relatedServiceType = _data["relatedServiceType"];
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
+            this.vehicleLongitude = _data["vehicleLongitude"];
+            this.vehicleLatitude = _data["vehicleLatitude"];
+            this.receiverWhatsAppNumberOrEmail = _data["receiverWhatsAppNumberOrEmail"];
+        }
+    }
+
+    static fromJS(data: any): SelectedService {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectedService();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["relatedGarageLookupId"] = this.relatedGarageLookupId;
+        data["relatedServiceType"] = this.relatedServiceType;
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
+        data["vehicleLongitude"] = this.vehicleLongitude;
+        data["vehicleLatitude"] = this.vehicleLatitude;
+        data["receiverWhatsAppNumberOrEmail"] = this.receiverWhatsAppNumberOrEmail;
+        return data;
+    }
+}
+
+export interface ISelectedService {
+    relatedGarageLookupId?: string;
+    relatedServiceType?: GarageServiceType;
+    vehicleLicensePlate?: string;
+    vehicleLongitude?: string;
+    vehicleLatitude?: string;
+    receiverWhatsAppNumberOrEmail?: string | undefined;
 }
 
 export class StartConversationCommand implements IStartConversationCommand {

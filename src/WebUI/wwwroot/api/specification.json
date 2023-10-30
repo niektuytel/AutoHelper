@@ -803,6 +803,48 @@
         }
       }
     },
+    "/api/Message/StartConversations": {
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_StartConversations",
+        "requestBody": {
+          "x-name": "selectedServices",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectedServices"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Message/EnqueueConversation": {
       "post": {
         "tags": [
@@ -3105,6 +3147,62 @@
           },
           "messageContent": {
             "type": "string"
+          }
+        }
+      },
+      "SelectedServices": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "senderPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderWhatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "senderEmailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/ConversationType"
+          },
+          "messageContent": {
+            "type": "string"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectedService"
+            }
+          }
+        }
+      },
+      "SelectedService": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "relatedGarageLookupId": {
+            "type": "string",
+            "format": "guid"
+          },
+          "relatedServiceType": {
+            "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "vehicleLicensePlate": {
+            "type": "string"
+          },
+          "vehicleLongitude": {
+            "type": "string"
+          },
+          "vehicleLatitude": {
+            "type": "string"
+          },
+          "receiverWhatsAppNumberOrEmail": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

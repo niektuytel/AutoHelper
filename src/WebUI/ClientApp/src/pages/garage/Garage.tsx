@@ -14,16 +14,17 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 // local
 import ImageLogo from "../../components/logo/ImageLogo";
 import { COLORS } from "../../constants/colors";
-import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
+import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService, StartConversationBody } from "../../app/web-api-client";
 import { useQueryClient } from "react-query";
 import useGarage from "./useGarage";
 import Header from "../../components/header/Header";
 import GarageServiceInfoCard from "./components/GarageServiceInfoCard";
 import { showOnError, showOnSuccess } from "../../redux/slices/statusSnackbarSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GarageDailySchedule from "./components/GarageDailySchedule";
 import GarageContactSection from "./components/GarageContactSection";
 import GarageQuestionDialog from "./components/GarageQuestionDialog";
+import { addService } from "../../redux/slices/storedServicesSlice";
 
 interface IProps {
 }
@@ -37,7 +38,6 @@ export default ({ }: IProps) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [relatedServiceTypes, setRelatedServiceTypes] = useState<GarageServiceType[]>([]);
     const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto | null>(null);
-    const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
     const queryParams = new URLSearchParams(location.search);
     const { identifier } = useParams();
     const licensePlate = queryParams.get('licensePlate');
@@ -45,15 +45,25 @@ export default ({ }: IProps) => {
     const lng = queryParams.get('lng');
 
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
-    //const { startConversatrion } = useConversation();
+    const services: SelectedService[] = useSelector((state: any) => state.storedServices);
 
-    const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
-        if (cartItems.some(cartItem => cartItem.id === itemToAdd.id)) {
+    const tryAddCartItem = (service: SelectedService) => {
+        service.relatedGarageLookupId = garageLookup?.id!;
+
+        if (services.some(item => (
+            item.relatedGarageLookupId === service.relatedGarageLookupId &&
+            item.relatedServiceType === service.relatedServiceType
+        ))) {
             dispatch(showOnError(t("Cart item already exist")));
             return;
         }
 
-        setCartItems([...cartItems, itemToAdd]);
+        service.receiverWhatsAppNumberOrEmail = (garageLookup?.whatsappNumber! || garageLookup?.emailAddress!);
+        service.vehicleLicensePlate = licensePlate!;
+        service.vehicleLatitude = lat!;
+        service.vehicleLongitude = lng!;
+
+        dispatch(addService(service));
     }
 
     const hasQuestionItem = (serviceType: GarageServiceType) => {

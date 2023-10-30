@@ -27,6 +27,9 @@ internal class WhatsappService : IWhatsappService
         _developPhoneNumberId = _configuration["WhatsApp:TestPhoneNumberId"]!;
     }
 
+    /// <summary>
+    /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=837399274834029
+    /// </summary>
     public async Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string fromContactName)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
@@ -82,6 +85,9 @@ internal class WhatsappService : IWhatsappService
         }
     }
 
+    /// <summary>
+    /// https://business.facebook.com/wa/manage/template-details/?business_id=656542846083352&waba_id=107289168858080&id=859328899233016&date_range=last_30_days
+    /// </summary>
     public async Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromContactName, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
@@ -142,6 +148,9 @@ internal class WhatsappService : IWhatsappService
         }
     }
 
+    /// <summary>
+    /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=2664948603645930
+    /// </summary>
     public async Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleTechnicalBriefDtoItem vehicle, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
@@ -211,9 +220,6 @@ internal class WhatsappService : IWhatsappService
                             },
                         }
                     },
-
-                    // TODO: Add "Meer info:   https://"
-                    // TODO: Remove "Antwoorden kan door middel van antwoord geven op dit bericht."
                 }
             }
         };

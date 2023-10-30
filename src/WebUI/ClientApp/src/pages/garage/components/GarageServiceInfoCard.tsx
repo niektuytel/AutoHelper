@@ -24,10 +24,11 @@ import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
+import QuestionMark from '@mui/icons-material/QuestionMark';
 import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceItemDto, GarageServiceType } from "../../../app/web-api-client";
+import { GarageServiceItemDto, GarageServiceType, SelectedService } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
 import { getDefaultCreateGarageServices, getDefaultGarageServicesInfo, getTitleForServiceType } from "../../garage-account/defaultGarageService";
 
@@ -37,7 +38,7 @@ interface IProps {
     serviceType: GarageServiceType;
     selectedItem: any | null;
     setSelectedItem: (serviceType: any) => void;
-    addCartItem: (serviceType: any) => void;
+    addCartItem: (selectedService: SelectedService) => void;
     hasQuestionItem: (serviceType: GarageServiceType) => void;
 }
 
@@ -69,15 +70,20 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
                                 hasQuestionItem(serviceType);
                             }}
                         >
-                            <HelpCenterOutlinedIcon sx={{ color: "black" }} />
+                            <HelpCenterOutlinedIcon />
                         </IconButton>
                         <IconButton
                             onClick={(e) => {
                                 e.stopPropagation();
-                                addCartItem(service);
+
+                                const selectedService: SelectedService = new SelectedService({
+                                    relatedServiceType: serviceType
+                                });
+
+                                addCartItem(selectedService);
                             }}
                         >
-                            <AddBoxOutlinedIcon sx={{ color: "black"}} />
+                            <AddIcon sx={{ color: "black"}} />
                         </IconButton>
                     </>
                 }
