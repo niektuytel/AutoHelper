@@ -23,7 +23,7 @@ import { showOnError, showOnSuccess } from "../../redux/slices/statusSnackbarSli
 import { useDispatch, useSelector } from "react-redux";
 import GarageDailySchedule from "./components/GarageDailySchedule";
 import GarageContactSection from "./components/GarageContactSection";
-import GarageQuestionDialog from "./components/GarageQuestionDialog";
+import GarageQuestionDialog from "../../components/GarageQuestionDialog";
 import { addService } from "../../redux/slices/storedServicesSlice";
 
 interface IProps {
@@ -49,6 +49,8 @@ export default ({ }: IProps) => {
 
     const tryAddCartItem = (service: SelectedService) => {
         service.relatedGarageLookupId = garageLookup?.id!;
+        service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
+        service.relatedGarageLookupName = garageLookup?.name;
 
         if (services.some(item => (
             item.relatedGarageLookupId === service.relatedGarageLookupId &&
@@ -132,12 +134,16 @@ export default ({ }: IProps) => {
         </Container>
         {garageLookup && relatedServiceTypes &&
             <GarageQuestionDialog
-                garageLookupId={garageLookup?.id!}
-                garageWhatsAppNumberOrEmail={garageLookup?.whatsappNumber! || garageLookup?.emailAddress!}
-                relatedServiceTypes={relatedServiceTypes!}
-                licensePlate={licensePlate!}
-                longitude={lng!}
-                latitude={lat!}
+                services={[new SelectedService({
+                    relatedServiceType: relatedServiceTypes![0],
+                    relatedGarageLookupId: garageLookup?.id!,
+                    relatedGarageLookupIdentifier: garageLookup?.identifier!,
+                    relatedGarageLookupName: garageLookup?.name,
+                    receiverWhatsAppNumberOrEmail: (garageLookup?.whatsappNumber! || garageLookup?.emailAddress!),
+                    vehicleLicensePlate: licensePlate!,
+                    vehicleLatitude: lat!,
+                    vehicleLongitude: lng!
+                })]}
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
             />

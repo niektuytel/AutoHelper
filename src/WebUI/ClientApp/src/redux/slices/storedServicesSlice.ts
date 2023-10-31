@@ -23,10 +23,10 @@ const storedServicesSlice = createSlice({
             setServicesToCookie(newState);
             return newState;
         },
-        removeService: (state, action: PayloadAction<string>) => {
-            //const newState = state.filter((service) => service.id !== action.payload);
-            //setServicesToCookie(newState);
-            return state;
+        removeService: (state, action: PayloadAction<SelectedService>) => {
+            const newState = state.filter((service) => service !== action.payload);
+            setServicesToCookie(newState);
+            return newState;
         },
         getServices: () => {
             return getServicesFromCookie();

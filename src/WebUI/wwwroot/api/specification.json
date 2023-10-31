@@ -3188,8 +3188,17 @@
             "type": "string",
             "format": "guid"
           },
+          "relatedGarageLookupIdentifier": {
+            "type": "string"
+          },
+          "relatedGarageLookupName": {
+            "type": "string"
+          },
           "relatedServiceType": {
             "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "relatedServiceTypeTitle": {
+            "type": "string"
           },
           "vehicleLicensePlate": {
             "type": "string"

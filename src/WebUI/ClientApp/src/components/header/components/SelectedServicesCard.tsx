@@ -1,0 +1,141 @@
+﻿import React, { useState, MouseEvent, useEffect, useRef, RefObject } from "react";
+import CloseIcon from '@mui/icons-material/Close';
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate, useParams } from "react-router";
+
+// own imports
+import HeaderLicensePlateSearch from "../components/HeaderLicensePlateSearch";
+import { ROUTES } from "../../../constants/routes";
+import { GarageLookupDto, SelectedService } from "../../../app/web-api-client";
+import { getServices, removeService } from "../../../redux/slices/storedServicesSlice";
+import { useTranslation } from "react-i18next";
+import GarageQuestionDialog from "../../GarageQuestionDialog";
+
+export function useOutsideClick<T extends HTMLElement = HTMLElement>(
+    ref: RefObject<T>,
+    callback: () => void
+): void {
+    const handleClick = (e: any) => {
+        if (ref.current && !ref.current.contains(e.target as Node)) {
+            callback();
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+        };
+    }, [ref, callback]);
+}
+
+interface IProps {
+    isCardVisible: boolean;
+    services: SelectedService[];
+    onClose: () => void;
+}
+
+export default ({ isCardVisible, services, onClose }: IProps) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+    useOutsideClick(cardRef, onClose);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [requestQuote, setRequestQuote] = useState(false);
+
+    const handleServiceClick = (service: SelectedService) => {
+        navigate(`${ROUTES.GARAGE}/${service.relatedGarageLookupIdentifier}?licensePlate=${service.vehicleLicensePlate}&lat=${service.vehicleLatitude}&lng=${service.vehicleLongitude}`);
+    };
+
+    const handleServiceRemove = (event: React.MouseEvent<HTMLButtonElement>, service: SelectedService) => {
+        event.stopPropagation();
+
+        if (services.length == 1) {
+            onClose();
+        }
+
+        dispatch(removeService(service));
+    };
+
+
+    const handleAskQuestionClick = () => {
+        setRequestQuote(false);
+        setDialogOpen(true);
+    };
+
+    const handleRequestQuoteClick = () => {
+        setRequestQuote(true);
+        setDialogOpen(true);
+    };
+
+
+    return (
+        <>
+            {isCardVisible && 
+                <Card ref={cardRef} sx={{ maxWidth: 345, position: 'absolute', top: '100%', right: 0, zIndex: 2, m: 1 }}>
+                    <CardHeader
+                        title={t("Selected Services")}
+                        action={
+                            <IconButton onClick={onClose}>
+                                <CloseIcon />
+                            </IconButton>
+                        }
+                        titleTypographyProps={{ align: 'left' }}
+                        sx={{ paddingBottom: 0 }}
+                    />
+                    <CardContent>
+                        <List dense>
+                            {services.map((service, index) => (
+                                <React.Fragment key={`${service.relatedGarageLookupId};${service.relatedServiceType}`}>
+                                    {index > 0 && <Divider component="li" />}
+                                    <ListItem
+                                        onClick={() => handleServiceClick(service)}
+                                        secondaryAction={
+                                            <IconButton edge="end" aria-label="delete">
+                                                <DeleteIcon onClick={(e: any) => handleServiceRemove(e, service)} />
+                                            </IconButton>
+                                        }
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.04)', // Or any other color
+                                                cursor: 'pointer',
+                                            },
+                                        }}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="subtitle1" noWrap>
+                                                    {service.relatedServiceTypeTitle}
+                                                </Typography>
+                                            }
+                                            secondary={
+                                                <Typography variant="body2" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {service.relatedGarageLookupName} {t("for")} {service.vehicleLicensePlate}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                </React.Fragment>
+                            ))}
+                        </List>
+                        <Button variant="outlined" fullWidth sx={{ marginTop: 1 }} onClick={handleAskQuestionClick}>
+                            {t("Ask question")}
+                        </Button>
+                        <Button variant="contained" fullWidth sx={{ marginTop: 1 }} onClick={handleRequestQuoteClick}>
+                            {t("Request quote")}
+                        </Button>
+                    </CardContent>
+                </Card>
+            }
+            <GarageQuestionDialog
+                requestQuote={requestQuote}
+                services={services}
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+            />
+        </>
+    );
+};

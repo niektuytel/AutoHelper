@@ -6,7 +6,12 @@ public class SelectedService
 {
     public Guid RelatedGarageLookupId { get; set; }
 
+    public string RelatedGarageLookupIdentifier { get; set; }
+
+    public string RelatedGarageLookupName { get; set; }
+
     public GarageServiceType RelatedServiceType { get; set; }
+    public string RelatedServiceTypeTitle { get; set; }
 
     public string VehicleLicensePlate { get; set; }
 

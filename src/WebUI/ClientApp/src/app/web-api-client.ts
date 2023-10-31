@@ -4407,7 +4407,10 @@ export interface ISelectedServices {
 
 export class SelectedService implements ISelectedService {
     relatedGarageLookupId?: string;
+    relatedGarageLookupIdentifier?: string;
+    relatedGarageLookupName?: string;
     relatedServiceType?: GarageServiceType;
+    relatedServiceTypeTitle?: string;
     vehicleLicensePlate?: string;
     vehicleLongitude?: string;
     vehicleLatitude?: string;
@@ -4425,7 +4428,10 @@ export class SelectedService implements ISelectedService {
     init(_data?: any) {
         if (_data) {
             this.relatedGarageLookupId = _data["relatedGarageLookupId"];
+            this.relatedGarageLookupIdentifier = _data["relatedGarageLookupIdentifier"];
+            this.relatedGarageLookupName = _data["relatedGarageLookupName"];
             this.relatedServiceType = _data["relatedServiceType"];
+            this.relatedServiceTypeTitle = _data["relatedServiceTypeTitle"];
             this.vehicleLicensePlate = _data["vehicleLicensePlate"];
             this.vehicleLongitude = _data["vehicleLongitude"];
             this.vehicleLatitude = _data["vehicleLatitude"];
@@ -4443,7 +4449,10 @@ export class SelectedService implements ISelectedService {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["relatedGarageLookupId"] = this.relatedGarageLookupId;
+        data["relatedGarageLookupIdentifier"] = this.relatedGarageLookupIdentifier;
+        data["relatedGarageLookupName"] = this.relatedGarageLookupName;
         data["relatedServiceType"] = this.relatedServiceType;
+        data["relatedServiceTypeTitle"] = this.relatedServiceTypeTitle;
         data["vehicleLicensePlate"] = this.vehicleLicensePlate;
         data["vehicleLongitude"] = this.vehicleLongitude;
         data["vehicleLatitude"] = this.vehicleLatitude;
@@ -4454,7 +4463,10 @@ export class SelectedService implements ISelectedService {
 
 export interface ISelectedService {
     relatedGarageLookupId?: string;
+    relatedGarageLookupIdentifier?: string;
+    relatedGarageLookupName?: string;
     relatedServiceType?: GarageServiceType;
+    relatedServiceTypeTitle?: string;
     vehicleLicensePlate?: string;
     vehicleLongitude?: string;
     vehicleLatitude?: string;

@@ -77,7 +77,8 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
                                 e.stopPropagation();
 
                                 const selectedService: SelectedService = new SelectedService({
-                                    relatedServiceType: serviceType
+                                    relatedServiceType: serviceType,
+                                    relatedServiceTypeTitle: service.title
                                 });
 
                                 addCartItem(selectedService);
