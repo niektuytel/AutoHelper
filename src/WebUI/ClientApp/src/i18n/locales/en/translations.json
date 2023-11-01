@@ -113,9 +113,13 @@
   "for": "for",
   "Ask question": "Ask question",
   "Request quote": "Request quote",
+  "by": "by",
 
 
 
+  "Request a quote": "Request a Quote",
+  "Request a quote.Tooltip": "Request a price estimate for the selected services and your vehicle.",
+  "Request a quote.Description": "We will forward your quote request to the garage, including the associated details of your vehicle. You will receive a message as soon as the garage has prepared your quote.",
   "Ask a Question": "Ask a question",
   "Ask a Question.Tooltip": "Ask a question related to your selected service and car",
   "Ask a Question.Description": "We will forward your question to the garage, with associated details of your vehicle. You will receive a message as soon as the garage has answered your question.",
@@ -133,6 +137,8 @@
   "ConversationType.Appointment.SampleMessage": "Is there an available slot soon?",
   "ConversationType.Technical": "Technical",
   "ConversationType.Technical.SampleMessage": "Are there any known issues I should be aware of?",
+  "ConversationType.RequestAQuote": "Request a quote",
+  "ConversationType.RequestAQuote.SampleMessage": "Hello, I am interested in your services and would like to request a quote. Could you please provide me with more information about your pricing and availability? Thank you!",
 
 
 

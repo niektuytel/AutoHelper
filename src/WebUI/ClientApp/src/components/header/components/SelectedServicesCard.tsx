@@ -3,15 +3,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 // own imports
-import HeaderLicensePlateSearch from "../components/HeaderLicensePlateSearch";
 import { ROUTES } from "../../../constants/routes";
-import { GarageLookupDto, SelectedService } from "../../../app/web-api-client";
-import { getServices, removeService } from "../../../redux/slices/storedServicesSlice";
-import { useTranslation } from "react-i18next";
-import GarageQuestionDialog from "../../GarageQuestionDialog";
+import { SelectedService } from "../../../app/web-api-client";
+import { removeService } from "../../../redux/slices/storedServicesSlice";
+import GarageContactDialog from "../../GarageContactDialog";
 
 export function useOutsideClick<T extends HTMLElement = HTMLElement>(
     ref: RefObject<T>,
@@ -94,8 +93,8 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
                                     <ListItem
                                         onClick={() => handleServiceClick(service)}
                                         secondaryAction={
-                                            <IconButton edge="end" aria-label="delete">
-                                                <DeleteIcon onClick={(e: any) => handleServiceRemove(e, service)} />
+                                            <IconButton onClick={(e: any) => handleServiceRemove(e, service)} edge="end" aria-label="delete">
+                                                <DeleteIcon />
                                             </IconButton>
                                         }
                                         sx={{
@@ -130,7 +129,7 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
                     </CardContent>
                 </Card>
             }
-            <GarageQuestionDialog
+            <GarageContactDialog
                 requestQuote={requestQuote}
                 services={services}
                 open={dialogOpen}

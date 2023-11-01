@@ -761,48 +761,6 @@
         }
       }
     },
-    "/api/Message/StartConversation": {
-      "post": {
-        "tags": [
-          "Message"
-        ],
-        "operationId": "Message_StartConversation",
-        "requestBody": {
-          "x-name": "conversation",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartConversationBody"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Message/StartConversations": {
       "post": {
         "tags": [
@@ -2200,13 +2158,15 @@
           "Other",
           "Price",
           "Appointment",
-          "Technical"
+          "Technical",
+          "RequestAQuote"
         ],
         "enum": [
           0,
           1,
           2,
-          3
+          3,
+          4
         ]
       },
       "ConversationMessageItem": {
@@ -3096,57 +3056,6 @@
           "total": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "StartConversationBody": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "relatedGarageLookupId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "relatedServiceTypes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
-            }
-          },
-          "vehicleLicensePlate": {
-            "type": "string"
-          },
-          "vehicleLongitude": {
-            "type": "string"
-          },
-          "vehicleLatitude": {
-            "type": "string"
-          },
-          "vehiclePhoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "vehicleWhatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "vehicleEmailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "senderWhatsAppNumberOrEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "receiverWhatsAppNumberOrEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "messageType": {
-            "$ref": "#/components/schemas/ConversationType"
-          },
-          "messageContent": {
-            "type": "string"
           }
         }
       },

@@ -24,7 +24,11 @@ const storedServicesSlice = createSlice({
             return newState;
         },
         removeService: (state, action: PayloadAction<SelectedService>) => {
-            const newState = state.filter((service) => service !== action.payload);
+            const serviceToRemove = action.payload;
+            const newState = state.filter((service) =>
+                service.relatedGarageLookupId !== serviceToRemove.relatedGarageLookupId ||
+                service.relatedServiceType !== serviceToRemove.relatedServiceType
+            );
             setServicesToCookie(newState);
             return newState;
         },

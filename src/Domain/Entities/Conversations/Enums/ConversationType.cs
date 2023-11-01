@@ -6,4 +6,5 @@ public enum ConversationType
     Price = 1,
     Appointment = 2,
     Technical = 3,
+    RequestAQuote = 4,
 }

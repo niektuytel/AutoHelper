@@ -12,6 +12,7 @@ import {
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useOnclickOutside from "react-cool-onclickoutside";
@@ -79,7 +80,7 @@ export default ({ }: IProps) => {
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
-                        <LocationOnOutlinedIcon color="action" />
+                        <DriveEtaIcon color="action" />
                     </InputAdornment>
                 ),
                 endAdornment: (

@@ -14,7 +14,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 // local
 import ImageLogo from "../../components/logo/ImageLogo";
 import { COLORS } from "../../constants/colors";
-import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService, StartConversationBody } from "../../app/web-api-client";
+import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
 import { useQueryClient } from "react-query";
 import useGarage from "./useGarage";
 import Header from "../../components/header/Header";
@@ -23,7 +23,7 @@ import { showOnError, showOnSuccess } from "../../redux/slices/statusSnackbarSli
 import { useDispatch, useSelector } from "react-redux";
 import GarageDailySchedule from "./components/GarageDailySchedule";
 import GarageContactSection from "./components/GarageContactSection";
-import GarageQuestionDialog from "../../components/GarageQuestionDialog";
+import GarageContactDialog from "../../components/GarageContactDialog";
 import { addService } from "../../redux/slices/storedServicesSlice";
 
 interface IProps {
@@ -133,7 +133,7 @@ export default ({ }: IProps) => {
             </Grid>
         </Container>
         {garageLookup && relatedServiceTypes &&
-            <GarageQuestionDialog
+            <GarageContactDialog
                 services={[new SelectedService({
                     relatedServiceType: relatedServiceTypes![0],
                     relatedGarageLookupId: garageLookup?.id!,

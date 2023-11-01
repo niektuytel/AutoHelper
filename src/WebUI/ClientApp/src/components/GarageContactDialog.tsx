@@ -7,7 +7,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { EnumValues } from 'enum-values';
 
 // custom imports
-import { ConversationType, GarageServiceType, MessageClient, SelectedService, SelectedServices, StartConversationBody } from '../app/web-api-client';
+import { ConversationType, GarageServiceType, MessageClient, SelectedService, SelectedServices } from '../app/web-api-client';
 import { showOnSuccess } from '../redux/slices/statusSnackbarSlice';
 
 const isValidEmail = (input: string): boolean => {
@@ -52,19 +52,6 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
 
     const [loading, setLoading] = useState<boolean>(false);
     const conversationClient = new MessageClient(process.env.PUBLIC_URL);
-    const startConversation = async (command: StartConversationBody) => {
-        setLoading(true);
-        try {
-            console.log(command);
-            const response = await conversationClient.startConversation(command);
-
-            setLoading(false);
-            return response;
-        } catch (response: any) {
-            setLoading(false);
-            throw response;
-        }
-    }
 
     const startConversations = async (command: SelectedServices) => {
         setLoading(true);
@@ -106,22 +93,38 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
             return; // Exit early if invalid input
         }
 
-        const enumValue = convertToEnumValue(messageType);
-        if (enumValue === undefined) {
-            console.error("Invalid messageType");
-            return; // Exit early if invalid messageType
+        // Check if the request a quote is selected
+        if (requestQuote) {
+            const enumValue = ConversationType.RequestAQuote;
+
+            var conversations = new SelectedServices({
+                senderEmailAddress: senderEmailAddress,
+                senderPhoneNumber: senderPhoneNumber,
+                senderWhatsappNumber: senderWhatsappNumber,
+                messageType: enumValue,
+                messageContent: message,
+                services: services
+            });
+            var response = await startConversations(conversations);
+        }
+        else {
+            const enumValue = convertToEnumValue(messageType);
+            if (enumValue === undefined) {
+                console.error("Invalid messageType");
+                return; // Exit early if invalid messageType
+            }
+
+            var conversations = new SelectedServices({
+                senderEmailAddress: senderEmailAddress,
+                senderPhoneNumber: senderPhoneNumber,
+                senderWhatsappNumber: senderWhatsappNumber,
+                messageType: enumValue,
+                messageContent: message,
+                services: services
+            });
+            var response = await startConversations(conversations);
         }
 
-        var conversations = new SelectedServices({
-            senderEmailAddress: senderEmailAddress,
-            senderPhoneNumber: senderPhoneNumber,
-            senderWhatsappNumber: senderWhatsappNumber,
-            messageType: enumValue,
-            messageContent: message,
-            services: services
-        });
-
-        var response = await startConversations(conversations);
         if (services.length === 0) {
             dispatch(showOnSuccess(t("Conversation.Started")));
         } else {
@@ -131,21 +134,20 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
         onClose();
     }
 
-    // TODO: Clean dialog to better usable
-
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>
-                {requestQuote ? t("Request quote") : t("Ask a Question")}
-                <Tooltip title={requestQuote ? t("Request quote.Tooltip") : t("Ask a Question.Tooltip")}>
+                {requestQuote ? t("Request a quote") : t("Ask a Question")}{` ${t("by")}`}
+                <Tooltip title={requestQuote ? t("Request a quote.Tooltip") : t("Ask a Question.Tooltip")}>
                     <IconButton size="small">
                         <InfoOutlinedIcon fontSize="inherit" />
                     </IconButton>
-                </Tooltip>
+                </Tooltip><br/>
+                [{[...new Set(services?.map(x => x.relatedGarageLookupName?.toLowerCase()))].join(' + ')}]
             </DialogTitle>
             <DialogContent>
                 <Typography variant="body2" paragraph>
-                    {requestQuote ? t("Request quote.Description") : t("Ask a Question.Description")}
+                    {requestQuote ? t("Request a quote.Description") : t("Ask a Question.Description")}
                 </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -185,7 +187,7 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                             name="messageType"
                             control={control}
                             rules={{
-                                required: t("Ask a Question.MessageType.Required")
+                                required: requestQuote ? undefined : t("Ask a Question.MessageType.Required")
                             }}
                             render={({ field }) => (
                                 <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }} error={!!errors.messageType}>
