@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Common.Models;
@@ -115,6 +116,23 @@ internal partial class RDWApiClient
             default://NG
                 return "Niet geregistreerd.";
         }
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/hx2c-gt7k.json
+    /// </summary>
+    /// <returns></returns>
+    public async Task<IEnumerable<VehicleDefectItem>> GetVehicleDefects()
+    {
+        var url = $"https://opendata.rdw.nl/resource/hx2c-gt7k.json";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+
+
+        throw new NotImplementedException();
     }
 
     /// <summary>

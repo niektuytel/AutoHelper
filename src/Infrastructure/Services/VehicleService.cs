@@ -2,6 +2,7 @@
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 using AutoHelper.Domain.Entities.Garages;
@@ -443,4 +444,16 @@ internal class VehicleService : IVehicleService
         };
     }
 
+    public async Task<VehicleDefectItem[]> GetVehicleDefectsHistory(string licensePlate)
+    {
+        var data = await _rdwService.GetVehicle(licensePlate);
+        if (data?.HasValues != true)
+        {
+            throw new NotFoundException("Vehicle data not found.");
+        }
+
+        throw new NotImplementedException();
+
+        return null;
+    }
 }

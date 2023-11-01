@@ -976,7 +976,7 @@ export interface IVehicleClient {
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
 
-    createLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem>;
+    upsertLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1075,7 +1075,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecsDtoItem>(null as any);
     }
 
-    createLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem> {
+    upsertLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem> {
         let url_ = this.baseUrl + "/api/Vehicle/CreateLookup";
         url_ = url_.replace(/[?&]$/, "");
 
