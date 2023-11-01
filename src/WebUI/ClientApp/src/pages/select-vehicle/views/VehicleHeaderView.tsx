@@ -15,15 +15,24 @@ export default ({ isMobile, license_plate }: IProps) => {
     return (
         <>
             <Hidden mdDown>
-                <LocationSearchField licence_plate={license_plate} />
+                <Box sx={{ alignSelf: "left", marginTop: "10px" }}>
+                    <Typography variant="h4" color="white" align="left">
+                        <b>Bestel onderhoud</b>
+                    </Typography>
+                    <Typography variant="body1" color="white" align="left">
+                        <b>met de garage in de buurt</b>
+                    </Typography>
+                    <LocationSearchField licence_plate={license_plate} />
+                </Box>
+                {/*<LocationSearchField licence_plate={license_plate} />*/}
                 <Grid container sx={{ minHeight: "50vh" }} >
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "30px" }}>
                         <Typography variant="h2" color="white">
-                            <b>Bestel onderhoud</b>
+                            <b>TODO: car with field that are been damages</b>
                         </Typography>
-                        <Typography variant="h6" color="white">
-                            <b>met de garage in de buurt</b>
-                        </Typography>
+                        {/*<Typography variant="h6" color="white">*/}
+                        {/*    <b>met de garage in de buurt</b>*/}
+                        {/*</Typography>*/}
                     </Grid>
                     <Grid item xs={6} sx={{ marginTop: "25px", paddingLeft:"50px" }}>
                         <VehicleBriefInformation isMobile={isMobile} license_plate={license_plate} />

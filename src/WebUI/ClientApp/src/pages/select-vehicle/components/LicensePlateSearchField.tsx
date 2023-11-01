@@ -118,7 +118,7 @@ export default ({ }: IProps) => {
                     </InputAdornment>
                 ),
                 style: {
-                    marginTop: isMobile ? '15px' : '60px',
+                    marginTop: isMobile ? '15px' : '90px',
                     height: '50px',
                     fontSize: '1.2em',
                     paddingRight: '0',

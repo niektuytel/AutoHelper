@@ -42,7 +42,7 @@ export default ({ }: IProps) => {
                     <Box sx={{ backgroundColor: COLORS.BLUE, borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px", p:1 }}>
                         <Paper
                             elevation={2}
-                            sx={{ p: 1, width: "initial", position: "relative", marginTop:"55px" }}
+                            sx={{ p: 1, width: "initial", position: "relative", marginTop:"90px" }}
                         >
                             <GarageSearchField
                                 license_plate={license_plate!}
