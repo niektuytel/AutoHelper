@@ -1,9 +1,10 @@
 ﻿import React from 'react';
-import { Box, Grid, Hidden, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid, Hidden, Typography } from "@mui/material";
 import TextFieldLicensePlates from "../components/LicensePlateSearchField";
 import LocationSearchField from '../components/LocationSearchField';
 import { useParams } from 'react-router-dom';
 import VehicleBriefInformation from '../components/VehicleBriefInformation';
+import CustomizedTimeline from '../components/TimelineBox';
 
 interface IProps {
     isMobile: boolean;
@@ -24,15 +25,9 @@ export default ({ isMobile, license_plate }: IProps) => {
                     </Typography>
                     <LocationSearchField licence_plate={license_plate} />
                 </Box>
-                {/*<LocationSearchField licence_plate={license_plate} />*/}
                 <Grid container sx={{ minHeight: "50vh" }} >
-                    <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "30px" }}>
-                        <Typography variant="h2" color="white">
-                            <b>TODO: car with field that are been damages</b>
-                        </Typography>
-                        {/*<Typography variant="h6" color="white">*/}
-                        {/*    <b>met de garage in de buurt</b>*/}
-                        {/*</Typography>*/}
+                    <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "25px" }}>
+                        <CustomizedTimeline/>
                     </Grid>
                     <Grid item xs={6} sx={{ marginTop: "25px", paddingLeft:"50px" }}>
                         <VehicleBriefInformation isMobile={isMobile} license_plate={license_plate} />

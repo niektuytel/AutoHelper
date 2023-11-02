@@ -11,9 +11,9 @@ using MediatR;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 
-public class GetVehicleDefectsQuery: IRequest<VehicleDefectItem[]>
+public class GetVehicleMOTHistoryQuery: IRequest<VehicleDefectItem[]>
 {
-    public GetVehicleDefectsQuery(string licensePlate)
+    public GetVehicleMOTHistoryQuery(string licensePlate)
     {
         LicensePlate = licensePlate;
     }
@@ -21,7 +21,7 @@ public class GetVehicleDefectsQuery: IRequest<VehicleDefectItem[]>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleDefectsQueryHandler : IRequestHandler<GetVehicleDefectsQuery, VehicleDefectItem[]>
+public class GetVehicleDefectsQueryHandler : IRequestHandler<GetVehicleMOTHistoryQuery, VehicleDefectItem[]>
 {
     private readonly IVehicleService _vehicleService;
 
@@ -30,7 +30,7 @@ public class GetVehicleDefectsQueryHandler : IRequestHandler<GetVehicleDefectsQu
         _vehicleService = vehicleService;
     }
 
-    public async Task<VehicleDefectItem[]> Handle(GetVehicleDefectsQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleDefectItem[]> Handle(GetVehicleMOTHistoryQuery request, CancellationToken cancellationToken)
     {
         var info = await _vehicleService.GetVehicleDefectsHistory(request.LicensePlate);
         if (info == null)

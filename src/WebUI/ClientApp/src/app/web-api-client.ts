@@ -974,15 +974,11 @@ export interface IVehicleClient {
 
     searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto>;
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]>;
 
-    getDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]>;
+    getMOTDetectedDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]>;
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
-
-    getCommonlyKnownIssues(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
-
-    upsertLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1038,7 +1034,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleBriefDtoItem>(null as any);
     }
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto> {
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
@@ -1056,14 +1052,21 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogItemDto> {
+    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogItemDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleServiceLogItemDto.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(VehicleServiceLogItemDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return result200;
             });
         } else if (status === 400) {
@@ -1078,11 +1081,11 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleServiceLogItemDto>(null as any);
+        return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
     }
 
-    getDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetDefects?";
+    getMOTDetectedDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetMOTDetectedDefects?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -1095,11 +1098,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetDefects(_response);
+            return this.processGetMOTDetectedDefects(_response);
         });
     }
 
-    protected processGetDefects(response: Response): Promise<VehicleDefectItem[]> {
+    protected processGetMOTDetectedDefects(response: Response): Promise<VehicleDefectItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1172,94 +1175,6 @@ export class VehicleClient implements IVehicleClient {
             });
         }
         return Promise.resolve<VehicleSpecsDtoItem>(null as any);
-    }
-
-    getCommonlyKnownIssues(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetCommonlyKnownIssues?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetCommonlyKnownIssues(_response);
-        });
-    }
-
-    protected processGetCommonlyKnownIssues(response: Response): Promise<VehicleSpecsDtoItem> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleSpecsDtoItem.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<VehicleSpecsDtoItem>(null as any);
-    }
-
-    upsertLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertLookup";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertLookup(_response);
-        });
-    }
-
-    protected processUpsertLookup(response: Response): Promise<VehicleLookupItem> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleLookupItem.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<VehicleLookupItem>(null as any);
     }
 }
 
@@ -4866,70 +4781,6 @@ export class VehicleInfoSectionItem implements IVehicleInfoSectionItem {
 export interface IVehicleInfoSectionItem {
     title?: string;
     values?: string[][];
-}
-
-export class UpsertVehicleLookupCommand implements IUpsertVehicleLookupCommand {
-    licensePlate!: string;
-    motExpiryDate?: Date;
-    longitude!: string;
-    latitude!: string;
-    location?: Point;
-    phoneNumber?: string | undefined;
-    whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
-
-    constructor(data?: IUpsertVehicleLookupCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.licensePlate = _data["licensePlate"];
-            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
-            this.longitude = _data["longitude"];
-            this.latitude = _data["latitude"];
-            this.location = _data["location"] ? Point.fromJS(_data["location"]) : <any>undefined;
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsappNumber = _data["whatsappNumber"];
-            this.emailAddress = _data["emailAddress"];
-        }
-    }
-
-    static fromJS(data: any): UpsertVehicleLookupCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpsertVehicleLookupCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["licensePlate"] = this.licensePlate;
-        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
-        data["longitude"] = this.longitude;
-        data["latitude"] = this.latitude;
-        data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsappNumber"] = this.whatsappNumber;
-        data["emailAddress"] = this.emailAddress;
-        return data;
-    }
-}
-
-export interface IUpsertVehicleLookupCommand {
-    licensePlate: string;
-    motExpiryDate?: Date;
-    longitude: string;
-    latitude: string;
-    location?: Point;
-    phoneNumber?: string | undefined;
-    whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
 }
 
 export interface FileResponse {

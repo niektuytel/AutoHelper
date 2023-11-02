@@ -909,7 +909,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                  }
                 }
               }
             }
@@ -927,12 +930,12 @@
         }
       }
     },
-    "/api/Vehicle/GetDefects": {
+    "/api/Vehicle/GetMOTDetectedDefects": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetDefects",
+        "operationId": "Vehicle_GetMOTDetectedDefects",
         "parameters": [
           {
             "name": "licensePlate",
@@ -995,89 +998,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VehicleSpecsDtoItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/GetCommonlyKnownIssues": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetCommonlyKnownIssues",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VehicleSpecsDtoItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertLookup": {
-      "post": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertLookup",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpsertVehicleLookupCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VehicleLookupItem"
                 }
               }
             }
@@ -3414,48 +3334,6 @@
                 "type": "string"
               }
             }
-          }
-        }
-      },
-      "UpsertVehicleLookupCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "licensePlate",
-          "longitude",
-          "latitude"
-        ],
-        "properties": {
-          "licensePlate": {
-            "type": "string",
-            "minLength": 1
-          },
-          "motExpiryDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "longitude": {
-            "type": "string",
-            "minLength": 1
-          },
-          "latitude": {
-            "type": "string",
-            "minLength": 1
-          },
-          "location": {
-            "$ref": "#/components/schemas/Point"
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "whatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "emailAddress": {
-            "type": "string",
-            "nullable": true
           }
         }
       }

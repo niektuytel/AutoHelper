@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 
-public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogItemDto>
+public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogItemDto[]>
 {
     public GetVehicleServiceLogsQuery(string licensePlate)
     {
@@ -23,7 +23,7 @@ public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogItemDto>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogItemDto>
+public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogItemDto[]>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
         _mapper = mapper;
     }
 
-    public async Task<VehicleServiceLogItemDto> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogItemDto[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
     {
         //var entities = await _context.Vehicles
         //    .AsNoTracking()

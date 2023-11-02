@@ -13,6 +13,7 @@ import VehicleInformation from '../components/VehicleInformation';
 
 const tabsConfig = [
     { hash: "#service_logs", label: 'Maintenance logs', icon: <CarRepairIcon fontSize='medium' /> },
+    { hash: "#mot_history", label: 'APK geschiedenis', icon: <DirectionsCarFilledIcon fontSize='medium' /> },
     { hash: "#information", label: 'Information', icon: <DirectionsCarFilledIcon fontSize='medium' /> },
 ];
 

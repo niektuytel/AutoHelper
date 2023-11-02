@@ -27,6 +27,9 @@ public class VehicleLookupItem : BaseAuditableEntity
     public string? EmailAddress { get; set; }
 
     [Required]
+    public ICollection<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();
+
+    [Required]
     public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
 
     [Required]
