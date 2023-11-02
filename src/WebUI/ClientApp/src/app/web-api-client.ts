@@ -974,7 +974,13 @@ export interface IVehicleClient {
 
     searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
 
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto>;
+
+    getDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]>;
+
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
+
+    getCommonlyKnownIssues(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
 
     upsertLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem>;
 }
@@ -1032,6 +1038,99 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleBriefDtoItem>(null as any);
     }
 
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetServiceLogs(_response);
+        });
+    }
+
+    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogItemDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleServiceLogItemDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleServiceLogItemDto>(null as any);
+    }
+
+    getDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetDefects?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetDefects(_response);
+        });
+    }
+
+    protected processGetDefects(response: Response): Promise<VehicleDefectItem[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(VehicleDefectItem.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleDefectItem[]>(null as any);
+    }
+
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/GetSpecifications?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1075,8 +1174,51 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecsDtoItem>(null as any);
     }
 
+    getCommonlyKnownIssues(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetCommonlyKnownIssues?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCommonlyKnownIssues(_response);
+        });
+    }
+
+    protected processGetCommonlyKnownIssues(response: Response): Promise<VehicleSpecsDtoItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleSpecsDtoItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleSpecsDtoItem>(null as any);
+    }
+
     upsertLookup(command: UpsertVehicleLookupCommand): Promise<VehicleLookupItem> {
-        let url_ = this.baseUrl + "/api/Vehicle/CreateLookup";
+        let url_ = this.baseUrl + "/api/Vehicle/UpsertLookup";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1091,11 +1233,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateLookup(_response);
+            return this.processUpsertLookup(_response);
         });
     }
 
-    protected processCreateLookup(response: Response): Promise<VehicleLookupItem> {
+    protected processUpsertLookup(response: Response): Promise<VehicleLookupItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -4472,6 +4614,166 @@ export interface IVehicleBriefDtoItem {
     consumption?: string;
     motExpiryDate?: string;
     mileage?: string;
+}
+
+export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
+    date?: Date;
+    mileage?: number;
+    description?: string | undefined;
+    serviceItems?: VehicleGarageServiceItemDto[];
+
+    constructor(data?: IVehicleServiceLogItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.mileage = _data["mileage"];
+            this.description = _data["description"];
+            if (Array.isArray(_data["serviceItems"])) {
+                this.serviceItems = [] as any;
+                for (let item of _data["serviceItems"])
+                    this.serviceItems!.push(VehicleGarageServiceItemDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleServiceLogItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleServiceLogItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["mileage"] = this.mileage;
+        data["description"] = this.description;
+        if (Array.isArray(this.serviceItems)) {
+            data["serviceItems"] = [];
+            for (let item of this.serviceItems)
+                data["serviceItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IVehicleServiceLogItemDto {
+    date?: Date;
+    mileage?: number;
+    description?: string | undefined;
+    serviceItems?: VehicleGarageServiceItemDto[];
+}
+
+export class VehicleGarageServiceItemDto implements IVehicleGarageServiceItemDto {
+    id?: string;
+    type?: GarageServiceType;
+    description?: string;
+    durationInMinutes?: number;
+
+    constructor(data?: IVehicleGarageServiceItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.type = _data["type"];
+            this.description = _data["description"];
+            this.durationInMinutes = _data["durationInMinutes"];
+        }
+    }
+
+    static fromJS(data: any): VehicleGarageServiceItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleGarageServiceItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["type"] = this.type;
+        data["description"] = this.description;
+        data["durationInMinutes"] = this.durationInMinutes;
+        return data;
+    }
+}
+
+export interface IVehicleGarageServiceItemDto {
+    id?: string;
+    type?: GarageServiceType;
+    description?: string;
+    durationInMinutes?: number;
+}
+
+export class VehicleDefectItem implements IVehicleDefectItem {
+    id?: string;
+    startDate?: number;
+    endDate?: number;
+    paragraphNumber?: number;
+    articleNumber?: string;
+    description?: string | undefined;
+
+    constructor(data?: IVehicleDefectItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.startDate = _data["startDate"];
+            this.endDate = _data["endDate"];
+            this.paragraphNumber = _data["paragraphNumber"];
+            this.articleNumber = _data["articleNumber"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): VehicleDefectItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleDefectItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["startDate"] = this.startDate;
+        data["endDate"] = this.endDate;
+        data["paragraphNumber"] = this.paragraphNumber;
+        data["articleNumber"] = this.articleNumber;
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IVehicleDefectItem {
+    id?: string;
+    startDate?: number;
+    endDate?: number;
+    paragraphNumber?: number;
+    articleNumber?: string;
+    description?: string | undefined;
 }
 
 export class VehicleSpecsDtoItem implements IVehicleSpecsDtoItem {

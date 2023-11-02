@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Domain.Entities.Vehicles;
 using MediatR;
 
@@ -22,20 +23,21 @@ public class GetVehicleDefectsQuery: IRequest<VehicleDefectItem[]>
 
 public class GetVehicleDefectsQueryHandler : IRequestHandler<GetVehicleDefectsQuery, VehicleDefectItem[]>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IVehicleService _vehicleService;
 
-    public GetVehicleDefectsQueryHandler(IApplicationDbContext context)
+    public GetVehicleDefectsQueryHandler(IVehicleService vehicleService)
     {
-        _context = context;
+        _vehicleService = vehicleService;
     }
 
     public async Task<VehicleDefectItem[]> Handle(GetVehicleDefectsQuery request, CancellationToken cancellationToken)
     {
-        var entity = _context.VehicleLookups.FirstOrDefault(x => x.LicensePlate == request.LicensePlate);
-        if (entity == null)
+        var info = await _vehicleService.GetVehicleDefectsHistory(request.LicensePlate);
+        if (info == null)
         {
-            throw new NotFoundException(nameof(VehicleLookupItem), request.LicensePlate);
+            throw new NotFoundException(nameof(VehicleBriefDtoItem), request.LicensePlate);
         }
+
 
         return null;
     }

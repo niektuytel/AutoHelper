@@ -4,3 +4,46 @@ html, body {
     padding-right: 0;
     margin: 0;
 }
+
+
+.car {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    background-color: #555;
+    margin: 50px auto;
+}
+.car .roof {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    width: 100px;
+    height: 60px;
+    background-color: #777;
+}
+.car .wheel {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    border-radius: 50%;
+}
+.car .wheel.front {
+    top: 10px;
+}
+.car .wheel.back {
+    bottom: 10px;
+}
+.car .wheel.left {
+    left: 10px;
+}
+.car .wheel.right {
+    right: 10px;
+}
+.square {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: orange;
+    cursor: pointer;
+}
