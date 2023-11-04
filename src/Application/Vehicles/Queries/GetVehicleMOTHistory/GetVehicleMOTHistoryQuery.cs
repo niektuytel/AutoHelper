@@ -32,7 +32,7 @@ public class GetVehicleDefectsQueryHandler : IRequestHandler<GetVehicleMOTHistor
 
     public async Task<VehicleDefectItem[]> Handle(GetVehicleMOTHistoryQuery request, CancellationToken cancellationToken)
     {
-        var info = await _vehicleService.GetVehicleDefectsHistory(request.LicensePlate);
+        var info = await _vehicleService.GetDefectHistoryByLicensePlateAsync(request.LicensePlate);
         if (info == null)
         {
             throw new NotFoundException(nameof(VehicleBriefDtoItem), request.LicensePlate);

@@ -33,7 +33,7 @@ public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefIn
 
     public async Task<VehicleBriefDtoItem> Handle(GetVehicleBriefInfoQuery request, CancellationToken cancellationToken)
     {
-        var info = await _vehicleService.GetVehicleBriefInfo(request.LicensePlate);
+        var info = await _vehicleService.GetVehicleByLicensePlateAsync(request.LicensePlate);
         if (info == null)
         {
             throw new NotFoundException(nameof(VehicleBriefDtoItem), request.LicensePlate);

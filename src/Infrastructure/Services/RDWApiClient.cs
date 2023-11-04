@@ -1,7 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Common.Models;
@@ -122,7 +123,7 @@ internal partial class RDWApiClient
     /// https://opendata.rdw.nl/resource/hx2c-gt7k.json
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<VehicleDefectItem>> GetVehicleDefects()
+    public async Task<IEnumerable<RDWDetectedDefect>> GetVehicleDefects()
     {
         var url = $"https://opendata.rdw.nl/resource/hx2c-gt7k.json";
 
@@ -254,5 +255,45 @@ internal partial class RDWApiClient
         };
     }
 
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/a34c-vvps.json
+    /// </summary>
+    /// <exception cref="Exception">When issue on api http call</exception>
+    internal async Task<IEnumerable<RDWDetectedDefect>> GetVehicleDetectedDefectsByPagination(int offset, int limit)
+    {
+        var url = $"https://opendata.rdw.nl/resource/a34c-vvps.json";
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
 
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"RDW API returned status code {response.StatusCode}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWDetectedDefect>>(json) ?? new List<RDWDetectedDefect>();
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/hx2c-gt7k.json
+    /// </summary>
+    /// <exception cref="Exception">When issue on api http call</exception>
+    internal async Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectTypes()
+    {
+        var url = $"https://opendata.rdw.nl/resource/hx2c-gt7k.json";
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"RDW API returned status code {response.StatusCode}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWDetectedDefectDescription>>(json) ?? new List<RDWDetectedDefectDescription>();
+    }
 }

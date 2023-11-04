@@ -10,10 +10,14 @@ namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IVehicleService
 {
-    Task<bool> ValidVehicle(string licensePlate);
-    Task<VehicleBriefDtoItem?> GetVehicleBriefInfo(string licensePlate);
-    Task<VehicleSpecsDtoItem> GetVehicleInfoQuery(string licensePlate);
-    Task<VehicleType> GetVehicleType(string licensePlate);
-    Task<VehicleTechnicalBriefDtoItem?> GetVehicleTechnicalBriefInfo(string licensePlate);
-    Task<VehicleDefectItem[]> GetVehicleDefectsHistory(string licensePlate);
+    Task<IEnumerable<string>> GetAllLicensePlatesAsync();
+    Task<VehicleBriefDtoItem?> GetVehicleByLicensePlateAsync(string licensePlate);
+    Task<VehicleSpecificationsDto> GetSpecificationsByLicensePlateAsync(string licensePlate);
+    Task<VehicleType> GetVehicleTypeByLicensePlateAsync(string licensePlate);
+    Task<bool> IsVehicleValidAsync(string licensePlate);
+    Task<VehicleTechnicalBriefDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate);
+    Task<RDWDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate);
+    Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync();
+    Task ForEachDetectedDefectAsync(Func<IEnumerable<RDWDetectedDefect>, Task> handleVehicle);
+    Task ForEachInspectionNotificationAsync(Func<IEnumerable<RDWInspectionNotification>, Task> handleVehicle);
 }

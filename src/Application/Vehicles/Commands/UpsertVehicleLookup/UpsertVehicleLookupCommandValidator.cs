@@ -48,7 +48,7 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
                 .CustomAsync(async (licensePlate, context, cancellationToken) => 
                 {
                     var cmd = (UpsertVehicleLookupCommand)context.InstanceToValidate;
-                    var vehicleInfo = await vehicleInfoService.GetVehicleBriefInfo(licensePlate);
+                    var vehicleInfo = await vehicleInfoService.GetVehicleByLicensePlateAsync(licensePlate);
 
                     // Store vehicleInfo in the validation context for reuse
                     context.RootContextData["VehicleInfo"] = vehicleInfo;

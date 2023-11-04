@@ -125,7 +125,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         // set vehicle related filters if not set by user.
         if (filters?.Any() != true && !string.IsNullOrEmpty(licensePlate))
         {
-            var type = await _vehicleInfoService.GetVehicleType(licensePlate);
+            var type = await _vehicleInfoService.GetVehicleTypeByLicensePlateAsync(licensePlate);
             filters = _garageInfoService.GetRelatedServiceTypes(type).Select(x => ((int)x).ToString()).ToArray();
             filtersFromLicensePlate = true;
         }

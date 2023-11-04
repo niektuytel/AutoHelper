@@ -9,7 +9,7 @@ using AutoHelper.Domain.Entities;
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 
 
-public class VehicleSpecsDtoItem
+public class VehicleSpecificationsDto
 {
     public List<VehicleInfoSectionItem> Data { get; set; } = new List<VehicleInfoSectionItem>();
 }

@@ -14,17 +14,18 @@ public class VehicleLookupItem : BaseAuditableEntity
     [Required]
     public string LicensePlate { get; set; }
 
-    [Required]
-    public DateTime MOTExpiryDate { get; set; }
-    
-    [Required]
-    public Geometry Location { get; set; }
+    public DateTime? MOTExpiryDate { get; set; }
+
+    public DateTime DateOfAscription { get; set; }
+
+    public Geometry? Location { get; set; }
 
     public string? PhoneNumber { get; set; }
 
     public string? WhatsappNumber { get; set; }
 
     public string? EmailAddress { get; set; }
+
 
     [Required]
     public ICollection<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();

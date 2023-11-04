@@ -3,9 +3,9 @@
 public enum VehicleTimelineType
 {
     Unknown,
-    SucceededMOT,
-    FailedMOT,
+    SucceededMOT,   // used
+    FailedMOT,      // used
     Service,
     Repair,
-    OwnerChange
+    OwnerChange     // used
 }

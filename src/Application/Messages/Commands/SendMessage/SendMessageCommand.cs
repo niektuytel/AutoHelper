@@ -167,7 +167,7 @@ public class StartConversationCommandHandler : IRequestHandler<SendMessageComman
         if (sendToGarage)
         {
             var licensePlate = conversation.RelatedVehicleLookup.LicensePlate;
-            var vehicleInfo = await _vehicleService.GetVehicleTechnicalBriefInfo(licensePlate);
+            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
             if (vehicleInfo == null)
             {
                 throw new InvalidDataException($"Vehicle not found: {licensePlate}");
@@ -196,7 +196,7 @@ public class StartConversationCommandHandler : IRequestHandler<SendMessageComman
         if (sendToGarage)
         {
             var licensePlate = conversation.RelatedVehicleLookup.LicensePlate;
-            var vehicleInfo = await _vehicleService.GetVehicleTechnicalBriefInfo(licensePlate);
+            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
             if (vehicleInfo == null)
             {
                 throw new InvalidDataException($"Vehicle not found: {licensePlate}");

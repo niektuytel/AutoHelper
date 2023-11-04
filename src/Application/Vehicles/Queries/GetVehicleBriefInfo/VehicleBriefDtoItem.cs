@@ -14,9 +14,11 @@ public class VehicleBriefDtoItem
     public string Brand { get; set; }
 
     public string Consumption { get; set; }
-
-    public string MOTExpiryDate { get; set; }
-
+    
     public string Mileage { get; set; }
+
+    public DateTime MOTExpiryDate { get; set; }
+
+    public DateTime DateOfAscription { get; set; }
 
 }

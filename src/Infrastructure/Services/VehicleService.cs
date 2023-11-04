@@ -1,15 +1,17 @@
-﻿using AutoHelper.Application.Common.Exceptions;
+﻿using System.Collections.Generic;
+using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
+using AutoHelper.Infrastructure.Common.Models;
 using Azure;
 using MediatR;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
@@ -23,12 +25,12 @@ internal class VehicleService : IVehicleService
         _rdwService = rdwService;
     }
 
-    public async Task<bool> ValidVehicle(string licensePlate)
+    public Task<IEnumerable<string>> GetAllLicensePlatesAsync()
     {
-        return await _rdwService.VehicleExist(licensePlate);
+        throw new NotImplementedException();
     }
 
-    public async Task<VehicleBriefDtoItem?> GetVehicleBriefInfo(string licensePlate)
+    public async Task<VehicleBriefDtoItem?> GetVehicleByLicensePlateAsync(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
         if (data?.HasValues != true)
@@ -40,13 +42,15 @@ internal class VehicleService : IVehicleService
         var fromText = from != 0 ? $" uit {from}" : string.Empty;
         var brandText = $"{data.GetSafeValue("merk")} ({data.GetSafeValue("handelsbenaming")}){fromText}";
         var motExpirydate = data.GetSafeDateValue("vervaldatum_apk_dt");
+        var dateOfAscription = data.GetSafeDateValue("datum_tenaamstelling_dt");
         var mileage = data.GetSafeValue("tellerstandoordeel");
         var response = new VehicleBriefDtoItem
         {
             LicensePlate = licensePlate,
             Brand = brandText,
-            MOTExpiryDate = motExpirydate,
-            Mileage = mileage
+            MOTExpiryDate = DateTime.Parse(motExpirydate),
+            Mileage = mileage,
+            DateOfAscription = DateTime.Parse(dateOfAscription)
         };
 
         var fuelInfo = await _rdwService.GetVehicleFuel(licensePlate);
@@ -63,7 +67,86 @@ internal class VehicleService : IVehicleService
         return response;
     }
 
-    public async Task<VehicleTechnicalBriefDtoItem?> GetVehicleTechnicalBriefInfo(string licensePlate)
+    public async Task<VehicleSpecificationsDto> GetSpecificationsByLicensePlateAsync(string licensePlate)
+    {
+        var response = new VehicleSpecificationsDto();
+        var data = await _rdwService.GetVehicle(licensePlate);
+
+        if (!data.HasValues)
+        {
+            throw new NotFoundException("Vehicle data not found.");
+        }
+
+        response.Data.Add(GetGeneralData(data));
+        response.Data.Add(GetExpirationDatesAndHistory(data));
+        response.Data.Add(GetWeightsData(data));
+        response.Data.Add(GetCounterReadings(data));
+        response.Data.Add(GetVehicleStatus(data));
+        response.Data.Add(GetRecallData(data));
+        response.Data.Add(GetMotorData(data));
+
+        var fuelInfo = await _rdwService.GetVehicleFuel(licensePlate);
+        if (fuelInfo.HasValues)
+        {
+            response.Data.Add(GetEnvironmentalPerformance(fuelInfo));
+            response.Data.Add(GetEmissions(fuelInfo));
+        }
+
+        response.Data.Add(GetCharacteristicsData(data));
+
+        var shafts = await _rdwService.GetVehicleShafts(licensePlate);
+        response.Data.Add(GetShaftsData(shafts));
+        response.Data.Add(GetFiscalData(data));
+        return response;
+    }
+
+    // TODO: Need better investigation
+    // can add more cases based on other vehicle kinds present in the RDW data.
+    public async Task<VehicleType> GetVehicleTypeByLicensePlateAsync(string licensePlate)
+    {
+        var data = await _rdwService.GetVehicle(licensePlate);
+
+        // Check "voertuigsoort" field for various types
+        var vehicleKind = data?["voertuigsoort"]?.ToString();
+
+        // Check weight for HeavyCar
+        if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
+        {
+            return VehicleType.HeavyCar;
+        }
+
+        switch (vehicleKind)
+        {
+            case "Personenauto":
+                return VehicleType.LightCar;
+            case "Driewielig motorrijtuig":
+                return VehicleType.Motorcycle;
+            case "Land- of bosbouwtrekker":
+                return VehicleType.Tractor;
+            case "Land- of bosb aanhw of getr uitr stuk":
+                return VehicleType.Tractor;
+
+            default:
+                break;
+        }
+
+        // Check Taxi
+        if (data?["taxi_indicator"]?.ToString() == "Ja")
+        {
+            return VehicleType.Taxi;
+        }
+
+
+        // If no matches, return Other
+        return VehicleType.Other;
+    }
+
+    public async Task<bool> IsVehicleValidAsync(string licensePlate)
+    {
+        return await _rdwService.VehicleExist(licensePlate);
+    }
+
+    public async Task<VehicleTechnicalBriefDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate)
     {
         var vehicleData = await _rdwService.GetVehicle(licensePlate);
         if (vehicleData?.HasValues != true)
@@ -104,80 +187,6 @@ internal class VehicleService : IVehicleService
                 vehicleBrief.FuelEfficiency = 100M / (combinedFuelConsumption * 100M);
             }
         }
-    }
-
-    public async Task<VehicleSpecsDtoItem> GetVehicleInfoQuery(string licensePlate)
-    {
-        var response = new VehicleSpecsDtoItem();
-        var data = await _rdwService.GetVehicle(licensePlate);
-
-        if (!data.HasValues)
-        {
-            throw new NotFoundException("Vehicle data not found.");
-        }
-
-        response.Data.Add(GetGeneralData(data));
-        response.Data.Add(GetExpirationDatesAndHistory(data));
-        response.Data.Add(GetWeightsData(data));
-        response.Data.Add(GetCounterReadings(data));
-        response.Data.Add(GetVehicleStatus(data));
-        response.Data.Add(GetRecallData(data));
-        response.Data.Add(GetMotorData(data));
-
-        var fuelInfo = await _rdwService.GetVehicleFuel(licensePlate);
-        if (fuelInfo.HasValues)
-        {
-            response.Data.Add(GetEnvironmentalPerformance(fuelInfo));
-            response.Data.Add(GetEmissions(fuelInfo));
-        }
-
-        response.Data.Add(GetCharacteristicsData(data));
-
-        var shafts = await _rdwService.GetVehicleShafts(licensePlate);
-        response.Data.Add(GetShaftsData(shafts));
-        response.Data.Add(GetFiscalData(data));
-        return response;
-    }
-
-    // TODO: Need better investigation
-    // can add more cases based on other vehicle kinds present in the RDW data.
-    public async Task<VehicleType> GetVehicleType(string licensePlate)
-    {
-        var data = await _rdwService.GetVehicle(licensePlate);
-
-        // Check "voertuigsoort" field for various types
-        var vehicleKind = data?["voertuigsoort"]?.ToString();
-
-        // Check weight for HeavyCar
-        if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
-        {
-            return VehicleType.HeavyCar;
-        }
-
-        switch (vehicleKind)
-        {
-            case "Personenauto":
-                return VehicleType.LightCar;
-            case "Driewielig motorrijtuig":
-                return VehicleType.Motorcycle;
-            case "Land- of bosbouwtrekker":
-                return VehicleType.Tractor;
-            case "Land- of bosb aanhw of getr uitr stuk":
-                return VehicleType.Tractor;
-
-            default:
-                break;
-        }
-
-        // Check Taxi
-        if (data?["taxi_indicator"]?.ToString() == "Ja")
-        {
-            return VehicleType.Taxi;
-        }
-
-
-        // If no matches, return Other
-        return VehicleType.Other;
     }
 
     //public async Task<IEnumerable<VehicleServiceLogDtoItem>> GetVehicleServiceLogs(string licensePlate)
@@ -444,7 +453,7 @@ internal class VehicleService : IVehicleService
         };
     }
 
-    public async Task<VehicleDefectItem[]> GetVehicleDefectsHistory(string licensePlate)
+    public async Task<RDWDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
         if (data?.HasValues != true)
@@ -456,4 +465,76 @@ internal class VehicleService : IVehicleService
 
         return null;
     }
+
+    public async Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync()
+    {
+        return await _rdwService.GetDetectedDefectTypes();
+    }
+
+    public async Task ForEachDetectedDefectAsync(Func<IEnumerable<RDWDetectedDefect>, Task> handleVehicle)
+    {
+        var limit = 2000;
+        var offset = 0;
+        var count = 0;
+
+        do
+        {
+            try
+            {
+                var items = await _rdwService.GetVehicleDetectedDefectsByPagination(offset, limit);
+                var groupedByLicensePlate = items.GroupBy(item => item.LicensePlate).ToList();
+
+                // Process each group as a bulk
+                foreach (var group in groupedByLicensePlate)
+                {
+                    var bulk = group.ToArray();
+                    await handleVehicle(bulk);
+
+                    count += group.Count();
+                }
+
+                offset++;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log error to hangfire dashboard
+                break;
+            }
+        }
+        while (count == (limit * offset));
+    }
+
+    public async Task ForEachInspectionNotificationAsync(Func<IEnumerable<RDWInspectionNotification>, Task> handleVehicle)
+    {
+        var limit = 2000;
+        var offset = 0;
+        var count = 0;
+
+        do
+        {
+            try
+            {
+                var items = await _rdwService.GetVehicleDetectedDefectsByPagination(offset, limit);
+                var groupedByLicensePlate = items.GroupBy(item => item.LicensePlate).ToList();
+
+                // Process each group as a bulk
+                foreach (var group in groupedByLicensePlate)
+                {
+                    var bulk = group.ToArray();
+                    await handleVehicle(bulk);
+
+                    count += group.Count();
+                }
+
+                offset++;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Log error to hangfire dashboard
+                break;
+            }
+        }
+        while (count == (limit * offset));
+    }
+
 }

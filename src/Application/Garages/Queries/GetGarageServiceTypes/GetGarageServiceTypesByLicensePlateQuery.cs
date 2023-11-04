@@ -36,7 +36,7 @@ public class GetGarageServiceTypesByLicensePlateQueryHandler : IRequestHandler<G
 
     public async Task<IEnumerable<GarageServiceType>> Handle(GetGarageServiceTypesByLicensePlateQuery request, CancellationToken cancellationToken)
     {
-        var type = await _vehicleInfoService.GetVehicleType(request.LicensePlate);
+        var type = await _vehicleInfoService.GetVehicleTypeByLicensePlateAsync(request.LicensePlate);
         var serviceTypes = _garageInfoService.GetRelatedServiceTypes(type);
         return serviceTypes;
     }

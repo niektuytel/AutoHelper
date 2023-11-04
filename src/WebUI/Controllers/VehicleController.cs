@@ -4,6 +4,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
@@ -39,6 +40,7 @@ public class VehicleController : ApiControllerBase
     {
         // TODO: add type vehicle for example car, truck, motorcycle or hatchback, sedan, suv
         // TODO: add total number of owners has owned this vehicle
+        // TODO: advice on service of the car at given mileage
         return await Mediator.Send(new GetVehicleBriefInfoQuery(licensePlate));
     }
 
@@ -59,17 +61,17 @@ public class VehicleController : ApiControllerBase
     }
 
     [HttpGet($"{nameof(GetMOTHistory)}")]
-    [ProducesResponseType(typeof(VehicleDefectItem[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(RDWDetectedDefect[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleDefectItem[]> GetMOTHistory([FromQuery] string licensePlate)
+    public async Task<RDWDetectedDefect[]> GetMOTHistory([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleMOTHistoryQuery(licensePlate));
     }
 
     [HttpGet($"{nameof(GetSpecifications)}")]
-    [ProducesResponseType(typeof(VehicleSpecsDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleSpecificationsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleSpecsDtoItem> GetSpecifications([FromQuery] string licensePlate)
+    public async Task<VehicleSpecificationsDto> GetSpecifications([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleSpecsQuery(licensePlate));
     }
