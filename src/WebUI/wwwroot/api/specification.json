@@ -1353,14 +1353,15 @@
                 "type": "string",
                 "minLength": 1
               },
-              "motExpiryDate": {
+              "dateOfMOTExpiry": {
                 "type": "string",
                 "format": "date-time",
                 "nullable": true
               },
               "dateOfAscription": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "nullable": true
               },
               "location": {
                 "nullable": true,
@@ -3387,8 +3388,16 @@
           },
           "messageContent": {
             "type": "string"
+          },
+          "queueingService": {
+            "$ref": "#/components/schemas/IQueueService"
           }
         }
+      },
+      "IQueueService": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false
       },
       "VehicleBriefDtoItem": {
         "type": "object",
@@ -3406,13 +3415,15 @@
           "mileage": {
             "type": "string"
           },
-          "motExpiryDate": {
+          "dateOfMOTExpiry": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "dateOfAscription": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           }
         }
       },

@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 
-public record UpsertGarageLookupsCommand : IRequest
+public record UpsertGarageLookupsCommand : IQueueRequest
 {
     public UpsertGarageLookupsCommand()
     {
@@ -32,6 +32,8 @@ public record UpsertGarageLookupsCommand : IRequest
 
     public int MaxInsertAmount { get; set;}
     public int MaxUpdateAmount { get; set;}
+
+    public IQueueService QueueService { get; set; }
 }
 
 public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLookupsCommand>
@@ -39,9 +41,9 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IGarageService _garageInfoService;
-    private readonly IQueueingService _queueingService;
+    private readonly IQueueService _queueingService;
 
-    public UpsertGarageLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IGarageService garageInfoService, IQueueingService queueingService)
+    public UpsertGarageLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IGarageService garageInfoService, IQueueService queueingService)
     {
         _dbContext = dbContext;
         _mapper = mapper;

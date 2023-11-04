@@ -40,9 +40,9 @@ public class UpsertVehicleLookupCommand : IRequest<VehicleLookupDtoItem>
     [Required]
     public string LicensePlate { get; set; } = null!;
 
-    public DateTime MOTExpiryDate { get; internal set; }
+    public DateTime? MOTExpiryDate { get; internal set; }
 
-    public DateTime DateOfAscription { get; internal set; }
+    public DateTime? DateOfAscription { get; internal set; }
 
     [Required]
     public string Longitude { get; set; } = null!;
@@ -79,7 +79,7 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
             entity = new VehicleLookupItem()
             {
                 LicensePlate = request.LicensePlate,
-                MOTExpiryDate = request.MOTExpiryDate,
+                DateOfMOTExpiry = request.MOTExpiryDate,
                 DateOfAscription = request.DateOfAscription,
                 Location = request.Location,
                 PhoneNumber = request.PhoneNumber,
@@ -91,7 +91,7 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
         }
         else
         {
-            entity.MOTExpiryDate = request.MOTExpiryDate;
+            entity.DateOfMOTExpiry = request.MOTExpiryDate;
             entity.DateOfAscription = request.DateOfAscription;
             entity.Location = request.Location;
             entity.PhoneNumber = request.PhoneNumber;

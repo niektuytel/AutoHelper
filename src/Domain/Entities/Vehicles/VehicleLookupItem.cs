@@ -14,9 +14,9 @@ public class VehicleLookupItem : BaseAuditableEntity
     [Required]
     public string LicensePlate { get; set; }
 
-    public DateTime? MOTExpiryDate { get; set; }
+    public DateTime? DateOfMOTExpiry { get; set; }
 
-    public DateTime DateOfAscription { get; set; }
+    public DateTime? DateOfAscription { get; set; }
 
     public Geometry? Location { get; set; }
 

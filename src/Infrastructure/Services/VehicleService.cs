@@ -41,17 +41,23 @@ internal class VehicleService : IVehicleService
         var from = data.GetSafeDateYearValue("datum_eerste_toelating_dt");
         var fromText = from != 0 ? $" uit {from}" : string.Empty;
         var brandText = $"{data.GetSafeValue("merk")} ({data.GetSafeValue("handelsbenaming")}){fromText}";
-        var motExpirydate = data.GetSafeDateValue("vervaldatum_apk_dt");
-        var dateOfAscription = data.GetSafeDateValue("datum_tenaamstelling_dt");
         var mileage = data.GetSafeValue("tellerstandoordeel");
         var response = new VehicleBriefDtoItem
         {
             LicensePlate = licensePlate,
             Brand = brandText,
-            MOTExpiryDate = DateTime.Parse(motExpirydate),
             Mileage = mileage,
-            DateOfAscription = DateTime.Parse(dateOfAscription)
         };
+
+        if(DateTime.TryParse(data.GetSafeDateValue("vervaldatum_apk_dt"), out var motExpiry))
+        {
+            response.DateOfMOTExpiry = motExpiry;
+        }
+
+        if (DateTime.TryParse(data.GetSafeDateValue("datum_tenaamstelling_dt"), out var dateOfAscription))
+        {
+            response.DateOfAscription = dateOfAscription;
+        }
 
         var fuelInfo = await _rdwService.GetVehicleFuel(licensePlate);
         if (fuelInfo?.HasValues == true)

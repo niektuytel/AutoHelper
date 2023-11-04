@@ -15,7 +15,7 @@ using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
 namespace AutoHelper.Application.Messages.Commands.StartConversation;
 
-public record StartConversationCommand : IRequest<SendMessageCommand?>
+public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
 {
     public StartConversationCommand(
         Guid relatedGarageLookupId,
@@ -53,6 +53,7 @@ public record StartConversationCommand : IRequest<SendMessageCommand?>
     public ConversationType ConversationType { get; set; }
 
     public string MessageContent { get; set; }
+    public IQueueService QueueingService { get; set; }
 }
 
 public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand, SendMessageCommand?>

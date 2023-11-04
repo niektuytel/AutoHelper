@@ -1,16 +1,16 @@
-﻿using System.Data.Entity;
-using System.Threading;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
+using Microsoft.Extensions.Logging;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 
-public record UpsertVehicleLookupsCommand : IRequest
+public record UpsertVehicleLookupsCommand : IQueueRequest
 {
     public UpsertVehicleLookupsCommand()
     {
@@ -40,6 +40,8 @@ public record UpsertVehicleLookupsCommand : IRequest
     public int MaxUpdateAmount { get; set; }
     public bool UpsertTimeline { get; set; }
     public bool UpsertServiceLogs { get; set; }
+
+    public IQueueService QueueService { get; set; }
 }
 
 public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleLookupsCommand>
@@ -47,21 +49,25 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
+    private readonly ILogger<UpsertVehicleLookupsCommandHandler> _logger;
 
     private int _maxInsertAmount = 0;
     private int _maxUpdateAmount = 0;
 
-    public UpsertVehicleLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService)
+    public UpsertVehicleLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, ILogger<UpsertVehicleLookupsCommandHandler> logger)
     {
         _dbContext = dbContext;
         _mapper = mapper;
         _vehicleService = vehicleService;
+        _logger = logger;
     }
 
     public async Task<Unit> Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
         _maxInsertAmount = request.MaxInsertAmount;
         _maxUpdateAmount = request.MaxUpdateAmount;
+
+        // TODO: Debug this functionality
 
         try
         {
@@ -71,19 +77,19 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
                 await _vehicleService.ForEachDetectedDefectAsync(async bulkByLicensePlate =>
                 {
-                    var stop = false;
                     var licensePlate = bulkByLicensePlate.First().LicensePlate;
                     var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
                     if (vehicle == null) return;
 
+                    var timeline = new List<VehicleTimelineItem>();
                     var vehicleLookup = await _dbContext.VehicleLookups
                         .Include(x => x.Timeline)
                         .FirstOrDefaultAsync(x => x.LicensePlate == vehicle.LicensePlate, cancellationToken);
 
-                    var timeline = new List<VehicleTimelineItem>();
                     var failedMOTs = UndefinedFailedMOTTimelineItems(vehicleLookup, bulkByLicensePlate, detectedDefectDescriptions);
                     if (failedMOTs?.Any() == true)
                     {
+                        request.QueueService.LogInformation($"Upsert [{licensePlate}] lookup, with {failedMOTs.Count} undefined FailedMOT timeline");
                         timeline.AddRange(failedMOTs);
                     }
 
@@ -93,7 +99,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
                         if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
                         {
-                            throw new OperationCanceledException($"Given MaxInsertAmount:{_maxInsertAmount} MaxUpdateAmount:{_maxUpdateAmount} reached");
+                            throw new OperationCanceledException();
                         }
                     }
                 });
@@ -112,12 +118,14 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
                     var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicleLookup, bulkByLicensePlate);
                     if (succeededMOTs?.Any() == true)
                     {
+                        request.QueueService.LogInformation($"Upsert [{licensePlate}] lookup, with {succeededMOTs.Count} undefined SucceededMOT");
                         timeline.AddRange(succeededMOTs);
                     }
 
                     var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicleLookup, vehicle.DateOfAscription);
                     if (ownerChanged != null)
                     {
+                        request.QueueService.LogInformation($"Upsert [{licensePlate}] lookup, with owner changed on {vehicle.DateOfAscription}");
                         timeline.Add(ownerChanged);
                     }
 
@@ -127,7 +135,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
                         if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
                         {
-                            throw new OperationCanceledException($"Given MaxInsertAmount:{_maxInsertAmount} MaxUpdateAmount:{_maxUpdateAmount} reached");
+                            throw new OperationCanceledException();
                         }
                     }
                 });
@@ -138,13 +146,17 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
                 // TODO: implement
                 throw new NotImplementedException();
             }
-}
+        }
         catch (OperationCanceledException ex)
         {
-            // TODO: Logging of the amount of inserts and updates to the hangfire dashboard
-            // TODO: _queueingService.LogInformation();
+            request.QueueService.LogInformation($"Done, MaxInsertAmount:{_maxInsertAmount} MaxUpdateAmount:{_maxUpdateAmount} reached");
             return Unit.Value;
         }
+        catch (Exception ex)
+        {
+            request.QueueService.LogError(ex.Message);
+            throw;
+        }   
   
         return Unit.Value;
     }
@@ -155,7 +167,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         var groupedByDate = bulkByLicensePlate.GroupBy(x => x.DetectionDate);
         foreach (var group in groupedByDate)
         {
-            if (vehicleLookup.Timeline.Any(x => x.Date == group.Key))
+            if (vehicleLookup?.Timeline?.Any(x => x.Date == group.Key) != true)
             {
                 continue;
             }
@@ -173,7 +185,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         var groupedByDate = bulkByLicensePlate.GroupBy(x => x.DateTimeByAuthority);
         foreach (var group in groupedByDate)
         {
-            if (vehicleLookup.Timeline.Any(x => x.Date == group.Key))
+            if (vehicleLookup?.Timeline?.Any(x => x.Date == group.Key) != true)
             {
                 continue;
             }
@@ -186,11 +198,13 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         return timeline.ToList();
     }
 
-    private VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(VehicleLookupItem vehicleLookup, DateTime dateOfAscription)
+    private VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(VehicleLookupItem vehicleLookup, DateTime? dateOfAscription)
     {
-        if (!vehicleLookup.Timeline.Any(x => x.Date == dateOfAscription))
+        if(dateOfAscription == null) return null;
+
+        if (vehicleLookup?.Timeline?.Any(x => x.Date == dateOfAscription) != true)
         {
-            var item = CreateOwnerChangeTimelineItem(dateOfAscription);
+            var item = CreateOwnerChangeTimelineItem((DateTime)dateOfAscription);
             return item;
         }
 
@@ -260,7 +274,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             vehicleLookup = new VehicleLookupItem
             {
                 LicensePlate = vehicle.LicensePlate,
-                MOTExpiryDate = vehicle.MOTExpiryDate,
+                DateOfMOTExpiry = vehicle.DateOfMOTExpiry,
                 DateOfAscription = vehicle.DateOfAscription,
                 Timeline = timeline
             };
@@ -273,7 +287,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         {
             timeline.AddRange(vehicleLookup.Timeline);
             vehicleLookup.LicensePlate = vehicle.LicensePlate;
-            vehicleLookup.MOTExpiryDate = vehicle.MOTExpiryDate;
+            vehicleLookup.DateOfMOTExpiry = vehicle.DateOfMOTExpiry;
             vehicleLookup.DateOfAscription = vehicle.DateOfAscription;
             vehicleLookup.Timeline = timeline.OrderByDescending(x => x.Date).ToList();
 

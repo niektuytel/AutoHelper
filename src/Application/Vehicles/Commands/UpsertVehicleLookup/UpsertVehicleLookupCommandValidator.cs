@@ -59,7 +59,7 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
                         return;
                     }
 
-                    cmd.MOTExpiryDate = vehicleInfo.MOTExpiryDate;
+                    cmd.MOTExpiryDate = vehicleInfo.DateOfMOTExpiry;
                     cmd.DateOfAscription = vehicleInfo.DateOfAscription;
 
                 });

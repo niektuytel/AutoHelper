@@ -1726,8 +1726,8 @@ export interface IBaseAuditableEntity extends IBaseEntity {
 
 export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLookupItem {
     licensePlate!: string;
-    motExpiryDate?: Date | undefined;
-    dateOfAscription?: Date;
+    dateOfMOTExpiry?: Date | undefined;
+    dateOfAscription?: Date | undefined;
     location?: Geometry | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
@@ -1749,7 +1749,7 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
         super.init(_data);
         if (_data) {
             this.licensePlate = _data["licensePlate"];
-            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
+            this.dateOfMOTExpiry = _data["dateOfMOTExpiry"] ? new Date(_data["dateOfMOTExpiry"].toString()) : <any>undefined;
             this.dateOfAscription = _data["dateOfAscription"] ? new Date(_data["dateOfAscription"].toString()) : <any>undefined;
             this.location = _data["location"] ? Geometry.fromJS(_data["location"]) : <any>undefined;
             this.phoneNumber = _data["phoneNumber"];
@@ -1783,7 +1783,7 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["licensePlate"] = this.licensePlate;
-        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
+        data["dateOfMOTExpiry"] = this.dateOfMOTExpiry ? this.dateOfMOTExpiry.toISOString() : <any>undefined;
         data["dateOfAscription"] = this.dateOfAscription ? this.dateOfAscription.toISOString() : <any>undefined;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
         data["phoneNumber"] = this.phoneNumber;
@@ -1811,8 +1811,8 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
 
 export interface IVehicleLookupItem extends IBaseAuditableEntity {
     licensePlate: string;
-    motExpiryDate?: Date | undefined;
-    dateOfAscription?: Date;
+    dateOfMOTExpiry?: Date | undefined;
+    dateOfAscription?: Date | undefined;
     location?: Geometry | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
@@ -4572,6 +4572,7 @@ export class StartConversationCommand implements IStartConversationCommand {
     receiverContactType?: ContactType;
     conversationType?: ConversationType;
     messageContent?: string;
+    queueingService?: IQueueService;
 
     constructor(data?: IStartConversationCommand) {
         if (data) {
@@ -4599,6 +4600,7 @@ export class StartConversationCommand implements IStartConversationCommand {
             this.receiverContactType = _data["receiverContactType"];
             this.conversationType = _data["conversationType"];
             this.messageContent = _data["messageContent"];
+            this.queueingService = _data["queueingService"] ? IQueueService.fromJS(_data["queueingService"]) : <any>undefined;
         }
     }
 
@@ -4626,6 +4628,7 @@ export class StartConversationCommand implements IStartConversationCommand {
         data["receiverContactType"] = this.receiverContactType;
         data["conversationType"] = this.conversationType;
         data["messageContent"] = this.messageContent;
+        data["queueingService"] = this.queueingService ? this.queueingService.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4642,6 +4645,35 @@ export interface IStartConversationCommand {
     receiverContactType?: ContactType;
     conversationType?: ConversationType;
     messageContent?: string;
+    queueingService?: IQueueService;
+}
+
+export abstract class IQueueService implements IIQueueService {
+
+    constructor(data?: IIQueueService) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+    }
+
+    static fromJS(data: any): IQueueService {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'IQueueService' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        return data;
+    }
+}
+
+export interface IIQueueService {
 }
 
 export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
@@ -4649,8 +4681,8 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     brand?: string;
     consumption?: string;
     mileage?: string;
-    motExpiryDate?: Date;
-    dateOfAscription?: Date;
+    dateOfMOTExpiry?: Date | undefined;
+    dateOfAscription?: Date | undefined;
 
     constructor(data?: IVehicleBriefDtoItem) {
         if (data) {
@@ -4667,7 +4699,7 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
             this.brand = _data["brand"];
             this.consumption = _data["consumption"];
             this.mileage = _data["mileage"];
-            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
+            this.dateOfMOTExpiry = _data["dateOfMOTExpiry"] ? new Date(_data["dateOfMOTExpiry"].toString()) : <any>undefined;
             this.dateOfAscription = _data["dateOfAscription"] ? new Date(_data["dateOfAscription"].toString()) : <any>undefined;
         }
     }
@@ -4685,7 +4717,7 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
         data["brand"] = this.brand;
         data["consumption"] = this.consumption;
         data["mileage"] = this.mileage;
-        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
+        data["dateOfMOTExpiry"] = this.dateOfMOTExpiry ? this.dateOfMOTExpiry.toISOString() : <any>undefined;
         data["dateOfAscription"] = this.dateOfAscription ? this.dateOfAscription.toISOString() : <any>undefined;
         return data;
     }
@@ -4696,8 +4728,8 @@ export interface IVehicleBriefDtoItem {
     brand?: string;
     consumption?: string;
     mileage?: string;
-    motExpiryDate?: Date;
-    dateOfAscription?: Date;
+    dateOfMOTExpiry?: Date | undefined;
+    dateOfAscription?: Date | undefined;
 }
 
 export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {

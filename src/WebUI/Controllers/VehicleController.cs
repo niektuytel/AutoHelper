@@ -107,10 +107,11 @@ public class VehicleController : ApiControllerBase
         [FromQuery] bool updateTimeline = true,
         [FromQuery] bool updateServiceLogs = true
     ) {
-        var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
         var command = new UpsertVehicleLookupsCommand(maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
+        var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
+        var title = $"maxInsertAmount: {maxInsertAmount} | maxUpdateAmount: {maxUpdateAmount} | updateTimeline: {updateTimeline} | updateServiceLogs: {updateServiceLogs}";
 
-        Mediator.Enqueue(queue, command);
+        Mediator.Enqueue(queue, title, command);
         return $"Successfully start hangfire job: {queue}";
     }
 

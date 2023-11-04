@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
+using AutoHelper.Application.Messages.Commands.StartConversation;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
@@ -32,15 +34,16 @@ public static class ConfigureServices
                 .UseRecommendedSerializerSettings()
                 .UseSqlServerStorage(hangfireConnection);
         });
-        services.AddHangfireServer();
-        //    options =>
-        //{
-        //    options.Queues = new[] { 
-        //        nameof(UpsertGarageLookupsCommand).ToLower(), 
-        //        "default" 
-        //    };
-        //});
-        services.AddTransient<IQueueingService, HangfireJobService>();
+        services.AddHangfireServer(options =>
+        {
+            options.Queues = new[] { 
+                nameof(UpsertGarageLookupsCommand).ToLower(), 
+                nameof(UpsertVehicleLookupsCommand).ToLower(),
+                nameof(StartConversationCommand).ToLower(),
+                "default" 
+            };
+        });
+        services.AddTransient<IQueueService, HangfireJobService>();
     }
 
     public static void UseMediatR(this IGlobalConfiguration configuration)

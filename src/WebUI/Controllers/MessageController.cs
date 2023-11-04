@@ -89,21 +89,10 @@ public class MessageController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public string EnqueueConversation([FromBody] StartConversationCommand command)
     {
-        var sender = SanitizeForQueueName(command.SenderWhatsAppNumberOrEmail);
-        var receiver = SanitizeForQueueName(command.ReceiverWhatsAppNumberOrEmail);
-        var queue = $"{nameof(StartConversationCommand).ToLower()}_{sender}_to_{receiver}";
+        var queue = nameof(StartConversationCommand);
+        var title = $"{command.SenderWhatsAppNumberOrEmail.ToLower()} to {command.ReceiverWhatsAppNumberOrEmail.ToLower()} about {command.RelatedVehicle.LicensePlate}";
 
-        Mediator.Enqueue(queue, command, isRecursive: true);
+        Mediator.Enqueue(queue, title, command, isRecursive: true);
         return queue;
     }
-
-    private static string SanitizeForQueueName(string input)
-    {
-        // Only allow lowercase letters, digits, underscores, and dashes
-        return new string(input
-            .Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '-')
-            .Select(c => char.IsUpper(c) ? char.ToLower(c) : c)
-            .ToArray());
-    }
-
 }
