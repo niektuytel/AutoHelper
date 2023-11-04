@@ -68,7 +68,6 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         _maxUpdateAmount = request.MaxUpdateAmount;
 
         // TODO: Debug this functionality
-
         try
         {
             if (request.UpsertTimeline)
