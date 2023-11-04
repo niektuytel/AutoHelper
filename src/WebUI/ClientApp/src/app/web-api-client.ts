@@ -972,13 +972,15 @@ export class MessageClient implements IMessageClient {
 
 export interface IVehicleClient {
 
-    searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
+    getBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
+
+    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]>;
 
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]>;
 
-    getMOTDetectedDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]>;
+    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto>;
 
-    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem>;
+    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -991,8 +993,8 @@ export class VehicleClient implements IVehicleClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    searchByLicensePlate(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem> {
-        let url_ = this.baseUrl + "/api/Vehicle/SearchByLicensePlate?";
+    getBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetBriefInfo?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -1005,11 +1007,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSearchByLicensePlate(_response);
+            return this.processGetBriefInfo(_response);
         });
     }
 
-    protected processSearchByLicensePlate(response: Response): Promise<VehicleBriefDtoItem> {
+    protected processGetBriefInfo(response: Response): Promise<VehicleBriefDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1032,6 +1034,60 @@ export class VehicleClient implements IVehicleClient {
             });
         }
         return Promise.resolve<VehicleBriefDtoItem>(null as any);
+    }
+
+    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        if (maxAmount === null)
+            throw new Error("The parameter 'maxAmount' cannot be null.");
+        else if (maxAmount !== undefined)
+            url_ += "maxAmount=" + encodeURIComponent("" + maxAmount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTimeline(_response);
+        });
+    }
+
+    protected processGetTimeline(response: Response): Promise<VehicleServiceLogItemDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(VehicleServiceLogItemDto.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
     }
 
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]> {
@@ -1084,57 +1140,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
     }
 
-    getMOTDetectedDefects(licensePlate: string | null | undefined): Promise<VehicleDefectItem[]> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetMOTDetectedDefects?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetMOTDetectedDefects(_response);
-        });
-    }
-
-    protected processGetMOTDetectedDefects(response: Response): Promise<VehicleDefectItem[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(VehicleDefectItem.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<VehicleDefectItem[]>(null as any);
-    }
-
-    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecsDtoItem> {
+    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto> {
         let url_ = this.baseUrl + "/api/Vehicle/GetSpecifications?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
@@ -1152,14 +1158,14 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processGetSpecifications(response: Response): Promise<VehicleSpecsDtoItem> {
+    protected processGetSpecifications(response: Response): Promise<VehicleSpecificationsDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleSpecsDtoItem.fromJS(resultData200);
+            result200 = VehicleSpecificationsDto.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -1174,7 +1180,65 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleSpecsDtoItem>(null as any);
+        return Promise.resolve<VehicleSpecificationsDto>(null as any);
+    }
+
+    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
+        if (maxInsertAmount === null)
+            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
+        else if (maxInsertAmount !== undefined)
+            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
+        if (updateTimeline === null)
+            throw new Error("The parameter 'updateTimeline' cannot be null.");
+        else if (updateTimeline !== undefined)
+            url_ += "updateTimeline=" + encodeURIComponent("" + updateTimeline) + "&";
+        if (updateServiceLogs === null)
+            throw new Error("The parameter 'updateServiceLogs' cannot be null.");
+        else if (updateServiceLogs !== undefined)
+            url_ += "updateServiceLogs=" + encodeURIComponent("" + updateServiceLogs) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertLookups(_response);
+        });
+    }
+
+    protected processUpsertLookups(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
     }
 }
 
@@ -1662,17 +1726,20 @@ export interface IBaseAuditableEntity extends IBaseEntity {
 
 export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLookupItem {
     licensePlate!: string;
-    motExpiryDate!: Date;
-    location!: Geometry;
+    motExpiryDate?: Date | undefined;
+    dateOfAscription?: Date;
+    location?: Geometry | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+    timeline!: VehicleTimelineItem[];
     conversations!: ConversationItem[];
     serviceLogs!: VehicleServiceLogItem[];
 
     constructor(data?: IVehicleLookupItem) {
         super(data);
         if (!data) {
+            this.timeline = [];
             this.conversations = [];
             this.serviceLogs = [];
         }
@@ -1683,10 +1750,16 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
         if (_data) {
             this.licensePlate = _data["licensePlate"];
             this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
+            this.dateOfAscription = _data["dateOfAscription"] ? new Date(_data["dateOfAscription"].toString()) : <any>undefined;
             this.location = _data["location"] ? Geometry.fromJS(_data["location"]) : <any>undefined;
             this.phoneNumber = _data["phoneNumber"];
             this.whatsappNumber = _data["whatsappNumber"];
             this.emailAddress = _data["emailAddress"];
+            if (Array.isArray(_data["timeline"])) {
+                this.timeline = [] as any;
+                for (let item of _data["timeline"])
+                    this.timeline!.push(VehicleTimelineItem.fromJS(item));
+            }
             if (Array.isArray(_data["conversations"])) {
                 this.conversations = [] as any;
                 for (let item of _data["conversations"])
@@ -1711,10 +1784,16 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
         data = typeof data === 'object' ? data : {};
         data["licensePlate"] = this.licensePlate;
         data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
+        data["dateOfAscription"] = this.dateOfAscription ? this.dateOfAscription.toISOString() : <any>undefined;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
         data["phoneNumber"] = this.phoneNumber;
         data["whatsappNumber"] = this.whatsappNumber;
         data["emailAddress"] = this.emailAddress;
+        if (Array.isArray(this.timeline)) {
+            data["timeline"] = [];
+            for (let item of this.timeline)
+                data["timeline"].push(item.toJSON());
+        }
         if (Array.isArray(this.conversations)) {
             data["conversations"] = [];
             for (let item of this.conversations)
@@ -1732,11 +1811,13 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
 
 export interface IVehicleLookupItem extends IBaseAuditableEntity {
     licensePlate: string;
-    motExpiryDate: Date;
-    location: Geometry;
+    motExpiryDate?: Date | undefined;
+    dateOfAscription?: Date;
+    location?: Geometry | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+    timeline: VehicleTimelineItem[];
     conversations: ConversationItem[];
     serviceLogs: VehicleServiceLogItem[];
 }
@@ -2487,6 +2568,90 @@ export interface IEnvelope {
     minExtent?: number;
     maxExtent?: number;
     centre?: Coordinate | undefined;
+}
+
+export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineItem {
+    title!: string;
+    description!: string;
+    date!: Date;
+    type!: VehicleTimelineType;
+    priority!: VehicleTimelinePriority;
+    extraDataTableJson?: string;
+    extraData?: { [key: string]: string; };
+
+    constructor(data?: IVehicleTimelineItem) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.type = _data["type"];
+            this.priority = _data["priority"];
+            this.extraDataTableJson = _data["extraDataTableJson"];
+            if (_data["extraData"]) {
+                this.extraData = {} as any;
+                for (let key in _data["extraData"]) {
+                    if (_data["extraData"].hasOwnProperty(key))
+                        (<any>this.extraData)![key] = _data["extraData"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleTimelineItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleTimelineItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["type"] = this.type;
+        data["priority"] = this.priority;
+        data["extraDataTableJson"] = this.extraDataTableJson;
+        if (this.extraData) {
+            data["extraData"] = {};
+            for (let key in this.extraData) {
+                if (this.extraData.hasOwnProperty(key))
+                    (<any>data["extraData"])[key] = (<any>this.extraData)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IVehicleTimelineItem extends IBaseEntity {
+    title: string;
+    description: string;
+    date: Date;
+    type: VehicleTimelineType;
+    priority: VehicleTimelinePriority;
+    extraDataTableJson?: string;
+    extraData?: { [key: string]: string; };
+}
+
+export enum VehicleTimelineType {
+    Unknown = 0,
+    SucceededMOT = 1,
+    FailedMOT = 2,
+    Service = 3,
+    Repair = 4,
+    OwnerChange = 5,
+}
+
+export enum VehicleTimelinePriority {
+    Low = 0,
+    Medium = 1,
+    High = 2,
 }
 
 export class ConversationItem extends BaseAuditableEntity implements IConversationItem {
@@ -4483,8 +4648,9 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     licensePlate?: string;
     brand?: string;
     consumption?: string;
-    motExpiryDate?: string;
     mileage?: string;
+    motExpiryDate?: Date;
+    dateOfAscription?: Date;
 
     constructor(data?: IVehicleBriefDtoItem) {
         if (data) {
@@ -4500,8 +4666,9 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
             this.licensePlate = _data["licensePlate"];
             this.brand = _data["brand"];
             this.consumption = _data["consumption"];
-            this.motExpiryDate = _data["motExpiryDate"];
             this.mileage = _data["mileage"];
+            this.motExpiryDate = _data["motExpiryDate"] ? new Date(_data["motExpiryDate"].toString()) : <any>undefined;
+            this.dateOfAscription = _data["dateOfAscription"] ? new Date(_data["dateOfAscription"].toString()) : <any>undefined;
         }
     }
 
@@ -4517,8 +4684,9 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
         data["licensePlate"] = this.licensePlate;
         data["brand"] = this.brand;
         data["consumption"] = this.consumption;
-        data["motExpiryDate"] = this.motExpiryDate;
         data["mileage"] = this.mileage;
+        data["motExpiryDate"] = this.motExpiryDate ? this.motExpiryDate.toISOString() : <any>undefined;
+        data["dateOfAscription"] = this.dateOfAscription ? this.dateOfAscription.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -4527,8 +4695,9 @@ export interface IVehicleBriefDtoItem {
     licensePlate?: string;
     brand?: string;
     consumption?: string;
-    motExpiryDate?: string;
     mileage?: string;
+    motExpiryDate?: Date;
+    dateOfAscription?: Date;
 }
 
 export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
@@ -4635,66 +4804,10 @@ export interface IVehicleGarageServiceItemDto {
     durationInMinutes?: number;
 }
 
-export class VehicleDefectItem implements IVehicleDefectItem {
-    id?: string;
-    startDate?: number;
-    endDate?: number;
-    paragraphNumber?: number;
-    articleNumber?: string;
-    description?: string | undefined;
-
-    constructor(data?: IVehicleDefectItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.startDate = _data["startDate"];
-            this.endDate = _data["endDate"];
-            this.paragraphNumber = _data["paragraphNumber"];
-            this.articleNumber = _data["articleNumber"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): VehicleDefectItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleDefectItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["startDate"] = this.startDate;
-        data["endDate"] = this.endDate;
-        data["paragraphNumber"] = this.paragraphNumber;
-        data["articleNumber"] = this.articleNumber;
-        data["description"] = this.description;
-        return data;
-    }
-}
-
-export interface IVehicleDefectItem {
-    id?: string;
-    startDate?: number;
-    endDate?: number;
-    paragraphNumber?: number;
-    articleNumber?: string;
-    description?: string | undefined;
-}
-
-export class VehicleSpecsDtoItem implements IVehicleSpecsDtoItem {
+export class VehicleSpecificationsDto implements IVehicleSpecificationsDto {
     data?: VehicleInfoSectionItem[];
 
-    constructor(data?: IVehicleSpecsDtoItem) {
+    constructor(data?: IVehicleSpecificationsDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4713,9 +4826,9 @@ export class VehicleSpecsDtoItem implements IVehicleSpecsDtoItem {
         }
     }
 
-    static fromJS(data: any): VehicleSpecsDtoItem {
+    static fromJS(data: any): VehicleSpecificationsDto {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleSpecsDtoItem();
+        let result = new VehicleSpecificationsDto();
         result.init(data);
         return result;
     }
@@ -4731,7 +4844,7 @@ export class VehicleSpecsDtoItem implements IVehicleSpecsDtoItem {
     }
 }
 
-export interface IVehicleSpecsDtoItem {
+export interface IVehicleSpecificationsDto {
     data?: VehicleInfoSectionItem[];
 }
 

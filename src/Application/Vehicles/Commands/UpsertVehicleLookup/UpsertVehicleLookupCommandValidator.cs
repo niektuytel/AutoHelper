@@ -59,13 +59,9 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
                         return;
                     }
 
-                    if (!DateTime.TryParse(vehicleInfo.MOTExpiryDate, out var motExpiryDate))
-                    {
-                        context.AddFailure("Invalid MOT Expiry Date");
-                        return;
-                    }
+                    cmd.MOTExpiryDate = vehicleInfo.MOTExpiryDate;
+                    cmd.DateOfAscription = vehicleInfo.DateOfAscription;
 
-                    cmd.MOTExpiryDate = motExpiryDate;
                 });
 
         }

@@ -19,7 +19,7 @@ function useSearchVehicle() {
     const fetchVehicleBriefInfoData = async (licensePlate: string) => {
         setLoading(true);
         try {
-            const response = await vehicleClient.searchByLicensePlate(licensePlate);
+            const response = await vehicleClient.getBriefInfo(licensePlate);
             setLoading(false);
             return response;
         } catch (response: any) {

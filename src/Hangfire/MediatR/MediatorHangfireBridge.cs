@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
+using Hangfire;
 using MediatR;
 using Newtonsoft.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AutoHelper.Hangfire.MediatR;
 
@@ -15,13 +17,15 @@ public class MediatorHangfireBridge
         _mediator = mediator;
     }
 
-    public async Task Send(IBaseRequest command)
+
+    [Queue("{0}")]
+    [DisplayName("{0}")]
+    public async Task Send(string queue, IBaseRequest command)
     {
-        await _mediator.Send(command);
+        await Send(command);
     }
 
-    [DisplayName("{0}")]
-    public async Task Send(string jobName, IBaseRequest command)
+    public async Task Send(IBaseRequest command)
     {
         await _mediator.Send(command);
     }

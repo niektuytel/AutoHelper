@@ -2,6 +2,7 @@
 using System.Threading;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
@@ -47,6 +48,9 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
     private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
 
+    private int _maxInsertAmount = 0;
+    private int _maxUpdateAmount = 0;
+
     public UpsertVehicleLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService)
     {
         _dbContext = dbContext;
@@ -56,78 +60,141 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
     public async Task<Unit> Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
+        _maxInsertAmount = request.MaxInsertAmount;
+        _maxUpdateAmount = request.MaxUpdateAmount;
 
-        // TODO: Implement the max insert and update amount functionality
-        var startMaxInsertAmount = request.MaxInsertAmount;
-        var startMaxUpdateAmount = request.MaxUpdateAmount;
-
-        // TODO: Logging of the amount of inserts and updates to the hangfire dashboard
-        if (request.UpsertTimeline)
+        try
         {
-            var detectedDefectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
-
-            await _vehicleService.ForEachDetectedDefectAsync(async bulkByLicensePlate =>
+            if (request.UpsertTimeline)
             {
-                var licensePlate = bulkByLicensePlate.First().LicensePlate;
-                var timeline = CreateVehicleFailedMOTTimeline(bulkByLicensePlate, detectedDefectDescriptions);
+                var detectedDefectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
 
-                await UpsertVehicleLookup(licensePlate, timeline, cancellationToken);
-            });
+                await _vehicleService.ForEachDetectedDefectAsync(async bulkByLicensePlate =>
+                {
+                    var stop = false;
+                    var licensePlate = bulkByLicensePlate.First().LicensePlate;
+                    var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
+                    if (vehicle == null) return;
 
-            await _vehicleService.ForEachInspectionNotificationAsync(async bulkByLicensePlate =>
+                    var vehicleLookup = await _dbContext.VehicleLookups
+                        .Include(x => x.Timeline)
+                        .FirstOrDefaultAsync(x => x.LicensePlate == vehicle.LicensePlate, cancellationToken);
+
+                    var timeline = new List<VehicleTimelineItem>();
+                    var failedMOTs = UndefinedFailedMOTTimelineItems(vehicleLookup, bulkByLicensePlate, detectedDefectDescriptions);
+                    if (failedMOTs?.Any() == true)
+                    {
+                        timeline.AddRange(failedMOTs);
+                    }
+
+                    if (timeline?.Any() == true)
+                    {
+                        await UpsertVehicleLookup(vehicleLookup, timeline, vehicle, cancellationToken);
+
+                        if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+                        {
+                            throw new OperationCanceledException($"Given MaxInsertAmount:{_maxInsertAmount} MaxUpdateAmount:{_maxUpdateAmount} reached");
+                        }
+                    }
+                });
+
+                await _vehicleService.ForEachInspectionNotificationAsync(async bulkByLicensePlate =>
+                {
+                    var licensePlate = bulkByLicensePlate.First().LicensePlate;
+                    var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
+                    if (vehicle == null) return;
+
+                    var vehicleLookup = await _dbContext.VehicleLookups
+                        .Include(x => x.Timeline)
+                        .FirstOrDefaultAsync(x => x.LicensePlate == vehicle.LicensePlate, cancellationToken);
+
+                    var timeline = new List<VehicleTimelineItem>();
+                    var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicleLookup, bulkByLicensePlate);
+                    if (succeededMOTs?.Any() == true)
+                    {
+                        timeline.AddRange(succeededMOTs);
+                    }
+
+                    var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicleLookup, vehicle.DateOfAscription);
+                    if (ownerChanged != null)
+                    {
+                        timeline.Add(ownerChanged);
+                    }
+
+                    if (timeline?.Any() == true)
+                    {
+                        await UpsertVehicleLookup(vehicleLookup, timeline, vehicle, cancellationToken);
+
+                        if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+                        {
+                            throw new OperationCanceledException($"Given MaxInsertAmount:{_maxInsertAmount} MaxUpdateAmount:{_maxUpdateAmount} reached");
+                        }
+                    }
+                });
+            }
+
+            if (request.UpsertServiceLogs)
             {
-                var licensePlate = bulkByLicensePlate.First().LicensePlate;
-                var timeline = CreateVehicleSucceededMOTTimeline(licensePlate, bulkByLicensePlate);
-
-                await UpsertVehicleLookup(licensePlate, timeline, cancellationToken);
-            });
-        }
-
-        if (request.UpsertServiceLogs)
+                // TODO: implement
+                throw new NotImplementedException();
+            }
+}
+        catch (OperationCanceledException ex)
         {
-            // TODO: implement
-            throw new NotImplementedException();
+            // TODO: Logging of the amount of inserts and updates to the hangfire dashboard
+            // TODO: _queueingService.LogInformation();
+            return Unit.Value;
         }
-
   
         return Unit.Value;
     }
 
-    private List<VehicleTimelineItem> CreateVehicleFailedMOTTimeline(IEnumerable<RDWDetectedDefect> bulkByLicensePlate, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
+    private List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(VehicleLookupItem vehicleLookup, IEnumerable<RDWDetectedDefect> bulkByLicensePlate, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
     {
         var timeline = new List<VehicleTimelineItem>();
         var groupedByDate = bulkByLicensePlate.GroupBy(x => x.DetectionDate);
         foreach (var group in groupedByDate)
         {
-            var timelineItem = CreateFailedMOTTimelineItem(group, defectDescriptions);
-            timeline.Add(timelineItem);
+            if (vehicleLookup.Timeline.Any(x => x.Date == group.Key))
+            {
+                continue;
+            }
+
+            var item = CreateFailedMOTTimelineItem(group, defectDescriptions);
+            timeline.Add(item);
         }
 
         return timeline.ToList();
     }
 
-    private List<VehicleTimelineItem> CreateVehicleSucceededMOTTimeline(string licensePlate, IEnumerable<RDWInspectionNotification> bulkByLicensePlate)
+    private List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(VehicleLookupItem vehicleLookup, IEnumerable<RDWInspectionNotification> bulkByLicensePlate)
     {
-        var lookup = _dbContext.VehicleLookups
-            .Include(x => x.Timeline)
-            .FirstOrDefault(x => x.LicensePlate == licensePlate);
-
         var timeline = new List<VehicleTimelineItem>();
         var groupedByDate = bulkByLicensePlate.GroupBy(x => x.DateTimeByAuthority);
         foreach (var group in groupedByDate)
         {
-            var item = group.First();
-            var alreadyExist = lookup.Timeline.Any(x => x.Date == item.DateTimeByAuthority);
-            if (alreadyExist)
+            if (vehicleLookup.Timeline.Any(x => x.Date == group.Key))
             {
                 continue;
             }
 
-            var timelineItem = CreateSucceededMOTTimelineItem(item);
-            timeline.Add(timelineItem);
+            var notification = group.First();
+            var item = CreateSucceededMOTTimelineItem(notification);
+            timeline.Add(item);
         }
 
         return timeline.ToList();
+    }
+
+    private VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(VehicleLookupItem vehicleLookup, DateTime dateOfAscription)
+    {
+        if (!vehicleLookup.Timeline.Any(x => x.Date == dateOfAscription))
+        {
+            var item = CreateOwnerChangeTimelineItem(dateOfAscription);
+            return item;
+        }
+
+        return null;
     }
 
     private VehicleTimelineItem CreateFailedMOTTimelineItem(IGrouping<DateTime, RDWDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
@@ -178,50 +245,41 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             Date = dateOfAscription,
             Title = "Nieuwe eigenaar",
             Type = VehicleTimelineType.OwnerChange,
-            Priority = VehicleTimelinePriority.Medium,
+            Priority = VehicleTimelinePriority.Low,
             ExtraData = new Dictionary<string, string>()
         };
 
         return timelineItem;
     }
 
-    private async Task UpsertVehicleLookup(string licensePlate, List<VehicleTimelineItem> timeline, CancellationToken cancellationToken)
+    private async Task UpsertVehicleLookup(VehicleLookupItem? vehicleLookup, List<VehicleTimelineItem> timeline, VehicleBriefDtoItem vehicle, CancellationToken cancellationToken)
     {
-        var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
-        if (vehicle == null) return;
-
-        var lookup = await _dbContext.VehicleLookups
-            .Include(x => x.Timeline)
-            .FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
-
-        // Always insert owner change to timeline
-        if(!timeline.Any(x => x.Date == vehicle.DateOfAscription))
+        
+        if (_maxInsertAmount != 0 && vehicleLookup == null)
         {
-            var newOwnerLine = CreateOwnerChangeTimelineItem(vehicle.DateOfAscription);
-            timeline.Add(newOwnerLine);
-        }
-
-        if (lookup == null)
-        {
-            lookup = new VehicleLookupItem
+            vehicleLookup = new VehicleLookupItem
             {
-                LicensePlate = licensePlate,
+                LicensePlate = vehicle.LicensePlate,
                 MOTExpiryDate = vehicle.MOTExpiryDate,
                 DateOfAscription = vehicle.DateOfAscription,
                 Timeline = timeline
             };
 
-            _dbContext.VehicleLookups.Add(lookup);
+            _dbContext.VehicleLookups.Add(vehicleLookup);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _maxInsertAmount--;
         }
-        else
+        else if (_maxUpdateAmount != 0 && vehicleLookup != null)
         {
-            timeline.AddRange(lookup.Timeline);
-            lookup.DateOfAscription = vehicle.DateOfAscription;
-            lookup.Timeline = timeline.OrderByDescending(x => x.Date).ToList();
+            timeline.AddRange(vehicleLookup.Timeline);
+            vehicleLookup.LicensePlate = vehicle.LicensePlate;
+            vehicleLookup.MOTExpiryDate = vehicle.MOTExpiryDate;
+            vehicleLookup.DateOfAscription = vehicle.DateOfAscription;
+            vehicleLookup.Timeline = timeline.OrderByDescending(x => x.Date).ToList();
 
-            _dbContext.VehicleLookups.Update(lookup);
+            _dbContext.VehicleLookups.Update(vehicleLookup);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _maxUpdateAmount--;
         }
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

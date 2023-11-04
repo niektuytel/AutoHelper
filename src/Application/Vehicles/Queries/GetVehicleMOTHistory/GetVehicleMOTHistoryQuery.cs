@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Domain.Entities.Vehicles;
 using MediatR;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 
-public class GetVehicleMOTHistoryQuery: IRequest<VehicleDefectItem[]>
+public class GetVehicleMOTHistoryQuery: IRequest<RDWDetectedDefect[]>
 {
     public GetVehicleMOTHistoryQuery(string licensePlate)
     {

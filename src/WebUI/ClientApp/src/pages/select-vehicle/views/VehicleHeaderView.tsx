@@ -18,10 +18,10 @@ export default ({ isMobile, license_plate }: IProps) => {
             <Hidden mdDown>
                 <Box sx={{ alignSelf: "left", marginTop: "10px" }}>
                     <Typography variant="h4" color="white" align="left">
-                        <b>Bestel onderhoud</b>
+                        <b>Zoek Garage</b>
                     </Typography>
                     <Typography variant="body1" color="white" align="left">
-                        <b>met de garage in de buurt</b>
+                        <b>voor onderhoud</b>
                     </Typography>
                     <LocationSearchField licence_plate={license_plate} />
                 </Box>
@@ -37,10 +37,10 @@ export default ({ isMobile, license_plate }: IProps) => {
             <Hidden mdUp>
                 <Box sx={{ alignSelf: "center", marginTop: "20px" }}>
                     <Typography variant="h4" color="white">
-                        <b>Bestel onderhoud</b>
+                        <b>Zoek Garage</b>
                     </Typography>
                     <Typography variant="body1" color="white">
-                        <b>met de garage in de buurt</b>
+                        <b>voor onderhoud</b>
                     </Typography>
                     <LocationSearchField licence_plate={license_plate} />
                     <Box sx={{ marginTop: "25px" }}>

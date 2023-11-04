@@ -120,28 +120,28 @@ export default function CustomizedTimeline() {
                         <Typography color="white">4 Onderdelen gerepareerd</Typography>
                     </TimelineContent>
                 </TimelineItem>
-                <TimelineItem>
-                    <TimelineOppositeContent
-                        sx={{ m: 'auto 0' }}
-                        variant="body2"
-                        color="white"
-                    >
-                        03/02/2021
-                    </TimelineOppositeContent>
-                    <TimelineSeparator>
-                        <TimelineConnector />
-                        <TimelineDot color="warning" variant="outlined" sx={{ bgcolor: 'white' }}>
-                            <PriorityHighRoundedIcon sx={{ color: "#ED6C02" }} />
-                        </TimelineDot>
-                        <TimelineConnector/>
-                    </TimelineSeparator>
-                    <TimelineContent sx={{ py: '12px', px: 2 }}>
-                        <Typography variant="h6" component="span" color="white">
-                            APK Afgekeurd
-                        </Typography>
-                        <Typography color="white">Er waren 3 opmerkingen</Typography>
-                    </TimelineContent>
-                </TimelineItem>
+                {/*<TimelineItem>*/}
+                {/*    <TimelineOppositeContent*/}
+                {/*        sx={{ m: 'auto 0' }}*/}
+                {/*        variant="body2"*/}
+                {/*        color="white"*/}
+                {/*    >*/}
+                {/*        03/02/2021*/}
+                {/*    </TimelineOppositeContent>*/}
+                {/*    <TimelineSeparator>*/}
+                {/*        <TimelineConnector />*/}
+                {/*        <TimelineDot color="warning" variant="outlined" sx={{ bgcolor: 'white' }}>*/}
+                {/*            <PriorityHighRoundedIcon sx={{ color: "#ED6C02" }} />*/}
+                {/*        </TimelineDot>*/}
+                {/*        <TimelineConnector/>*/}
+                {/*    </TimelineSeparator>*/}
+                {/*    <TimelineContent sx={{ py: '12px', px: 2 }}>*/}
+                {/*        <Typography variant="h6" component="span" color="white">*/}
+                {/*            APK Afgekeurd*/}
+                {/*        </Typography>*/}
+                {/*        <Typography color="white">Er waren 3 opmerkingen</Typography>*/}
+                {/*    </TimelineContent>*/}
+                {/*</TimelineItem>*/}
             </Timeline>
     );
 }

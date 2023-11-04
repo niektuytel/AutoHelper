@@ -91,10 +91,10 @@ public class MessageController : ApiControllerBase
     {
         var sender = SanitizeForQueueName(command.SenderWhatsAppNumberOrEmail);
         var receiver = SanitizeForQueueName(command.ReceiverWhatsAppNumberOrEmail);
-        var jobName = $"{nameof(StartConversationCommand).ToLower()}_{sender}_to_{receiver}";
+        var queue = $"{nameof(StartConversationCommand).ToLower()}_{sender}_to_{receiver}";
 
-        Mediator.Enqueue(jobName, command, isRecursive: true);
-        return jobName;
+        Mediator.Enqueue(queue, command, isRecursive: true);
+        return queue;
     }
 
     private static string SanitizeForQueueName(string input)

@@ -28,7 +28,7 @@ public class VehicleLookupItem : BaseAuditableEntity
 
 
     [Required]
-    public ICollection<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();
+    public List<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();
 
     [Required]
     public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();

@@ -6,7 +6,6 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleDefects;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
@@ -60,13 +59,13 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleServiceLogsQuery(licensePlate));
     }
 
-    [HttpGet($"{nameof(GetMOTHistory)}")]
-    [ProducesResponseType(typeof(RDWDetectedDefect[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<RDWDetectedDefect[]> GetMOTHistory([FromQuery] string licensePlate)
-    {
-        return await Mediator.Send(new GetVehicleMOTHistoryQuery(licensePlate));
-    }
+    //[HttpGet($"{nameof(GetMOTHistory)}")]
+    //[ProducesResponseType(typeof(RDWDetectedDefect[]), StatusCodes.Status200OK)]
+    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    //public async Task<RDWDetectedDefect[]> GetMOTHistory([FromQuery] string licensePlate)
+    //{
+    //    return await Mediator.Send(new GetVehicleMOTHistoryQuery(licensePlate));
+    //}
 
     [HttpGet($"{nameof(GetSpecifications)}")]
     [ProducesResponseType(typeof(VehicleSpecificationsDto), StatusCodes.Status200OK)]
@@ -108,11 +107,11 @@ public class VehicleController : ApiControllerBase
         [FromQuery] bool updateTimeline = true,
         [FromQuery] bool updateServiceLogs = true
     ) {
-        var jobName = $"{nameof(UpsertVehicleLookupsCommand)}:maxInsert({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
+        var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
         var command = new UpsertVehicleLookupsCommand(maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
-        Mediator.Enqueue(jobName, command);
 
-        return $"Successfully start hangfire job: {jobName}";
+        Mediator.Enqueue(queue, command);
+        return $"Successfully start hangfire job: {queue}";
     }
 
 

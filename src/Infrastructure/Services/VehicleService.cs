@@ -468,7 +468,7 @@ internal class VehicleService : IVehicleService
 
     public async Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync()
     {
-        return await _rdwService.GetDetectedDefectTypes();
+        return await _rdwService.GetDetectedDefectDescriptions();
     }
 
     public async Task ForEachDetectedDefectAsync(Func<IEnumerable<RDWDetectedDefect>, Task> handleVehicle)
@@ -514,7 +514,7 @@ internal class VehicleService : IVehicleService
         {
             try
             {
-                var items = await _rdwService.GetVehicleDetectedDefectsByPagination(offset, limit);
+                var items = await _rdwService.GetVehicleInspectionNotificationsByPagination(offset, limit);
                 var groupedByLicensePlate = items.GroupBy(item => item.LicensePlate).ToList();
 
                 // Process each group as a bulk

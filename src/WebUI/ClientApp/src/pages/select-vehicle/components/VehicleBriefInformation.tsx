@@ -76,7 +76,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 </TableCell>
                                 :
                                 <TableCell style={cellStyle}>
-                                    {vehicleBriefInfo?.motExpiryDate}
+                                    {vehicleBriefInfo?.motExpiryDate?.toDateString()}
                                 </TableCell>
                             }
                         </TableRow>

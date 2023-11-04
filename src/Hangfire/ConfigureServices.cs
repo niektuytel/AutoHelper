@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
@@ -32,6 +33,13 @@ public static class ConfigureServices
                 .UseSqlServerStorage(hangfireConnection);
         });
         services.AddHangfireServer();
+        //    options =>
+        //{
+        //    options.Queues = new[] { 
+        //        nameof(UpsertGarageLookupsCommand).ToLower(), 
+        //        "default" 
+        //    };
+        //});
         services.AddTransient<IQueueingService, HangfireJobService>();
     }
 

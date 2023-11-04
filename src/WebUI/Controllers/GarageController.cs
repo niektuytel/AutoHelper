@@ -107,11 +107,11 @@ public class GarageController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public string UpsertLookups([FromQuery] int maxInsertAmount=0, [FromQuery] int maxUpdateAmount=0)
     {
-        var jobName = $"{nameof(UpsertGarageLookupsCommand)}:maxInsert({maxInsertAmount}):maxUpdate({maxUpdateAmount})";
+        var queue = nameof(UpsertGarageLookupsCommand);
         var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
-        Mediator.Enqueue(jobName, command);
 
-        return $"Successfully start hangfire job: {jobName}";
+        Mediator.Enqueue(queue, command);
+        return $"Successfully start hangfire job: {queue}";
     }
 
 }

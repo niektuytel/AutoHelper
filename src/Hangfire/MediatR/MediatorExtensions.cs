@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
+using Hangfire.States;
 using MediatR;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AutoHelper.Hangfire.MediatR;
 
@@ -22,7 +24,15 @@ public static class MediatorExtensions
         }
         else
         {
-            client.Enqueue<MediatorHangfireBridge>(queue, bridge => bridge.Send(request));
+            if(string.IsNullOrEmpty(queue))
+            {
+                client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(request));
+            }
+            else
+            {
+                queue = queue.ToLower();
+                client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(queue, request));
+            }
         }
     }
 
