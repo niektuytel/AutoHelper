@@ -234,6 +234,9 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             timelineItem.ExtraData.Add(information.DefectArticleNumber, description);
         }
 
+        var total = group.Select(x => x.DetectedAmount).Sum();
+        timelineItem.Description = $"op {total} plekken";
+
         return timelineItem;
     }
 
@@ -243,6 +246,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         {
             Date = notification.DateTimeByAuthority,
             Title = "APK goedgekeurd",
+            Description = "",
             Type = VehicleTimelineType.SucceededMOT,
             Priority = VehicleTimelinePriority.Medium,
             ExtraData = new Dictionary<string, string>()
@@ -258,6 +262,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         {
             Date = dateOfAscription,
             Title = "Nieuwe eigenaar",
+            Description = "",
             Type = VehicleTimelineType.OwnerChange,
             Priority = VehicleTimelinePriority.Low,
             ExtraData = new Dictionary<string, string>()
