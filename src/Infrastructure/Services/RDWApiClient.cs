@@ -238,6 +238,7 @@ internal partial class RDWApiClient
         };
     }
 
+
     /// <summary>
     /// https://opendata.rdw.nl/resource/hx2c-gt7k.json
     /// </summary>
@@ -260,13 +261,30 @@ internal partial class RDWApiClient
     }
 
     /// <summary>
+    /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
+    /// </summary>
+    public async Task<IEnumerable<RDWVehicle>> GetVehicles(int offset, int limit)
+    {
+        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWVehicle>>(json) ?? new List<RDWVehicle>();
+    }
+
+    /// <summary>
     /// https://opendata.rdw.nl/resource/a34c-vvps.json
     /// </summary>
     /// <exception cref="Exception">When issue on api http call</exception>
-    internal async Task<IEnumerable<RDWDetectedDefect>> GetVehicleDetectedDefectsByPagination(int offset, int limit)
+    internal async Task<IEnumerable<RDWVehicleDetectedDefect>> GetVehicleDetectedDefects(string licensePlate)
     {
         var url = $"https://opendata.rdw.nl/resource/a34c-vvps.json";
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?kenteken={licensePlate}");
         request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
         request.Headers.Add("Accept", "application/json");
 
@@ -277,17 +295,17 @@ internal partial class RDWApiClient
         }
 
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<IEnumerable<RDWDetectedDefect>>(json) ?? new List<RDWDetectedDefect>();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWVehicleDetectedDefect>>(json) ?? new List<RDWVehicleDetectedDefect>();
     }
 
     /// <summary>
     /// https://opendata.rdw.nl/resource/sgfe-77wx.json
     /// </summary>
     /// <exception cref="Exception">When issue on api http call</exception>
-    internal async Task<IEnumerable<RDWInspectionNotification>> GetVehicleInspectionNotificationsByPagination(int offset, int limit)
+    internal async Task<IEnumerable<RDWvehicleInspectionNotification>> GetVehicleInspectionNotifications(string licensePlate)
     {
         var url = $"https://opendata.rdw.nl/resource/sgfe-77wx.json";
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?kenteken={licensePlate}");
         request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
         request.Headers.Add("Accept", "application/json");
 
@@ -298,7 +316,6 @@ internal partial class RDWApiClient
         }
 
         var json = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<IEnumerable<RDWInspectionNotification>>(json) ?? new List<RDWInspectionNotification>();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWvehicleInspectionNotification>>(json) ?? new List<RDWvehicleInspectionNotification>();
     }
-
 }

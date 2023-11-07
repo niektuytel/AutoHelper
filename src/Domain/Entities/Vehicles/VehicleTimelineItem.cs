@@ -9,6 +9,14 @@ public class VehicleTimelineItem: BaseEntity
     public VehicleTimelineItem()
     { }
 
+
+    // TODO: Get this working
+    [ForeignKey(nameof(VehicleLookupItem))]
+    public string LicensePlate { get; set; }
+
+    [Required]
+    public DateTime LatestChange { get; set; }
+
     [Required]
     public string Title { get; set; } = null!;
 
@@ -24,14 +32,27 @@ public class VehicleTimelineItem: BaseEntity
     [Required]
     public VehicleTimelinePriority Priority { get; set; } = VehicleTimelinePriority.Low;
 
-    public string ExtraDataTableJson { get; private set; } = "";
+    [NotMapped]
+    private Dictionary<string, string> _extraDataCache;
+
+    public string ExtraDataTableJson { get; private set; } = "{}";
 
     [NotMapped]
     public Dictionary<string, string> ExtraData
     {
-        get => JsonConvert.DeserializeObject<Dictionary<string, string>>(ExtraDataTableJson) ?? new();
-        set => ExtraDataTableJson = JsonConvert.SerializeObject(value);
+        get
+        {
+            if (_extraDataCache == null)
+            {
+                _extraDataCache = JsonConvert.DeserializeObject<Dictionary<string, string>>(ExtraDataTableJson) ?? new Dictionary<string, string>();
+            }
+            return _extraDataCache;
+        }
+        set
+        {
+            _extraDataCache = value;
+            ExtraDataTableJson = JsonConvert.SerializeObject(value);
+        }
     }
-
 
 }

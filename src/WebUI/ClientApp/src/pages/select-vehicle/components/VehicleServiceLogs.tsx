@@ -13,7 +13,8 @@ export default ({ isMobile, license_plate }: IProps) => {
     return <>
         <Box>
             <Typography variant="h4">
-                TODO: Does not found any service logs for this vehicle
+                create upload service log dialog...<br/>
+                show all related vehicle [logs]
             </Typography>
         </Box>
     </>

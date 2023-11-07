@@ -51,8 +51,8 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
     private readonly IVehicleService _vehicleService;
     private readonly ILogger<UpsertVehicleLookupsCommandHandler> _logger;
 
-    private int _maxInsertAmount = 0;
-    private int _maxUpdateAmount = 0;
+    private int _maxInsertAmount { get; set; }
+    private int _maxUpdateAmount { get; set; }
 
     public UpsertVehicleLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, ILogger<UpsertVehicleLookupsCommandHandler> logger)
     {
@@ -67,84 +67,78 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         _maxInsertAmount = request.MaxInsertAmount;
         _maxUpdateAmount = request.MaxUpdateAmount;
 
-        // TODO: Debug this functionality
-        try
+        if (_maxInsertAmount == -1)
         {
-            if (request.UpsertTimeline)
+            request.QueueService.LogInformation($"Insert all available vehicles");
+        }
+        else
+        {
+            request.QueueService.LogInformation($"Insert {_maxInsertAmount} vehicles");
+        }
+
+        if (_maxUpdateAmount == -1)
+        {
+            request.QueueService.LogInformation($"Update all available vehicles");
+        }
+        else
+        {
+            request.QueueService.LogInformation($"Update {_maxUpdateAmount} vehicles");
+        }
+
+        var defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
+        try {
+            await _vehicleService.ForEachVehicleInBatches(async vehicleBatch =>
             {
-                var detectedDefectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
-
-                await _vehicleService.ForEachDetectedDefectAsync(async bulkByLicensePlate =>
+                foreach (var vehicle in vehicleBatch)
                 {
-                    var licensePlate = bulkByLicensePlate.First().LicensePlate;
-                    var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
-                    if (vehicle == null) return;
-
-                    var timeline = new List<VehicleTimelineItem>();
                     var vehicleLookup = await _dbContext.VehicleLookups
                         .Include(x => x.Timeline)
                         .FirstOrDefaultAsync(x => x.LicensePlate == vehicle.LicensePlate, cancellationToken);
 
-                    var failedMOTs = UndefinedFailedMOTTimelineItems(vehicleLookup, bulkByLicensePlate, detectedDefectDescriptions);
-                    if (failedMOTs?.Any() == true)
+                    // always be sure that the vehicle lookup is up-to-date
+                    var onInsert = vehicleLookup == null;
+                    if (onInsert)
                     {
-                        request.QueueService.LogInformation($"Upsert [{licensePlate}] lookup, with {failedMOTs.Count} undefined FailedMOT timeline");
-                        timeline.AddRange(failedMOTs);
-                    }
-
-                    if (timeline?.Any() == true)
-                    {
-                        await UpsertVehicleLookup(vehicleLookup, timeline, vehicle, cancellationToken);
-
-                        if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+                        vehicleLookup = new VehicleLookupItem
                         {
-                            throw new OperationCanceledException();
+                            LicensePlate = vehicle.LicensePlate
+                        };
+                    }
+                    vehicleLookup!.DateOfMOTExpiry = vehicle.MOTExpiryDateDt;
+                    vehicleLookup.DateOfAscription = vehicle.RegistrationDateDt;
+
+                    var hasChanges = false;
+                    var timeline = vehicleLookup.Timeline ?? new List<VehicleTimelineItem>();
+                    if (request.UpsertTimeline)
+                    {
+                        var updatedTimeline = await _vehicleService.GetVehicleUpdatedTimeline(timeline, vehicle, defectDescriptions);
+                        if (updatedTimeline?.Any() == true && updatedTimeline.Count() != timeline.Count())
+                        {
+                            timeline = updatedTimeline;
+                            hasChanges = true;
                         }
                     }
-                });
 
-                await _vehicleService.ForEachInspectionNotificationAsync(async bulkByLicensePlate =>
-                {
-                    var licensePlate = bulkByLicensePlate.First().LicensePlate;
-                    var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
-                    if (vehicle == null) return;
-
-                    var vehicleLookup = await _dbContext.VehicleLookups
-                        .Include(x => x.Timeline)
-                        .FirstOrDefaultAsync(x => x.LicensePlate == vehicle.LicensePlate, cancellationToken);
-
-                    var timeline = new List<VehicleTimelineItem>();
-                    var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicleLookup, bulkByLicensePlate);
-                    if (succeededMOTs?.Any() == true)
+                    if (request.UpsertServiceLogs)
                     {
-                        request.QueueService.LogInformation($"Upsert [{licensePlate}] lookup, with {succeededMOTs.Count} undefined SucceededMOT");
-                        timeline.AddRange(succeededMOTs);
+                        // TODO: implement
+                        throw new NotImplementedException();
+                        hasChanges = true;
                     }
 
-                    var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicleLookup, vehicle.DateOfAscription);
-                    if (ownerChanged != null)
+                    if (hasChanges)
                     {
-                        request.QueueService.LogInformation($"Upsert [{licensePlate}] lookup, with owner changed on {vehicle.DateOfAscription}");
-                        timeline.Add(ownerChanged);
+                        await UpsertVehicleLookup(vehicleLookup, timeline, onInsert, cancellationToken);
+
+                        // Calculate the progress
+                        double totalOperations = request.MaxInsertAmount + request.MaxUpdateAmount;
+                        double completedOperations = (request.MaxInsertAmount - _maxInsertAmount) + (request.MaxUpdateAmount - _maxUpdateAmount);
+                        int progressPercentage = (int)Math.Round((completedOperations / totalOperations) * 100);
+                        if(progressPercentage >= 100) progressPercentage = 1; // Ensure it doesn't exceed 100%
+                        request.QueueService.LogProgress(progressPercentage);
                     }
-
-                    if (timeline?.Any() == true)
-                    {
-                        await UpsertVehicleLookup(vehicleLookup, timeline, vehicle, cancellationToken);
-
-                        if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
-                        {
-                            throw new OperationCanceledException();
-                        }
-                    }
-                });
-            }
-
-            if (request.UpsertServiceLogs)
-            {
-                // TODO: implement
-                throw new NotImplementedException();
-            }
+                }
+            });
         }
         catch (OperationCanceledException ex)
         {
@@ -160,144 +154,33 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         return Unit.Value;
     }
 
-    private List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(VehicleLookupItem vehicleLookup, IEnumerable<RDWDetectedDefect> bulkByLicensePlate, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
-    {
-        var timeline = new List<VehicleTimelineItem>();
-        var groupedByDate = bulkByLicensePlate.GroupBy(x => x.DetectionDate);
-        foreach (var group in groupedByDate)
+    private async Task UpsertVehicleLookup(
+        VehicleLookupItem vehicleLookup, 
+        List<VehicleTimelineItem> timeline, 
+        bool onInsert, 
+        CancellationToken cancellationToken
+    ){
+        vehicleLookup.Timeline = timeline.OrderByDescending(x => x.Date).ToList();
+
+        if (_maxInsertAmount != 0 && onInsert)
         {
-            if (vehicleLookup?.Timeline?.Any(x => x.Date == group.Key) != true)
-            {
-                continue;
-            }
-
-            var item = CreateFailedMOTTimelineItem(group, defectDescriptions);
-            timeline.Add(item);
-        }
-
-        return timeline.ToList();
-    }
-
-    private List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(VehicleLookupItem vehicleLookup, IEnumerable<RDWInspectionNotification> bulkByLicensePlate)
-    {
-        var timeline = new List<VehicleTimelineItem>();
-        var groupedByDate = bulkByLicensePlate.GroupBy(x => x.DateTimeByAuthority);
-        foreach (var group in groupedByDate)
-        {
-            if (vehicleLookup?.Timeline?.Any(x => x.Date == group.Key) != true)
-            {
-                continue;
-            }
-
-            var notification = group.First();
-            var item = CreateSucceededMOTTimelineItem(notification);
-            timeline.Add(item);
-        }
-
-        return timeline.ToList();
-    }
-
-    private VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(VehicleLookupItem vehicleLookup, DateTime? dateOfAscription)
-    {
-        if(dateOfAscription == null) return null;
-
-        if (vehicleLookup?.Timeline?.Any(x => x.Date == dateOfAscription) != true)
-        {
-            var item = CreateOwnerChangeTimelineItem((DateTime)dateOfAscription);
-            return item;
-        }
-
-        return null;
-    }
-
-    private VehicleTimelineItem CreateFailedMOTTimelineItem(IGrouping<DateTime, RDWDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
-    {
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Date = group.Key,
-            Title = "APK afgekeurd",
-            Type = VehicleTimelineType.FailedMOT,
-            Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new Dictionary<string, string>()
-        };
-
-        foreach (var defect in group)
-        {
-            var information = defectDescriptions.First(x => x.Identification == defect.Identifier);
-            var description = information.Description;
-            if (defect.DetectedAmount > 1)
-            {
-                description += $" ({defect.DetectedAmount}x)";
-            }
-
-            timelineItem.ExtraData.Add(information.DefectArticleNumber, description);
-        }
-
-        var total = group.Select(x => x.DetectedAmount).Sum();
-        timelineItem.Description = $"op {total} plekken";
-
-        return timelineItem;
-    }
-
-    private VehicleTimelineItem CreateSucceededMOTTimelineItem(RDWInspectionNotification notification)
-    {
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Date = notification.DateTimeByAuthority,
-            Title = "APK goedgekeurd",
-            Description = "",
-            Type = VehicleTimelineType.SucceededMOT,
-            Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new Dictionary<string, string>()
-        };
-
-        timelineItem.ExtraData.Add("Verval datum", notification.ExpiryDateTime.ToShortDateString());
-        return timelineItem;
-    }
-
-    private VehicleTimelineItem CreateOwnerChangeTimelineItem(DateTime dateOfAscription)
-    {
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Date = dateOfAscription,
-            Title = "Nieuwe eigenaar",
-            Description = "",
-            Type = VehicleTimelineType.OwnerChange,
-            Priority = VehicleTimelinePriority.Low,
-            ExtraData = new Dictionary<string, string>()
-        };
-
-        return timelineItem;
-    }
-
-    private async Task UpsertVehicleLookup(VehicleLookupItem? vehicleLookup, List<VehicleTimelineItem> timeline, VehicleBriefDtoItem vehicle, CancellationToken cancellationToken)
-    {
-        
-        if (_maxInsertAmount != 0 && vehicleLookup == null)
-        {
-            vehicleLookup = new VehicleLookupItem
-            {
-                LicensePlate = vehicle.LicensePlate,
-                DateOfMOTExpiry = vehicle.DateOfMOTExpiry,
-                DateOfAscription = vehicle.DateOfAscription,
-                Timeline = timeline
-            };
-
             _dbContext.VehicleLookups.Add(vehicleLookup);
             await _dbContext.SaveChangesAsync(cancellationToken);
+
             _maxInsertAmount--;
         }
-        else if (_maxUpdateAmount != 0 && vehicleLookup != null)
+        else if (_maxUpdateAmount != 0 && !onInsert)
         {
-            timeline.AddRange(vehicleLookup.Timeline);
-            vehicleLookup.LicensePlate = vehicle.LicensePlate;
-            vehicleLookup.DateOfMOTExpiry = vehicle.DateOfMOTExpiry;
-            vehicleLookup.DateOfAscription = vehicle.DateOfAscription;
-            vehicleLookup.Timeline = timeline.OrderByDescending(x => x.Date).ToList();
-
             _dbContext.VehicleLookups.Update(vehicleLookup);
             await _dbContext.SaveChangesAsync(cancellationToken);
+
             _maxUpdateAmount--;
+        }
+
+        if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+        {
+            // cancel next operation
+            throw new OperationCanceledException();
         }
     }
 }

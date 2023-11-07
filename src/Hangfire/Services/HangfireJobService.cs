@@ -28,7 +28,6 @@ internal class HangfireJobService : IQueueService
     public void LogInformation(string value)
     {
         if (_context == null) throw new InvalidOperationException("PerformContext not initialized.");
-
         _context.WriteLine(value);
     }
 

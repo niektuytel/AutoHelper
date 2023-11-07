@@ -37,9 +37,16 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 
     public async Task<VehicleTimelineDtoItem[]> Handle(GetVehicleTimelineQuery request, CancellationToken cancellationToken)
     {
+        // Include the timeline and perform ordering and limiting in the query itself
         var vehicle = await _context.VehicleLookups
             .AsNoTracking()
-            .Include(x => x.Timeline)
+            .Select(v => new
+            {
+                v.LicensePlate,
+                Timeline = v.Timeline
+                                .OrderBy(t => t.Date)
+                                .Take(4)
+            })
             .FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
 
         if (vehicle == null)

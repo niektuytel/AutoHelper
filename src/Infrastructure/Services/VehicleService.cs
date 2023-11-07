@@ -10,6 +10,8 @@ using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Common.Models;
 using Azure;
+using Azure.Core;
+using Force.DeepCloner;
 using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -459,7 +461,7 @@ internal class VehicleService : IVehicleService
         };
     }
 
-    public async Task<RDWDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate)
+    public async Task<RDWVehicleDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
         if (data?.HasValues != true)
@@ -477,7 +479,7 @@ internal class VehicleService : IVehicleService
         return await _rdwService.GetDetectedDefectDescriptions();
     }
 
-    public async Task ForEachDetectedDefectAsync(Func<IEnumerable<RDWDetectedDefect>, Task> handleVehicle)
+    public async Task ForEachVehicleInBatches(Func<IEnumerable<RDWVehicle>, Task> onVehicleBatch)
     {
         var limit = 2000;
         var offset = 0;
@@ -485,62 +487,168 @@ internal class VehicleService : IVehicleService
 
         do
         {
-            try
-            {
-                var items = await _rdwService.GetVehicleDetectedDefectsByPagination(offset, limit);
-                var groupedByLicensePlate = items.GroupBy(item => item.LicensePlate).ToList();
+            var items = await _rdwService.GetVehicles(offset, limit);
+            await onVehicleBatch(items);
 
-                // Process each group as a bulk
-                foreach (var group in groupedByLicensePlate)
-                {
-                    var bulk = group.ToArray();
-                    await handleVehicle(bulk);
-
-                    count += group.Count();
-                }
-
-                offset++;
-            }
-            catch (Exception ex)
-            {
-                // TODO: Log error to hangfire dashboard
-                break;
-            }
+            count += items.Count();
+            offset++;
         }
         while (count == (limit * offset));
     }
 
-    public async Task ForEachInspectionNotificationAsync(Func<IEnumerable<RDWInspectionNotification>, Task> handleVehicle)
+    public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
+        List<VehicleTimelineItem> timeline, 
+        RDWVehicle vehicle, 
+        IEnumerable<RDWDetectedDefectDescription> defectDescriptions
+    )
     {
-        var limit = 2000;
-        var offset = 0;
-        var count = 0;
-
-        do
+        var items = timeline.DeepClone() ?? new List<VehicleTimelineItem>();
+        var defects = await _rdwService.GetVehicleDetectedDefects(vehicle.LicensePlate);
+        if (defects?.Any() == true)
         {
-            try
+            var failedMOTs = UndefinedFailedMOTTimelineItems(items, defects, defectDescriptions);
+            if (failedMOTs?.Any() == true)
             {
-                var items = await _rdwService.GetVehicleInspectionNotificationsByPagination(offset, limit);
-                var groupedByLicensePlate = items.GroupBy(item => item.LicensePlate).ToList();
-
-                // Process each group as a bulk
-                foreach (var group in groupedByLicensePlate)
-                {
-                    var bulk = group.ToArray();
-                    await handleVehicle(bulk);
-
-                    count += group.Count();
-                }
-
-                offset++;
-            }
-            catch (Exception ex)
-            {
-                // TODO: Log error to hangfire dashboard
-                break;
+                items.AddRange(failedMOTs);
             }
         }
-        while (count == (limit * offset));
+
+        var inspections = await _rdwService.GetVehicleInspectionNotifications(vehicle.LicensePlate);
+        if (inspections?.Any() == true)
+        {
+            var succeededMOTs = UndefinedSucceededMOTTimelineItems(items, inspections);
+            if (succeededMOTs?.Any() == true)
+            {
+                items.AddRange(succeededMOTs);
+            }
+        }
+
+        var ownerChanged = UndefinedOwnerChangedTimelineItem(items, vehicle.RegistrationDateDt);
+        if (ownerChanged != null)
+        {
+            items.Add(ownerChanged);
+        }
+
+        return items;
+    }
+
+    private List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(List<VehicleTimelineItem> timeline, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
+    {
+        var items = new List<VehicleTimelineItem>();
+        var groupedByDate = detectedDefects.GroupBy(x => x.DetectionDate);
+        foreach (var group in groupedByDate)
+        {
+            if (timeline?.Any(x => x.Date == group.Key) == true)
+            {
+                continue;
+            }
+
+            var item = CreateFailedMOTTimelineItem(group, defectDescriptions);
+            items.Add(item);
+        }
+
+        return items;
+    }
+
+    private List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(List<VehicleTimelineItem> timeline, IEnumerable<RDWvehicleInspectionNotification> notifications)
+    {
+        var items = new List<VehicleTimelineItem>();
+        var groupedByDate = notifications.GroupBy(x => x.DateTimeByAuthority);
+        foreach (var group in groupedByDate)
+        {
+            if (timeline?.Any(x => x.Date == group.Key) == true)
+            {
+                continue;
+            }
+
+            var notification = group.First();
+            var item = CreateSucceededMOTTimelineItem(notification);
+            items.Add(item);
+        }
+
+        return items;
+    }
+
+    private VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(List<VehicleTimelineItem> timeline, DateTime? dateOfAscription)
+    {
+        if (dateOfAscription == null || dateOfAscription == DateTime.MinValue)
+        {
+            return null;
+        }
+        else if(timeline?.Any(x => x.Date == dateOfAscription) == true)
+        {
+            return null;
+        }
+
+        var item = CreateOwnerChangeTimelineItem((DateTime)dateOfAscription);
+        return item;
+    }
+
+    private VehicleTimelineItem CreateFailedMOTTimelineItem(IGrouping<DateTime, RDWVehicleDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
+    {
+        var timelineItem = new VehicleTimelineItem()
+        {
+            Date = group.Key,
+            Title = "APK afgekeurd",
+            Type = VehicleTimelineType.FailedMOT,
+            Priority = VehicleTimelinePriority.Medium,
+            ExtraData = new Dictionary<string, string>()
+        };
+
+        // avoid repeated deserialization
+        var extraData = timelineItem.ExtraData;
+
+        foreach (var defect in group)
+        {
+            var information = defectDescriptions.First(x => x.Identification == defect.Identifier);
+            var description = information.Description;
+            if (defect.DetectedAmount > 1)
+            {
+                description += $" ({defect.DetectedAmount}x)";
+            }
+
+            extraData.Add(description, information.DefectArticleNumber);
+        }
+
+        // set the property back to serialize and store the updates
+        timelineItem.ExtraData = extraData;
+
+        var total = group.Select(x => x.DetectedAmount).Sum();
+        timelineItem.Description = $"op {total} plekken";
+
+        return timelineItem;
+    }
+
+    private VehicleTimelineItem CreateSucceededMOTTimelineItem(RDWvehicleInspectionNotification notification)
+    {
+        var timelineItem = new VehicleTimelineItem()
+        {
+            Date = notification.DateTimeByAuthority,
+            Title = "APK goedgekeurd",
+            Description = "",
+            Type = VehicleTimelineType.SucceededMOT,
+            Priority = VehicleTimelinePriority.Medium,
+            ExtraData = new Dictionary<string, string>() {
+                { "Verval datum", notification.ExpiryDateTime.ToShortDateString() }
+            }
+        };
+
+        return timelineItem;
+    }
+
+    private VehicleTimelineItem CreateOwnerChangeTimelineItem(DateTime dateOfAscription)
+    {
+        var timelineItem = new VehicleTimelineItem()
+        {
+            Date = dateOfAscription,
+            Title = "Nieuwe eigenaar",
+            Description = "",
+            Type = VehicleTimelineType.OwnerChange,
+            Priority = VehicleTimelinePriority.Low,
+            ExtraData = new Dictionary<string, string>()
+        };
+
+        return timelineItem;
     }
 
 }

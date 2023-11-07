@@ -3,7 +3,7 @@ using System;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 
-public class RDWInspectionNotification
+public class RDWvehicleInspectionNotification
 {
     [JsonProperty("kenteken")]
     public string LicensePlate { get; set; }

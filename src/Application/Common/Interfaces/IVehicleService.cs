@@ -4,6 +4,7 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Infrastructure.Services;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
@@ -15,8 +16,12 @@ public interface IVehicleService
     Task<VehicleType> GetVehicleTypeByLicensePlateAsync(string licensePlate);
     Task<bool> IsVehicleValidAsync(string licensePlate);
     Task<VehicleTechnicalBriefDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate);
-    Task<RDWDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate);
+    Task<RDWVehicleDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate);
+    Task ForEachVehicleInBatches(Func<IEnumerable<RDWVehicle>, Task> onVehicleBatch);
     Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync();
-    Task ForEachDetectedDefectAsync(Func<IEnumerable<RDWDetectedDefect>, Task> handleVehicle);
-    Task ForEachInspectionNotificationAsync(Func<IEnumerable<RDWInspectionNotification>, Task> handleVehicle);
+    Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
+        List<VehicleTimelineItem> timeline, 
+        RDWVehicle vehicle, 
+        IEnumerable<RDWDetectedDefectDescription> defectDescriptions
+    );
 }
