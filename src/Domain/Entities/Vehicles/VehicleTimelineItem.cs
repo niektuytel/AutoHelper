@@ -9,11 +9,6 @@ public class VehicleTimelineItem: BaseEntity
     public VehicleTimelineItem()
     { }
 
-
-    // TODO: Get this working
-    [ForeignKey(nameof(VehicleLookupItem))]
-    public string LicensePlate { get; set; }
-
     [Required]
     public DateTime LatestChange { get; set; }
 
