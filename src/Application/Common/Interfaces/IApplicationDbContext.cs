@@ -22,6 +22,9 @@ public interface IApplicationDbContext
     DbSet<ConversationItem> Conversations { get; }
     DbSet<ConversationMessageItem> ConversationMessages { get; }
 
+    Task BulkInsertAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class;
+    Task BulkUpdateAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class;
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     void SetQueryTrackingBehavior(QueryTrackingBehavior behavior);
 

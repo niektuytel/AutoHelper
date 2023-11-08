@@ -41,6 +41,11 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
     public bool UpsertTimeline { get; set; }
     public bool UpsertServiceLogs { get; set; }
 
+    /// <summary>
+    /// Check once a week if data is still up to date with RDW
+    /// </summary>
+    public DateTime RecentUpdateThreshold { get; set; } = DateTime.UtcNow.AddDays(-7);
+
     public IQueueService QueueService { get; set; }
 }
 
@@ -87,56 +92,69 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
         var defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
         try {
-            await _vehicleService.ForEachVehicleInBatches(async vehicleBatch =>
+            await _vehicleService.ForEachVehicleBasicsInBatches(async vehicleBatch =>
             {
-                foreach (var vehicle in vehicleBatch)
+                var licensePlates = vehicleBatch.Select(v => v.LicensePlate).ToList();
+
+                // Retrieve the required entities without join, using Contains and checking the LastModified date
+                var vehicleLookupDictionary = await _dbContext.VehicleLookups
+                    .Include(x => x.Timeline)
+                    .Where(v => licensePlates.Contains(v.LicensePlate))
+                    .ToDictionaryAsync(v => v.LicensePlate, cancellationToken);
+
+                var updateTasks = vehicleBatch.Select(rdwVehicle => ProcessVehicleAsync(rdwVehicle, vehicleLookupDictionary, request, defectDescriptions, cancellationToken)).ToList();
+
+                // After all parallel tasks are completed, we can now save the changes to the database.
+                var vehicleLookupsToUpdate = new List<VehicleLookupItem>();
+                var vehicleLookupsToInsert = new List<VehicleLookupItem>();
+                var results = await Task.WhenAll(updateTasks);
+
+                foreach (var result in results)
                 {
-                    var vehicleLookup = await _dbContext.VehicleLookups
-                        .Include(x => x.Timeline)
-                        .FirstOrDefaultAsync(x => x.LicensePlate == vehicle.LicensePlate, cancellationToken);
-
-                    // always be sure that the vehicle lookup is up-to-date
-                    var onInsert = vehicleLookup == null;
-                    if (onInsert)
+                    if (result.Errors.Any())
                     {
-                        vehicleLookup = new VehicleLookupItem
+                        foreach (var error in result.Errors)
                         {
-                            LicensePlate = vehicle.LicensePlate
-                        };
-                    }
-                    vehicleLookup!.DateOfMOTExpiry = vehicle.MOTExpiryDateDt;
-                    vehicleLookup.DateOfAscription = vehicle.RegistrationDateDt;
-
-                    var hasChanges = false;
-                    var timeline = vehicleLookup.Timeline ?? new List<VehicleTimelineItem>();
-                    if (request.UpsertTimeline)
-                    {
-                        var updatedTimeline = await _vehicleService.GetVehicleUpdatedTimeline(timeline, vehicle, defectDescriptions);
-                        if (updatedTimeline?.Any() == true && updatedTimeline.Count() != timeline.Count())
-                        {
-                            timeline = updatedTimeline;
-                            hasChanges = true;
+                            request.QueueService.LogError(error);
                         }
                     }
-
-                    if (request.UpsertServiceLogs)
+                    else if (result.HasChanges)
                     {
-                        // TODO: implement
-                        throw new NotImplementedException();
-                        hasChanges = true;
-                    }
+                        result.VehicleLookup.Timeline = result.Timeline.OrderByDescending(x => x.Date).ToList();
 
-                    if (hasChanges)
-                    {
-                        await UpsertVehicleLookup(vehicleLookup, timeline, onInsert, cancellationToken);
-
-                        // Calculate the progress
-                        double totalOperations = request.MaxInsertAmount + request.MaxUpdateAmount;
-                        double completedOperations = (request.MaxInsertAmount - _maxInsertAmount) + (request.MaxUpdateAmount - _maxUpdateAmount);
-                        int progressPercentage = (int)Math.Round((completedOperations / totalOperations) * 100);
-                        if(progressPercentage >= 100) progressPercentage = 1; // Ensure it doesn't exceed 100%
-                        request.QueueService.LogProgress(progressPercentage);
+                        if (_maxInsertAmount != 0 && !result.OnUpdate)
+                        {
+                            vehicleLookupsToInsert.Add(result.VehicleLookup);
+                            _maxInsertAmount--;
+                        }
+                        else if (_maxUpdateAmount != 0 && result.OnUpdate)
+                        {
+                            vehicleLookupsToUpdate.Add(result.VehicleLookup);
+                            _maxUpdateAmount--;
+                        }
+                        else if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+                        {
+                            break;
+                        }
                     }
+                }
+
+                if (vehicleLookupsToInsert.Any())
+                {
+                    await _dbContext.BulkInsertAsync(vehicleLookupsToInsert, cancellationToken);
+                    request.QueueService.LogInformation($"Insert {vehicleLookupsToInsert.Count} items");
+                }
+
+                if (vehicleLookupsToUpdate.Any())
+                {
+                    await _dbContext.BulkUpdateAsync(vehicleLookupsToUpdate, cancellationToken);
+                    request.QueueService.LogInformation($"Update {vehicleLookupsToInsert.Count} items");
+                }
+
+                if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+                {
+                    // cancel next operation
+                    throw new OperationCanceledException();
                 }
             });
         }
@@ -154,33 +172,84 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         return Unit.Value;
     }
 
-    private async Task UpsertVehicleLookup(
-        VehicleLookupItem vehicleLookup, 
-        List<VehicleTimelineItem> timeline, 
-        bool onInsert, 
-        CancellationToken cancellationToken
-    ){
-        vehicleLookup.Timeline = timeline.OrderByDescending(x => x.Date).ToList();
 
-        if (_maxInsertAmount != 0 && onInsert)
+    // reschdule in 5 min
+    //    fail: AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommand[0]
+    //      AutoHelper Request: Unhandled Exception for Request UpsertVehicleLookupsCommand UpsertVehicleLookupsCommand { MaxInsertAmount = -1, MaxUpdateAmount = 1500, UpsertTimeline = True, UpsertServiceLogs = False, RecentUpdateThreshold = 01-01-0001 00:00:00, QueueService = AutoHelper.Hangfire.Services.HangfireJobService
+    //}
+    //System.Exception: RDW API returned status code InternalServerError
+    //         at AutoHelper.Infrastructure.Services.RDWApiClient.GetVehicleDetectedDefects(String licensePlate) in C:\Repositories\AutoHelper\src\Infrastructure\Services\RDWApiClient.cs:line 311
+    //         at AutoHelper.Infrastructure.Services.VehicleService.GetVehicleUpdatedTimeline(List`1 timeline, RDWVehicleBasics vehicle, IEnumerable`1 defectDescriptions) in C:\Repositories\AutoHelper\src\Infrastructure\Services\VehicleService.cs:line 523
+    //         at AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommandHandler.ProcessVehicleAsync(RDWVehicleBasics vehicle, Dictionary`2 vehicleLookupDictionary, UpsertVehicleLookupsCommand request, IEnumerable`1 defectDescriptions, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Vehicles\Commands\UpsertVehicleLookups\UpsertVehicleLookupsCommand.cs:line 196
+    //         at AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommandHandler.<>c__DisplayClass13_0.<<Handle>b__0>d.MoveNext() in C:\Repositories\AutoHelper\src\Application\Vehicles\Commands\UpsertVehicleLookups\UpsertVehicleLookupsCommand.cs:line 110
+    //      --- End of stack trace from previous location ---
+    //         at AutoHelper.Infrastructure.Services.VehicleService.ForEachVehicleBasicsInBatches(Func`2 onVehicleBatch) in C:\Repositories\AutoHelper\src\Infrastructure\Services\VehicleService.cs:line 508
+    //         at AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommandHandler.Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Vehicles\Commands\UpsertVehicleLookups\UpsertVehicleLookupsCommand.cs:line 95
+    //         at AutoHelper.Application.Common.Behaviours.PerformanceBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\PerformanceBehaviour.cs:line 31
+    //         at AutoHelper.Application.Common.Behaviours.ValidationBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\ValidationBehaviour.cs:line 34
+    //         at AutoHelper.Application.Common.Behaviours.AuthorizationBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\AuthorizationBehaviour.cs:line 78
+    //         at AutoHelper.Application.Common.Behaviours.UnhandledExceptionBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\UnhandledExceptionBehaviour.cs:line 19
+
+    async Task<(bool HasChanges, VehicleLookupItem VehicleLookup, List<VehicleTimelineItem> Timeline, bool OnUpdate, List<string> Errors)> ProcessVehicleAsync(
+        RDWVehicleBasics vehicle,
+        Dictionary<string, VehicleLookupItem> vehicleLookupDictionary,
+        UpsertVehicleLookupsCommand request,
+        IEnumerable<RDWDetectedDefectDescription> defectDescriptions,
+        CancellationToken cancellationToken)
+    {
+        var onUpdate = vehicleLookupDictionary.TryGetValue(vehicle.LicensePlate, out var vehicleLookup);
+        if (onUpdate == false)
         {
-            _dbContext.VehicleLookups.Add(vehicleLookup);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            _maxInsertAmount--;
+            vehicleLookup = new VehicleLookupItem
+            {
+                Id = Guid.NewGuid(),
+                LicensePlate = vehicle.LicensePlate,
+                DateOfMOTExpiry = vehicle.MOTExpiryDateDt,
+                DateOfAscription = vehicle.RegistrationDateDt
+            };
         }
-        else if (_maxUpdateAmount != 0 && !onInsert)
+        else
         {
-            _dbContext.VehicleLookups.Update(vehicleLookup);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            // still to recently to been updated
+            if(vehicleLookup!.LastModified >= request.RecentUpdateThreshold)
+            {
+                return (false, vehicleLookup, vehicleLookup.Timeline ?? new List<VehicleTimelineItem>(), true, new List<string>());
+            }
 
-            _maxUpdateAmount--;
+            vehicleLookup.Id = vehicleLookup.Id;
+            vehicleLookup.DateOfMOTExpiry = vehicle.MOTExpiryDateDt;
+            vehicleLookup.DateOfAscription = vehicle.RegistrationDateDt;
         }
 
-        if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+        var hasChanges = false;
+        var timeline = vehicleLookup.Timeline ?? new List<VehicleTimelineItem>();
+        var errors = new List<string>();
+        try
         {
-            // cancel next operation
-            throw new OperationCanceledException();
+            if (request.UpsertTimeline)
+            {
+                var updatedTimeline = await _vehicleService.GetVehicleUpdatedTimeline(timeline, vehicle, defectDescriptions);
+                if (updatedTimeline?.Any() == true && updatedTimeline.Count() != timeline.Count())
+                {
+                    timeline = updatedTimeline;
+                    hasChanges = true;
+                }
+            }
+
+            if (request.UpsertServiceLogs)
+            {
+                // TODO: implement
+                throw new NotImplementedException();
+                hasChanges = true;
+            }
         }
+        catch (Exception ex)
+        {
+            errors.Add($"[{vehicle.LicensePlate}]:{ex.Message}");
+        }
+
+        // Return a tuple with all the necessary info to apply changes later
+        return (hasChanges, vehicleLookup, timeline, onUpdate, errors);
     }
+
 }

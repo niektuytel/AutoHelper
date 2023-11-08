@@ -278,6 +278,23 @@ internal partial class RDWApiClient
     }
 
     /// <summary>
+    /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
+    /// </summary>
+    public async Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasics(int offset, int limit)
+    {
+        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWVehicleBasics>>(json) ?? new List<RDWVehicleBasics>();
+    }
+
+    /// <summary>
     /// https://opendata.rdw.nl/resource/a34c-vvps.json
     /// </summary>
     /// <exception cref="Exception">When issue on api http call</exception>

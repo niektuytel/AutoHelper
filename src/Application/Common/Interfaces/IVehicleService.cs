@@ -18,10 +18,11 @@ public interface IVehicleService
     Task<VehicleTechnicalBriefDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate);
     Task<RDWVehicleDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate);
     Task ForEachVehicleInBatches(Func<IEnumerable<RDWVehicle>, Task> onVehicleBatch);
+    Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch);
     Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync();
     Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
         List<VehicleTimelineItem> timeline, 
-        RDWVehicle vehicle, 
+        RDWVehicleBasics vehicle, 
         IEnumerable<RDWDetectedDefectDescription> defectDescriptions
     );
 }

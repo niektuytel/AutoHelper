@@ -28,16 +28,22 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IVehicleService _vehicleService;
 
-    public GetVehicleTimelineQueryHandler(IApplicationDbContext context, IMapper mapper)
+
+    public GetVehicleTimelineQueryHandler(IApplicationDbContext context, IMapper mapper, IVehicleService vehicleService)
     {
         _context = context;
         _mapper = mapper;
+        _vehicleService = vehicleService;
     }
 
     public async Task<VehicleTimelineDtoItem[]> Handle(GetVehicleTimelineQuery request, CancellationToken cancellationToken)
     {
         // Include the timeline and perform ordering and limiting in the query itself
+
+
+
         var vehicle = await _context.VehicleLookups
             .AsNoTracking()
             .Select(v => new

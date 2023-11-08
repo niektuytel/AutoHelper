@@ -10,9 +10,6 @@ public class VehicleTimelineItem: BaseEntity
     { }
 
     [Required]
-    public DateTime LatestChange { get; set; }
-
-    [Required]
     public string Title { get; set; } = null!;
 
     [Required]

@@ -496,9 +496,26 @@ internal class VehicleService : IVehicleService
         while (count == (limit * offset));
     }
 
+    public async Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch)
+    {
+        var limit = 2000;
+        var offset = 0;
+        var count = 0;
+
+        do
+        {
+            var items = await _rdwService.GetVehicleBasics(offset, limit);
+            await onVehicleBatch(items);
+
+            count += items.Count();
+            offset++;
+        }
+        while (count == (limit * offset));
+    }
+
     public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
         List<VehicleTimelineItem> timeline, 
-        RDWVehicle vehicle, 
+        RDWVehicleBasics vehicle, 
         IEnumerable<RDWDetectedDefectDescription> defectDescriptions
     )
     {

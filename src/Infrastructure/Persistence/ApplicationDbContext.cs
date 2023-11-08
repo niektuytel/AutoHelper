@@ -11,10 +11,13 @@ using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using Duende.IdentityServer.EntityFramework.Options;
+using EFCore.BulkExtensions;
 using MediatR;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using EFCore.BulkExtensions;
+
 
 namespace AutoHelper.Infrastructure.Persistence;
 
@@ -105,6 +108,28 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public void SetQueryTrackingBehavior(QueryTrackingBehavior behavior)
     {
         this.ChangeTracker.QueryTrackingBehavior = behavior;
+    }
+
+    public async Task BulkInsertAsync<T>(IList<T> entities, CancellationToken cancellationToken = default) where T : class
+    {
+        var bulkConfig = new BulkConfig
+        {
+            PreserveInsertOrder = true, // Set to true if the insert order should be preserved
+            SetOutputIdentity = true,    // Set to true to update entities' identities after inserting them
+            BatchSize = 2000             // Optional: specify a batch size for large inserts
+        };
+
+        await this.BulkInsertAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);
+    }
+
+    public async Task BulkUpdateAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class
+    {
+        var bulkConfig = new BulkConfig
+        {
+            BatchSize = 2000  // Optional: specify a batch size for large updates
+        };
+
+        await this.BulkUpdateAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);
     }
 
 }
