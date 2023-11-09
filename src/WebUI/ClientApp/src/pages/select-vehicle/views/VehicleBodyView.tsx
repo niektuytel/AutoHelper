@@ -1,7 +1,9 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { Box, Card, IconButton, Paper, Tab, Table, TableBody, TableCell, TableRow, Tabs, Typography } from "@mui/material";
+import { Box, Button, Card, IconButton, Paper, Tab, Table, TableBody, TableCell, TableRow, Tabs, Tooltip, Typography, Drawer, List, ListItem } from "@mui/material";
 import CarRepairIcon from '@mui/icons-material/CarRepair';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CloseIcon from '@mui/icons-material/Close';
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
 import Divider from '@mui/material/Divider';
 
@@ -11,6 +13,14 @@ import { useLocation, useNavigate } from 'react-router';
 import VehicleServiceLogs from '../components/VehicleServiceLogs';
 import VehicleInformation from '../components/VehicleInformation';
 
+
+
+const textStyles = {
+    root: {
+        color: "black",
+        fontFamily: "'Nunito', sans-serif",
+    }
+}
 
 const tabsConfig = [
     { hash: "#service_logs", label: 'Maintenance logs', icon: <CarRepairIcon fontSize='medium' /> },
@@ -34,13 +44,18 @@ export default ({ isMobile, license_plate }: IProps) => {
     const navigate = useNavigate();
     const [value, setValue] = useState(findTabValueByHash(location.hash));
 
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
-    // Function to handle the add service action
-    const handleAddService = () => {
-        // Implement your logic to add a service
-        console.log('Add Service Clicked');
+    const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+        if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
+            return;
+        }
+        setDrawerOpen(open);
     };
 
+    const handleAddService = () => {
+        setDrawerOpen(true);
+    };
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -60,10 +75,24 @@ export default ({ isMobile, license_plate }: IProps) => {
                 ))}
             </Tabs>
             <Box sx={{ marginBottom: "40px" }}>
-                <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden", margin: 1 }}>
-                    <IconButton onClick={handleAddService} sx={{ marginRight: 1 }}>
-                        <AddCircleOutlineIcon />
-                    </IconButton>
+                <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden" }}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" padding={1}>
+                        <Typography variant={"h4"} sx={textStyles.root}>
+                            {t("Service logs")}
+                            <Tooltip title={t("Service logs.description")}>
+                                <IconButton size="small">
+                                    <InfoOutlinedIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            onClick={handleAddService}
+                            startIcon={<AddCircleOutlineIcon />}
+                        >
+                            {t("Onderhoud Toevoegen")}
+                        </Button>
+                    </Box>
                     <Divider />
                     {value === 0 ?
                         <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} />
@@ -72,6 +101,40 @@ export default ({ isMobile, license_plate }: IProps) => {
                     }
                 </Paper>
             </Box>
+
+            <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+                <Box
+                    sx={{ width: 250 }}
+                    role="presentation"
+                    onKeyDown={toggleDrawer(false)}
+                >
+                    <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
+                        <Typography variant="h6" component="div">
+                            Upload Image
+                        </Typography>
+                        <IconButton onClick={toggleDrawer(false)}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                    <Divider />
+                    <List>
+                        <ListItem>
+                            {/* Implement your image upload functionality here */}
+                            {/* Placeholder for image upload - replace this with your component or implementation */}
+                            <Button variant="contained" component="label">
+                                Upload File
+                                <input type="file" hidden />
+                            </Button>
+                        </ListItem>
+                    </List>
+                    <Divider />
+                    <Box p={1}>
+                        <Button fullWidth variant="contained" color="primary">
+                            Confirm
+                        </Button>
+                    </Box>
+                </Box>
+            </Drawer>
         </>
     );
 }

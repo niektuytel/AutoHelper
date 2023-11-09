@@ -42,6 +42,11 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
     public bool UpsertServiceLogs { get; set; }
 
     /// <summary>
+    /// Only vehicles, not the carts and trailers
+    /// </summary>
+    public bool UpsertOnlyMOTRequiredVehicles { get; set; } = true;
+
+    /// <summary>
     /// Check once a week if data is still up to date with RDW
     /// </summary>
     public DateTime RecentUpdateThreshold { get; set; } = DateTime.UtcNow.AddDays(-7);
@@ -156,7 +161,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
                     // cancel next operation
                     throw new OperationCanceledException();
                 }
-            });
+            }, request.UpsertOnlyMOTRequiredVehicles);
         }
         catch (OperationCanceledException ex)
         {
@@ -171,24 +176,6 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
   
         return Unit.Value;
     }
-
-
-    // reschdule in 5 min
-    //    fail: AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommand[0]
-    //      AutoHelper Request: Unhandled Exception for Request UpsertVehicleLookupsCommand UpsertVehicleLookupsCommand { MaxInsertAmount = -1, MaxUpdateAmount = 1500, UpsertTimeline = True, UpsertServiceLogs = False, RecentUpdateThreshold = 01-01-0001 00:00:00, QueueService = AutoHelper.Hangfire.Services.HangfireJobService
-    //}
-    //System.Exception: RDW API returned status code InternalServerError
-    //         at AutoHelper.Infrastructure.Services.RDWApiClient.GetVehicleDetectedDefects(String licensePlate) in C:\Repositories\AutoHelper\src\Infrastructure\Services\RDWApiClient.cs:line 311
-    //         at AutoHelper.Infrastructure.Services.VehicleService.GetVehicleUpdatedTimeline(List`1 timeline, RDWVehicleBasics vehicle, IEnumerable`1 defectDescriptions) in C:\Repositories\AutoHelper\src\Infrastructure\Services\VehicleService.cs:line 523
-    //         at AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommandHandler.ProcessVehicleAsync(RDWVehicleBasics vehicle, Dictionary`2 vehicleLookupDictionary, UpsertVehicleLookupsCommand request, IEnumerable`1 defectDescriptions, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Vehicles\Commands\UpsertVehicleLookups\UpsertVehicleLookupsCommand.cs:line 196
-    //         at AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommandHandler.<>c__DisplayClass13_0.<<Handle>b__0>d.MoveNext() in C:\Repositories\AutoHelper\src\Application\Vehicles\Commands\UpsertVehicleLookups\UpsertVehicleLookupsCommand.cs:line 110
-    //      --- End of stack trace from previous location ---
-    //         at AutoHelper.Infrastructure.Services.VehicleService.ForEachVehicleBasicsInBatches(Func`2 onVehicleBatch) in C:\Repositories\AutoHelper\src\Infrastructure\Services\VehicleService.cs:line 508
-    //         at AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups.UpsertVehicleLookupsCommandHandler.Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Vehicles\Commands\UpsertVehicleLookups\UpsertVehicleLookupsCommand.cs:line 95
-    //         at AutoHelper.Application.Common.Behaviours.PerformanceBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\PerformanceBehaviour.cs:line 31
-    //         at AutoHelper.Application.Common.Behaviours.ValidationBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\ValidationBehaviour.cs:line 34
-    //         at AutoHelper.Application.Common.Behaviours.AuthorizationBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\AuthorizationBehaviour.cs:line 78
-    //         at AutoHelper.Application.Common.Behaviours.UnhandledExceptionBehaviour`2.Handle(TRequest request, RequestHandlerDelegate`1 next, CancellationToken cancellationToken) in C:\Repositories\AutoHelper\src\Application\Common\Behaviours\UnhandledExceptionBehaviour.cs:line 19
 
     async Task<(bool HasChanges, VehicleLookupItem VehicleLookup, List<VehicleTimelineItem> Timeline, bool OnUpdate, List<string> Errors)> ProcessVehicleAsync(
         RDWVehicleBasics vehicle,

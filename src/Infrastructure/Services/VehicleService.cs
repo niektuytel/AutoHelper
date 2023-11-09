@@ -496,7 +496,7 @@ internal class VehicleService : IVehicleService
         while (count == (limit * offset));
     }
 
-    public async Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch)
+    public async Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch, bool upsertOnlyMOTRequiredVehicles)
     {
         var limit = 2000;
         var offset = 0;

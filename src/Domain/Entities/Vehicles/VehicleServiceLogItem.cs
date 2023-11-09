@@ -18,18 +18,28 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     public VehicleLookupItem VehicleLookup { get; set; }
     
     [Required]
-    public DateTime Date { get; set; }
+    public DateTime ServiceDate { get; set; }
+
+    // Optional: Expected next service date based on average usage or time
+    public DateTime? ExpectedNextServiceDate { get; set; }
 
     [Required]
-    public int Mileage { get; set; }
+    public int OdometerReading { get; set; }
 
-    [Required]
-    public decimal TotalPrice { get; set; }
+    public decimal? TotalCost { get; set; }
 
-    public string? Description { get; set; }
+    public string? WorkDescription { get; set; }
+
+    public string? PerformedBy { get; set; }
+
+    public string? Notes { get; set; }
+
+    // Optional: URL to documentation or related images
+    public string? DocumentationUrl { get; set; }
 
     [Required]
     public ICollection<GarageServiceItem> ServiceItems { get; set; }
 
     public string MetaData { get; set; } = "";
 }
+
