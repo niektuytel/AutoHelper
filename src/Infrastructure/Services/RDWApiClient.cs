@@ -335,4 +335,14 @@ internal partial class RDWApiClient
         var json = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<IEnumerable<RDWvehicleInspectionNotification>>(json) ?? new List<RDWvehicleInspectionNotification>();
     }
+
+    /// <summary>
+    /// https://www.rdw.nl/particulier/paginas/voertuigcategorieen
+    /// </summary>
+    internal bool MOTIsRequired(string europeanVehicleCategory)
+    {
+        // Een lijst van APK-plichtige voertuigcategorieën
+        var apkRequiredCategories = new HashSet<string> { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
+        return apkRequiredCategories.Contains(europeanVehicleCategory);
+    }
 }

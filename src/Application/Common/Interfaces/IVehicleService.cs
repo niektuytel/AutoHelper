@@ -25,4 +25,5 @@ public interface IVehicleService
         RDWVehicleBasics vehicle, 
         IEnumerable<RDWDetectedDefectDescription> defectDescriptions
     );
+    bool MOTIsRequired(string europeanVehicleCategory);
 }

@@ -496,7 +496,7 @@ internal class VehicleService : IVehicleService
         while (count == (limit * offset));
     }
 
-    public async Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch, bool upsertOnlyMOTRequiredVehicles)
+    public async Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch)
     {
         var limit = 2000;
         var offset = 0;
@@ -668,4 +668,8 @@ internal class VehicleService : IVehicleService
         return timelineItem;
     }
 
+    public bool MOTIsRequired(string europeanVehicleCategory)
+    {
+        return _rdwService.MOTIsRequired(europeanVehicleCategory);
+    }
 }

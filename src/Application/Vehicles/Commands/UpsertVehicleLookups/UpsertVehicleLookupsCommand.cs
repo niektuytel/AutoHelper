@@ -99,6 +99,11 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         try {
             await _vehicleService.ForEachVehicleBasicsInBatches(async vehicleBatch =>
             {
+                if (request.UpsertOnlyMOTRequiredVehicles)
+                {
+                    vehicleBatch = vehicleBatch.Where(v => _vehicleService.MOTIsRequired(v.EuropeanVehicleCategory));
+                }
+
                 var licensePlates = vehicleBatch.Select(v => v.LicensePlate).ToList();
 
                 // Retrieve the required entities without join, using Contains and checking the LastModified date
@@ -161,7 +166,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
                     // cancel next operation
                     throw new OperationCanceledException();
                 }
-            }, request.UpsertOnlyMOTRequiredVehicles);
+            });
         }
         catch (OperationCanceledException ex)
         {
