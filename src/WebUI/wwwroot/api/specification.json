@@ -2518,9 +2518,8 @@
             "additionalProperties": false,
             "required": [
               "vehicleLookupId",
-              "date",
-              "mileage",
-              "totalPrice",
+              "serviceDate",
+              "odometerReading",
               "serviceItems"
             ],
             "properties": {
@@ -2532,20 +2531,38 @@
               "vehicleLookup": {
                 "$ref": "#/components/schemas/VehicleLookupItem"
               },
-              "date": {
+              "serviceDate": {
                 "type": "string",
                 "format": "date-time",
                 "minLength": 1
               },
-              "mileage": {
+              "expectedNextServiceDate": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "odometerReading": {
                 "type": "integer",
                 "format": "int32"
               },
-              "totalPrice": {
+              "totalCost": {
                 "type": "number",
-                "format": "decimal"
+                "format": "decimal",
+                "nullable": true
               },
-              "description": {
+              "workDescription": {
+                "type": "string",
+                "nullable": true
+              },
+              "performedBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "notes": {
+                "type": "string",
+                "nullable": true
+              },
+              "documentationUrl": {
                 "type": "string",
                 "nullable": true
               },

@@ -3029,10 +3029,14 @@ export enum MessageStatus {
 export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehicleServiceLogItem {
     vehicleLookupId!: string;
     vehicleLookup?: VehicleLookupItem;
-    date!: Date;
-    mileage!: number;
-    totalPrice!: number;
-    description?: string | undefined;
+    serviceDate!: Date;
+    expectedNextServiceDate?: Date | undefined;
+    odometerReading!: number;
+    totalCost?: number | undefined;
+    workDescription?: string | undefined;
+    performedBy?: string | undefined;
+    notes?: string | undefined;
+    documentationUrl?: string | undefined;
     serviceItems!: GarageServiceItem[];
     metaData?: string;
 
@@ -3048,10 +3052,14 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
         if (_data) {
             this.vehicleLookupId = _data["vehicleLookupId"];
             this.vehicleLookup = _data["vehicleLookup"] ? VehicleLookupItem.fromJS(_data["vehicleLookup"]) : <any>undefined;
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.mileage = _data["mileage"];
-            this.totalPrice = _data["totalPrice"];
-            this.description = _data["description"];
+            this.serviceDate = _data["serviceDate"] ? new Date(_data["serviceDate"].toString()) : <any>undefined;
+            this.expectedNextServiceDate = _data["expectedNextServiceDate"] ? new Date(_data["expectedNextServiceDate"].toString()) : <any>undefined;
+            this.odometerReading = _data["odometerReading"];
+            this.totalCost = _data["totalCost"];
+            this.workDescription = _data["workDescription"];
+            this.performedBy = _data["performedBy"];
+            this.notes = _data["notes"];
+            this.documentationUrl = _data["documentationUrl"];
             if (Array.isArray(_data["serviceItems"])) {
                 this.serviceItems = [] as any;
                 for (let item of _data["serviceItems"])
@@ -3072,10 +3080,14 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
         data = typeof data === 'object' ? data : {};
         data["vehicleLookupId"] = this.vehicleLookupId;
         data["vehicleLookup"] = this.vehicleLookup ? this.vehicleLookup.toJSON() : <any>undefined;
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["mileage"] = this.mileage;
-        data["totalPrice"] = this.totalPrice;
-        data["description"] = this.description;
+        data["serviceDate"] = this.serviceDate ? this.serviceDate.toISOString() : <any>undefined;
+        data["expectedNextServiceDate"] = this.expectedNextServiceDate ? this.expectedNextServiceDate.toISOString() : <any>undefined;
+        data["odometerReading"] = this.odometerReading;
+        data["totalCost"] = this.totalCost;
+        data["workDescription"] = this.workDescription;
+        data["performedBy"] = this.performedBy;
+        data["notes"] = this.notes;
+        data["documentationUrl"] = this.documentationUrl;
         if (Array.isArray(this.serviceItems)) {
             data["serviceItems"] = [];
             for (let item of this.serviceItems)
@@ -3090,10 +3102,14 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
 export interface IVehicleServiceLogItem extends IBaseAuditableEntity {
     vehicleLookupId: string;
     vehicleLookup?: VehicleLookupItem;
-    date: Date;
-    mileage: number;
-    totalPrice: number;
-    description?: string | undefined;
+    serviceDate: Date;
+    expectedNextServiceDate?: Date | undefined;
+    odometerReading: number;
+    totalCost?: number | undefined;
+    workDescription?: string | undefined;
+    performedBy?: string | undefined;
+    notes?: string | undefined;
+    documentationUrl?: string | undefined;
     serviceItems: GarageServiceItem[];
     metaData?: string;
 }

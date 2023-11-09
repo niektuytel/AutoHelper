@@ -62,7 +62,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
                .HasColumnType("decimal(18,2)");
 
         builder.Entity<VehicleServiceLogItem>()
-               .Property(p => p.TotalPrice)
+               .Property(p => p.TotalCost)
                .HasColumnType("decimal(18,2)");
 
         // Configuring the deep relationships

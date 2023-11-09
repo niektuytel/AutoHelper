@@ -48,7 +48,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
             {
                 Vehicle = v,
                 ServiceLogs = v.ServiceLogs
-                    .OrderBy(s => s.Date) // Or whatever criteria you want
+                    .OrderBy(s => s.ServiceDate) // Or whatever criteria you want
                     .Take(10)
                     .Select(s => new
                     {
