@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
@@ -15,8 +16,8 @@ using EFCore.BulkExtensions;
 using MediatR;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
-using EFCore.BulkExtensions;
 
 
 namespace AutoHelper.Infrastructure.Persistence;
@@ -47,6 +48,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
 
     public DbSet<VehicleLookupItem> VehicleLookups => Set<VehicleLookupItem>();
     public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
+    public DbSet<VehicleTimelineItem> VehicleTimelineItems => Set<VehicleTimelineItem>();
 
     public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
     public DbSet<ConversationMessageItem> ConversationMessages => Set<ConversationMessageItem>();
@@ -74,7 +76,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         builder.Entity<ConversationItem>()
             .HasOne(e => e.RelatedVehicleLookup)
             .WithMany(g => g.Conversations)
-            .HasForeignKey(e => e.RelatedVehicleLookupId)
+            .HasForeignKey(e => e.VehicleLicensePlate)
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<ConversationItem>()
@@ -83,14 +85,28 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
             .HasForeignKey(e => e.RelatedGarageLookupId)
             .OnDelete(DeleteBehavior.NoAction);
 
+
+        builder.Entity<VehicleLookupItem>()
+            .HasIndex(v => v.LicensePlate)
+            .IsUnique();
+
+        builder.Entity<VehicleServiceLogItem>()
+            .HasIndex(e => e.VehicleLicensePlate);
+
+        builder.Entity<VehicleTimelineItem>()
+            .HasIndex(e => e.VehicleLicensePlate);
+
         builder.Entity<VehicleServiceLogItem>()
             .HasOne(e => e.VehicleLookup)
             .WithMany(g => g.ServiceLogs)
-            .HasForeignKey(e => e.VehicleLookupId)
+            .HasForeignKey(e => e.VehicleLicensePlate)
             .OnDelete(DeleteBehavior.NoAction);
 
-
-
+        builder.Entity<VehicleTimelineItem>()
+            .HasOne(e => e.VehicleLookup)
+            .WithMany(g => g.Timeline)
+            .HasForeignKey(e => e.VehicleLicensePlate)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -108,6 +124,11 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public void SetQueryTrackingBehavior(QueryTrackingBehavior behavior)
     {
         this.ChangeTracker.QueryTrackingBehavior = behavior;
+    }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        return this.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task BulkInsertAsync<T>(IList<T> entities, CancellationToken cancellationToken = default) where T : class

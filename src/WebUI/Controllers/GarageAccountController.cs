@@ -19,6 +19,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
 namespace AutoHelper.WebUI.Controllers;
 

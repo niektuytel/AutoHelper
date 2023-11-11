@@ -19,7 +19,7 @@ public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
 {
     public StartConversationCommand(
         Guid relatedGarageLookupId,
-        Guid relatedVehicleLookupId,
+        string relatedVehicleLicensePlate,
         GarageServiceType[] relatedServiceTypes,
         string? senderWhatsAppNumberOrEmail,
         string? receiverWhatsAppNumberOrEmail,
@@ -28,7 +28,7 @@ public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
     )
     {
         RelatedGarageLookupId = relatedGarageLookupId;
-        RelatedVehicleLookupId = relatedVehicleLookupId;
+        RelatedVehicleLicensePlate = relatedVehicleLicensePlate;
         RelatedServiceTypes = relatedServiceTypes;
         SenderWhatsAppNumberOrEmail = senderWhatsAppNumberOrEmail;
         ReceiverWhatsAppNumberOrEmail = receiverWhatsAppNumberOrEmail;
@@ -39,7 +39,7 @@ public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
     public Guid RelatedGarageLookupId { get; set; }
     public GarageLookupItem RelatedGarage { get; internal set; }
 
-    public Guid RelatedVehicleLookupId { get; set; }
+    public string RelatedVehicleLicensePlate { get; set; }
     public VehicleLookupItem RelatedVehicle { get; internal set; }
 
     public GarageServiceType[] RelatedServiceTypes { get; set; }
@@ -74,7 +74,7 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
         var conversation = new ConversationItem
         {
             RelatedGarageLookupId = request.RelatedGarageLookupId,
-            RelatedVehicleLookupId = request.RelatedVehicleLookupId,
+            VehicleLicensePlate = request.RelatedVehicleLicensePlate,
             RelatedServiceTypes = request.RelatedServiceTypes,
             ConversationType = request.ConversationType,
         };

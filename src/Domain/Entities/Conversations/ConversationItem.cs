@@ -18,9 +18,9 @@ public class ConversationItem : BaseAuditableEntity
     public PriorityLevel Priority { get; set; } = PriorityLevel.Low;
 
     [Required]
-    public Guid RelatedVehicleLookupId { get; set; }
+    public string VehicleLicensePlate { get; set; }
 
-    [ForeignKey(nameof(RelatedVehicleLookupId))]
+    [ForeignKey(nameof(VehicleLicensePlate))]
     public VehicleLookupItem RelatedVehicleLookup { get; set; } = null!;
 
     [Required]

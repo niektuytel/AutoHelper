@@ -34,7 +34,7 @@ export default ({ }: IProps) => {
     // redirect when user is on confirmation step 1
     const userRole = localStorage.getItem('userRole');
     const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
-    const notFound = (userRole == ROLES.GARAGE && confirmationStepIndex == 1)
+    const notFound = (confirmationStepIndex == 0)
 
     const { reset, handleSubmit, control, formState: { errors }, setError, setValue } = useForm();
     const { loading, isError, createGarage, updateGarageSettings, garageSettings } = useGarageSettings(reset, setError, notFound);

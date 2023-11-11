@@ -2,10 +2,10 @@
 
 public enum VehicleTimelineType
 {
-    Unknown,
-    SucceededMOT,   // used
-    FailedMOT,      // used
-    Service,
-    Repair,
-    OwnerChange     // used
+    Unknown = 0,
+    SucceededMOT = 1,   // used
+    FailedMOT = 2,      // used
+    Service = 3,
+    Repair = 4,
+    OwnerChange = 5     // used
 }

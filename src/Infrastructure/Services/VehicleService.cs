@@ -496,21 +496,9 @@ internal class VehicleService : IVehicleService
         while (count == (limit * offset));
     }
 
-    public async Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch)
+    public async Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasicsWithMOTRequirement(int offset, int limit)
     {
-        var limit = 2000;
-        var offset = 0;
-        var count = 0;
-
-        do
-        {
-            var items = await _rdwService.GetVehicleBasics(offset, limit);
-            await onVehicleBatch(items);
-
-            count += items.Count();
-            offset++;
-        }
-        while (count == (limit * offset));
+        return await _rdwService.GetVehicleBasicsWithMOTRequirement(offset, limit);
     }
 
     public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
@@ -523,7 +511,7 @@ internal class VehicleService : IVehicleService
         var defects = await _rdwService.GetVehicleDetectedDefects(vehicle.LicensePlate);
         if (defects?.Any() == true)
         {
-            var failedMOTs = UndefinedFailedMOTTimelineItems(items, defects, defectDescriptions);
+            var failedMOTs = UndefinedFailedMOTTimelineItems(vehicle.LicensePlate, items, defects, defectDescriptions);
             if (failedMOTs?.Any() == true)
             {
                 items.AddRange(failedMOTs);
@@ -533,14 +521,14 @@ internal class VehicleService : IVehicleService
         var inspections = await _rdwService.GetVehicleInspectionNotifications(vehicle.LicensePlate);
         if (inspections?.Any() == true)
         {
-            var succeededMOTs = UndefinedSucceededMOTTimelineItems(items, inspections);
+            var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicle.LicensePlate, items, inspections);
             if (succeededMOTs?.Any() == true)
             {
                 items.AddRange(succeededMOTs);
             }
         }
 
-        var ownerChanged = UndefinedOwnerChangedTimelineItem(items, vehicle.RegistrationDateDt);
+        var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicle.LicensePlate, items, vehicle.RegistrationDateDt);
         if (ownerChanged != null)
         {
             items.Add(ownerChanged);
@@ -549,7 +537,7 @@ internal class VehicleService : IVehicleService
         return items;
     }
 
-    private List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(List<VehicleTimelineItem> timeline, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
+    public List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
     {
         var items = new List<VehicleTimelineItem>();
         var groupedByDate = detectedDefects.GroupBy(x => x.DetectionDate);
@@ -560,14 +548,14 @@ internal class VehicleService : IVehicleService
                 continue;
             }
 
-            var item = CreateFailedMOTTimelineItem(group, defectDescriptions);
+            var item = CreateFailedMOTTimelineItem(licensePlate, group, defectDescriptions);
             items.Add(item);
         }
 
         return items;
     }
 
-    private List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(List<VehicleTimelineItem> timeline, IEnumerable<RDWvehicleInspectionNotification> notifications)
+    public List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWvehicleInspectionNotification> notifications)
     {
         var items = new List<VehicleTimelineItem>();
         var groupedByDate = notifications.GroupBy(x => x.DateTimeByAuthority);
@@ -579,14 +567,14 @@ internal class VehicleService : IVehicleService
             }
 
             var notification = group.First();
-            var item = CreateSucceededMOTTimelineItem(notification);
+            var item = CreateSucceededMOTTimelineItem(licensePlate, notification);
             items.Add(item);
         }
 
         return items;
     }
 
-    private VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(List<VehicleTimelineItem> timeline, DateTime? dateOfAscription)
+    public VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(string licensePlate, List<VehicleTimelineItem> timeline, DateTime? dateOfAscription)
     {
         if (dateOfAscription == null || dateOfAscription == DateTime.MinValue)
         {
@@ -597,14 +585,16 @@ internal class VehicleService : IVehicleService
             return null;
         }
 
-        var item = CreateOwnerChangeTimelineItem((DateTime)dateOfAscription);
+        var item = CreateOwnerChangeTimelineItem(licensePlate, (DateTime)dateOfAscription);
         return item;
     }
 
-    private VehicleTimelineItem CreateFailedMOTTimelineItem(IGrouping<DateTime, RDWVehicleDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
+    private VehicleTimelineItem CreateFailedMOTTimelineItem(string licensePlate, IGrouping<DateTime, RDWVehicleDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
     {
         var timelineItem = new VehicleTimelineItem()
         {
+            Id = Guid.NewGuid(),
+            VehicleLicensePlate = licensePlate,
             Date = group.Key,
             Title = "APK afgekeurd",
             Type = VehicleTimelineType.FailedMOT,
@@ -636,10 +626,12 @@ internal class VehicleService : IVehicleService
         return timelineItem;
     }
 
-    private VehicleTimelineItem CreateSucceededMOTTimelineItem(RDWvehicleInspectionNotification notification)
+    private VehicleTimelineItem CreateSucceededMOTTimelineItem(string licensePlate, RDWvehicleInspectionNotification notification)
     {
         var timelineItem = new VehicleTimelineItem()
         {
+            Id = Guid.NewGuid(),
+            VehicleLicensePlate = licensePlate,
             Date = notification.DateTimeByAuthority,
             Title = "APK goedgekeurd",
             Description = "",
@@ -653,10 +645,12 @@ internal class VehicleService : IVehicleService
         return timelineItem;
     }
 
-    private VehicleTimelineItem CreateOwnerChangeTimelineItem(DateTime dateOfAscription)
+    private VehicleTimelineItem CreateOwnerChangeTimelineItem(string licensePlate, DateTime dateOfAscription)
     {
         var timelineItem = new VehicleTimelineItem()
         {
+            Id = Guid.NewGuid(),
+            VehicleLicensePlate = licensePlate,
             Date = dateOfAscription,
             Title = "Nieuwe eigenaar",
             Description = "",
@@ -671,5 +665,37 @@ internal class VehicleService : IVehicleService
     public bool MOTIsRequired(string europeanVehicleCategory)
     {
         return _rdwService.MOTIsRequired(europeanVehicleCategory);
+    }
+
+    public async Task<IEnumerable<RDWVehicleDetectedDefect>> GetVehicleDetectedDefects(List<string> licensePlates)
+    {
+        var limit = 2000;
+        var offset = 0;
+
+        var defects = new List<RDWVehicleDetectedDefect>();
+        do
+        {
+            var items = await _rdwService.GetVehicleDetectedDefects(licensePlates, offset, limit);
+            defects.AddRange(items);
+            offset++;
+        }
+        while (defects.Count() == (limit * offset));
+        return defects.ToArray();
+    }
+
+    public async Task<IEnumerable<RDWvehicleInspectionNotification>> GetVehicleInspectionNotifications(List<string> licensePlates)
+    {
+        var limit = 2000;
+        var offset = 0;
+
+        var inspections = new List<RDWvehicleInspectionNotification>();
+        do
+        {
+            var items = await _rdwService.GetVehicleInspectionNotifications(licensePlates, offset, limit);
+            inspections.AddRange(items);
+            offset++;
+        }
+        while (inspections.Count() == (limit * offset));
+        return inspections.ToArray();
     }
 }

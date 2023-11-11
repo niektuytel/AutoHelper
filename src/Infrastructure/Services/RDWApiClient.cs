@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
@@ -280,11 +281,21 @@ internal partial class RDWApiClient
     /// <summary>
     /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
     /// </summary>
-    public async Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasics(int offset, int limit)
+    public async Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasicsWithMOTRequirement(int offset, int limit)
     {
-        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json";
+        // Define the categories that require MOT.
+        string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
 
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
+        // Construct the $where clause to filter by these categories.
+        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
+
+        // Encode the whereClause to ensure it is URL-safe.
+        string encodedWhereClause = WebUtility.UrlEncode(whereClause);
+
+        // Construct the full URL with the $where clause.
+        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?$where={encodedWhereClause}&$limit={limit}&$offset={offset * limit}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
         request.Headers.Add("Accept", "application/json");
         var response = await _httpClient.SendAsync(request);
@@ -345,4 +356,48 @@ internal partial class RDWApiClient
         var apkRequiredCategories = new HashSet<string> { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
         return apkRequiredCategories.Contains(europeanVehicleCategory);
     }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/a34c-vvps.json?$where=(kenteken='RV231P'%20OR%20kenteken='87GRN6')
+    /// </summary>
+    internal async Task<IEnumerable<RDWVehicleDetectedDefect>> GetVehicleDetectedDefects(List<string> licensePlates, int offset, int limit)
+    {
+        var url = $"https://opendata.rdw.nl/resource/a34c-vvps.json";
+        var query = string.Join(" OR ", licensePlates.Select(licensePlate => $"kenteken='{licensePlate}'"));
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$where=({query})&$limit={limit}&$offset={offset * limit}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"RDW API returned status code {response.StatusCode}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWVehicleDetectedDefect>>(json) ?? new List<RDWVehicleDetectedDefect>();
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/sgfe-77wx.json?$where=(kenteken='RV231P'%20OR%20kenteken='87GRN6')
+    /// </summary>
+    /// <exception cref="Exception">When issue on api http call</exception>
+    internal async Task<IEnumerable<RDWvehicleInspectionNotification>> GetVehicleInspectionNotifications(List<string> licensePlates, int offset, int limit)
+    {
+        var url = $"https://opendata.rdw.nl/resource/sgfe-77wx.json";
+        var query = string.Join(" OR ", licensePlates.Select(licensePlate => $"kenteken='{licensePlate}'"));
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$where=({query})&$limit={limit}&$offset={offset * limit}");
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"RDW API returned status code {response.StatusCode}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWvehicleInspectionNotification>>(json) ?? new List<RDWvehicleInspectionNotification>();
+    }
+
 }

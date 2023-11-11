@@ -41,7 +41,10 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            await TrySeedAsync();
+            if (!_context.Database.EnsureCreated())
+            {
+                await TrySeedAsync();
+            }
         }
         catch (Exception ex)
         {

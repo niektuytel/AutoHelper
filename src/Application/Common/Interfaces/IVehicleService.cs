@@ -18,7 +18,6 @@ public interface IVehicleService
     Task<VehicleTechnicalBriefDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate);
     Task<RDWVehicleDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate);
     Task ForEachVehicleInBatches(Func<IEnumerable<RDWVehicle>, Task> onVehicleBatch);
-    Task ForEachVehicleBasicsInBatches(Func<IEnumerable<RDWVehicleBasics>, Task> onVehicleBatch);
     Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync();
     Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
         List<VehicleTimelineItem> timeline, 
@@ -26,4 +25,10 @@ public interface IVehicleService
         IEnumerable<RDWDetectedDefectDescription> defectDescriptions
     );
     bool MOTIsRequired(string europeanVehicleCategory);
+    Task<IEnumerable<RDWVehicleDetectedDefect>> GetVehicleDetectedDefects(List<string> licensePlates);
+    Task<IEnumerable<RDWvehicleInspectionNotification>> GetVehicleInspectionNotifications(List<string> licensePlates);
+    List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions);
+    List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWvehicleInspectionNotification> notifications);
+    VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(string licensePlate, List<VehicleTimelineItem> timeline, DateTime? dateOfAscription);
+    Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasicsWithMOTRequirement(int offset, int limit);
 }

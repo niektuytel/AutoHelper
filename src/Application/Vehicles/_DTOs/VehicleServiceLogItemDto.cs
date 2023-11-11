@@ -9,11 +9,12 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 
-namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
+namespace AutoHelper.Application.Vehicles._DTOs;
 
 
-public class VehicleServiceLogItemDto: IMapFrom<VehicleServiceLogItem>
+public class VehicleServiceLogItemDto : IMapFrom<VehicleServiceLogItem>
 {
     public DateTime Date { get; set; }
 

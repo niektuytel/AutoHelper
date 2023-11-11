@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Queries.GetGarageEmployees;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities;
 using AutoMapper;
 using MediatR;

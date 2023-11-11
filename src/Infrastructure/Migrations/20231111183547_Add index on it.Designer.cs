@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231104133411_set upsert vehicle timeline")]
-    partial class setupsertvehicletimeline
+    [Migration("20231111183547_Add index on it")]
+    partial class Addindexonit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,14 +57,15 @@ namespace AutoHelper.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RelatedVehicleLookupId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("VehicleLicensePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RelatedGarageLookupId");
 
-                    b.HasIndex("RelatedVehicleLookupId");
+                    b.HasIndex("VehicleLicensePlate");
 
                     b.ToTable("Conversations");
                 });
@@ -506,9 +507,8 @@ namespace AutoHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Vehicles.VehicleLookupItem", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("LicensePlate")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -516,27 +516,26 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateOfAscription")
+                    b.Property<DateTime?>("DateOfAscription")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfMOTExpiry")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EmailAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModified")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LicensePlate")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Geometry>("Location")
                         .HasColumnType("geography");
-
-                    b.Property<DateTime?>("MOTExpiryDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -544,7 +543,10 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("WhatsappNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("LicensePlate");
+
+                    b.HasIndex("LicensePlate")
+                        .IsUnique();
 
                     b.ToTable("VehicleLookups");
                 });
@@ -561,11 +563,11 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("DocumentationUrl")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpectedNextServiceDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -577,18 +579,31 @@ namespace AutoHelper.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Mileage")
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OdometerReading")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TotalPrice")
+                    b.Property<string>("PerformedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ServiceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("TotalCost")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("VehicleLookupId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("VehicleLicensePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WorkDescription")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleLookupId");
+                    b.HasIndex("VehicleLicensePlate");
 
                     b.ToTable("VehicleServiceLogs");
                 });
@@ -620,14 +635,15 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("VehicleLookupItemId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("VehicleLicensePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleLookupItemId");
+                    b.HasIndex("VehicleLicensePlate");
 
-                    b.ToTable("VehicleTimelineItem");
+                    b.ToTable("VehicleTimelineItems");
                 });
 
             modelBuilder.Entity("AutoHelper.Infrastructure.Identity.ApplicationUser", b =>
@@ -983,7 +999,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasOne("AutoHelper.Domain.Entities.Vehicles.VehicleLookupItem", "RelatedVehicleLookup")
                         .WithMany("Conversations")
-                        .HasForeignKey("RelatedVehicleLookupId")
+                        .HasForeignKey("VehicleLicensePlate")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1075,7 +1091,7 @@ namespace AutoHelper.Infrastructure.Migrations
                 {
                     b.HasOne("AutoHelper.Domain.Entities.Vehicles.VehicleLookupItem", "VehicleLookup")
                         .WithMany("ServiceLogs")
-                        .HasForeignKey("VehicleLookupId")
+                        .HasForeignKey("VehicleLicensePlate")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1084,9 +1100,13 @@ namespace AutoHelper.Infrastructure.Migrations
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Vehicles.VehicleTimelineItem", b =>
                 {
-                    b.HasOne("AutoHelper.Domain.Entities.Vehicles.VehicleLookupItem", null)
+                    b.HasOne("AutoHelper.Domain.Entities.Vehicles.VehicleLookupItem", "VehicleLookup")
                         .WithMany("Timeline")
-                        .HasForeignKey("VehicleLookupItemId");
+                        .HasForeignKey("VehicleLicensePlate")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("VehicleLookup");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -67,7 +67,7 @@ public class MessageController : ApiControllerBase
 
                 var command = new StartConversationCommand(
                     garage.RelatedGarageLookupId,
-                    vehicleLookup.Id,
+                    vehicleLookup.LicensePlate,
                     services,
                     selectedServices.SenderPhoneNumber,
                     selectedServices.SenderWhatsappNumber,

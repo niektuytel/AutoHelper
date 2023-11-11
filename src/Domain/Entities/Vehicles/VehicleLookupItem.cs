@@ -5,17 +5,19 @@ using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Domain.Entities.Vehicles;
 
-public class VehicleLookupItem : BaseAuditableEntity
+public class VehicleLookupItem
 {
     public VehicleLookupItem()
     { }
 
-
+    [Key]
     [Required]
     public string LicensePlate { get; set; }
 
+    [Required]
     public DateTime? DateOfMOTExpiry { get; set; }
 
+    [Required]
     public DateTime? DateOfAscription { get; set; }
 
     public Geometry? Location { get; set; }
@@ -26,6 +28,15 @@ public class VehicleLookupItem : BaseAuditableEntity
 
     public string? EmailAddress { get; set; }
 
+    [Required]
+    public DateTime Created { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    [Required]
+    public DateTime? LastModified { get; set; }
+
+    public string? LastModifiedBy { get; set; }
 
     [Required]
     public List<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();

@@ -1335,75 +1335,90 @@
         }
       },
       "VehicleLookupItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "licensePlate",
+          "dateOfMOTExpiry",
+          "dateOfAscription",
+          "created",
+          "lastModified",
+          "timeline",
+          "conversations",
+          "serviceLogs"
+        ],
+        "properties": {
+          "licensePlate": {
+            "type": "string",
+            "minLength": 1
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "licensePlate",
-              "timeline",
-              "conversations",
-              "serviceLogs"
-            ],
-            "properties": {
-              "licensePlate": {
-                "type": "string",
-                "minLength": 1
-              },
-              "dateOfMOTExpiry": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "dateOfAscription": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "location": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Geometry"
-                  }
-                ]
-              },
-              "phoneNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "whatsappNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "emailAddress": {
-                "type": "string",
-                "nullable": true
-              },
-              "timeline": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/VehicleTimelineItem"
-                }
-              },
-              "conversations": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ConversationItem"
-                }
-              },
-              "serviceLogs": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/VehicleServiceLogItem"
-                }
+          "dateOfMOTExpiry": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "dateOfAscription": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "location": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Geometry"
               }
+            ]
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleTimelineItem"
+            }
+          },
+          "conversations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationItem"
+            }
+          },
+          "serviceLogs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehicleServiceLogItem"
             }
           }
-        ]
+        }
       },
       "Geometry": {
         "type": "object",
@@ -2043,6 +2058,7 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "vehicleLicensePlate",
               "title",
               "description",
               "date",
@@ -2050,6 +2066,13 @@
               "priority"
             ],
             "properties": {
+              "vehicleLicensePlate": {
+                "type": "string",
+                "minLength": 1
+              },
+              "vehicleLookup": {
+                "$ref": "#/components/schemas/VehicleLookupItem"
+              },
               "title": {
                 "type": "string",
                 "minLength": 1
@@ -2125,7 +2148,7 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "relatedVehicleLookupId",
+              "vehicleLicensePlate",
               "relatedGarageLookupId",
               "relatedServiceTypesString",
               "conversationType"
@@ -2134,9 +2157,8 @@
               "priority": {
                 "$ref": "#/components/schemas/PriorityLevel"
               },
-              "relatedVehicleLookupId": {
+              "vehicleLicensePlate": {
                 "type": "string",
-                "format": "guid",
                 "minLength": 1
               },
               "relatedVehicleLookup": {
@@ -2517,15 +2539,14 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
-              "vehicleLookupId",
+              "vehicleLicensePlate",
               "serviceDate",
               "odometerReading",
               "serviceItems"
             ],
             "properties": {
-              "vehicleLookupId": {
+              "vehicleLicensePlate": {
                 "type": "string",
-                "format": "guid",
                 "minLength": 1
               },
               "vehicleLookup": {
@@ -3375,9 +3396,8 @@
           "relatedGarage": {
             "$ref": "#/components/schemas/GarageLookupItem"
           },
-          "relatedVehicleLookupId": {
-            "type": "string",
-            "format": "guid"
+          "relatedVehicleLicensePlate": {
+            "type": "string"
           },
           "relatedVehicle": {
             "$ref": "#/components/schemas/VehicleLookupItem"

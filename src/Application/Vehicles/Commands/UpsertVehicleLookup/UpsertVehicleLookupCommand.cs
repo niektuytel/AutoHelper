@@ -101,6 +101,8 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
             _context.VehicleLookups.Update(entity);
         }
 
+        // TODO: also upsert timeline and service logs
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<VehicleLookupDtoItem>(entity);

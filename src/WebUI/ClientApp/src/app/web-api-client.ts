@@ -1681,63 +1681,29 @@ export interface IGarageOverview {
     vehicles?: VehicleLookupItem[];
 }
 
-export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
-    created?: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-
-    constructor(data?: IBaseAuditableEntity) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.createdBy = _data["createdBy"];
-            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
-            this.lastModifiedBy = _data["lastModifiedBy"];
-        }
-    }
-
-    static fromJS(data: any): BaseAuditableEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["createdBy"] = this.createdBy;
-        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
-        data["lastModifiedBy"] = this.lastModifiedBy;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IBaseAuditableEntity extends IBaseEntity {
-    created?: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-}
-
-export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLookupItem {
+export class VehicleLookupItem implements IVehicleLookupItem {
     licensePlate!: string;
-    dateOfMOTExpiry?: Date | undefined;
-    dateOfAscription?: Date | undefined;
+    dateOfMOTExpiry!: Date;
+    dateOfAscription!: Date;
     location?: Geometry | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+    created!: Date;
+    createdBy?: string | undefined;
+    lastModified!: Date;
+    lastModifiedBy?: string | undefined;
     timeline!: VehicleTimelineItem[];
     conversations!: ConversationItem[];
     serviceLogs!: VehicleServiceLogItem[];
 
     constructor(data?: IVehicleLookupItem) {
-        super(data);
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
         if (!data) {
             this.timeline = [];
             this.conversations = [];
@@ -1746,7 +1712,6 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
     }
 
     init(_data?: any) {
-        super.init(_data);
         if (_data) {
             this.licensePlate = _data["licensePlate"];
             this.dateOfMOTExpiry = _data["dateOfMOTExpiry"] ? new Date(_data["dateOfMOTExpiry"].toString()) : <any>undefined;
@@ -1755,6 +1720,10 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
             this.phoneNumber = _data["phoneNumber"];
             this.whatsappNumber = _data["whatsappNumber"];
             this.emailAddress = _data["emailAddress"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
             if (Array.isArray(_data["timeline"])) {
                 this.timeline = [] as any;
                 for (let item of _data["timeline"])
@@ -1789,6 +1758,10 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
         data["phoneNumber"] = this.phoneNumber;
         data["whatsappNumber"] = this.whatsappNumber;
         data["emailAddress"] = this.emailAddress;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
         if (Array.isArray(this.timeline)) {
             data["timeline"] = [];
             for (let item of this.timeline)
@@ -1804,19 +1777,22 @@ export class VehicleLookupItem extends BaseAuditableEntity implements IVehicleLo
             for (let item of this.serviceLogs)
                 data["serviceLogs"].push(item.toJSON());
         }
-        super.toJSON(data);
         return data;
     }
 }
 
-export interface IVehicleLookupItem extends IBaseAuditableEntity {
+export interface IVehicleLookupItem {
     licensePlate: string;
-    dateOfMOTExpiry?: Date | undefined;
-    dateOfAscription?: Date | undefined;
+    dateOfMOTExpiry: Date;
+    dateOfAscription: Date;
     location?: Geometry | undefined;
     phoneNumber?: string | undefined;
     whatsappNumber?: string | undefined;
     emailAddress?: string | undefined;
+    created: Date;
+    createdBy?: string | undefined;
+    lastModified: Date;
+    lastModifiedBy?: string | undefined;
     timeline: VehicleTimelineItem[];
     conversations: ConversationItem[];
     serviceLogs: VehicleServiceLogItem[];
@@ -2571,6 +2547,8 @@ export interface IEnvelope {
 }
 
 export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineItem {
+    vehicleLicensePlate!: string;
+    vehicleLookup?: VehicleLookupItem;
     title!: string;
     description!: string;
     date!: Date;
@@ -2586,6 +2564,8 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
     init(_data?: any) {
         super.init(_data);
         if (_data) {
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
+            this.vehicleLookup = _data["vehicleLookup"] ? VehicleLookupItem.fromJS(_data["vehicleLookup"]) : <any>undefined;
             this.title = _data["title"];
             this.description = _data["description"];
             this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
@@ -2611,6 +2591,8 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
+        data["vehicleLookup"] = this.vehicleLookup ? this.vehicleLookup.toJSON() : <any>undefined;
         data["title"] = this.title;
         data["description"] = this.description;
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
@@ -2630,6 +2612,8 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
 }
 
 export interface IVehicleTimelineItem extends IBaseEntity {
+    vehicleLicensePlate: string;
+    vehicleLookup?: VehicleLookupItem;
     title: string;
     description: string;
     date: Date;
@@ -2654,9 +2638,52 @@ export enum VehicleTimelinePriority {
     High = 2,
 }
 
+export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+
+    constructor(data?: IBaseAuditableEntity) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+        }
+    }
+
+    static fromJS(data: any): BaseAuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'BaseAuditableEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBaseAuditableEntity extends IBaseEntity {
+    created?: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+}
+
 export class ConversationItem extends BaseAuditableEntity implements IConversationItem {
     priority?: PriorityLevel;
-    relatedVehicleLookupId!: string;
+    vehicleLicensePlate!: string;
     relatedVehicleLookup?: VehicleLookupItem;
     relatedGarageLookupId!: string;
     relatedGarageLookup?: GarageLookupItem;
@@ -2673,7 +2700,7 @@ export class ConversationItem extends BaseAuditableEntity implements IConversati
         super.init(_data);
         if (_data) {
             this.priority = _data["priority"];
-            this.relatedVehicleLookupId = _data["relatedVehicleLookupId"];
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
             this.relatedVehicleLookup = _data["relatedVehicleLookup"] ? VehicleLookupItem.fromJS(_data["relatedVehicleLookup"]) : <any>undefined;
             this.relatedGarageLookupId = _data["relatedGarageLookupId"];
             this.relatedGarageLookup = _data["relatedGarageLookup"] ? GarageLookupItem.fromJS(_data["relatedGarageLookup"]) : <any>undefined;
@@ -2702,7 +2729,7 @@ export class ConversationItem extends BaseAuditableEntity implements IConversati
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["priority"] = this.priority;
-        data["relatedVehicleLookupId"] = this.relatedVehicleLookupId;
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
         data["relatedVehicleLookup"] = this.relatedVehicleLookup ? this.relatedVehicleLookup.toJSON() : <any>undefined;
         data["relatedGarageLookupId"] = this.relatedGarageLookupId;
         data["relatedGarageLookup"] = this.relatedGarageLookup ? this.relatedGarageLookup.toJSON() : <any>undefined;
@@ -2725,7 +2752,7 @@ export class ConversationItem extends BaseAuditableEntity implements IConversati
 
 export interface IConversationItem extends IBaseAuditableEntity {
     priority?: PriorityLevel;
-    relatedVehicleLookupId: string;
+    vehicleLicensePlate: string;
     relatedVehicleLookup?: VehicleLookupItem;
     relatedGarageLookupId: string;
     relatedGarageLookup?: GarageLookupItem;
@@ -3027,7 +3054,7 @@ export enum MessageStatus {
 }
 
 export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehicleServiceLogItem {
-    vehicleLookupId!: string;
+    vehicleLicensePlate!: string;
     vehicleLookup?: VehicleLookupItem;
     serviceDate!: Date;
     expectedNextServiceDate?: Date | undefined;
@@ -3050,7 +3077,7 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
     init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.vehicleLookupId = _data["vehicleLookupId"];
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
             this.vehicleLookup = _data["vehicleLookup"] ? VehicleLookupItem.fromJS(_data["vehicleLookup"]) : <any>undefined;
             this.serviceDate = _data["serviceDate"] ? new Date(_data["serviceDate"].toString()) : <any>undefined;
             this.expectedNextServiceDate = _data["expectedNextServiceDate"] ? new Date(_data["expectedNextServiceDate"].toString()) : <any>undefined;
@@ -3078,7 +3105,7 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["vehicleLookupId"] = this.vehicleLookupId;
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
         data["vehicleLookup"] = this.vehicleLookup ? this.vehicleLookup.toJSON() : <any>undefined;
         data["serviceDate"] = this.serviceDate ? this.serviceDate.toISOString() : <any>undefined;
         data["expectedNextServiceDate"] = this.expectedNextServiceDate ? this.expectedNextServiceDate.toISOString() : <any>undefined;
@@ -3100,7 +3127,7 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
 }
 
 export interface IVehicleServiceLogItem extends IBaseAuditableEntity {
-    vehicleLookupId: string;
+    vehicleLicensePlate: string;
     vehicleLookup?: VehicleLookupItem;
     serviceDate: Date;
     expectedNextServiceDate?: Date | undefined;
@@ -4579,7 +4606,7 @@ export interface ISelectedService {
 export class StartConversationCommand implements IStartConversationCommand {
     relatedGarageLookupId?: string;
     relatedGarage?: GarageLookupItem;
-    relatedVehicleLookupId?: string;
+    relatedVehicleLicensePlate?: string;
     relatedVehicle?: VehicleLookupItem;
     relatedServiceTypes?: GarageServiceType[];
     senderWhatsAppNumberOrEmail?: string;
@@ -4603,7 +4630,7 @@ export class StartConversationCommand implements IStartConversationCommand {
         if (_data) {
             this.relatedGarageLookupId = _data["relatedGarageLookupId"];
             this.relatedGarage = _data["relatedGarage"] ? GarageLookupItem.fromJS(_data["relatedGarage"]) : <any>undefined;
-            this.relatedVehicleLookupId = _data["relatedVehicleLookupId"];
+            this.relatedVehicleLicensePlate = _data["relatedVehicleLicensePlate"];
             this.relatedVehicle = _data["relatedVehicle"] ? VehicleLookupItem.fromJS(_data["relatedVehicle"]) : <any>undefined;
             if (Array.isArray(_data["relatedServiceTypes"])) {
                 this.relatedServiceTypes = [] as any;
@@ -4631,7 +4658,7 @@ export class StartConversationCommand implements IStartConversationCommand {
         data = typeof data === 'object' ? data : {};
         data["relatedGarageLookupId"] = this.relatedGarageLookupId;
         data["relatedGarage"] = this.relatedGarage ? this.relatedGarage.toJSON() : <any>undefined;
-        data["relatedVehicleLookupId"] = this.relatedVehicleLookupId;
+        data["relatedVehicleLicensePlate"] = this.relatedVehicleLicensePlate;
         data["relatedVehicle"] = this.relatedVehicle ? this.relatedVehicle.toJSON() : <any>undefined;
         if (Array.isArray(this.relatedServiceTypes)) {
             data["relatedServiceTypes"] = [];
@@ -4652,7 +4679,7 @@ export class StartConversationCommand implements IStartConversationCommand {
 export interface IStartConversationCommand {
     relatedGarageLookupId?: string;
     relatedGarage?: GarageLookupItem;
-    relatedVehicleLookupId?: string;
+    relatedVehicleLicensePlate?: string;
     relatedVehicle?: VehicleLookupItem;
     relatedServiceTypes?: GarageServiceType[];
     senderWhatsAppNumberOrEmail?: string;

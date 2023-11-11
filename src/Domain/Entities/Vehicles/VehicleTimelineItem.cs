@@ -10,6 +10,12 @@ public class VehicleTimelineItem: BaseEntity
     { }
 
     [Required]
+    public string VehicleLicensePlate { get; set; }
+
+    [ForeignKey(nameof(VehicleLicensePlate))]
+    public VehicleLookupItem VehicleLookup { get; set; }
+
+    [Required]
     public string Title { get; set; } = null!;
 
     [Required]

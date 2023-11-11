@@ -25,7 +25,7 @@ namespace AutoHelper.Application.Messages.Commands.StartConversation
                 .MustAsync(BeValidGarage)
                 .WithMessage("The provided Garage does not exist.");
 
-            RuleFor(x => x.RelatedVehicleLookupId)
+            RuleFor(x => x.RelatedVehicleLicensePlate)
                 .NotEmpty()
                 .WithMessage("RelatedVehicleLookupId is required.")
                 .MustAsync(BeValidVehicle)
@@ -67,9 +67,9 @@ namespace AutoHelper.Application.Messages.Commands.StartConversation
             return false;
         }
 
-        private async Task<bool> BeValidVehicle(StartConversationCommand command, Guid vehicleId, CancellationToken cancellationToken)
+        private async Task<bool> BeValidVehicle(StartConversationCommand command, string licensePlate, CancellationToken cancellationToken)
         {
-            var vehicle = await _context.VehicleLookups.FirstOrDefaultAsync(x => x.Id == vehicleId, cancellationToken);
+            var vehicle = await _context.VehicleLookups.FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
             if (vehicle != null)
             {
                 command.RelatedVehicle = vehicle;
