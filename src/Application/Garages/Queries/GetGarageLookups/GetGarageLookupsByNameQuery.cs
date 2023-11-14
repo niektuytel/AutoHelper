@@ -38,7 +38,8 @@ public class GetGaragesByNameQueryHandler : IRequestHandler<GetGarageLookupsByNa
             .Take(request.MaxSize)
             .Select(g => new GarageLookupSimplefiedDto() {
                 Identifier = g.Identifier,
-                Name = g.Name
+                Name = g.Name,
+                City = g.City,
             })
             .ToArrayAsync(cancellationToken);
 

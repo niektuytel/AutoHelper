@@ -53,6 +53,14 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
     const [selectedType, setSelectedType] = useState("");
     const [isMaintanance, setMaintanance] = useState(false);
 
+    const [file, setFile] = useState<File | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files ? event.target.files[0] : null;
+        setFile(file);
+        setFileName(file ? file.name : null);
+    };
 
     const onSubmit = (data: any) => {
         console.log(data);
@@ -198,10 +206,21 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
                                 <TextField {...field} label={t("AddMaintenanceLog.ServiceDescription.Label")} multiline rows={4} fullWidth sx={{ mb: 1 }} />
                             )}
                         />
-                        <Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color:"gray", borderColor:"gray" }}>
-                            {t("Attachments")}
-                            <VisuallyHiddenInput type="file" />
-                        </Button>
+                        {/*<Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color:"gray", borderColor:"gray" }}>*/}
+                        {/*    {t("Attachments")}*/}
+                        {/*    <VisuallyHiddenInput type="file" />*/}
+                        {/*</Button>*/}
+                        <div>
+                            <Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color: "gray", borderColor: "gray" }}>
+                                Attachments
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={handleFileChange}
+                                />
+                            </Button>
+                            {fileName && <div>{fileName}</div>}
+                        </div>
                     </Box>
                     <Divider />
                     <Box p={1} component="footer" sx={{ mt: 1 }}>
