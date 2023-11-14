@@ -45,19 +45,6 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
         var entity = await _context.VehicleLookups
             .AsNoTracking()
             .Where(v => v.LicensePlate == request.LicensePlate)
-            .Select(v => new
-            {
-                Vehicle = v,
-                ServiceLogs = v.ServiceLogs
-                    .OrderBy(s => s.ServiceDate) // Or whatever criteria you want
-                    .Take(10)
-                    .Select(s => new
-                    {
-                        ServiceLog = s,
-                        ServiceItems = s.ServiceItems
-                    })
-                    .ToList()
-            })
             .FirstOrDefaultAsync();
 
 

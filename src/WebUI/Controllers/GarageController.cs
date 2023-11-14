@@ -26,6 +26,8 @@ using AutoHelper.Hangfire.MediatR;
 using Hangfire.Server;
 using AutoHelper.Domain.Entities.Conversations;
 using WebUI.Models;
+using AutoHelper.Application.Garages._DTOs;
+using AutoHelper.Application.Garages.Queries.GetGarageLookups;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -75,6 +77,18 @@ public class GarageController : ApiControllerBase
             pageSize
         );
 
+        return await Mediator.Send(query, cancellationToken);
+    }
+
+    [HttpGet($"{nameof(SearchLookupsByName)}")]
+    [ProducesResponseType(typeof(GarageLookupSimplefiedDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<GarageLookupSimplefiedDto[]> SearchLookupsByName(
+        [FromQuery] string name, 
+        [FromQuery] int maxSize = 10, 
+        CancellationToken cancellationToken = default
+    ){
+        var query = new GetGarageLookupsByNameQuery(name, maxSize);
         return await Mediator.Send(query, cancellationToken);
     }
 

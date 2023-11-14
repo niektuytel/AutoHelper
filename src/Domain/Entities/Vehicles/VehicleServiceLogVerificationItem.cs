@@ -1,5 +1,11 @@
-﻿namespace AutoHelper.Domain.Entities.Vehicles;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class VehicleServiceLogVerificationItem
+namespace AutoHelper.Domain.Entities.Vehicles;
+
+public class VehicleServiceLogVerificationItem: BaseAuditableEntity
 {
+    [Required]
+    public ServiceLogVerificationType Type { get; set; } = ServiceLogVerificationType.NotVerified;
+
+
 }

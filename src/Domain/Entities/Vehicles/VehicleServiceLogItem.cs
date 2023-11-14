@@ -9,7 +9,7 @@ public class VehicleServiceLogItem: BaseAuditableEntity
 {
     public VehicleServiceLogItem()
     {
-        ServiceItems = new List<VehicleServiceItem>();
+        Verification = new VehicleServiceLogVerificationItem();
     }
 
     [Required]
@@ -19,36 +19,36 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     public VehicleLookupItem VehicleLookup { get; set; }
 
     [Required]
-    public Guid PerformedByGarageId { get; set; }
+    public string PerformedByGarageName { get; set; }
+
+    public Guid? PerformedByGarageId { get; set; } = null!;
 
     [ForeignKey(nameof(PerformedByGarageId))]
-    public GarageItem? PerformedByGarage { get; set; }
+    public GarageItem? PerformedByGarage { get; set; } = null!;
 
     [Required]
-    public DateTime ServiceDate { get; set; }
+    public VehicleServiceLogVerificationItem Verification { get; set; }
+
+    [Required]
+    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+
+    [Required]
+    public DateTime Date { get; set; }
+
+    public DateTime? ExpectedNextDate { get; set; } = null!;
 
     [Required]
     public int OdometerReading { get; set; }
 
-    public string? WorkDescription { get; set; }
+    public int? ExpectedNextOdometerReading { get; set; } = null!;
+
+    public string? Description { get; set; }
 
     public string? Notes { get; set; }
 
-    public VehicleServiceLogVerificationItem? Verification { get; set; }
-
-    public ICollection<Attachment> Attachments { get; set; }
-
-    [Required]
-    public ICollection<VehicleServiceItem>? ServiceItems { get; set; }
+    public ICollection<VehicleServiceAttachmentItem> Attachments { get; set; }
 
     public string MetaData { get; set; } = "";
-
-    // TODO: privacy reasons, into meta data? (still need it as garage can still give an special price)
-    public decimal? TotalCost { get; set; }
-
-    // TODO: only used for mot or regular service, into meta data?
-    public int? ExpectedNextServiceOdometerReading { get; set; }
-    public DateTime? ExpectedNextServiceDate { get; set; }
 
 }
 

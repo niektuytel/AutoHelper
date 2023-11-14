@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import VehicleServiceLogs from '../components/VehicleServiceLogs';
 import VehicleInformation from '../components/VehicleInformation';
+import CreateVehicleServiceLogDrawer from '../components/CreateVehicleServiceLogDrawer';
 
 
 
@@ -90,7 +91,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                             onClick={handleAddService}
                             startIcon={<AddCircleOutlineIcon />}
                         >
-                            {t("Onderhoud Toevoegen")}
+                            {t("AddMaintenanceLog.Title")}
                         </Button>
                     </Box>
                     <Divider />
@@ -101,40 +102,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                     }
                 </Paper>
             </Box>
-
-            <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-                <Box
-                    sx={{ width: 250 }}
-                    role="presentation"
-                    onKeyDown={toggleDrawer(false)}
-                >
-                    <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
-                        <Typography variant="h6" component="div">
-                            Upload Image
-                        </Typography>
-                        <IconButton onClick={toggleDrawer(false)}>
-                            <CloseIcon />
-                        </IconButton>
-                    </Box>
-                    <Divider />
-                    <List>
-                        <ListItem>
-                            {/* Implement your image upload functionality here */}
-                            {/* Placeholder for image upload - replace this with your component or implementation */}
-                            <Button variant="contained" component="label">
-                                Upload File
-                                <input type="file" hidden />
-                            </Button>
-                        </ListItem>
-                    </List>
-                    <Divider />
-                    <Box p={1}>
-                        <Button fullWidth variant="contained" color="primary">
-                            Confirm
-                        </Button>
-                    </Box>
-                </Box>
-            </Drawer>
+            <CreateVehicleServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
         </>
     );
 }

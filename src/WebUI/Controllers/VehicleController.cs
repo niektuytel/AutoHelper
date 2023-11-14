@@ -3,6 +3,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
@@ -113,6 +114,14 @@ public class VehicleController : ApiControllerBase
 
         Mediator.Enqueue(queue, title, command);
         return $"Successfully start queue: {queue}";
+    }
+
+    [HttpPut($"{nameof(CreateVehicleServiceLog)}")]
+    [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogItemDto> CreateVehicleServiceLog([FromBody] CreateVehicleServiceLogCommand command, CancellationToken cancellationToken)
+    {
+        return await Mediator.Send(command, cancellationToken);
     }
 
 

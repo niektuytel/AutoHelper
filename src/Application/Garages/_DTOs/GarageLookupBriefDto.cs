@@ -5,7 +5,7 @@ using AutoHelper.Domain.Entities.Garages;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
 
-namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
+namespace AutoHelper.Application.Garages._DTOs;
 
 public class GarageLookupBriefDto
 {

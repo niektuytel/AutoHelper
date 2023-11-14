@@ -28,8 +28,9 @@ export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceT
     return altValue;
 }
 
+// Display all enum items except the first one (None)
 export function getDefaultGarageServicesInfo(t: any) {
-    return enumToKeyValueArray(GarageServiceType).slice(1).map(({ key, value }) => // Display all enum items except the first one (None)
+    return enumToKeyValueArray(GarageServiceType).slice(1).map(({ key, value }) => 
         ({
             type: key,
             title: t(`${value}.Title`),
