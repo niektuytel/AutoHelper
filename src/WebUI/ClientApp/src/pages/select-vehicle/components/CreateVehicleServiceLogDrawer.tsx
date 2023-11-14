@@ -131,6 +131,9 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
         );
     };
 
+    // TODO: Add validation for file size and type (only images) 
+    // TODO: We need more information about the user (name, phone, email)
+
     return (
         <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)} sx={{ width: drawerWidth }}>
             <form onSubmit={handleSubmit(onSubmit)} style={{ height: "100%" }}>
