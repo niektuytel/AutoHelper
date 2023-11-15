@@ -9,8 +9,30 @@ import { useDebounce } from 'use-debounce';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useTranslation } from 'react-i18next';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { GarageClient, GarageLookupSimplefiedDto, GarageServiceType } from '../../../app/web-api-client';
+import { GarageClient, GarageLookupSimplefiedDto, GarageServiceType, VehicleClient } from '../../../app/web-api-client';
 import { enumToKeyValueArray } from '../../../app/utils';
+
+const convertFileToByteArray = async (file: File) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const arrayBuffer = reader.result as ArrayBuffer;
+            const byteArray = new Uint8Array(arrayBuffer);
+            resolve(byteArray);
+        };
+
+        reader.onerror = (error) => {
+            reject(error);
+        };
+
+        if (file) {
+            reader.readAsArrayBuffer(file);
+        } else {
+            reject(new Error("No file provided"));
+        }
+    });
+};
 
 function getVehicleServicesTypes() {
     const items = [
@@ -43,11 +65,12 @@ const VisuallyHiddenInput = styled('input')`
 `;
 
 interface IProps {
+    licensePlate: string,
     drawerOpen: boolean,
     toggleDrawer: (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => void
 }
 
-export default ({ drawerOpen, toggleDrawer }: IProps) => {
+export default ({ licensePlate, drawerOpen, toggleDrawer }: IProps) => {
     const { control, handleSubmit, formState: { errors } } = useForm();
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const [selectedType, setSelectedType] = useState("");
@@ -64,6 +87,105 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
 
     const onSubmit = (data: any) => {
         console.log(data);
+
+        // Send command data and file to your backend endpoint
+        const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
+        const formData = new FormData();
+
+        // Append the command data as JSON
+        formData.append('ServiceLogCommand', JSON.stringify({
+            vehicleLicensePlate: licensePlate,
+            performedByGarageName: data.performedByGarageName,
+            type: data.type,
+            description: data.description,
+            date: data.date,
+            expectedNextDate: data.expectedNextDate,
+            odometerReading: data.odometerReading,
+            expectedNextOdometerReading: data.expectedNextOdometerReading,
+        }));
+
+        // Append the file
+        if (file) {
+            formData.append('AttachmentFile', file);
+        }
+
+        // Example values for the service log command
+        let vehicleLicensePlate = "ABC123";
+        let performedByGarageName = "Garage XYZ";
+        let type = GarageServiceType.MOTServiceHeavyVehicle; // Example enum value
+        let description = "Service Description";
+        let date = new Date();
+        let expectedNextDate = new Date();
+        let odometerReading = 12345;
+        let expectedNextOdometerReading = 13000;
+
+        // Example file attachment
+        let attachmentFile = {
+            data: file, // Your file object
+            fileName: file?.name || ''
+        };
+
+        // Create the service log
+        const response = vehicleClient.createServiceLog(
+            vehicleLicensePlate,
+            performedByGarageName,
+            type,
+            description,
+            date,
+            expectedNextDate,
+            odometerReading,
+            expectedNextOdometerReading,
+            file?.name || '',
+            null, // Assuming FileData is handled separately
+            attachmentFile
+        ).then(response => {
+            console.log(response);
+        })
+
+        //const response = await vehicleClient.createServiceLog(,
+
+        //if (file) {
+        //    const array = await convertFileToByteArray(file);
+        //    response = await vehicleClient.createServiceLog(
+        //        licensePlate,
+        //        ,
+        //        ,
+        //        data.description,
+        //        data.date,
+        //        data.expectedNextDate,
+        //        data.odometerReading,
+        //        data.expectedNextOdometerReading,
+        //        file.name,
+        //        array as any,
+        //        file.type,
+        //        file.name,
+        //        null,
+        //        file.size,
+        //        file.name,
+        //        file.name
+
+        //        //vehicleLicensePlate: string | null | undefined,
+        //        //performedByGarageName: string | null | undefined, 
+        //        //type: GarageServiceType | undefined, 
+        //        //description: string | null | undefined, 
+        //        //date: Date | undefined, 
+        //        //expectedNextDate: Date | null | undefined, 
+        //        //odometerReading: number | undefined, 
+        //        //expectedNextOdometerReading: number | null | undefined, 
+        //        //attachment_FileName: string | null | undefined, 
+        //        //attachment_FileData: string | null | undefined, 
+        //        //contentType: string | null | undefined, 
+        //        //contentDisposition: string | null | undefined, 
+        //        //headers: IHeaderDictionary | null | undefined, 
+        //        //length: number | undefined, 
+        //        //name: string | null | undefined, 
+        //        //fileName: string | null | undefined
+        //    );
+        //} else {
+        //    // Handle the case where there is no file to upload
+        //}
+        
+        //console.log(response);
     };
 
     const drawerWidth = window.innerWidth < 600 ? '100%' : '600px';
@@ -83,9 +205,9 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
     const today = formatDate(new Date());
 
     const SearchGarageComponent = () => {
-        const [inputValue, setInputValue] = useState('');
+        const [garageName, setGarageName] = useState('');
         const [options, setOptions] = useState<GarageLookupSimplefiedDto[]>([]);
-        const [debouncedInputValue] = useDebounce(inputValue, 500); // Debounce for 500ms
+        const [debouncedInputValue] = useDebounce(garageName, 500); // Debounce for 500ms
         const garageClient = new GarageClient(process.env.PUBLIC_URL);
         const [loading, setLoading] = useState(false);
 
@@ -116,7 +238,7 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
                     typeof option === 'string' ? option : option.name || ''
                 }
                 onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue);
+                    setGarageName(newInputValue);
                 }}
                 renderInput={(params) => (
                     <TextField
@@ -141,6 +263,7 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
 
     // TODO: Add validation for file size and type (only images) 
     // TODO: We need more information about the user (name, phone, email)
+    console.log(errors);
 
     return (
         <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)} sx={{ width: drawerWidth }}>
@@ -159,10 +282,10 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
                     </Box>
                     <Divider />
                     <Box flexGrow={1} p={1}>
+                            {/*rules={{ required: 'Garage is required' }}*/}
                         <Controller
-                            name="performedByGarageId"
+                            name="performedByGarageName"
                             control={control}
-                            rules={{ required: 'Garage is required' }}
                             render={({ field, fieldState: { error } }) => (
                                 <SearchGarageComponent/>
                             )}
@@ -206,18 +329,15 @@ export default ({ drawerOpen, toggleDrawer }: IProps) => {
                                 <TextField {...field} label={t("AddMaintenanceLog.ServiceDescription.Label")} multiline rows={4} fullWidth sx={{ mb: 1 }} />
                             )}
                         />
-                        {/*<Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color:"gray", borderColor:"gray" }}>*/}
-                        {/*    {t("Attachments")}*/}
-                        {/*    <VisuallyHiddenInput type="file" />*/}
-                        {/*</Button>*/}
                         <div>
                             <Button component="label" variant="outlined" startIcon={<AttachFileIcon />} sx={{ color: "gray", borderColor: "gray" }}>
-                                Attachments
+                                {t("Attachments")}
                                 <input
                                     type="file"
                                     hidden
                                     onChange={handleFileChange}
                                 />
+                                {/*<VisuallyHiddenInput type="file" />*/}
                             </Button>
                             {fileName && <div>{fileName}</div>}
                         </div>

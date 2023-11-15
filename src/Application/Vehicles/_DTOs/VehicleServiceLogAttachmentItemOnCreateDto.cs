@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 
-public class VehicleServiceAttachmentItemOnCreateDto
+public class VehicleServiceLogAttachmentItemOnCreateDto
 {
     [Required]
     [StringLength(255)]
@@ -12,6 +12,4 @@ public class VehicleServiceAttachmentItemOnCreateDto
 
     [Required]
     public byte[] FileData { get; set; }
-
-    public string Description { get; set; }
 }

@@ -13,17 +13,27 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
+
+public record CreateVehicleServiceLogWithAttachmentDto : IRequest<VehicleServiceLogItemDto>
+{
+    public CreateVehicleServiceLogCommand ServiceLogCommand { get; set; }
+    public IFormFile AttachmentFile { get; set; }
+}
 
 public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto>
 {
     public string VehicleLicensePlate { get; set; }
 
-    public Guid PerformedByGarageId { get; set; }
+    public string PerformedByGarageName { get; set; }
 
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+
+    public string? Description { get; set; }
+
 
     public DateTime Date { get; set; }
 
@@ -33,11 +43,7 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto
 
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
-    public string? Description { get; set; }
-
-    public string? Notes { get; set; }
-
-    public List<VehicleServiceAttachmentItemOnCreateDto>? Attachments { get; set; } = null!;
+    public VehicleServiceLogAttachmentItemOnCreateDto Attachment { get; set; }
 
 }
 

@@ -1038,7 +1038,7 @@ export interface IVehicleClient {
 
     upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string>;
 
-    createVehicleServiceLog(command: CreateVehicleServiceLogCommand): Promise<VehicleServiceLogItemDto>;
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_PerformedByGarageName: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: Date | undefined, serviceLogCommand_ExpectedNextDate: Date | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1299,27 +1299,54 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<string>(null as any);
     }
 
-    createVehicleServiceLog(command: CreateVehicleServiceLogCommand): Promise<VehicleServiceLogItemDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/CreateVehicleServiceLog";
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_PerformedByGarageName: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: Date | undefined, serviceLogCommand_ExpectedNextDate: Date | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto> {
+        let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
+        const content_ = new FormData();
+        if (serviceLogCommand_VehicleLicensePlate !== null && serviceLogCommand_VehicleLicensePlate !== undefined)
+            content_.append("ServiceLogCommand.VehicleLicensePlate", serviceLogCommand_VehicleLicensePlate.toString());
+        if (serviceLogCommand_PerformedByGarageName !== null && serviceLogCommand_PerformedByGarageName !== undefined)
+            content_.append("ServiceLogCommand.PerformedByGarageName", serviceLogCommand_PerformedByGarageName.toString());
+        if (serviceLogCommand_Type === null || serviceLogCommand_Type === undefined)
+            throw new Error("The parameter 'serviceLogCommand_Type' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.Type", serviceLogCommand_Type.toString());
+        if (serviceLogCommand_Description !== null && serviceLogCommand_Description !== undefined)
+            content_.append("ServiceLogCommand.Description", serviceLogCommand_Description.toString());
+        if (serviceLogCommand_Date === null || serviceLogCommand_Date === undefined)
+            throw new Error("The parameter 'serviceLogCommand_Date' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toJSON());
+        if (serviceLogCommand_ExpectedNextDate !== null && serviceLogCommand_ExpectedNextDate !== undefined)
+            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toJSON());
+        if (serviceLogCommand_OdometerReading === null || serviceLogCommand_OdometerReading === undefined)
+            throw new Error("The parameter 'serviceLogCommand_OdometerReading' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.OdometerReading", serviceLogCommand_OdometerReading.toString());
+        if (serviceLogCommand_ExpectedNextOdometerReading !== null && serviceLogCommand_ExpectedNextOdometerReading !== undefined)
+            content_.append("ServiceLogCommand.ExpectedNextOdometerReading", serviceLogCommand_ExpectedNextOdometerReading.toString());
+        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
+        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
+        if (attachmentFile !== null && attachmentFile !== undefined)
+            content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
 
         let options_: RequestInit = {
             body: content_,
-            method: "PUT",
+            method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateVehicleServiceLog(_response);
+            return this.processCreateServiceLog(_response);
         });
     }
 
-    protected processCreateVehicleServiceLog(response: Response): Promise<VehicleServiceLogItemDto> {
+    protected processCreateServiceLog(response: Response): Promise<VehicleServiceLogItemDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -4522,6 +4549,7 @@ export interface IGarageLookupBriefDto {
 export class GarageLookupSimplefiedDto implements IGarageLookupSimplefiedDto {
     identifier?: string;
     name?: string;
+    city?: string;
 
     constructor(data?: IGarageLookupSimplefiedDto) {
         if (data) {
@@ -4536,6 +4564,7 @@ export class GarageLookupSimplefiedDto implements IGarageLookupSimplefiedDto {
         if (_data) {
             this.identifier = _data["identifier"];
             this.name = _data["name"];
+            this.city = _data["city"];
         }
     }
 
@@ -4550,6 +4579,7 @@ export class GarageLookupSimplefiedDto implements IGarageLookupSimplefiedDto {
         data = typeof data === 'object' ? data : {};
         data["identifier"] = this.identifier;
         data["name"] = this.name;
+        data["city"] = this.city;
         return data;
     }
 }
@@ -4557,6 +4587,7 @@ export class GarageLookupSimplefiedDto implements IGarageLookupSimplefiedDto {
 export interface IGarageLookupSimplefiedDto {
     identifier?: string;
     name?: string;
+    city?: string;
 }
 
 export class GarageLookupDto implements IGarageLookupDto {
@@ -5263,128 +5294,9 @@ export interface IVehicleInfoSectionItem {
     values?: string[][];
 }
 
-export class CreateVehicleServiceLogCommand implements ICreateVehicleServiceLogCommand {
-    vehicleLicensePlate?: string;
-    performedByGarageId?: string;
-    type?: GarageServiceType;
-    date?: Date;
-    expectedNextDate?: Date | undefined;
-    odometerReading?: number;
-    expectedNextOdometerReading?: number | undefined;
-    description?: string | undefined;
-    notes?: string | undefined;
-    attachments?: VehicleServiceAttachmentItemOnCreateDto[] | undefined;
-
-    constructor(data?: ICreateVehicleServiceLogCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-            this.performedByGarageId = _data["performedByGarageId"];
-            this.type = _data["type"];
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.expectedNextDate = _data["expectedNextDate"] ? new Date(_data["expectedNextDate"].toString()) : <any>undefined;
-            this.odometerReading = _data["odometerReading"];
-            this.expectedNextOdometerReading = _data["expectedNextOdometerReading"];
-            this.description = _data["description"];
-            this.notes = _data["notes"];
-            if (Array.isArray(_data["attachments"])) {
-                this.attachments = [] as any;
-                for (let item of _data["attachments"])
-                    this.attachments!.push(VehicleServiceAttachmentItemOnCreateDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): CreateVehicleServiceLogCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateVehicleServiceLogCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        data["performedByGarageId"] = this.performedByGarageId;
-        data["type"] = this.type;
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["expectedNextDate"] = this.expectedNextDate ? this.expectedNextDate.toISOString() : <any>undefined;
-        data["odometerReading"] = this.odometerReading;
-        data["expectedNextOdometerReading"] = this.expectedNextOdometerReading;
-        data["description"] = this.description;
-        data["notes"] = this.notes;
-        if (Array.isArray(this.attachments)) {
-            data["attachments"] = [];
-            for (let item of this.attachments)
-                data["attachments"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ICreateVehicleServiceLogCommand {
-    vehicleLicensePlate?: string;
-    performedByGarageId?: string;
-    type?: GarageServiceType;
-    date?: Date;
-    expectedNextDate?: Date | undefined;
-    odometerReading?: number;
-    expectedNextOdometerReading?: number | undefined;
-    description?: string | undefined;
-    notes?: string | undefined;
-    attachments?: VehicleServiceAttachmentItemOnCreateDto[] | undefined;
-}
-
-export class VehicleServiceAttachmentItemOnCreateDto implements IVehicleServiceAttachmentItemOnCreateDto {
-    fileName!: string;
-    fileData!: string;
-    description?: string;
-
-    constructor(data?: IVehicleServiceAttachmentItemOnCreateDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.fileName = _data["fileName"];
-            this.fileData = _data["fileData"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): VehicleServiceAttachmentItemOnCreateDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleServiceAttachmentItemOnCreateDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fileName"] = this.fileName;
-        data["fileData"] = this.fileData;
-        data["description"] = this.description;
-        return data;
-    }
-}
-
-export interface IVehicleServiceAttachmentItemOnCreateDto {
+export interface FileParameter {
+    data: any;
     fileName: string;
-    fileData: string;
-    description?: string;
 }
 
 export interface FileResponse {

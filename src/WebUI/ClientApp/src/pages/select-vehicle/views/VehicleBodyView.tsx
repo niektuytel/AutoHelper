@@ -102,7 +102,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                     }
                 </Paper>
             </Box>
-            <CreateVehicleServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
+            <CreateVehicleServiceLogDrawer licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
         </>
     );
 }

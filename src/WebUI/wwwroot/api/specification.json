@@ -1149,23 +1149,69 @@
         }
       }
     },
-    "/api/Vehicle/CreateVehicleServiceLog": {
-      "put": {
+    "/api/Vehicle/CreateServiceLog": {
+      "post": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_CreateVehicleServiceLog",
+        "operationId": "Vehicle_CreateServiceLog",
         "requestBody": {
-          "x-name": "command",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVehicleServiceLogCommand"
+                "type": "object",
+                "properties": {
+                  "ServiceLogCommand.VehicleLicensePlate": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.PerformedByGarageName": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Type": {
+                    "$ref": "#/components/schemas/GarageServiceType"
+                  },
+                  "ServiceLogCommand.Description": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Date": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "ServiceLogCommand.ExpectedNextDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.OdometerReading": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "ServiceLogCommand.ExpectedNextOdometerReading": {
+                    "type": "integer",
+                    "format": "int32",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileName": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileData": {
+                    "type": "string",
+                    "format": "byte",
+                    "nullable": true
+                  },
+                  "AttachmentFile": {
+                    "type": "string",
+                    "format": "binary",
+                    "nullable": true
+                  }
+                }
               }
             }
-          },
-          "required": true,
-          "x-position": 1
+          }
         },
         "responses": {
           "200": {
@@ -3423,6 +3469,9 @@
           },
           "name": {
             "type": "string"
+          },
+          "city": {
+            "type": "string"
           }
         }
       },
@@ -3797,78 +3846,6 @@
                 "type": "string"
               }
             }
-          }
-        }
-      },
-      "CreateVehicleServiceLogCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "vehicleLicensePlate": {
-            "type": "string"
-          },
-          "performedByGarageId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "expectedNextDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "odometerReading": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "expectedNextOdometerReading": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "notes": {
-            "type": "string",
-            "nullable": true
-          },
-          "attachments": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "$ref": "#/components/schemas/VehicleServiceAttachmentItemOnCreateDto"
-            }
-          }
-        }
-      },
-      "VehicleServiceAttachmentItemOnCreateDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "fileName",
-          "fileData"
-        ],
-        "properties": {
-          "fileName": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 0
-          },
-          "fileData": {
-            "type": "string",
-            "format": "byte",
-            "minLength": 1
-          },
-          "description": {
-            "type": "string"
           }
         }
       }

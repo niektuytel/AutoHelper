@@ -116,11 +116,26 @@ public class VehicleController : ApiControllerBase
         return $"Successfully start queue: {queue}";
     }
 
-    [HttpPut($"{nameof(CreateVehicleServiceLog)}")]
+    [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogItemDto> CreateVehicleServiceLog([FromBody] CreateVehicleServiceLogCommand command, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogItemDto> CreateServiceLog([FromForm] CreateVehicleServiceLogWithAttachmentDto commandWithAttachment, CancellationToken cancellationToken)
     {
+        var command = commandWithAttachment.ServiceLogCommand;
+
+        // If a file is included, process it
+        if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
+        {
+            using var memoryStream = new MemoryStream();
+            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream);
+
+            command.Attachment = new VehicleServiceLogAttachmentItemOnCreateDto
+            {
+                FileName = commandWithAttachment.AttachmentFile.FileName,
+                FileData = memoryStream.ToArray()
+            };
+        }
+
         return await Mediator.Send(command, cancellationToken);
     }
 
