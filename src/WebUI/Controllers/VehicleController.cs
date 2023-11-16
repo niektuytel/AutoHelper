@@ -103,14 +103,16 @@ public class VehicleController : ApiControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public string UpsertLookups(
+        [FromQuery] int startRowIndex = 0,
+        [FromQuery] int endRowIndex = -1,
         [FromQuery] int maxInsertAmount = 10, 
         [FromQuery] int maxUpdateAmount = 0,
         [FromQuery] bool updateTimeline = true,
-        [FromQuery] bool updateServiceLogs = true
+        [FromQuery] bool updateServiceLogs = false
     ) {
-        var command = new UpsertVehicleLookupsCommand(maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
+        var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-        var title = $"max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] | update_[timeline:{updateTimeline}|servicelogs:{updateServiceLogs}]";
+        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] | update_[timeline:{updateTimeline}|servicelogs:{updateServiceLogs}]";
 
         Mediator.Enqueue(queue, title, command);
         return $"Successfully start queue: {queue}";

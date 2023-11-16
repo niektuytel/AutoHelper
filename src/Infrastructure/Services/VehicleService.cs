@@ -500,6 +500,10 @@ internal class VehicleService : IVehicleService
     {
         return await _rdwService.GetVehicleBasicsWithMOTRequirement(offset, limit);
     }
+    public async Task<int> GetVehicleBasicsWithMOTRequirementCount()
+    {
+        return await _rdwService.GetVehicleBasicsWithMOTRequirementCount();
+    }
 
     public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
         List<VehicleTimelineItem> timeline, 
@@ -698,4 +702,5 @@ internal class VehicleService : IVehicleService
         while (inspections.Count() == (limit * offset));
         return inspections.ToArray();
     }
+
 }

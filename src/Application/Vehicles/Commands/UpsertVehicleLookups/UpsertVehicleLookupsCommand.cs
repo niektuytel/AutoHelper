@@ -18,18 +18,24 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
     public const int InsertAll = -1;
     public const int UpdateAll = -1;
     public const int DefaultDaysToCheck = -7;
+    public const int DefaultStartingRowIndex = 0;
+    public const int DefaultEndingRowIndex = -1;
 
     public UpsertVehicleLookupsCommand()
     {
     }
 
     public UpsertVehicleLookupsCommand(
+        int startRowIndex = DefaultStartingRowIndex,
+        int endRowIndex = DefaultEndingRowIndex,
         int maxInsertAmount = InsertAll,
         int maxUpdateAmount = UpdateAll,
         bool upsertTimeline = true,
         bool upsertServiceLogs = true,
         DateTime? upsertOnlyLastModifiedOlderThan = null)
     {
+        StartRowIndex = startRowIndex;
+        EndRowIndex = endRowIndex;
         MaxInsertAmount = maxInsertAmount;
         MaxUpdateAmount = maxUpdateAmount;
         UpsertTimeline = upsertTimeline;
@@ -37,6 +43,8 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
         UpsertOnlyLastModifiedOlderThan = upsertOnlyLastModifiedOlderThan ?? DateTime.UtcNow.AddDays(DefaultDaysToCheck);
     }
 
+    public int StartRowIndex { get; init; }
+    public int EndRowIndex { get; set; }
     public int MaxInsertAmount { get; init; }
     public int MaxUpdateAmount { get; init; }
     public bool UpsertTimeline { get; init; }
@@ -69,44 +77,59 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll ? int.MaxValue : request.MaxInsertAmount;
         _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleLookupsCommand.UpdateAll ? int.MaxValue : request.MaxUpdateAmount;
 
-        LogInformationBasedOnAmount(request);
-
         var limit = 1000;
         var offset = 0;
         var count = 0;
+
+        // set offset to start row index if set
+        if(request.StartRowIndex > 0)
+        {
+            offset = (request.StartRowIndex / limit);
+            count = request.StartRowIndex;
+        }
+
+        // set end row index to total amount of vehicles if not set
+        if (request.EndRowIndex <= 0)
+        {
+            request.EndRowIndex = await _vehicleService.GetVehicleBasicsWithMOTRequirementCount();
+        }
+
+        LogInformationBasedOnAmount(request);
 
         do
         {
             var vehicleBatch = await _vehicleService.GetVehicleBasicsWithMOTRequirement(offset, limit);
             count += vehicleBatch.Count();
-            offset++; 
+            offset++;
 
             var (vehicleLookupsToInsert, vehicleLookupsToUpdate, vehicleTimelineItemsToInsert) = await ProcessVehicleBatchAsync(vehicleBatch, request, cancellationToken);
 
             if (vehicleLookupsToInsert.Any())
             {
                 await _dbContext.BulkInsertAsync(vehicleLookupsToInsert, cancellationToken);
-                LogBulkOperationInformation(request.QueueService, "Insert lookups", vehicleLookupsToInsert.Count);
             }
 
             if (vehicleLookupsToUpdate.Any())
             {
                 await _dbContext.BulkUpdateAsync(vehicleLookupsToUpdate, cancellationToken);
-                LogBulkOperationInformation(request.QueueService, "Update lookups", vehicleLookupsToUpdate.Count);
             }
 
             if (vehicleTimelineItemsToInsert.Any())
             {
                 await _dbContext.BulkInsertAsync(vehicleTimelineItemsToInsert, cancellationToken);
-                LogBulkOperationInformation(request.QueueService, "Insert timelines", vehicleTimelineItemsToInsert.Count);
             }
+
+            request.QueueService.LogInformation($"[{count}/{request.EndRowIndex}] " +
+                $"Lookups (insert: {vehicleLookupsToInsert.Count} | update: {vehicleLookupsToUpdate.Count}) " +
+                $"Timelines (insert: {vehicleTimelineItemsToInsert.Count})"
+            );
 
             if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
             {
-                request.QueueService.LogInformation($"Operation canceled: Limits reached.");
+                request.QueueService.LogInformation($"Operation finished.");
                 break;
             }
-        } while (count == (limit * offset));
+        } while (count == (limit * offset) || count <= request.EndRowIndex);
 
         request.QueueService.LogInformation($"Done processing. Inserted: {request.MaxInsertAmount - _maxInsertAmount}, Updated: {request.MaxUpdateAmount - _maxUpdateAmount}");
         return Unit.Value;
@@ -114,6 +137,8 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
     private void LogInformationBasedOnAmount(UpsertVehicleLookupsCommand request)
     {
+        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
+
         if (request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll)
         {
             request.QueueService.LogInformation($"Insert all available vehicles");
@@ -131,11 +156,6 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         {
             request.QueueService.LogInformation($"Update {_maxUpdateAmount} vehicles");
         }
-    }
-
-    private void LogBulkOperationInformation(IQueueService queueService, string operation, int count)
-    {
-        queueService.LogInformation($"{operation} {count} items");
     }
 
     private async Task<(List<VehicleLookupItem> Inserts, List<VehicleLookupItem> Updates, List<VehicleTimelineItem> InsertTimelineItems)> ProcessVehicleBatchAsync(

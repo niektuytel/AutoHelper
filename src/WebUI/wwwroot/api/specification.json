@@ -1087,6 +1087,26 @@
         "operationId": "Vehicle_UpsertLookups",
         "parameters": [
           {
+            "name": "startRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
             "name": "maxInsertAmount",
             "in": "query",
             "schema": {
@@ -1094,7 +1114,7 @@
               "format": "int32",
               "default": 10
             },
-            "x-position": 1
+            "x-position": 3
           },
           {
             "name": "maxUpdateAmount",
@@ -1104,7 +1124,7 @@
               "format": "int32",
               "default": 0
             },
-            "x-position": 2
+            "x-position": 4
           },
           {
             "name": "updateTimeline",
@@ -1113,16 +1133,16 @@
               "type": "boolean",
               "default": true
             },
-            "x-position": 3
+            "x-position": 5
           },
           {
             "name": "updateServiceLogs",
             "in": "query",
             "schema": {
               "type": "boolean",
-              "default": true
+              "default": false
             },
-            "x-position": 4
+            "x-position": 6
           }
         ],
         "responses": {

@@ -306,6 +306,52 @@ internal partial class RDWApiClient
     }
 
     /// <summary>
+    /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
+    /// </summary>
+    internal async Task<int> GetVehicleBasicsWithMOTRequirementCount()
+    {
+        // Define the categories that require MOT.
+        string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
+
+        // Construct the $where clause to filter by these categories.
+        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
+
+        // Encode the whereClause to ensure it is URL-safe.
+        string encodedWhereClause = WebUtility.UrlEncode(whereClause);
+
+        // Construct the full URL with the $where clause.
+        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?$where={encodedWhereClause}&$select=count(*)";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"RDW API returned status code {response.StatusCode}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var jsonArray = JArray.Parse(json);
+
+        // Check if the JSON array has at least one element
+        if (jsonArray.Count > 0)
+        {
+            // Get the first element of the JSON array
+            var firstElement = jsonArray[0];
+
+            // Retrieve the count value
+            var countValue = firstElement.Value<int>("count");
+
+            return countValue;
+        }
+        else
+        {
+            throw new Exception("No data returned from RDW API");
+        }
+    }
+
+    /// <summary>
     /// https://opendata.rdw.nl/resource/a34c-vvps.json
     /// </summary>
     /// <exception cref="Exception">When issue on api http call</exception>

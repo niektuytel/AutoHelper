@@ -1036,7 +1036,7 @@ export interface IVehicleClient {
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto>;
 
-    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string>;
+    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string>;
 
     createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_PerformedByGarageName: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: Date | undefined, serviceLogCommand_ExpectedNextDate: Date | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto>;
 }
@@ -1241,8 +1241,16 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecificationsDto>(null as any);
     }
 
-    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string> {
+    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
+        if (startRowIndex === null)
+            throw new Error("The parameter 'startRowIndex' cannot be null.");
+        else if (startRowIndex !== undefined)
+            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
+        if (endRowIndex === null)
+            throw new Error("The parameter 'endRowIndex' cannot be null.");
+        else if (endRowIndex !== undefined)
+            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
         if (maxInsertAmount === null)
             throw new Error("The parameter 'maxInsertAmount' cannot be null.");
         else if (maxInsertAmount !== undefined)
