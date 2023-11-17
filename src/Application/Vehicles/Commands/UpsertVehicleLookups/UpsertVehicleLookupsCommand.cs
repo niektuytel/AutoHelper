@@ -53,7 +53,6 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
     private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
     private readonly ILogger<UpsertVehicleLookupsCommandHandler> _logger;
-    private IEnumerable<RDWDetectedDefectDescription> _defectDescriptions;
     private int _maxInsertAmount;
     private int _maxUpdateAmount;
 
@@ -68,7 +67,6 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
     public async Task<Unit> Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
         var totalAmountOfVehicles = await _vehicleService.GetVehicleBasicsWithMOTRequirementCount();
-        _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
         _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll ? totalAmountOfVehicles : request.MaxInsertAmount;
         _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleLookupsCommand.UpdateAll ? totalAmountOfVehicles : request.MaxUpdateAmount;
 
@@ -110,6 +108,15 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             {
                 // only known license plates are allowed
                 vehicleBatch = vehicleBatch.Where(x => licensePlates.ContainsKey(x.LicensePlate));
+            }
+
+            // when there is nothing to do, skip to next batch
+            if (!vehicleBatch.Any())
+            {
+                request.QueueService.LogInformation(
+                    $"[{count}/{request.EndRowIndex}] insert: 0 | update: 0 items"
+                );
+                continue;
             }
 
             var (vehicleLookupsToInsert, vehicleLookupsToUpdate) = await ProcessLookupsAsync(vehicleBatch, request, cancellationToken);

@@ -1,4 +1,6 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
@@ -9,6 +11,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
 
@@ -73,10 +76,16 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
 
     public async Task<Unit> Handle(UpsertVehicleTimelinesCommand request, CancellationToken cancellationToken)
     {
-        var totalAmountOfVehicles = await _vehicleService.GetVehicleBasicsWithMOTRequirementCount();
+        var vehicleLookups = await _dbContext.VehicleLookups
+            .Where(x => x.LastModified < request.UpsertOnlyLastModifiedOlderThan)
+            .ToDictionaryAsync(x => x.LicensePlate, x => new {
+                x.DateOfMOTExpiry,
+                x.DateOfAscription
+            }, cancellationToken);
+        
         _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
-        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll ? totalAmountOfVehicles : request.MaxInsertAmount;
-        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll ? totalAmountOfVehicles : request.MaxUpdateAmount;
+        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll ? vehicleLookups.Count : request.MaxInsertAmount;
+        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll ? vehicleLookups.Count : request.MaxUpdateAmount;
 
         var limit = 1000;
         var offset = 0;
@@ -92,13 +101,11 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
         // set end row index to total amount of vehicles if not set
         if (request.EndRowIndex <= 0)
         {
-            request.EndRowIndex = totalAmountOfVehicles;
+            request.EndRowIndex = vehicleLookups.Count;
         }
 
         LogInformationBasedOnAmount(request);
 
-        var licensePlates = _dbContext.VehicleLookups.Select(x => x.LicensePlate)
-            .ToDictionary(x => x, x => new Tuple<bool>(true));
 
         // TODO: He is to slow on inserting when have already insert 8.5million vehicles
         // TODO: Get all existing vehicle lookup licensePlates

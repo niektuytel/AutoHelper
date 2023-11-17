@@ -7,6 +7,7 @@ using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
@@ -128,13 +129,34 @@ public class VehicleController : ApiControllerBase
     public string UpsertLookups(
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
-        [FromQuery] int maxInsertAmount = 10,
+        [FromQuery] int maxInsertAmount = -1,
         [FromQuery] int maxUpdateAmount = 0
     )
     {
         var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount);
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}]";
+        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
+
+        Mediator.Enqueue(queue, title, command);
+        return $"Successfully start queue: {queue}";
+    }
+
+    /// <param name="maxInsertAmount">-1 is all of them</param>
+    /// <param name="maxUpdateAmount">-1 is all of them</param>
+    [Authorize]// TODO: (Policy="Admin")
+    [HttpPut($"{nameof(UpsertTimelines)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public string UpsertTimelines(
+        [FromQuery] int startRowIndex = 0,
+        [FromQuery] int endRowIndex = -1,
+        [FromQuery] int maxInsertAmount = -1,
+        [FromQuery] int maxUpdateAmount = 0
+    )
+    {
+        var command = new UpsertVehicleTimelinesCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount);
+        var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
+        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] timelines";
 
         Mediator.Enqueue(queue, title, command);
         return $"Successfully start queue: {queue}";

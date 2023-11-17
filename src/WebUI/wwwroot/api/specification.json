@@ -1112,7 +1112,7 @@
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 10
+              "default": -1
             },
             "x-position": 3
           },

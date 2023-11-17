@@ -288,13 +288,10 @@ internal partial class RDWApiClient
         string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Construct the $where clause to filter by these categories.
-        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'")) 
-            + $" AND {selectedFields[1]} IS NOT NULL"
-            + $" AND {selectedFields[2]} IS NOT NULL"
-        ;
+        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
 
         // Encode the whereClause to ensure it is URL-safe.
-        string encodedWhereClause = WebUtility.UrlEncode(whereClause);
+        string encodedWhereClause = WebUtility.UrlEncode($"({whereClause}) AND {selectedFields[1]} IS NOT NULL AND {selectedFields[2]} IS NOT NULL");
 
         // Create a comma-separated list of selected fields.
         string selectedFieldsQuery = selectedFields != null && selectedFields.Length > 0
@@ -324,13 +321,11 @@ internal partial class RDWApiClient
         string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Construct the $where clause to filter by these categories.
-        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"))
-            + $" AND {selectedFields[1]} IS NOT NULL"
-            + $" AND {selectedFields[2]} IS NOT NULL"
-        ;
+        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
 
         // Encode the whereClause to ensure it is URL-safe.
-        string encodedWhereClause = WebUtility.UrlEncode(whereClause);
+        string encodedWhereClause = WebUtility.UrlEncode($"({whereClause}) AND {selectedFields[1]} IS NOT NULL AND {selectedFields[2]} IS NOT NULL");
+
 
         // Construct the full URL with the $where clause.
         var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?$where={encodedWhereClause}&$select=count(*)";
