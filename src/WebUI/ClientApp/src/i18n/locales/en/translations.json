@@ -143,7 +143,15 @@
   "AddMaintenanceLog.Tip": "Maintenance has been done to your car",
   "AddMaintenanceLog.ServiceType.Label": "Service type",
   "AddMaintenanceLog.ServiceDescription.Label": "Description",
-
+  "AddMaintenanceLog.Attachments.Label": "Attachments",
+  "AddMaintenanceLog.Date.Required": "When did this happen?",
+  "AddMaintenanceLog.Date.Label": "Date",
+  "AddMaintenanceLog.ExpectedNextDate.Required": "Date for next maintenance",
+  "AddMaintenanceLog.ExpectedNextDate.Label": "Next date",
+  "AddMaintenanceLog.OdometerReading.Required": "What is the odometer reading?",
+  "AddMaintenanceLog.OdometerReading.Label": "Current odometer reading",
+  "AddMaintenanceLog.ExpectedNextOdometerReading.Required": "Odometer reading for next maintenance",
+  "AddMaintenanceLog.ExpectedNextOdometerReading.Label": "Next odometer reading",
 
 
 

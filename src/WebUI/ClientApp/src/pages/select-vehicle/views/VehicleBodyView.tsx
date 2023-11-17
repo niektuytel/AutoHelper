@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import VehicleServiceLogs from '../components/VehicleServiceLogs';
 import VehicleInformation from '../components/VehicleInformation';
-import CreateVehicleServiceLogDrawer from '../components/CreateVehicleServiceLogDrawer';
+import ServiceLogForm from '../components/ServiceLogForm';
 
 
 
@@ -102,7 +102,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                     }
                 </Paper>
             </Box>
-            <CreateVehicleServiceLogDrawer licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
+            <ServiceLogForm licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
         </>
     );
 }

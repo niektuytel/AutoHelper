@@ -142,6 +142,15 @@
   "AddMaintenanceLog.Tip": "Onderhoud gedaan is aan u auto",
   "AddMaintenanceLog.ServiceType.Label": "Soort onderhoud",
   "AddMaintenanceLog.ServiceDescription.Label": "Omschrijving",
+  "AddMaintenanceLog.Attachments.Label": "Bijlage",
+  "AddMaintenanceLog.Date.Required": "Wanneer is dit gebeurd?",
+  "AddMaintenanceLog.Date.Label": "Datum",
+  "AddMaintenanceLog.ExpectedNextDate.Required": "Datum voor volgende onderhoud",
+  "AddMaintenanceLog.ExpectedNextDate.Label": "Volgende datum",
+  "AddMaintenanceLog.OdometerReading.Required": "Wat is de kilometerstand?",
+  "AddMaintenanceLog.OdometerReading.Label": "Kilometerstand",
+  "AddMaintenanceLog.ExpectedNextOdometerReading.Required": "Kilometerstand voor volgend onderhoud",
+  "AddMaintenanceLog.ExpectedNextOdometerReading.Label": "Onderhoud bij kilometerstand",
 
 
 
