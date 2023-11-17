@@ -76,35 +76,55 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
 
     public async Task<Unit> Handle(UpsertVehicleTimelinesCommand request, CancellationToken cancellationToken)
     {
-        var vehicleLookups = await _dbContext.VehicleLookups
-            .Where(x => x.LastModified < request.UpsertOnlyLastModifiedOlderThan)
-            .ToDictionaryAsync(x => x.LicensePlate, x => new {
-                x.DateOfMOTExpiry,
-                x.DateOfAscription
-            }, cancellationToken);
+        //var vehicleLookups = await _dbContext.VehicleLookups
+        //    .Where(x => x.LastModified < request.UpsertOnlyLastModifiedOlderThan)
+        //    .ToDictionaryAsync(x => x.LicensePlate, x => new {
+        //        x.DateOfMOTExpiry,
+        //        x.DateOfAscription
+        //    }, cancellationToken);
         
-        _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
-        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll ? vehicleLookups.Count : request.MaxInsertAmount;
-        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll ? vehicleLookups.Count : request.MaxUpdateAmount;
+        //var limit = 1000;
+        //var offset = 0;
+        //var count = 0;
 
-        var limit = 1000;
-        var offset = 0;
-        var count = 0;
+        //// set offset to start row index if set
+        //if (request.StartRowIndex > 0)
+        //{
+        //    offset = request.StartRowIndex / limit;
+        //    count = request.StartRowIndex;
+        //}
 
-        // set offset to start row index if set
-        if (request.StartRowIndex > 0)
-        {
-            offset = request.StartRowIndex / limit;
-            count = request.StartRowIndex;
-        }
-
-        // set end row index to total amount of vehicles if not set
-        if (request.EndRowIndex <= 0)
-        {
-            request.EndRowIndex = vehicleLookups.Count;
-        }
+        //// set end row index to total amount of vehicles if not set
+        //if (request.EndRowIndex <= 0)
+        //{
+        //    request.EndRowIndex = vehicleLookups.Count;
+        //}
 
         LogInformationBasedOnAmount(request);
+
+        int batchSize = 1000; // Example batch size
+        int totalRecords = await _dbContext.VehicleLookups.CountAsync(cancellationToken);
+        int numberOfBatches = (totalRecords / batchSize) + (totalRecords % batchSize == 0 ? 0 : 1); // Calculate the number of batches needed
+
+        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll ? totalRecords : request.MaxInsertAmount;
+        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll ? totalRecords : request.MaxUpdateAmount;
+        _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
+
+        for (int i = 0; i < numberOfBatches; i++)
+        {
+            var batch = await _dbContext.VehicleLookups
+                .Where(x => x.LastModified < request.UpsertOnlyLastModifiedOlderThan)
+                .OrderBy(x => x.LicensePlate) // Ensure a consistent order for paging
+                .Skip(i * batchSize)
+                .Take(batchSize)
+                .ToDictionaryAsync(x => x.LicensePlate, x => new {
+                    x.DateOfMOTExpiry,
+                    x.DateOfAscription
+                }, cancellationToken);
+
+            // Process each batch here
+            // ...
+        }
 
 
         // TODO: He is to slow on inserting when have already insert 8.5million vehicles
