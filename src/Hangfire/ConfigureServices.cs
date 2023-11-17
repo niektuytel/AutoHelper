@@ -2,6 +2,7 @@
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Messages.Commands.StartConversation;
+using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
@@ -36,6 +37,7 @@ public static class ConfigureServices
         });
         services.AddHangfireServer(options =>
         {
+            options.CancellationCheckInterval = TimeSpan.FromSeconds(5);
             options.Queues = new[] { 
                 nameof(UpsertGarageLookupsCommand).ToLower(), 
                 nameof(UpsertVehicleLookupsCommand).ToLower(),

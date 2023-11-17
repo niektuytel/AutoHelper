@@ -3,6 +3,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
@@ -96,6 +97,28 @@ public class VehicleController : ApiControllerBase
     //}
 
 
+    ///// <param name="maxInsertAmount">-1 is all of them</param>
+    ///// <param name="maxUpdateAmount">-1 is all of them</param>
+    //[Authorize]// TODO: (Policy="Admin")
+    //[HttpPut($"{nameof(UpsertLookups)}")]
+    //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    //public string UpsertLookups(
+    //    [FromQuery] int startRowIndex = 0,
+    //    [FromQuery] int endRowIndex = -1,
+    //    [FromQuery] int maxInsertAmount = 10, 
+    //    [FromQuery] int maxUpdateAmount = 0,
+    //    [FromQuery] bool updateTimeline = true,
+    //    [FromQuery] bool updateServiceLogs = false
+    //) {
+    //    var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
+    //    var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
+    //    var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] | update_[timeline:{updateTimeline}|servicelogs:{updateServiceLogs}]";
+
+    //    Mediator.Enqueue(queue, title, command);
+    //    return $"Successfully start queue: {queue}";
+    //}
+
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize]// TODO: (Policy="Admin")
@@ -105,14 +128,13 @@ public class VehicleController : ApiControllerBase
     public string UpsertLookups(
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
-        [FromQuery] int maxInsertAmount = 10, 
-        [FromQuery] int maxUpdateAmount = 0,
-        [FromQuery] bool updateTimeline = true,
-        [FromQuery] bool updateServiceLogs = false
-    ) {
-        var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
+        [FromQuery] int maxInsertAmount = 10,
+        [FromQuery] int maxUpdateAmount = 0
+    )
+    {
+        var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount);
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] | update_[timeline:{updateTimeline}|servicelogs:{updateServiceLogs}]";
+        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}]";
 
         Mediator.Enqueue(queue, title, command);
         return $"Successfully start queue: {queue}";

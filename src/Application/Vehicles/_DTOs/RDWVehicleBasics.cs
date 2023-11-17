@@ -7,9 +7,6 @@ public class RDWVehicleBasics
     [JsonProperty("kenteken")]
     public string LicensePlate { get; set; }
 
-    [JsonProperty("europese_voertuigcategorie")]
-    public string EuropeanVehicleCategory { get; set; }
-
     [JsonProperty("vervaldatum_apk_dt")]
     public DateTime MOTExpiryDateDt { get; set; }
 

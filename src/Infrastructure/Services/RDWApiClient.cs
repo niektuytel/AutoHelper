@@ -285,15 +285,24 @@ internal partial class RDWApiClient
     {
         // Define the categories that require MOT.
         string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
+        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Construct the $where clause to filter by these categories.
-        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
+        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'")) 
+            + $" AND {selectedFields[1]} IS NOT NULL"
+            + $" AND {selectedFields[2]} IS NOT NULL"
+        ;
 
         // Encode the whereClause to ensure it is URL-safe.
         string encodedWhereClause = WebUtility.UrlEncode(whereClause);
 
-        // Construct the full URL with the $where clause.
-        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?$where={encodedWhereClause}&$limit={limit}&$offset={offset * limit}";
+        // Create a comma-separated list of selected fields.
+        string selectedFieldsQuery = selectedFields != null && selectedFields.Length > 0
+                                     ? $"$select={string.Join(",", selectedFields)}&"
+                                     : string.Empty;
+
+        // Construct the full URL with the $where and $select clauses.
+        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?{selectedFieldsQuery}$where={encodedWhereClause}&$limit={limit}&$offset={offset * limit}";
 
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
@@ -312,9 +321,13 @@ internal partial class RDWApiClient
     {
         // Define the categories that require MOT.
         string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
+        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Construct the $where clause to filter by these categories.
-        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
+        string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"))
+            + $" AND {selectedFields[1]} IS NOT NULL"
+            + $" AND {selectedFields[2]} IS NOT NULL"
+        ;
 
         // Encode the whereClause to ensure it is URL-safe.
         string encodedWhereClause = WebUtility.UrlEncode(whereClause);

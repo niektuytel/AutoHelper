@@ -1036,7 +1036,7 @@ export interface IVehicleClient {
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto>;
 
-    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string>;
+    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string>;
 
     createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_PerformedByGarageName: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: Date | undefined, serviceLogCommand_ExpectedNextDate: Date | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto>;
 }
@@ -1241,7 +1241,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecificationsDto>(null as any);
     }
 
-    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, updateTimeline: boolean | undefined, updateServiceLogs: boolean | undefined): Promise<string> {
+    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
         if (startRowIndex === null)
             throw new Error("The parameter 'startRowIndex' cannot be null.");
@@ -1259,14 +1259,6 @@ export class VehicleClient implements IVehicleClient {
             throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
         else if (maxUpdateAmount !== undefined)
             url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
-        if (updateTimeline === null)
-            throw new Error("The parameter 'updateTimeline' cannot be null.");
-        else if (updateTimeline !== undefined)
-            url_ += "updateTimeline=" + encodeURIComponent("" + updateTimeline) + "&";
-        if (updateServiceLogs === null)
-            throw new Error("The parameter 'updateServiceLogs' cannot be null.");
-        else if (updateServiceLogs !== undefined)
-            url_ += "updateServiceLogs=" + encodeURIComponent("" + updateServiceLogs) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {

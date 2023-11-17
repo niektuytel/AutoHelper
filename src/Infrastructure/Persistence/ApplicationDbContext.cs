@@ -132,8 +132,8 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         var bulkConfig = new BulkConfig
         {
             PreserveInsertOrder = true, // Set to true if the insert order should be preserved
-            SetOutputIdentity = true,    // Set to true to update entities' identities after inserting them
-            BatchSize = 2000             // Optional: specify a batch size for large inserts
+            SetOutputIdentity = true,   // Set to true to update entities' identities after inserting them
+            BatchSize = entities.Count  // Optional: specify a batch size for large inserts
         };
 
         await this.BulkInsertAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);
@@ -143,7 +143,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     {
         var bulkConfig = new BulkConfig
         {
-            BatchSize = 2000  // Optional: specify a batch size for large updates
+            BatchSize = entities.Count  // Optional: specify a batch size for large updates
         };
 
         await this.BulkUpdateAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);

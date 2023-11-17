@@ -1125,24 +1125,6 @@
               "default": 0
             },
             "x-position": 4
-          },
-          {
-            "name": "updateTimeline",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": true
-            },
-            "x-position": 5
-          },
-          {
-            "name": "updateServiceLogs",
-            "in": "query",
-            "schema": {
-              "type": "boolean",
-              "default": false
-            },
-            "x-position": 6
           }
         ],
         "responses": {

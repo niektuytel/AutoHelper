@@ -23,11 +23,11 @@ public static class MediatorExtensions
         queue = queue.ToLower();
         if (isRecursive)
         {
-            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(null, queue, title, request));
+            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(null, queue, title, request, CancellationToken.None));
         }
         else
         {
-            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(null, queue, title, request));
+            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(null, queue, title, request, CancellationToken.None));
         }
     }
 
@@ -39,11 +39,11 @@ public static class MediatorExtensions
         queue = queue.ToLower();
         if (isRecursive)
         {
-            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(null, queue, title, request));
+            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(null, queue, title, request, CancellationToken.None));
         }
         else
         {
-            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(null, queue, title, request));
+            client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(null, queue, title, request, CancellationToken.None));
         }
     }
 
@@ -51,7 +51,7 @@ public static class MediatorExtensions
     {
         if (enabled)
         {
-            RecurringJob.AddOrUpdate<MediatorHangfireBridge>(jobId, bridge => bridge.Send(request), Cron.Weekly);
+            RecurringJob.AddOrUpdate<MediatorHangfireBridge>(jobId, bridge => bridge.Send(request, CancellationToken.None), Cron.Weekly);
         }
         else
         {

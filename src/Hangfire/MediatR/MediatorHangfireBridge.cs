@@ -25,33 +25,34 @@ public class MediatorHangfireBridge
 
     [Queue("{1}")]
     [DisplayName("{2}")]
-    public async Task Send(PerformContext context, string queue, string displayName, IQueueRequest command)
+    public async Task Send(PerformContext context, string queue, string displayName, IQueueRequest command, CancellationToken cancellationToken)
     {
         _queueJobService.Initialize(context);
         command.QueueService = _queueJobService;
 
-        await _mediator.Send(command);
+        await _mediator.Send(command, cancellationToken);
     }
 
     [Queue("{1}")]
     [DisplayName("{2}")]
-    public async Task Send<T>(PerformContext context, string queue, string displayName, IQueueRequest<T> command)
+    public async Task Send<T>(PerformContext context, string queue, string displayName, IQueueRequest<T> command, CancellationToken cancellationToken)
     {
         _queueJobService.Initialize(context);
         command.QueueingService = _queueJobService;
 
-        await _mediator.Send(command);
+        await _mediator.Send(command, cancellationToken);
     }
 
-    public async Task Send(IBaseRequest command)
+    public async Task Send(IBaseRequest command, CancellationToken cancellationToken)
     {
-        await _mediator.Send(command);
+        await _mediator.Send(command, cancellationToken);
     }
 
     [Queue("{1}")]
     [DisplayName("{2}")]
-    public async Task SendMany(PerformContext context, string queue, string displayName, object? request)
+    public async Task SendMany(PerformContext context, string queue, string displayName, object? request, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var nextStep = true;
         if (request is null)
         {
@@ -70,7 +71,7 @@ public class MediatorHangfireBridge
 
             try
             {
-                request = await _mediator.Send(request);
+                request = await _mediator.Send(request, cancellationToken);
                 nextStep = request != null && request is IBaseRequest;
             }
             catch (ValidationException ex)
