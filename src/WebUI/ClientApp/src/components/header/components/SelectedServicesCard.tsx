@@ -88,7 +88,7 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
                     <CardContent>
                         <List dense>
                             {services.map((service, index) => (
-                                <React.Fragment key={`${service.relatedGarageLookupId};${service.relatedServiceType}`}>
+                                <React.Fragment key={`${service.relatedGarageLookupIdentifier};${service.relatedServiceType}`}>
                                     {index > 0 && <Divider component="li" />}
                                     <ListItem
                                         onClick={() => handleServiceClick(service)}

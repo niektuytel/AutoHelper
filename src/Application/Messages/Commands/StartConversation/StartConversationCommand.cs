@@ -18,7 +18,7 @@ namespace AutoHelper.Application.Messages.Commands.StartConversation;
 public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
 {
     public StartConversationCommand(
-        Guid relatedGarageLookupId,
+        string relatedGarageLookupId,
         string relatedVehicleLicensePlate,
         GarageServiceType[] relatedServiceTypes,
         string? senderWhatsAppNumberOrEmail,
@@ -27,7 +27,7 @@ public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
         string messageContent
     )
     {
-        RelatedGarageLookupId = relatedGarageLookupId;
+        RelatedGarageLookupIdentifier = relatedGarageLookupId;
         RelatedVehicleLicensePlate = relatedVehicleLicensePlate;
         RelatedServiceTypes = relatedServiceTypes;
         SenderWhatsAppNumberOrEmail = senderWhatsAppNumberOrEmail;
@@ -36,7 +36,7 @@ public record StartConversationCommand : IQueueRequest<SendMessageCommand?>
         MessageContent = messageContent;
     }
 
-    public Guid RelatedGarageLookupId { get; set; }
+    public string RelatedGarageLookupIdentifier { get; set; }
     public GarageLookupItem RelatedGarage { get; internal set; }
 
     public string RelatedVehicleLicensePlate { get; set; }
@@ -73,7 +73,7 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
     {
         var conversation = new ConversationItem
         {
-            RelatedGarageLookupId = request.RelatedGarageLookupId,
+            RelatedGarageLookupIdentifier = request.RelatedGarageLookupIdentifier,
             VehicleLicensePlate = request.RelatedVehicleLicensePlate,
             RelatedServiceTypes = request.RelatedServiceTypes,
             ConversationType = request.ConversationType,

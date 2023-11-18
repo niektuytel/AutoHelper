@@ -19,17 +19,14 @@ public interface IVehicleService
     Task<RDWVehicleDetectedDefect[]> GetDefectHistoryByLicensePlateAsync(string licensePlate);
     Task ForEachVehicleInBatches(Func<IEnumerable<RDWVehicle>, Task> onVehicleBatch);
     Task<IEnumerable<RDWDetectedDefectDescription>> GetDetectedDefectDescriptionsAsync();
-    Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
-        List<VehicleTimelineItem> timeline, 
-        RDWVehicleBasics vehicle, 
-        IEnumerable<RDWDetectedDefectDescription> defectDescriptions
-    );
+
+
     bool MOTIsRequired(string europeanVehicleCategory);
     Task<IEnumerable<RDWVehicleDetectedDefect>> GetVehicleDetectedDefects(List<string> licensePlates);
     Task<IEnumerable<RDWvehicleInspectionNotification>> GetVehicleInspectionNotifications(List<string> licensePlates);
-    List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions);
-    List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWvehicleInspectionNotification> notifications);
-    VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(string licensePlate, List<VehicleTimelineItem> timeline, DateTime? dateOfAscription);
+    Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> FailedMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions);
+    Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> SucceededMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWvehicleInspectionNotification> notifications);
+    Task<VehicleTimelineItem?> OwnerChangedTimelineItem(VehicleLookupItem vehicle);
     Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasicsWithMOTRequirement(int offset, int limit);
     Task<int> GetVehicleBasicsWithMOTRequirementCount();
 }

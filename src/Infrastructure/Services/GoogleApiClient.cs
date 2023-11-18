@@ -90,7 +90,7 @@ internal class GoogleApiClient
     /// <summary>
     /// https://developers.google.com/maps/documentation/places/web-service/photos
     /// </summary>
-    public async Task<string?> GetPlacePhotoInBase64(string photo_reference, int maxWidth)
+    public async Task<(byte[]? fileBytes, string fileExtension)> GetPlacePhoto(string photo_reference, int maxWidth)
     {
         var url = "https://maps.googleapis.com/maps/api/place/photo" +
             $"?maxwidth={maxWidth}" +
@@ -101,13 +101,41 @@ internal class GoogleApiClient
         var response = await _httpClient.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            var bytes = await response.Content.ReadAsByteArrayAsync();
-            var base64String = Convert.ToBase64String(bytes);
+            var contentType = response.Content.Headers.ContentType?.MediaType;
 
-            return base64String;
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var fileExtension = GetFileExtension(contentType);
+            return (bytes, fileExtension);
         }
 
-        return null;
+        return (null, "");
+    }
+
+    private string GetFileExtension(string? contentType)
+    {
+        switch (contentType)
+        {
+            case "image/jpeg":
+                return ".jpg";
+            case "image/png":
+                return ".png";
+            case "image/bmp":
+                return ".bmp";
+            case "image/gif":
+                return ".gif";
+            case "image/tiff":
+                return ".tiff";
+            case "image/svg+xml":
+                return ".svg";
+            case "image/webp":
+                return ".webp";
+            case "image/heif":
+                return ".heif";
+            case "image/heic":
+                return ".heic";
+            default:
+                return "";
+        }
     }
 
 }

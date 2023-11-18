@@ -51,7 +51,6 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupQue
     public async Task<GarageLookupDto> Handle(GetGarageLookupQuery request, CancellationToken cancellationToken)
     {
         var lookup = await _context.GarageLookups
-            .Include(x => x.LargeData)// TODO: remove this line, customer not allowed to look at data comming from google and rdw
             .FirstOrDefaultAsync(x => x.Identifier == request.Identifier);
 
         if (lookup == null)

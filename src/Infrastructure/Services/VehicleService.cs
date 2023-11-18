@@ -506,91 +506,111 @@ internal class VehicleService : IVehicleService
         return await _rdwService.GetVehicleBasicsWithMOTRequirementCount();
     }
 
-    public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
-        List<VehicleTimelineItem> timeline, 
-        RDWVehicleBasics vehicle, 
-        IEnumerable<RDWDetectedDefectDescription> defectDescriptions
-    )
+    //public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
+    //    List<VehicleTimelineItem> timeline, 
+    //    RDWVehicleBasics vehicle, 
+    //    IEnumerable<RDWDetectedDefectDescription> defectDescriptions
+    //)
+    //{
+    //    var items = timeline.DeepClone() ?? new List<VehicleTimelineItem>();
+    //    var defects = await _rdwService.GetVehicleDetectedDefects(vehicle.LicensePlate);
+    //    if (defects?.Any() == true)
+    //    {
+    //        var failedMOTs = UndefinedFailedMOTTimelineItems(vehicle.LicensePlate, items, defects, defectDescriptions);
+    //        if (failedMOTs?.Any() == true)
+    //        {
+    //            items.AddRange(failedMOTs);
+    //        }
+    //    }
+
+    //    var inspections = await _rdwService.GetVehicleInspectionNotifications(vehicle.LicensePlate);
+    //    if (inspections?.Any() == true)
+    //    {
+    //        var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicle.LicensePlate, items, inspections);
+    //        if (succeededMOTs?.Any() == true)
+    //        {
+    //            items.AddRange(succeededMOTs);
+    //        }
+    //    }
+
+    //    var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicle.LicensePlate, items, vehicle.RegistrationDateDt);
+    //    if (ownerChanged != null)
+    //    {
+    //        items.Add(ownerChanged);
+    //    }
+
+    //    return items;
+    //}
+
+    public async Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> FailedMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
     {
-        var items = timeline.DeepClone() ?? new List<VehicleTimelineItem>();
-        var defects = await _rdwService.GetVehicleDetectedDefects(vehicle.LicensePlate);
-        if (defects?.Any() == true)
+        var itemsToInsert = new List<VehicleTimelineItem>();
+        var itemsToUpdate = new List<VehicleTimelineItem>();
+
+        // No defects found
+        if (detectedDefects?.Any() != true)
         {
-            var failedMOTs = UndefinedFailedMOTTimelineItems(vehicle.LicensePlate, items, defects, defectDescriptions);
-            if (failedMOTs?.Any() == true)
-            {
-                items.AddRange(failedMOTs);
-            }
+            return (itemsToInsert, itemsToUpdate);
         }
 
-        var inspections = await _rdwService.GetVehicleInspectionNotifications(vehicle.LicensePlate);
-        if (inspections?.Any() == true)
-        {
-            var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicle.LicensePlate, items, inspections);
-            if (succeededMOTs?.Any() == true)
-            {
-                items.AddRange(succeededMOTs);
-            }
-        }
-
-        var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicle.LicensePlate, items, vehicle.RegistrationDateDt);
-        if (ownerChanged != null)
-        {
-            items.Add(ownerChanged);
-        }
-
-        return items;
-    }
-
-    public List<VehicleTimelineItem> UndefinedFailedMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
-    {
-        var items = new List<VehicleTimelineItem>();
         var groupedByDate = detectedDefects.GroupBy(x => x.DetectionDate);
         foreach (var group in groupedByDate)
         {
-            if (timeline?.Any(x => x.Date == group.Key) == true)
+            if (vehicle.Timeline?.Any(x => x.Date == group.Key) == true)
             {
+                // Already exists
                 continue;
             }
 
-            var item = CreateFailedMOTTimelineItem(licensePlate, group, defectDescriptions);
-            items.Add(item);
+            var item = CreateFailedMOTTimelineItem(vehicle.LicensePlate, group, defectDescriptions);
+            itemsToInsert.Add(item);
         }
 
-        return items;
+        return (itemsToInsert, itemsToUpdate);
     }
 
-    public List<VehicleTimelineItem> UndefinedSucceededMOTTimelineItems(string licensePlate, List<VehicleTimelineItem> timeline, IEnumerable<RDWvehicleInspectionNotification> notifications)
+    public async Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> SucceededMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWvehicleInspectionNotification> notifications)
     {
+        var itemsToInsert = new List<VehicleTimelineItem>();
+        var itemsToUpdate = new List<VehicleTimelineItem>();
+
+        // No notifications found
+        if (notifications?.Any() != true)
+        {
+            return (itemsToInsert, itemsToUpdate);
+        }
+
         var items = new List<VehicleTimelineItem>();
         var groupedByDate = notifications.GroupBy(x => x.DateTimeByAuthority);
-        foreach (var group in groupedByDate)
+        foreach (var notification in notifications)
         {
-            if (timeline?.Any(x => x.Date == group.Key) == true)
+            if (vehicle.Timeline?.Any(x => x.Date == notification!.DateTimeByAuthority) == true)
             {
+                // Already exists
                 continue;
             }
 
-            var notification = group.First();
-            var item = CreateSucceededMOTTimelineItem(licensePlate, notification);
-            items.Add(item);
+            var item = CreateSucceededMOTTimelineItem(vehicle.LicensePlate, notification);
+            itemsToInsert.Add(item);
         }
 
-        return items;
+        return (itemsToInsert, itemsToUpdate);
     }
 
-    public VehicleTimelineItem? UndefinedOwnerChangedTimelineItem(string licensePlate, List<VehicleTimelineItem> timeline, DateTime? dateOfAscription)
+    public async Task<VehicleTimelineItem?> OwnerChangedTimelineItem(VehicleLookupItem vehicle)
     {
-        if (dateOfAscription == null || dateOfAscription == DateTime.MinValue)
-        {
-            return null;
-        }
-        else if(timeline?.Any(x => x.Date == dateOfAscription) == true)
+        var entity = vehicle.Timeline?.FirstOrDefault(x => 
+            x.Type == VehicleTimelineType.OwnerChange &&
+            x.Date == vehicle.DateOfAscription
+        );
+
+        // Already exists or has invalid date
+        if (entity != null || vehicle.DateOfAscription == null || vehicle.DateOfAscription == DateTime.MinValue)
         {
             return null;
         }
 
-        var item = CreateOwnerChangeTimelineItem(licensePlate, (DateTime)dateOfAscription);
+        var item = CreateOwnerChangeTimelineItem(vehicle.LicensePlate, (DateTime)vehicle.DateOfAscription);
         return item;
     }
 

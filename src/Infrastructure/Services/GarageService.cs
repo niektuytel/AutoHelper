@@ -27,15 +27,18 @@ namespace AutoHelper.Infrastructure.Services;
 
 internal class GarageService : IGarageService
 {
+    private readonly IBlobStorageService _blobStorageService;
     private readonly WebScraperClient _webScraperClient;
     private readonly GoogleApiClient _googleApiClient;
     private readonly RDWApiClient _rdwApiClient;
 
     public GarageService(
+        IBlobStorageService blobStorageService,
         WebScraperClient webScraperClient,
         GoogleApiClient googleApiClient,
         RDWApiClient rdwApiClient
     ) {
+        _blobStorageService = blobStorageService;
         _webScraperClient = webScraperClient;
         _googleApiClient = googleApiClient;
         _rdwApiClient = rdwApiClient;
@@ -71,7 +74,11 @@ internal class GarageService : IGarageService
                 Name = rdwCompany.Naambedrijf,
                 KnownServices = services,
                 Address = FormatAddress(rdwCompany.Straat, rdwCompany.Huisnummer.ToString(), rdwCompany.Huisnummertoevoeging),
-                City = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(rdwCompany.Plaats.ToLower())
+                City = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(rdwCompany.Plaats.ToLower()),
+                CreatedBy = "System",
+                Created = DateTime.UtcNow,
+                LastModifiedBy = "System",
+                LastModified = DateTime.UtcNow,
             };
 
             garageLookups.Add(garageLookup);
@@ -140,12 +147,19 @@ internal class GarageService : IGarageService
             GoogleApiDetailsJson = placeDetailsJson
         };
 
-        // TODO: Set small first photo (if exist)
         var reference = details.result.photos?[0].photo_reference;
         if (!string.IsNullOrEmpty(reference))
         {
-            var photo = await _googleApiClient.GetPlacePhotoInBase64(reference, 2000);
-            item.LargeData.FirstPlacePhoto = photo;
+            var (fileBytes, fileExtension) = await _googleApiClient.GetPlacePhoto(reference, 1000);
+            if (fileBytes != null)
+            {
+                // Upload original image
+                item.Image = await _blobStorageService.UploadGarageImageAsync(fileBytes, fileExtension, CancellationToken.None);
+
+                // Create and upload thumbnail image
+                var thumbnailBytes = CreateThumbnail(fileBytes, 150);
+                item.ImageThumbnail = await _blobStorageService.UploadGarageImageAsync(thumbnailBytes, fileExtension, CancellationToken.None);
+            }
         }
 
         item.Status = details.result.business_status;
@@ -196,6 +210,18 @@ internal class GarageService : IGarageService
         // TODO: Validate Email* and phone numbers that really has valid value
 
         return item;
+    }
+
+    public byte[] CreateThumbnail(byte[] originalImage, int thumbnailHeight)
+    {
+        using var image = Image.Load(originalImage);
+        // Calculate the new width while maintaining the aspect ratio
+        int newWidth = (int)((double)image.Width / ((double)image.Height / (double)thumbnailHeight));
+
+        image.Mutate(x => x.Resize(newWidth, thumbnailHeight));
+        using var memoryStream = new MemoryStream();
+        image.SaveAsJpeg(memoryStream);
+        return memoryStream.ToArray();
     }
 
     // TODO: Need better investigation

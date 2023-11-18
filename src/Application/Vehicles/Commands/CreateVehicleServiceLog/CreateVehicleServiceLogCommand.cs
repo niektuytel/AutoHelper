@@ -8,6 +8,7 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Domain;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
@@ -27,28 +28,26 @@ public record CreateVehicleServiceLogWithAttachmentDto : IRequest<VehicleService
 public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto>
 {
     public string VehicleLicensePlate { get; set; }
-
-    public string PerformedByGarageName { get; set; }
-
+    public string GarageLookupIdentifier { get; set; }
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
-
     public string? Description { get; set; }
+    public VehicleServiceLogAttachmentItemOnCreateDto Attachment { get; set; }
 
 
     public DateTime Date { get; set; }
-
     public DateTime? ExpectedNextDate { get; set; } = null!;
-
     public int OdometerReading { get; set; }
-
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
-    public VehicleServiceLogAttachmentItemOnCreateDto Attachment { get; set; }
 
+    public string CreatedBy { get; set; } = null!;
+    public string? PhoneNumber { get; set; } = null!;
+    public string? EmailAddress { get; set; } = null!;
 }
 
 public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehicleServiceLogCommand, VehicleServiceLogItemDto>
 {
+    private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
@@ -60,36 +59,41 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
 
     public async Task<VehicleServiceLogItemDto> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
     {
+        // upload attached file
+        var fileExtension = Path.GetExtension(request.Attachment.FileName);
+        var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
+            request.Attachment.FileData,
+            fileExtension,
+            cancellationToken
+        );
+
         var entity = new VehicleServiceLogItem
         {
-            //UserId = request.UserId,
-            //Name = request.Name,
-            //PhoneNumber = request.PhoneNumber,
-            //WhatsAppNumber = request.WhatsAppNumber,
-            //Email = request.Email,
-            //Location = new GarageLocationItem
-            //{
-            //    Address = request.Location.Address,
-            //    PostalCode = request.Location.PostalCode,
-            //    City = request.Location.City,
-            //    Country = request.Location.Country,
-            //    Longitude = request.Location.Longitude,
-            //    Latitude = request.Location.Latitude
-            //},
-            //BankingDetails = new GarageBankingDetailsItem
-            //{
-            //    BankName = request.BankingDetails.BankName,
-            //    KvKNumber = request.BankingDetails.KvKNumber,
-            //    AccountHolderName = request.BankingDetails.AccountHolderName,
-            //    IBAN = request.BankingDetails.IBAN
-            //}
+            VehicleLicensePlate = request.VehicleLicensePlate,
+            GarageLookupIdentifier = request.GarageLookupIdentifier,
+            Type = request.Type,
+            Description = request.Description,
+            AttachedFile = attachmentBlobName,
+            
+            Date = request.Date,
+            ExpectedNextDate = request.ExpectedNextDate,
+            OdometerReading = request.OdometerReading,
+            ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
+
+            Verification = new VehicleServiceLogVerificationItem()
+            {
+                Type = ServiceLogVerificationType.NotVerified,
+                CreatedBy = request.CreatedBy,
+                PhoneNumber = request.PhoneNumber,
+                EmailAddress = request.EmailAddress
+            }
         };
 
-        //// If you wish to use domain events, then you can add them here:
-        //// entity.AddDomainEvent(new SomeDomainEvent(entity));
+        // If you wish to use domain events, then you can add them here:
+        // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        //_context.Garages.Add(entity);
-        //await _context.SaveChangesAsync(cancellationToken);
+        _context.VehicleServiceLogs.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
         return null;
     }
 }

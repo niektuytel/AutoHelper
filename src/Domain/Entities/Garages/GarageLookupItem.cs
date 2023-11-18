@@ -8,8 +8,14 @@ using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
-public class GarageLookupItem : BaseEntity
+public class GarageLookupItem
 {
+    public GarageLookupItem()
+    { }
+
+    [Key]
+    [Required]
+    public string Identifier { get; set; }
 
     /// <summary>
     /// Provide a reference to the GarageItem that this GarageSearchableItem is associated with.
@@ -17,9 +23,6 @@ public class GarageLookupItem : BaseEntity
     /// The garage still do not have a GarageItem until the GarageItem is created.
     /// </summary>
     public Guid? GarageId { get; set; }
-
-    [Required]
-    public string Identifier { get; set; }
 
     [Required]
     public string Name { get; set; }
@@ -53,7 +56,11 @@ public class GarageLookupItem : BaseEntity
     [Required]
     public string City { get; set; }
 
-    public Geometry? Location { get; set; }
+    [Required]
+    public Geometry Location { get; set; }
+
+    public string? Image { get; set; } = null;
+    public string? ImageThumbnail { get; set; } = null;
 
     public string? Status { get; set; }
 
@@ -91,9 +98,19 @@ public class GarageLookupItem : BaseEntity
 
     public bool HasReplacementTransportService { get; set; } = false;// TODO: Implement replacement transport service
 
-    public GarageLookupLargeItem? LargeData { get; set; } = null;
+    [Required]
+    public DateTime Created { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    [Required]
+    public DateTime? LastModified { get; set; }
+
+    public string? LastModifiedBy { get; set; }
 
     [Required]
     public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
+
+    public GarageLookupLargeItem? LargeData { get; set; } = null;
 
 }

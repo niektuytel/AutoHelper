@@ -48,12 +48,11 @@ export default ({ }: IProps) => {
     const services: SelectedService[] = useSelector((state: any) => state.storedServices);
 
     const tryAddCartItem = (service: SelectedService) => {
-        service.relatedGarageLookupId = garageLookup?.id!;
         service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
         service.relatedGarageLookupName = garageLookup?.name;
 
         if (services.some(item => (
-            item.relatedGarageLookupId === service.relatedGarageLookupId &&
+            item.relatedGarageLookupIdentifier === service.relatedGarageLookupIdentifier &&
             item.relatedServiceType === service.relatedServiceType
         ))) {
             dispatch(showOnError(t("Cart item already exist")));
@@ -78,6 +77,8 @@ export default ({ }: IProps) => {
         // TODO: handle garage specific page
     }
 
+    const imageUrl = `http://127.0.0.1:10000/devstoreaccount1/garage-images/${garageLookup?.image}`;
+
 
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} />
@@ -85,14 +86,23 @@ export default ({ }: IProps) => {
             <Box pt={1} pb={2}>
                 <Paper
                     style={{
-                        backgroundImage: `url(data:image/jpeg;base64,${garageLookup?.largeData?.firstPlacePhoto})`,
                         backgroundSize: 'cover',
-                        backgroundPosition: 'left center', // This line changed
+                        backgroundPosition: 'left center',
                         backgroundRepeat: 'no-repeat',
                         minWidth: '100%',
                         minHeight: '400px'
                     }}
-                />
+                >
+                    <img
+                        src={imageUrl}
+                        alt="Garage"
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                        }}
+                    />
+                </Paper>
             </Box>
             <Grid container spacing={1}>
                 <Grid item xs={12} md={8} pr={isMobile ? 0 : 2}>
@@ -136,7 +146,6 @@ export default ({ }: IProps) => {
             <GarageContactDialog
                 services={[new SelectedService({
                     relatedServiceType: relatedServiceTypes![0],
-                    relatedGarageLookupId: garageLookup?.id!,
                     relatedGarageLookupIdentifier: garageLookup?.identifier!,
                     relatedGarageLookupName: garageLookup?.name,
                     receiverWhatsAppNumberOrEmail: (garageLookup?.whatsappNumber! || garageLookup?.emailAddress!),

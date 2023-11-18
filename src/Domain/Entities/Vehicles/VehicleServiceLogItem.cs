@@ -19,18 +19,19 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     public VehicleLookupItem VehicleLookup { get; set; }
 
     [Required]
-    public string PerformedByGarageName { get; set; }
+    public string GarageLookupIdentifier { get; set; }
 
-    public Guid? PerformedByGarageId { get; set; } = null!;
-
-    [ForeignKey(nameof(PerformedByGarageId))]
-    public GarageItem? PerformedByGarage { get; set; } = null!;
-
-    [Required]
-    public VehicleServiceLogVerificationItem Verification { get; set; }
+    [ForeignKey(nameof(GarageLookupIdentifier))]
+    public GarageLookupItem? GarageLookup { get; set; } = null!;
 
     [Required]
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+
+    public string? Description { get; set; }
+
+    public string? AttachedFile { get; set; }
+
+    public string Notes { get; set; } = "";
 
     [Required]
     public DateTime Date { get; set; }
@@ -42,11 +43,8 @@ public class VehicleServiceLogItem: BaseAuditableEntity
 
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
-    public string? Description { get; set; }
-
-    public string? Notes { get; set; }
-
-    public ICollection<VehicleServiceAttachmentItem> Attachments { get; set; }
+    [Required]
+    public VehicleServiceLogVerificationItem Verification { get; set; }
 
     public string MetaData { get; set; } = "";
 

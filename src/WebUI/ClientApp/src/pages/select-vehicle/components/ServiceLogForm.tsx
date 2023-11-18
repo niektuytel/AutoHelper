@@ -49,6 +49,9 @@ interface IServiceLogFormData {
     expectedNextDate: Date | null;
     odometerReading: number | '';
     expectedNextOdometerReading: number | '';
+    createdby: string;
+    phonenumber: string | null;
+    emailaddress: string | null;
 }
 
 const steps = ['Garage', 'Vehicle', 'Confirmation']; // The steps in your process
@@ -100,13 +103,16 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
             const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
             const response = vehicleClient.createServiceLog(
                 licensePlate,
-                data.performedByGarageName,
+                data.garageIdentifier,
                 data.type,
                 data.description,
                 data.date,
                 data.expectedNextDate,
                 data.odometerReading,
                 data.expectedNextOdometerReading,
+                data.createdby,
+                data.phonenumber,
+                data.emailaddress,
                 file?.name || '',
                 null, // Assuming FileData is handled separately
                 attachmentFile
@@ -126,6 +132,9 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
                 data.expectedNextDate,
                 data.odometerReading,
                 data.expectedNextOdometerReading,
+                data.createdby,
+                data.phonenumber,
+                data.emailaddress,
                 null,
                 null,
                 null
@@ -336,6 +345,27 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
                 {activeStep === 2 && (
                     <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
                         <Box flexGrow={1} p={1}>
+                            <Controller
+                                name="createdby"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField {...field} label={t("AddMaintenanceLog.ServiceCreatedBy.Label")} fullWidth sx={{ mb: 1 }} />
+                                )}
+                            />
+                            <Controller
+                                name="phonenumber"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField {...field} label={t("AddMaintenanceLog.ServicePhoneNumber.Label")} fullWidth sx={{ mb: 1 }} />
+                                )}
+                            />
+                            <Controller
+                                name="emailaddress"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField {...field} label={t("AddMaintenanceLog.ServiceEmailAddress.Label")} fullWidth sx={{ mb: 1 }} />
+                                )}
+                            />
                             <TextField
                                 fullWidth
                                 label={t("ServiceLog.ResponsiblePerson")}

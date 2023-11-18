@@ -24,9 +24,9 @@ public class ConversationItem : BaseAuditableEntity
     public VehicleLookupItem RelatedVehicleLookup { get; set; } = null!;
 
     [Required]
-    public Guid RelatedGarageLookupId { get; set; }
+    public string RelatedGarageLookupIdentifier { get; set; }
     
-    [ForeignKey(nameof(RelatedGarageLookupId))]
+    [ForeignKey(nameof(RelatedGarageLookupIdentifier))]
     public GarageLookupItem RelatedGarageLookup { get; set; } = null!;
 
     [NotMapped]

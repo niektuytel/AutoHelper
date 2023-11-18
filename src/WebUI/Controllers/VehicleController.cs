@@ -78,48 +78,6 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleSpecsQuery(licensePlate));
     }
 
-
-    //[HttpGet($"{nameof(GetCommonlyKnownIssues)}")]
-    //[ProducesResponseType(typeof(VehicleSpecsDtoItem), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    //public async Task<VehicleSpecsDtoItem> GetCommonlyKnownIssues([FromQuery] string licensePlate)
-    //{
-    //    // TODO: call to get vehicle most commonly known issues
-    //    throw new NotImplementedException();
-    //}
-
-    //[HttpPost($"{nameof(UpsertKnownDefects)}")]
-    //[ProducesResponseType(typeof(VehicleLookupItem), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    //public async Task<VehicleLookupDtoItem> UpsertKnownDefects([FromBody] UpsertVehicleLookupCommand command)
-    //{
-    //    var response = await Mediator.Send(command);
-    //    return response;
-    //}
-
-
-    ///// <param name="maxInsertAmount">-1 is all of them</param>
-    ///// <param name="maxUpdateAmount">-1 is all of them</param>
-    //[Authorize]// TODO: (Policy="Admin")
-    //[HttpPut($"{nameof(UpsertLookups)}")]
-    //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    //public string UpsertLookups(
-    //    [FromQuery] int startRowIndex = 0,
-    //    [FromQuery] int endRowIndex = -1,
-    //    [FromQuery] int maxInsertAmount = 10, 
-    //    [FromQuery] int maxUpdateAmount = 0,
-    //    [FromQuery] bool updateTimeline = true,
-    //    [FromQuery] bool updateServiceLogs = false
-    //) {
-    //    var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, updateTimeline, updateServiceLogs);
-    //    var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-    //    var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] | update_[timeline:{updateTimeline}|servicelogs:{updateServiceLogs}]";
-
-    //    Mediator.Enqueue(queue, title, command);
-    //    return $"Successfully start queue: {queue}";
-    //}
-
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize]// TODO: (Policy="Admin")
@@ -130,10 +88,11 @@ public class VehicleController : ApiControllerBase
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
         [FromQuery] int maxInsertAmount = -1,
-        [FromQuery] int maxUpdateAmount = 0
+        [FromQuery] int maxUpdateAmount = 0,
+        [FromQuery] int batchSize = 10000
     )
     {
-        var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount);
+        var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
@@ -151,10 +110,11 @@ public class VehicleController : ApiControllerBase
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
         [FromQuery] int maxInsertAmount = -1,
-        [FromQuery] int maxUpdateAmount = 0
+        [FromQuery] int maxUpdateAmount = 0,
+        [FromQuery] int batchSize = 1000
     )
     {
-        var command = new UpsertVehicleTimelinesCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount);
+        var command = new UpsertVehicleTimelinesCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] timelines";
 
@@ -173,7 +133,7 @@ public class VehicleController : ApiControllerBase
         if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
         {
             using var memoryStream = new MemoryStream();
-            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream);
+            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
 
             command.Attachment = new VehicleServiceLogAttachmentItemOnCreateDto
             {

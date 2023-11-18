@@ -22,7 +22,9 @@ public class GarageLookupDto: IMapFrom<GarageLookupItem>
 
     public string Name { get; set; }
 
-    public GarageLookupLargeItem? LargeData { get; set; } = null;
+    public string Image { get; set; }
+
+    public string ImageThumbnail { get; set; }
 
     public GarageServiceType[] KnownServices { get; set; }
 

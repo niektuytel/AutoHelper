@@ -78,7 +78,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         builder.Entity<ConversationItem>()
             .HasOne(e => e.RelatedGarageLookup)
             .WithMany(g => g.Conversations)
-            .HasForeignKey(e => e.RelatedGarageLookupId)
+            .HasForeignKey(e => e.RelatedGarageLookupIdentifier)
             .OnDelete(DeleteBehavior.NoAction);
 
 
@@ -86,10 +86,16 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
             .HasIndex(v => v.LicensePlate)
             .IsUnique();
 
-        builder.Entity<VehicleServiceLogItem>()
+        builder.Entity<VehicleTimelineItem>()
             .HasIndex(e => e.VehicleLicensePlate);
 
         builder.Entity<VehicleTimelineItem>()
+            .HasOne(e => e.VehicleLookup)
+            .WithMany(g => g.Timeline)
+            .HasForeignKey(e => e.VehicleLicensePlate)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<VehicleServiceLogItem>()
             .HasIndex(e => e.VehicleLicensePlate);
 
         builder.Entity<VehicleServiceLogItem>()
@@ -98,11 +104,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
             .HasForeignKey(e => e.VehicleLicensePlate)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.Entity<VehicleTimelineItem>()
-            .HasOne(e => e.VehicleLookup)
-            .WithMany(g => g.Timeline)
-            .HasForeignKey(e => e.VehicleLicensePlate)
-            .OnDelete(DeleteBehavior.NoAction);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

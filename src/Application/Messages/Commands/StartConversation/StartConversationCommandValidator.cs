@@ -19,7 +19,7 @@ namespace AutoHelper.Application.Messages.Commands.StartConversation
         {
             _context = context;
 
-            _ = RuleFor(x => x.RelatedGarageLookupId)
+            _ = RuleFor(x => x.RelatedGarageLookupIdentifier)
                 .NotEmpty()
                 .WithMessage("RelatedGarageLookupId is required.")
                 .MustAsync(BeValidGarage)
@@ -56,9 +56,9 @@ namespace AutoHelper.Application.Messages.Commands.StartConversation
                 .WithMessage("MessageContent is required.");
         }
 
-        private async Task<bool> BeValidGarage(StartConversationCommand command, Guid garageId, CancellationToken cancellationToken)
+        private async Task<bool> BeValidGarage(StartConversationCommand command, string garageIdentifier, CancellationToken cancellationToken)
         {
-            var garage = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Id == garageId, cancellationToken);
+            var garage = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == garageIdentifier, cancellationToken);
             if (garage != null)
             {
                 command.RelatedGarage = garage;

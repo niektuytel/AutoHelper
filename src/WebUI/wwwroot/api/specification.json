@@ -1125,6 +1125,98 @@
               "default": 0
             },
             "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertTimelines": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_UpsertTimelines",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "x-position": 5
           }
         ],
         "responses": {
@@ -1167,7 +1259,7 @@
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.PerformedByGarageName": {
+                  "ServiceLogCommand.GarageLookupIdentifier": {
                     "type": "string",
                     "nullable": true
                   },
@@ -1176,6 +1268,15 @@
                   },
                   "ServiceLogCommand.Description": {
                     "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileName": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileData": {
+                    "type": "string",
+                    "format": "byte",
                     "nullable": true
                   },
                   "ServiceLogCommand.Date": {
@@ -1196,13 +1297,16 @@
                     "format": "int32",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Attachment.FileName": {
+                  "ServiceLogCommand.CreatedBy": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Attachment.FileData": {
+                  "ServiceLogCommand.PhoneNumber": {
                     "type": "string",
-                    "format": "byte",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.EmailAddress": {
+                    "type": "string",
                     "nullable": true
                   },
                   "AttachmentFile": {
@@ -2293,7 +2397,7 @@
             "additionalProperties": false,
             "required": [
               "vehicleLicensePlate",
-              "relatedGarageLookupId",
+              "relatedGarageLookupIdentifier",
               "relatedServiceTypesString",
               "conversationType"
             ],
@@ -2308,9 +2412,8 @@
               "relatedVehicleLookup": {
                 "$ref": "#/components/schemas/VehicleLookupItem"
               },
-              "relatedGarageLookupId": {
+              "relatedGarageLookupIdentifier": {
                 "type": "string",
-                "format": "guid",
                 "minLength": 1
               },
               "relatedGarageLookup": {
@@ -2356,125 +2459,142 @@
         ]
       },
       "GarageLookupItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "name",
+          "knownServicesString",
+          "address",
+          "city",
+          "location",
+          "created",
+          "lastModified",
+          "conversations"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 1
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "identifier",
-              "name",
-              "knownServicesString",
-              "address",
-              "city",
-              "conversations"
-            ],
-            "properties": {
-              "garageId": {
-                "type": "string",
-                "format": "guid",
-                "nullable": true
-              },
-              "identifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "name": {
-                "type": "string",
-                "minLength": 1
-              },
-              "knownServices": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageServiceType"
-                }
-              },
-              "knownServicesString": {
-                "type": "string",
-                "minLength": 1
-              },
-              "address": {
-                "type": "string",
-                "minLength": 1
-              },
-              "city": {
-                "type": "string",
-                "minLength": 1
-              },
-              "location": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Geometry"
-                  }
-                ]
-              },
-              "status": {
-                "type": "string",
-                "nullable": true
-              },
-              "daysOfWeek": {
-                "type": "array",
-                "nullable": true,
-                "items": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "daysOfWeekString": {
-                "type": "string"
-              },
-              "phoneNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "whatsappNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "emailAddress": {
-                "type": "string",
-                "nullable": true
-              },
-              "website": {
-                "type": "string",
-                "nullable": true
-              },
-              "rating": {
-                "type": "number",
-                "format": "float",
-                "nullable": true
-              },
-              "userRatingsTotal": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "hasPickupService": {
-                "type": "boolean"
-              },
-              "hasReplacementTransportService": {
-                "type": "boolean"
-              },
-              "largeData": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/GarageLookupLargeItem"
-                  }
-                ]
-              },
-              "conversations": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/ConversationItem"
-                }
-              }
+          "garageId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "knownServices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageServiceType"
             }
+          },
+          "knownServicesString": {
+            "type": "string",
+            "minLength": 1
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "$ref": "#/components/schemas/Geometry"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageThumbnail": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "daysOfWeek": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "daysOfWeekString": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "website": {
+            "type": "string",
+            "nullable": true
+          },
+          "rating": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "userRatingsTotal": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "hasPickupService": {
+            "type": "boolean"
+          },
+          "hasReplacementTransportService": {
+            "type": "boolean"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "conversations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConversationItem"
+            }
+          },
+          "largeData": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/GarageLookupLargeItem"
+              }
+            ]
           }
-        ]
+        }
       },
       "GarageServiceType": {
         "type": "integer",
@@ -2531,10 +2651,6 @@
             "properties": {
               "googleApiDetailsJson": {
                 "type": "string"
-              },
-              "firstPlacePhoto": {
-                "type": "string",
-                "nullable": true
               }
             }
           }
@@ -2684,11 +2800,11 @@
             "additionalProperties": false,
             "required": [
               "vehicleLicensePlate",
-              "performedByGarageName",
-              "verification",
+              "garageLookupIdentifier",
               "type",
               "date",
-              "odometerReading"
+              "odometerReading",
+              "verification"
             ],
             "properties": {
               "vehicleLicensePlate": {
@@ -2698,28 +2814,31 @@
               "vehicleLookup": {
                 "$ref": "#/components/schemas/VehicleLookupItem"
               },
-              "performedByGarageName": {
+              "garageLookupIdentifier": {
                 "type": "string",
                 "minLength": 1
               },
-              "performedByGarageId": {
-                "type": "string",
-                "format": "guid",
-                "nullable": true
-              },
-              "performedByGarage": {
+              "garageLookup": {
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/GarageItem"
+                    "$ref": "#/components/schemas/GarageLookupItem"
                   }
                 ]
               },
-              "verification": {
-                "$ref": "#/components/schemas/VehicleServiceLogVerificationItem"
-              },
               "type": {
                 "$ref": "#/components/schemas/GarageServiceType"
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "attachedFile": {
+                "type": "string",
+                "nullable": true
+              },
+              "notes": {
+                "type": "string"
               },
               "date": {
                 "type": "string",
@@ -2740,19 +2859,8 @@
                 "format": "int32",
                 "nullable": true
               },
-              "description": {
-                "type": "string",
-                "nullable": true
-              },
-              "notes": {
-                "type": "string",
-                "nullable": true
-              },
-              "attachments": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/VehicleServiceAttachmentItem"
-                }
+              "verification": {
+                "$ref": "#/components/schemas/VehicleServiceLogVerificationItem"
               },
               "metaData": {
                 "type": "string"
@@ -2761,86 +2869,109 @@
           }
         ]
       },
-      "GarageItem": {
+      "VehicleServiceLogVerificationItem": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
+            "$ref": "#/components/schemas/BaseEntity"
           },
           {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "type",
+              "createdBy"
+            ],
             "properties": {
-              "userId": {
-                "type": "string"
+              "type": {
+                "$ref": "#/components/schemas/ServiceLogVerificationType"
               },
-              "name": {
-                "type": "string"
-              },
-              "email": {
-                "type": "string"
+              "createdBy": {
+                "type": "string",
+                "minLength": 1
               },
               "phoneNumber": {
-                "type": "string"
+                "type": "string",
+                "nullable": true
               },
-              "whatsAppNumber": {
-                "type": "string"
-              },
-              "location": {
-                "$ref": "#/components/schemas/GarageLocationItem"
-              },
-              "bankingDetails": {
-                "$ref": "#/components/schemas/GarageBankingDetailsItem"
-              },
-              "employees": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeItem"
-                }
+              "emailAddress": {
+                "type": "string",
+                "nullable": true
               }
             }
           }
         ]
       },
-      "GarageEmployeeItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
+      "ServiceLogVerificationType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "NotVerified",
+          "VerifiedByGarage",
+          "VerifiedByOwner",
+          "VerifiedByBoth"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "GarageServiceItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
           },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "userId": {
-                "type": "string"
-              },
-              "garageId": {
-                "type": "string",
-                "format": "guid"
-              },
-              "garage": {
-                "$ref": "#/components/schemas/GarageItem"
-              },
-              "isActive": {
-                "type": "boolean"
-              },
-              "contact": {
-                "$ref": "#/components/schemas/GarageEmployeeContactItem"
-              },
-              "workSchema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
-                }
-              },
-              "workExperiences": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
-                }
-              }
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "description": {
+            "type": "string"
+          },
+          "durationInMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "GarageEmployeeItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "contact": {
+            "$ref": "#/components/schemas/GarageEmployeeContactItem"
+          },
+          "workSchema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+            }
+          },
+          "workExperiences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
             }
           }
-        ]
+        }
       },
       "GarageEmployeeContactItem": {
         "allOf": [
@@ -2954,7 +3085,7 @@
           }
         ]
       },
-      "VehicleServiceLogVerificationItem": {
+      "GarageItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseAuditableEntity"
@@ -2962,136 +3093,78 @@
           {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "type"
-            ],
             "properties": {
-              "type": {
-                "$ref": "#/components/schemas/ServiceLogVerificationType"
+              "userId": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phoneNumber": {
+                "type": "string"
+              },
+              "whatsAppNumber": {
+                "type": "string"
+              },
+              "location": {
+                "$ref": "#/components/schemas/GarageLocationItem"
+              },
+              "bankingDetails": {
+                "$ref": "#/components/schemas/GarageBankingDetailsItem"
+              },
+              "employees": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeItem"
+                }
               }
             }
           }
         ]
       },
-      "ServiceLogVerificationType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "NotVerified",
-          "VerifiedByGarage",
-          "VerifiedByOwner",
-          "VerifiedByBoth"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "VehicleServiceAttachmentItem": {
+      "GarageEmployeeItem": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/BaseEntity"
+            "$ref": "#/components/schemas/BaseAuditableEntity"
           },
           {
             "type": "object",
             "additionalProperties": false,
-            "required": [
-              "vehicleServiceLogItemId",
-              "fileName",
-              "fileType",
-              "fileSize",
-              "containerName"
-            ],
             "properties": {
-              "vehicleServiceLogItemId": {
-                "type": "string",
-                "format": "guid",
-                "minLength": 1
-              },
-              "vehicleServiceLogItem": {
-                "$ref": "#/components/schemas/VehicleServiceLogItem"
-              },
-              "fileName": {
-                "type": "string",
-                "maxLength": 255,
-                "minLength": 0
-              },
-              "fileType": {
-                "type": "string",
-                "minLength": 1
-              },
-              "fileSize": {
-                "type": "integer",
-                "format": "int64"
-              },
-              "containerName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "description": {
+              "userId": {
                 "type": "string"
+              },
+              "garageId": {
+                "type": "string",
+                "format": "guid"
+              },
+              "garage": {
+                "$ref": "#/components/schemas/GarageItem"
+              },
+              "isActive": {
+                "type": "boolean"
+              },
+              "contact": {
+                "$ref": "#/components/schemas/GarageEmployeeContactItem"
+              },
+              "workSchema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+                }
+              },
+              "workExperiences": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                }
               }
             }
           }
         ]
-      },
-      "GarageServiceItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "description": {
-            "type": "string"
-          },
-          "durationInMinutes": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "GarageEmployeeItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "isActive": {
-            "type": "boolean"
-          },
-          "contact": {
-            "$ref": "#/components/schemas/GarageEmployeeContactItem"
-          },
-          "workSchema": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
-            }
-          },
-          "workExperiences": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
-            }
-          }
-        }
       },
       "CreateGarageCommand": {
         "type": "object",
@@ -3496,13 +3569,11 @@
           "name": {
             "type": "string"
           },
-          "largeData": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/GarageLookupLargeItem"
-              }
-            ]
+          "image": {
+            "type": "string"
+          },
+          "imageThumbnail": {
+            "type": "string"
           },
           "knownServices": {
             "type": "array",
@@ -3613,10 +3684,6 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "relatedGarageLookupId": {
-            "type": "string",
-            "format": "guid"
-          },
           "relatedGarageLookupIdentifier": {
             "type": "string"
           },
@@ -3648,9 +3715,8 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "relatedGarageLookupId": {
-            "type": "string",
-            "format": "guid"
+          "relatedGarageLookupIdentifier": {
+            "type": "string"
           },
           "relatedGarage": {
             "$ref": "#/components/schemas/GarageLookupItem"

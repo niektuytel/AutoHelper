@@ -76,6 +76,7 @@ public static class ConfigureServices
         services.AddTransient<GoogleApiClient>();
         services.AddTransient<IVehicleService, VehicleService>();
         services.AddTransient<IGarageService, GarageService>();
+        services.AddTransient<IBlobStorageService, AzureBlobStorageService>();
 
         return services;
     }

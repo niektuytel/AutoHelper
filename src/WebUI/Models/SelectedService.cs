@@ -4,8 +4,6 @@ namespace AutoHelper.WebUI.Models;
 
 public class SelectedService
 {
-    public Guid RelatedGarageLookupId { get; set; }
-
     public string RelatedGarageLookupIdentifier { get; set; }
 
     public string RelatedGarageLookupName { get; set; }

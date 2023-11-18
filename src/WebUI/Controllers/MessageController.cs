@@ -51,22 +51,20 @@ public class MessageController : ApiControllerBase
             var vehicleLookup = await Mediator.Send(upsertVehicle, cancellationToken);
 
             var garages = selectedServices.Services
-                .Where(item => item.VehicleLicensePlate == vehicle.LicensePlate)
-                .DistinctBy(x => x.RelatedGarageLookupId);
+                .Where(item => item.VehicleLicensePlate == vehicle.LicensePlate);
 
             foreach (var garage in garages)
             {
                 var services = selectedServices.Services
                     .Where(item => 
                         item.VehicleLicensePlate == vehicle.LicensePlate && 
-                        item.RelatedGarageLookupId == garage.RelatedGarageLookupId
+                        item.RelatedGarageLookupIdentifier == garage.RelatedGarageLookupIdentifier
                     )
                     .Select(item => item.RelatedServiceType)
-                    .Distinct()
                     .ToArray();
 
                 var command = new StartConversationCommand(
-                    garage.RelatedGarageLookupId,
+                    garage.RelatedGarageLookupIdentifier,
                     vehicleLookup.LicensePlate,
                     services,
                     selectedServices.SenderPhoneNumber,
