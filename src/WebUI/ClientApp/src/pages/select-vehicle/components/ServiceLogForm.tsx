@@ -78,16 +78,20 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
     };
 
     const handleNext = (data: IServiceLogFormData) => {
-        if (activeStep === (steps.length - 1)) {
-            onSubmit(data);
-        }
-        else {
-            setActiveStep(activeStep+1);
-        }
+        setActiveStep(activeStep+1);
     };
 
     const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        console.log("activeStep: ", activeStep)
+
+        if (activeStep === 0)
+        {
+            toggleDrawer(false);
+        }
+        else
+        {
+            setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        }
     };
 
     const onSubmit = (data: any) => {
@@ -239,7 +243,7 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
                             </div>
                         </Box>
                         <Box p={1} component="footer" sx={{ mt: 1 }}>
-                            <Button onClick={handleBack}>{t("Back")}</Button>
+                            <Button onClick={toggleDrawer(false)}>{t("Cancel")}</Button>
                             <Button variant="contained" color="primary" type="submit">
                                 {t("Next")}
                             </Button>
