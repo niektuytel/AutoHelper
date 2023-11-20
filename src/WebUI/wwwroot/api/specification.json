@@ -1270,22 +1270,12 @@
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Attachment.FileName": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.Attachment.FileData": {
-                    "type": "string",
-                    "format": "byte",
-                    "nullable": true
-                  },
                   "ServiceLogCommand.Date": {
                     "type": "string",
-                    "format": "date-time"
+                    "nullable": true
                   },
                   "ServiceLogCommand.ExpectedNextDate": {
                     "type": "string",
-                    "format": "date-time",
                     "nullable": true
                   },
                   "ServiceLogCommand.OdometerReading": {
@@ -1309,6 +1299,15 @@
                     "type": "string",
                     "nullable": true
                   },
+                  "ServiceLogCommand.Attachment.FileName": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileData": {
+                    "type": "string",
+                    "format": "byte",
+                    "nullable": true
+                  },
                   "AttachmentFile": {
                     "type": "string",
                     "format": "binary",
@@ -1319,6 +1318,48 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/DeleteServiceLog/{serviceLogId}": {
+      "delete": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_DeleteServiceLog",
+        "parameters": [
+          {
+            "name": "serviceLogId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

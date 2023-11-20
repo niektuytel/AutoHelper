@@ -1,10 +1,9 @@
 ﻿import React from 'react';
 import { Box, Card, CardContent, Grid, Hidden, Typography } from "@mui/material";
-import TextFieldLicensePlates from "../components/LicensePlateSearchField";
-import LocationSearchField from '../components/LocationSearchField';
+import SearchLocation from '../components/SearchLocation';
 import { useParams } from 'react-router-dom';
-import VehicleBriefInformation from '../components/VehicleBriefInformation';
-import CustomizedTimeline from '../components/TimelineBox';
+import VehicleSpecificationsCard from '../components/VehicleSpecificationsCard';
+import VehicleTimelineCard from '../components/VehicleTimelineCard';
 
 interface IProps {
     isMobile: boolean;
@@ -23,14 +22,14 @@ export default ({ isMobile, license_plate }: IProps) => {
                     <Typography variant="body1" color="white" align="left">
                         <b>voor onderhoud</b>
                     </Typography>
-                    <LocationSearchField licence_plate={license_plate} />
+                    <SearchLocation licence_plate={license_plate} />
                 </Box>
                 <Grid container sx={{ minHeight: "50vh" }} >
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "25px" }}>
-                        <CustomizedTimeline/>
+                        <VehicleTimelineCard/>
                     </Grid>
                     <Grid item xs={6} sx={{ marginTop: "25px", paddingLeft:"50px" }}>
-                        <VehicleBriefInformation isMobile={isMobile} license_plate={license_plate} />
+                        <VehicleSpecificationsCard isMobile={isMobile} license_plate={license_plate} />
                     </Grid>
                 </Grid>
             </Hidden>
@@ -42,9 +41,9 @@ export default ({ isMobile, license_plate }: IProps) => {
                     <Typography variant="body1" color="white">
                         <b>voor onderhoud</b>
                     </Typography>
-                    <LocationSearchField licence_plate={license_plate} />
+                    <SearchLocation licence_plate={license_plate} />
                     <Box sx={{ marginTop: "25px" }}>
-                        <VehicleBriefInformation isMobile={isMobile} license_plate={license_plate} />
+                        <VehicleSpecificationsCard isMobile={isMobile} license_plate={license_plate} />
                     </Box>
                 </Box>
             </Hidden>

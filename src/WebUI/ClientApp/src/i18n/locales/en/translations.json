@@ -114,9 +114,13 @@
   "Ask question": "Ask question",
   "Request quote": "Request quote",
   "by": "by",
+  "Next": "Next",
 
 
 
+
+
+  "Search.LicensePlate.NotFound": "Specified vehicle license plate not found",
   "Request a quote": "Request a Quote",
   "Request a quote.Tooltip": "Request a price estimate for the selected services and your vehicle.",
   "Request a quote.Description": "We will forward your quote request to the garage, including the associated details of your vehicle. You will receive a message as soon as the garage has prepared your quote.",
@@ -141,6 +145,14 @@
   "ConversationType.RequestAQuote.SampleMessage": "Hello, I am interested in your services and would like to request a quote. Could you please provide me with more information about your pricing and availability? Thank you!",
   "AddMaintenanceLog.Title": "Add Maintenance",
   "AddMaintenanceLog.Tip": "Maintenance has been done to your car",
+  "AddMaintenanceLog.Step.Garage.Title": "Garage",
+  "AddMaintenanceLog.Step.Vehicle.Title": "Vehicle",
+  "AddMaintenanceLog.Step.Confirmation.Title": "Confirmation",
+  "AddMaintenanceLog.DescriptionOnTypeOther.Required": "Please provide a description for 'Other' type",
+  "AddMaintenanceLog.NextDateGTDate.Required": "Next service date must be later than the current service date",
+  "AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required": "Next odometer reading should be greater than the current reading",
+  "AddMaintenanceLog.PhoneOrEmail.Required": "Please provide either a phone number or an email address",
+  "AddMaintenanceLog.GarageLookup.Requried": "Select the garage.",
   "AddMaintenanceLog.ServiceType.Label": "Service type",
   "AddMaintenanceLog.ServiceDescription.Label": "Description",
   "AddMaintenanceLog.Attachments.Label": "Attachments",
@@ -152,8 +164,10 @@
   "AddMaintenanceLog.OdometerReading.Label": "Current odometer reading",
   "AddMaintenanceLog.ExpectedNextOdometerReading.Required": "Odometer reading for next maintenance",
   "AddMaintenanceLog.ExpectedNextOdometerReading.Label": "Next odometer reading",
-
-
+  "AddMaintenanceLog.ServiceCreatedBy.Label": "Service Logged by",
+  "AddMaintenanceLog.ServiceCreatedBy.Required": "Please enter your name",
+  "AddMaintenanceLog.ServicePhoneNumber.Label": "Phone Number",
+  "AddMaintenanceLog.ServiceEmailAddress.Label": "Email Address",
 
 
 

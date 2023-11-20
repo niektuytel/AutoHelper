@@ -1,14 +1,13 @@
 ﻿import React from 'react';
 import { Box, Grid, Hidden, Typography } from "@mui/material";
-import LicensePlateTextField from "../components/LicensePlateTextField";
-import LicensePlateSearchField from '../components/LicensePlateSearchField';
+import SearchLicensePlate from '../components/SearchLicensePlate';
 
 export default () => {
 
     return (
         <>
             <Hidden mdDown>
-                <LicensePlateSearchField />
+                <SearchLicensePlate />
                 <Grid container sx={{ minHeight: "50vh" }} >
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "30px" }}>
                         <Typography variant="h2" color="white">
@@ -35,7 +34,7 @@ export default () => {
                     <Typography variant="body1" color="white">
                         <b>voor je onderhoud en informatie</b>
                     </Typography>
-                    <LicensePlateSearchField />
+                    <SearchLicensePlate />
                     <img
                         src="/images/mauntain_with_car_key.png"
                         height="200px"

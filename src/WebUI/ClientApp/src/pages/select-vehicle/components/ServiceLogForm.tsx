@@ -1,39 +1,23 @@
-﻿import React, { ChangeEvent, useEffect, useState } from 'react';
-import { useForm, Controller, FieldError } from 'react-hook-form';
+﻿import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-    Autocomplete, TextField, Select, MenuItem, InputLabel, FormControl,
-    Grid, Button, Divider, Typography, Box, IconButton, Drawer, styled, SvgIcon, Chip, useMediaQuery, useTheme, Stepper, StepLabel, Step
+    Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress
 } from '@mui/material';
-import { useDebounce } from 'use-debounce';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTranslation } from 'react-i18next';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { GarageClient, GarageLookupSimplefiedDto, GarageServiceType, VehicleClient } from '../../../app/web-api-client';
-import { enumToKeyValueArray } from '../../../app/utils';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePickerProps } from '@mui/x-date-pickers';
-import SearchGarage from './SearchGarage';
+import GarageIcon from '@mui/icons-material/HomeWork';
+import CarIcon from '@mui/icons-material/DirectionsCar';
+import PersonIcon from '@mui/icons-material/Person';
+import CheckIcon from '@mui/icons-material/Check';
 
-function getVehicleServicesTypes() {
-    const items = [
-        GarageServiceType.Other,
-        GarageServiceType.Inspection,
-        GarageServiceType.SmallMaintenance,
-        GarageServiceType.GreatMaintenance,
-        GarageServiceType.AirConditioningMaintenance,
-        GarageServiceType.SeasonalTireChange
-    ];
 
-    return enumToKeyValueArray(GarageServiceType)
-        .filter(({ key, value }) => items.includes(key))
-        .map(({ key, value }) => ({
-            key: key,
-            value: value,
-        }));
-}
-
+// own imports
+import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient } from '../../../app/web-api-client';
+import StepConfirmation from './StepConfirmation';
+import StepVehicle from './StepVehicle';
+import StepGarage from './StepGarage';
+import { showOnError } from '../../../redux/slices/statusSnackbarSlice';
+import { useDispatch } from 'react-redux';
 
 interface IServiceLogFormProps {
     licensePlate: string;
@@ -42,7 +26,7 @@ interface IServiceLogFormProps {
 }
 
 interface IServiceLogFormData {
-    performedByGarageName: string;
+    garageLookup: GarageLookupSimplefiedDto;
     type: string;
     description: string;
     date: Date | null;
@@ -54,36 +38,64 @@ interface IServiceLogFormData {
     emailaddress: string | null;
 }
 
-const steps = ['Garage', 'Vehicle', 'Confirmation']; // The steps in your process
+const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
 
 export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
-    const [selectedType, setSelectedType] = useState<string>('');
+    const dispatch = useDispatch();
     const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const { control, handleSubmit, formState: { errors }, reset } = useForm<IServiceLogFormData>();
-
+    const { control, handleSubmit, formState: { errors }, reset, setError } = useForm<IServiceLogFormData>();
     const [activeStep, setActiveStep] = useState(0);
-    const [userInput, setUserInput] = useState(''); // For storing additional user input for step 2
-
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files ? event.target.files[0] : null;
-        setFile(file);
-    };
-
-    const removeFileChange = () => {
-        setFile(null);
-    };
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleNext = (data: IServiceLogFormData) => {
-        setActiveStep(activeStep+1);
+
+        let hasError = false;
+
+        if (activeStep === 0) {
+
+            // Validate Description for 'Other' Type
+            if (data.type === 'Other' && !data.description?.trim()) {
+                setError('description', { type: 'manual', message: t('AddMaintenanceLog.DescriptionOnTypeOther.Required')});
+                hasError = true;
+            }
+        } else if (activeStep === 1) {
+
+            // Validate Dates
+            if (data.date && data.expectedNextDate && data.date > data.expectedNextDate) {
+                setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required')});
+                hasError = true;
+            }
+
+            // Validate Odometer Readings
+            if (data.odometerReading && data.expectedNextOdometerReading && data.odometerReading > data.expectedNextOdometerReading) {
+                setError('expectedNextOdometerReading', { type: 'manual', message: t('AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required')});
+                hasError = true;
+            }
+        } else if (activeStep === 2) {
+
+            // Check if both phonenumber and emailaddress are not set
+            if (!data.phonenumber?.trim() && !data.emailaddress?.trim()) {
+                setError('phonenumber', { type: 'manual', message: t('AddMaintenanceLog.PhoneOrEmail.Required')});
+                hasError = true;
+            }
+        }
+
+        if (hasError) {
+            return;
+        }
+
+        if (activeStep === steps.length - 1) {
+            onSubmit(data);
+        } else {
+            setActiveStep(activeStep+1);
+        }
     };
 
     const handleBack = () => {
-        console.log("activeStep: ", activeStep)
-
         if (activeStep === 0)
         {
             toggleDrawer(false);
@@ -96,297 +108,115 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
 
     const onSubmit = (data: any) => {
         console.log(data);
+        setIsLoading(true); // Set loading to true
 
-        if (file) {
-            let attachmentFile = {
-                data: file, // Your file object
-                fileName: file?.name || ''
-            };
-
-            // Create the service log
-            const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
-            const response = vehicleClient.createServiceLog(
-                licensePlate,
-                data.garageIdentifier,
-                data.type,
-                data.description,
-                data.date,
-                data.expectedNextDate,
-                data.odometerReading,
-                data.expectedNextOdometerReading,
-                data.createdby,
-                data.phonenumber,
-                data.emailaddress,
-                file?.name || '',
-                null, // Assuming FileData is handled separately
-                attachmentFile
-            ).then(response => {
+        const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
+        const createLog = async () => {
+            try {
+                const response = await vehicleClient.createServiceLog(
+                    licensePlate,
+                    data.garageLookup.identifier,
+                    data.type,
+                    data.description,
+                    data.date.toISOString(), 
+                    data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 
+                    data.odometerReading,
+                    data.expectedNextOdometerReading,
+                    data.createdby,
+                    data.phonenumber,
+                    data.emailaddress,
+                    file?.name || '',
+                    null, 
+                    file ? { data: file, fileName: file?.name || '' } : null
+                );
                 console.log(response);
-            })
+            } catch (error) {
+                console.error('Error:', error);
 
-        } else {
-            // Create the service log
-            const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
-            const response = vehicleClient.createServiceLog(
-                licensePlate,
-                data.performedByGarageName,
-                data.type,
-                data.description,
-                data.date,
-                data.expectedNextDate,
-                data.odometerReading,
-                data.expectedNextOdometerReading,
-                data.createdby,
-                data.phonenumber,
-                data.emailaddress,
-                null,
-                null,
-                null
-            ).then(response => {
-                console.log(response);
-            })
+                // Display specific error message from server response
+                if (error instanceof BadRequestResponse && error.errors) {
+                    dispatch(showOnError(Object.entries(error.errors)[0][1]));
+                }
+            } finally {
+                setIsLoading(false); // Reset loading to false regardless of request outcome
+            }
+        };
 
-        }
-
+        createLog();
     };
 
-    // TODO: Add validation for file size and type (only images) 
-    // TODO: We need more information about the user (name, phone, email)
-    console.log(errors);
-
     const drawerWidth = isMobile ? '100%' : '600px';
-    return (
-        <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)} sx={{ width: drawerWidth }}>
-            <Box sx={{ width: drawerWidth, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
-                <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
-                    <Typography variant="h6" component="div">
-                        {t("AddMaintenanceLog.Title")}
-                    </Typography>
-                    <IconButton onClick={toggleDrawer(false)}>
-                        <CloseIcon />
-                    </IconButton>
-                </Box>
-                <Divider />
-                <Stepper activeStep={activeStep} alternativeLabel sx={{ padding: theme.spacing(3) }}>
-                    {steps.map((label) => (
-                        <Step key={label}>
-                            <StepLabel>{t(label)}</StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
-                {activeStep === 0 && (
-                    <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
-                        <Box flexGrow={1} p={1}>
-                            <Controller
-                                name="performedByGarageName"
-                                control={control}
-                                rules={{ required: 'Garage is required' }}
-                                render={({ field, fieldState: { error } }) => (
-                                    <SearchGarage
-                                        value={field.value || ''}
-                                        onChange={field.onChange}
-                                        error={error}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name="type"
-                                control={control}
-                                defaultValue={"Other"}
-                                render={({ field }) => (
-                                    <FormControl fullWidth sx={{ mb: 1, mt:1 }} size='small'>
-                                        <InputLabel id="service-type-label">
-                                            {t("AddMaintenanceLog.ServiceType.Label")}
-                                        </InputLabel>
-                                        <Select
-                                            {...field}
-                                            labelId="service-type-label"
-                                            label={t("AddMaintenanceLog.ServiceType.Label")}
-                                            onChange={(e) => {
-                                                field.onChange(e);
-                                                setSelectedType(e.target.value); 
-                                                setIsMaintenance(
-                                                    e.target.value === GarageServiceType[GarageServiceType.Inspection] ||
-                                                    e.target.value === GarageServiceType[GarageServiceType.SmallMaintenance] ||
-                                                    e.target.value === GarageServiceType[GarageServiceType.GreatMaintenance]
-                                                )
-                                            }}
-                                        >
-                                            {getVehicleServicesTypes().map(({ key, value }) => (
-                                                <MenuItem key={key} value={value}>
-                                                    {t(`serviceTypes:${value}.Title`)}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                )}
-                            />
-                            <Controller
-                                name="description"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField {...field} label={t("AddMaintenanceLog.ServiceDescription.Label")} multiline rows={4} fullWidth sx={{ mb: 1 }} />
-                                )}
-                            />
-                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                {file?.name !== null && file?.name !== undefined ?
-                                    <Chip label={file!.name} variant="outlined" onDelete={removeFileChange} /> : null}
-                                <Button
-                                    component="label"
-                                    variant="outlined"
-                                    startIcon={<AttachFileIcon />}
-                                    sx={{ color: "gray", borderColor: "gray" }}
-                                >
-                                    {t("AddMaintenanceLog.Attachments.Label")}
-                                    <input type="file" hidden onChange={handleFileChange} />
-                                </Button>
-                            </div>
-                        </Box>
-                        <Box p={1} component="footer" sx={{ mt: 1 }}>
-                            <Button onClick={toggleDrawer(false)}>{t("Cancel")}</Button>
-                            <Button variant="contained" color="primary" type="submit">
-                                {t("Next")}
-                            </Button>
-                        </Box>
-                    </form>
-                )}
-                {activeStep === 1 && (
-                    <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
-                        <Box flexGrow={1} p={1}>
-                            <Grid container spacing={2} sx={{ mb: 1 }}>
-                                <Grid item xs={isMaintenance ? 6 : 12}>
-                                    <Controller
-                                        name="date"
-                                        control={control}
-                                        defaultValue={new Date()}
-                                        rules={{ required: t("AddMaintenanceLog.Date.Required") }}
-                                        render={({ field, fieldState: { error } }) => (
-                                            <DatePicker
-                                                {...field}
-                                                label={t("AddMaintenanceLog.Date.Label")}
-                                                slotProps={{ textField: { fullWidth: true, size: 'small' } }}
-                                                format="dd/MM/yyyy"
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                {isMaintenance &&
-                                    <Grid item xs={6}>
-                                        <Controller
-                                            name="expectedNextDate"
-                                            control={control}
-                                            rules={{ required: t('AddMaintenanceLog.ExpectedNextDate.Required') }}
-                                            render={({ field, fieldState: { error } }) => (
-                                                <DatePicker
-                                                    {...field}
-                                                    label={t('AddMaintenanceLog.ExpectedNextDate.Label')}
-                                                    slotProps={{
-                                                        textField: {
-                                                            fullWidth: true,
-                                                            size: 'small',
-                                                            error: !!error,
-                                                            helperText: error ? error.message : null
-                                                        }
-                                                    }}
-                                                    format="dd/MM/yyyy"
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-                                }
-                            </Grid>
-                            <Grid container spacing={2} sx={{ mb: 3 }}>
-                                <Grid item xs={isMaintenance ? 6 : 12}>
-                                    <Controller
-                                        name="odometerReading"
-                                        control={control}
-                                        rules={{ required: t('AddMaintenanceLog.OdometerReading.Required') }}
-                                        render={({ field, fieldState: { error } }) => (
-                                            <TextField
-                                                {...field}
-                                                value={field.value || ''}
-                                                label={t('AddMaintenanceLog.OdometerReading.Label')}
-                                                fullWidth
-                                                type="number"
-                                                size='small'
-                                                error={!!error}
-                                                helperText={error ? error.message : null}
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                                {isMaintenance &&
-                                    <Grid item xs={6}>
-                                        <Controller
-                                            name="expectedNextOdometerReading"
-                                            control={control}
-                                            rules={{ required: t('AddMaintenanceLog.ExpectedNextOdometerReading.Required') }}
-                                            render={({ field, fieldState: { error } }) =>
-                                                <TextField
-                                                    {...field}
-                                                    value={field.value || ''}
-                                                    label={t('AddMaintenanceLog.ExpectedNextOdometerReading.Label')}
-                                                    type="number"
-                                                    fullWidth
-                                                    size='small'
-                                                    error={!!error}
-                                                    helperText={error ? error.message : null}
-                                                />
-                                            }
-                                        />
-                                    </Grid>
-                                }
-                            </Grid>
-                        </Box>
-                        <Box p={1} component="footer" sx={{ mt: 1 }}>
-                            <Button onClick={handleBack}>{t("Back")}</Button>
-                            <Button variant="contained" color="primary" type="submit">
-                                {t("Next")}
-                            </Button>
-                        </Box>
-                    </form>
-                )}
-                {activeStep === 2 && (
-                    <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
-                        <Box flexGrow={1} p={1}>
-                            <Controller
-                                name="createdby"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField {...field} label={t("AddMaintenanceLog.ServiceCreatedBy.Label")} fullWidth sx={{ mb: 1 }} />
-                                )}
-                            />
-                            <Controller
-                                name="phonenumber"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField {...field} label={t("AddMaintenanceLog.ServicePhoneNumber.Label")} fullWidth sx={{ mb: 1 }} />
-                                )}
-                            />
-                            <Controller
-                                name="emailaddress"
-                                control={control}
-                                render={({ field }) => (
-                                    <TextField {...field} label={t("AddMaintenanceLog.ServiceEmailAddress.Label")} fullWidth sx={{ mb: 1 }} />
-                                )}
-                            />
-                            <TextField
-                                fullWidth
-                                label={t("ServiceLog.ResponsiblePerson")}
-                                value={userInput}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => setUserInput(e.target.value)}
-                                margin="normal"
-                            />
-                        </Box>
-                        <Box p={1} component="footer" sx={{ mt: 1 }}>
-                            <Button onClick={handleBack}>{t("Back")}</Button>
-                            <Button variant="contained" color="primary" type="submit">
-                                {t("Confirm")}
-                            </Button>
-                        </Box>
-                    </form>
-                )}
+    return <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        sx={{
+            '& .MuiDrawer-paper': {
+                width: isMobile ? '100%' : '600px',
+            },
+        }}
+    >
+        <Box sx={{ width: drawerWidth, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
+            <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
+                <Typography variant="h6" component="div">
+                    {t("AddMaintenanceLog.Title")}
+                </Typography>
+                <IconButton onClick={toggleDrawer(false)}>
+                    <CloseIcon />
+                </IconButton>
             </Box>
-        </Drawer>
-    );
+            <Divider />
+            <Stepper activeStep={activeStep} alternativeLabel sx={{ padding: theme.spacing(3) }}>
+                {steps.map((label, index) => (
+                    <Step key={label} completed={activeStep > index}>
+                        <StepLabel StepIconComponent={(props) => <CustomStepIcon {...props} />}>
+                            {t(label)}
+                        </StepLabel>
+                    </Step>
+                ))}
+            </Stepper>
+            <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
+                {activeStep === 0 && <StepGarage control={control} setIsMaintenance={setIsMaintenance} file={file} setFile={setFile} />}
+                {activeStep === 1 && <StepVehicle control={control} isMaintenance={isMaintenance} />}
+                {activeStep === 2 && <StepConfirmation control={control} />}
+                <Box component="footer" sx={{ ml:1, mb: 2 }}>
+                    <Button onClick={handleBack}>{(activeStep === 0) ? t("Cancel") : t("Back")}</Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        disabled={isLoading}
+                    >
+                        {isLoading ?
+                            <CircularProgress size={24} />
+                            :
+                            (activeStep === steps.length - 1) ? t("Confirm") : t("Next")
+                        }
+                    </Button>
+                </Box>
+            </form>
+        </Box>
+    </Drawer>
+    ;
+};
+
+
+const CustomStepIcon = ({ active, completed, icon }:any) => {
+    const getIcon = () => {
+        if (completed) {
+            return <CheckIcon color='primary' />;
+        }
+        switch (icon) {
+            case 1:
+                return <GarageIcon color='primary' />;
+            case 2:
+                return <CarIcon color='primary' />;
+            case 3:
+                return <PersonIcon color='primary' />;
+            default:
+                return <CheckIcon color='primary' />;
+        }
+    };
+
+    return <div>{getIcon()}</div>;
 };

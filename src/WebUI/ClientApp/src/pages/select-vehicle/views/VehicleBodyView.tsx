@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import VehicleServiceLogs from '../components/VehicleServiceLogs';
-import VehicleInformation from '../components/VehicleInformation';
+import VehicleSpecifications from '../components/VehicleSpecifications';
 import ServiceLogForm from '../components/ServiceLogForm';
 
 
@@ -98,7 +98,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                     {value === 0 ?
                         <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} />
                         :
-                        <VehicleInformation isMobile={isMobile} license_plate={license_plate} />
+                        <VehicleSpecifications isMobile={isMobile} license_plate={license_plate} />
                     }
                 </Paper>
             </Box>

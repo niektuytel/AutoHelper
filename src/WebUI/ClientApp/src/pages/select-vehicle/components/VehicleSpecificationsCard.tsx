@@ -1,6 +1,6 @@
 ﻿import React, { useEffect } from "react";
 import { Box, Card, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import LicensePlateTextField from "./LicensePlateTextField";
+import LicensePlateTextField from "./EditableLicensePlate";
 import { CSSProperties } from "react";
 import useSearchVehicle from "../useSearchVehicle";
 import { useQuery } from "react-query";

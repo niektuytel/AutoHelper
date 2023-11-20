@@ -7,6 +7,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Domain.Entities;
 using AutoMapper;
+using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,13 +34,17 @@ public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefIn
 
     public async Task<VehicleBriefDtoItem> Handle(GetVehicleBriefInfoQuery request, CancellationToken cancellationToken)
     {
-        var info = await _vehicleService.GetVehicleByLicensePlateAsync(request.LicensePlate);
-        if (info == null)
+        try
         {
-            throw new NotFoundException(nameof(VehicleBriefDtoItem), request.LicensePlate);
+            var info = await _vehicleService.GetVehicleByLicensePlateAsync(request.LicensePlate);
+            return info!;
         }
-
-        return info;
+        catch (Exception)
+        {
+            throw new ValidationException(new List<ValidationFailure>() {
+                new(nameof(VehicleBriefDtoItem), $"Search.LicensePlate.NotFound")
+            });
+        }
     }
 
 

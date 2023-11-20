@@ -1,46 +1,55 @@
-﻿import React, { useEffect, useState, memo } from 'react';
+﻿import React, { useEffect, useState, useCallback, memo } from 'react';
 import { FieldError } from 'react-hook-form';
-import { Autocomplete, TextField, CircularProgress } from '@mui/material';
+import { Autocomplete, TextField, CircularProgress, debounce } from '@mui/material';
 import { GarageClient, GarageLookupSimplefiedDto } from '../../../app/web-api-client';
 
 interface ISearchGarageProps {
-    value: string,
-    onChange: (value: string) => void,
-    error?: FieldError
+    value: GarageLookupSimplefiedDto;
+    onChange: (value: GarageLookupSimplefiedDto) => void;
+    error?: FieldError;
 }
 
-export default memo(({ value, onChange, error }: ISearchGarageProps) => {
+const fetchGarages = async (garageClient: GarageClient, search: string) => {
+    if (!search) return [];
+    try {
+        const response = await garageClient.searchLookupsByName(search, 5);
+        return response;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+    }
+};
+
+const SearchGarage = memo(({ value, onChange, error }: ISearchGarageProps) => {
     const [options, setOptions] = useState<GarageLookupSimplefiedDto[]>([]);
     const garageClient = new GarageClient(process.env.PUBLIC_URL);
+    const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchOptions = async () => {
-            if (!value) return; // Exit early if value is empty
-            setLoading(true);
-            try {
-                const response = await garageClient.searchLookupsByName(value, 5);
-                setOptions(response);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const debouncedFetch = useCallback(debounce(async (searchValue: string) => {
+        setLoading(true);
+        const fetchedOptions = await fetchGarages(garageClient, searchValue);
+        setOptions(fetchedOptions);
+        setLoading(false);
+    }, 300), []);
 
-        fetchOptions();
-    }, [value]);
+    useEffect(() => {
+        debouncedFetch(search);
+    }, [search, debouncedFetch]);
 
     return (
         <Autocomplete
             freeSolo
             options={options}
-            value={value}
-            getOptionLabel={(option) =>
-                typeof option === 'string' ? option : option.name || ''
-            }
+            value={value || ''}
+            getOptionLabel={(option: any) => option?.name || ''}
             onInputChange={(event, newInputValue) => {
-                onChange(newInputValue);
+                const garageLookup = options.find(option => option.name === newInputValue);
+                if (garageLookup) {
+                    onChange(garageLookup);
+                }
+
+                setSearch(newInputValue);
             }}
             renderInput={(params) => (
                 <TextField
@@ -64,4 +73,4 @@ export default memo(({ value, onChange, error }: ISearchGarageProps) => {
     );
 });
 
-
+export default SearchGarage;

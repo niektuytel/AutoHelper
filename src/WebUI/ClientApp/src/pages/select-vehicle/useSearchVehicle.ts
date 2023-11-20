@@ -4,8 +4,9 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { VehicleBriefDtoItem, VehicleClient } from "../../app/web-api-client";
+import { BadRequestResponse, VehicleBriefDtoItem, VehicleClient } from "../../app/web-api-client";
 import { useState } from "react";
+import { showOnError } from "../../redux/slices/statusSnackbarSlice";
 
 function useSearchVehicle() {
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
@@ -22,9 +23,15 @@ function useSearchVehicle() {
             const response = await vehicleClient.getBriefInfo(licensePlate);
             setLoading(false);
             return response;
-        } catch (response: any) {
+        } catch (error) {
+            console.error('Error:', error);
+
+            // Display specific error message from server response
+            if (error instanceof BadRequestResponse && error.errors) {
+                dispatch(showOnError(t(Object.entries(error.errors)[0][1])));
+            }
+        } finally {
             setLoading(false);
-            throw response;
         }
     }
 

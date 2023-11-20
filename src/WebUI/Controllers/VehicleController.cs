@@ -5,6 +5,7 @@ using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
+using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
@@ -125,7 +126,10 @@ public class VehicleController : ApiControllerBase
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogItemDto> CreateServiceLog([FromForm] CreateVehicleServiceLogWithAttachmentDto commandWithAttachment, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogItem> CreateServiceLog(
+        [FromForm] CreateVehicleServiceLogWithAttachmentDto commandWithAttachment, 
+        CancellationToken cancellationToken
+    )
     {
         var command = commandWithAttachment.ServiceLogCommand;
 
@@ -145,5 +149,13 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(command, cancellationToken);
     }
 
-
+    [HttpDelete($"{nameof(DeleteServiceLog)}/{{serviceLogId}}")]
+    [Authorize]// TODO: (Policy="Admin")
+    [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogItem> DeleteServiceLog([FromRoute] Guid serviceLogId, CancellationToken cancellationToken)
+    {
+        var command = new DeleteVehicleServiceLogCommand(serviceLogId);
+        return await Mediator.Send(command, cancellationToken);
+    }
 }

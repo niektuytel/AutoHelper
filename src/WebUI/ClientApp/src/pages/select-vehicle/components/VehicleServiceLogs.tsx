@@ -1,6 +1,5 @@
 ﻿import React, { useEffect } from "react";
 import { Box, Card, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import LicensePlateTextField from "./LicensePlateTextField";
 import { CSSProperties } from "react";
 
 interface IProps {

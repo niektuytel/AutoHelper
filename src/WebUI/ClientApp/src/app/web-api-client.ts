@@ -1040,7 +1040,9 @@ export interface IVehicleClient {
 
     upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, serviceLogCommand_Date: Date | undefined, serviceLogCommand_ExpectedNextDate: Date | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_CreatedBy: string | null | undefined, serviceLogCommand_PhoneNumber: string | null | undefined, serviceLogCommand_EmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto>;
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_CreatedBy: string | null | undefined, serviceLogCommand_PhoneNumber: string | null | undefined, serviceLogCommand_EmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto>;
+
+    deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogItemDto>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1367,7 +1369,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<string>(null as any);
     }
 
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, serviceLogCommand_Date: Date | undefined, serviceLogCommand_ExpectedNextDate: Date | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_CreatedBy: string | null | undefined, serviceLogCommand_PhoneNumber: string | null | undefined, serviceLogCommand_EmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto> {
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_CreatedBy: string | null | undefined, serviceLogCommand_PhoneNumber: string | null | undefined, serviceLogCommand_EmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto> {
         let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1382,16 +1384,10 @@ export class VehicleClient implements IVehicleClient {
             content_.append("ServiceLogCommand.Type", serviceLogCommand_Type.toString());
         if (serviceLogCommand_Description !== null && serviceLogCommand_Description !== undefined)
             content_.append("ServiceLogCommand.Description", serviceLogCommand_Description.toString());
-        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
-            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
-        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
-            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
-        if (serviceLogCommand_Date === null || serviceLogCommand_Date === undefined)
-            throw new Error("The parameter 'serviceLogCommand_Date' cannot be null.");
-        else
-            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toJSON());
+        if (serviceLogCommand_Date !== null && serviceLogCommand_Date !== undefined)
+            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toString());
         if (serviceLogCommand_ExpectedNextDate !== null && serviceLogCommand_ExpectedNextDate !== undefined)
-            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toJSON());
+            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toString());
         if (serviceLogCommand_OdometerReading === null || serviceLogCommand_OdometerReading === undefined)
             throw new Error("The parameter 'serviceLogCommand_OdometerReading' cannot be null.");
         else
@@ -1404,6 +1400,10 @@ export class VehicleClient implements IVehicleClient {
             content_.append("ServiceLogCommand.PhoneNumber", serviceLogCommand_PhoneNumber.toString());
         if (serviceLogCommand_EmailAddress !== null && serviceLogCommand_EmailAddress !== undefined)
             content_.append("ServiceLogCommand.EmailAddress", serviceLogCommand_EmailAddress.toString());
+        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
+        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
         if (attachmentFile !== null && attachmentFile !== undefined)
             content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
 
@@ -1421,6 +1421,50 @@ export class VehicleClient implements IVehicleClient {
     }
 
     protected processCreateServiceLog(response: Response): Promise<VehicleServiceLogItemDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleServiceLogItemDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleServiceLogItemDto>(null as any);
+    }
+
+    deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogItemDto> {
+        let url_ = this.baseUrl + "/api/Vehicle/DeleteServiceLog/{serviceLogId}";
+        if (serviceLogId === undefined || serviceLogId === null)
+            throw new Error("The parameter 'serviceLogId' must be defined.");
+        url_ = url_.replace("{serviceLogId}", encodeURIComponent("" + serviceLogId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteServiceLog(_response);
+        });
+    }
+
+    protected processDeleteServiceLog(response: Response): Promise<VehicleServiceLogItemDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {

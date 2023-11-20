@@ -114,8 +114,13 @@
   "Ask question": "Vraag stellen",
   "Request quote": "Offerte aanvragen",
   "by": "aan",
+  "Next": "Volgende",
 
 
+
+
+
+  "Search.LicensePlate.NotFound": "Opgegeven kentekenplaat niet gevonden",
   "Request a quote": "Offerte aanvragen",
   "Request a quote.Tooltip": "Vraag een prijsopgave aan voor de geselecteerde diensten en uw voertuig.",
   "Request a quote.Description": "Wij sturen uw offerteaanvraag door naar de garage, inclusief de bijbehorende gegevens van uw voertuig. U ontvangt een bericht zodra de garage uw offerte heeft opgesteld.",
@@ -140,6 +145,14 @@
   "ConversationType.RequestAQuote.SampleMessage": "Hallo, ik ben geïnteresseerd in uw diensten. Kunt u mij een offerte sturen en informatie geven over uw beschikbaarheid? Bedankt!",
   "AddMaintenanceLog.Title": "Onderhoud toevoegen",
   "AddMaintenanceLog.Tip": "Onderhoud gedaan is aan u auto",
+  "AddMaintenanceLog.Step.Garage.Title": "Garageg",
+  "AddMaintenanceLog.Step.Vehicle.Title": "Voertuig",
+  "AddMaintenanceLog.Step.Confirmation.Title": "Bevestiging",
+  "AddMaintenanceLog.DescriptionOnTypeOther.Required": "Geef een beschrijving voor het type 'Overig'",
+  "AddMaintenanceLog.NextDateGTDate.Required": "De volgende onderhoudsdatum moet later zijn dan de huidige onderhoudsdatum",
+  "AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required": "De volgende kilometerstand moet hoger zijn dan de huidige stand",
+  "AddMaintenanceLog.PhoneOrEmail.Required": "Geef alstublieft een telefoonnummer of e-mailadres op",
+  "AddMaintenanceLog.GarageLookup.Requried": "Selecteer een garage",
   "AddMaintenanceLog.ServiceType.Label": "Soort onderhoud",
   "AddMaintenanceLog.ServiceDescription.Label": "Omschrijving",
   "AddMaintenanceLog.Attachments.Label": "Bijlage",
@@ -151,8 +164,10 @@
   "AddMaintenanceLog.OdometerReading.Label": "Kilometerstand",
   "AddMaintenanceLog.ExpectedNextOdometerReading.Required": "Kilometerstand voor volgend onderhoud",
   "AddMaintenanceLog.ExpectedNextOdometerReading.Label": "Onderhoud bij kilometerstand",
-
-
+  "AddMaintenanceLog.ServiceCreatedBy.Label": "Service geregistreerd door",
+  "AddMaintenanceLog.ServiceCreatedBy.Required": "Vul alstublieft uw naam in",
+  "AddMaintenanceLog.ServicePhoneNumber.Label": "Telefoonnummer",
+  "AddMaintenanceLog.ServiceEmailAddress.Label": "E-mailadres",
 
 
 
