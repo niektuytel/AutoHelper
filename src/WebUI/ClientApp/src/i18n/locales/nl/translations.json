@@ -145,7 +145,7 @@
   "ConversationType.RequestAQuote.SampleMessage": "Hallo, ik ben geïnteresseerd in uw diensten. Kunt u mij een offerte sturen en informatie geven over uw beschikbaarheid? Bedankt!",
   "AddMaintenanceLog.Title": "Onderhoud toevoegen",
   "AddMaintenanceLog.Tip": "Onderhoud gedaan is aan u auto",
-  "AddMaintenanceLog.Step.Garage.Title": "Garageg",
+  "AddMaintenanceLog.Step.Garage.Title": "Garage",
   "AddMaintenanceLog.Step.Vehicle.Title": "Voertuig",
   "AddMaintenanceLog.Step.Confirmation.Title": "Bevestiging",
   "AddMaintenanceLog.DescriptionOnTypeOther.Required": "Geef een beschrijving voor het type 'Overig'",

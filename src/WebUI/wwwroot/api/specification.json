@@ -3833,98 +3833,31 @@
       "VehicleServiceLogItemDto": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "type",
-          "date",
-          "odometerReading"
-        ],
         "properties": {
-          "vehicleLicensePlate": {
+          "garageLookupName": {
             "type": "string"
           },
-          "performedByGarageId": {
-            "type": "string",
-            "format": "guid"
+          "garageLookupIdentifier": {
+            "type": "string"
           },
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
           "date": {
             "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "expectedNextDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           },
           "odometerReading": {
             "type": "integer",
             "format": "int32"
           },
-          "expectedNextOdometerReading": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
           "description": {
             "type": "string",
             "nullable": true
           },
-          "notes": {
+          "attachedFile": {
             "type": "string",
             "nullable": true
-          },
-          "attachments": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VehicleServiceAttachmentItemDto"
-            }
-          },
-          "metaData": {
-            "type": "string"
-          }
-        }
-      },
-      "VehicleServiceAttachmentItemDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "vehicleServiceLogItemId",
-          "fileName",
-          "fileType",
-          "fileSize",
-          "containerName"
-        ],
-        "properties": {
-          "vehicleServiceLogItemId": {
-            "type": "string",
-            "format": "guid",
-            "minLength": 1
-          },
-          "vehicleServiceLogItem": {
-            "$ref": "#/components/schemas/VehicleServiceLogItem"
-          },
-          "fileName": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 0
-          },
-          "fileType": {
-            "type": "string",
-            "minLength": 1
-          },
-          "fileSize": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "containerName": {
-            "type": "string",
-            "minLength": 1
-          },
-          "description": {
-            "type": "string"
           }
         }
       },

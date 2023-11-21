@@ -37,30 +37,17 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
 
     public async Task<VehicleServiceLogItemDto[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
     {
-        //var entities = await _context.Vehicles
-        //    .AsNoTracking()
-        //    .Include(x => x.ServiceLogs)
-        //    .ThenInclude(x => x.ServiceItems)
-        //    .FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
-        var entity = await _context.VehicleLookups
+        var licensePlate = request.LicensePlate.ToUpper().Replace(" ", "").Replace("-", "");
+
+        var entities = _context.VehicleServiceLogs
             .AsNoTracking()
-            .Where(v => v.LicensePlate == request.LicensePlate)
-            .FirstOrDefaultAsync();
+            .Where(v => v.VehicleLicensePlate == licensePlate);
 
+        var result = await _mapper
+            .ProjectTo<VehicleServiceLogItemDto>(entities)
+            .ToArrayAsync(cancellationToken);
 
-        var result = new VehicleServiceLogItemDto();
-
-        throw new NotImplementedException();
-
-        return null;// _mapper.Map<IEnumerable<GarageEmployeeItemDto>>(entities) ?? new List<GarageEmployeeItemDto>();
-
-        //var info = await _vehicleService.GetVehicleServiceLogsQuery(request.LicensePlate);
-        //if (info == null)
-        //{
-        //    throw new NotFoundException(nameof(VehicleServiceLogsItem), request.LicensePlate);
-        //}
-
-        //return info;
+        return result;
     }
 
 }

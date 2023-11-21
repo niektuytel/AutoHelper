@@ -5143,17 +5143,13 @@ export interface IVehicleBriefDtoItem {
 }
 
 export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
-    vehicleLicensePlate?: string;
-    performedByGarageId?: string;
-    type!: GarageServiceType;
-    date!: Date;
-    expectedNextDate?: Date | undefined;
-    odometerReading!: number;
-    expectedNextOdometerReading?: number | undefined;
+    garageLookupName?: string;
+    garageLookupIdentifier?: string;
+    type?: GarageServiceType;
+    date?: Date;
+    odometerReading?: number;
     description?: string | undefined;
-    notes?: string | undefined;
-    attachments?: VehicleServiceAttachmentItemDto[];
-    metaData?: string;
+    attachedFile?: string | undefined;
 
     constructor(data?: IVehicleServiceLogItemDto) {
         if (data) {
@@ -5166,21 +5162,13 @@ export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
 
     init(_data?: any) {
         if (_data) {
-            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-            this.performedByGarageId = _data["performedByGarageId"];
+            this.garageLookupName = _data["garageLookupName"];
+            this.garageLookupIdentifier = _data["garageLookupIdentifier"];
             this.type = _data["type"];
             this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.expectedNextDate = _data["expectedNextDate"] ? new Date(_data["expectedNextDate"].toString()) : <any>undefined;
             this.odometerReading = _data["odometerReading"];
-            this.expectedNextOdometerReading = _data["expectedNextOdometerReading"];
             this.description = _data["description"];
-            this.notes = _data["notes"];
-            if (Array.isArray(_data["attachments"])) {
-                this.attachments = [] as any;
-                for (let item of _data["attachments"])
-                    this.attachments!.push(VehicleServiceAttachmentItemDto.fromJS(item));
-            }
-            this.metaData = _data["metaData"];
+            this.attachedFile = _data["attachedFile"];
         }
     }
 
@@ -5193,97 +5181,25 @@ export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        data["performedByGarageId"] = this.performedByGarageId;
+        data["garageLookupName"] = this.garageLookupName;
+        data["garageLookupIdentifier"] = this.garageLookupIdentifier;
         data["type"] = this.type;
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["expectedNextDate"] = this.expectedNextDate ? this.expectedNextDate.toISOString() : <any>undefined;
         data["odometerReading"] = this.odometerReading;
-        data["expectedNextOdometerReading"] = this.expectedNextOdometerReading;
         data["description"] = this.description;
-        data["notes"] = this.notes;
-        if (Array.isArray(this.attachments)) {
-            data["attachments"] = [];
-            for (let item of this.attachments)
-                data["attachments"].push(item.toJSON());
-        }
-        data["metaData"] = this.metaData;
+        data["attachedFile"] = this.attachedFile;
         return data;
     }
 }
 
 export interface IVehicleServiceLogItemDto {
-    vehicleLicensePlate?: string;
-    performedByGarageId?: string;
-    type: GarageServiceType;
-    date: Date;
-    expectedNextDate?: Date | undefined;
-    odometerReading: number;
-    expectedNextOdometerReading?: number | undefined;
+    garageLookupName?: string;
+    garageLookupIdentifier?: string;
+    type?: GarageServiceType;
+    date?: Date;
+    odometerReading?: number;
     description?: string | undefined;
-    notes?: string | undefined;
-    attachments?: VehicleServiceAttachmentItemDto[];
-    metaData?: string;
-}
-
-export class VehicleServiceAttachmentItemDto implements IVehicleServiceAttachmentItemDto {
-    vehicleServiceLogItemId!: string;
-    vehicleServiceLogItem?: VehicleServiceLogItem;
-    fileName!: string;
-    fileType!: string;
-    fileSize!: number;
-    containerName!: string;
-    description?: string;
-
-    constructor(data?: IVehicleServiceAttachmentItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.vehicleServiceLogItemId = _data["vehicleServiceLogItemId"];
-            this.vehicleServiceLogItem = _data["vehicleServiceLogItem"] ? VehicleServiceLogItem.fromJS(_data["vehicleServiceLogItem"]) : <any>undefined;
-            this.fileName = _data["fileName"];
-            this.fileType = _data["fileType"];
-            this.fileSize = _data["fileSize"];
-            this.containerName = _data["containerName"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): VehicleServiceAttachmentItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleServiceAttachmentItemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["vehicleServiceLogItemId"] = this.vehicleServiceLogItemId;
-        data["vehicleServiceLogItem"] = this.vehicleServiceLogItem ? this.vehicleServiceLogItem.toJSON() : <any>undefined;
-        data["fileName"] = this.fileName;
-        data["fileType"] = this.fileType;
-        data["fileSize"] = this.fileSize;
-        data["containerName"] = this.containerName;
-        data["description"] = this.description;
-        return data;
-    }
-}
-
-export interface IVehicleServiceAttachmentItemDto {
-    vehicleServiceLogItemId: string;
-    vehicleServiceLogItem?: VehicleServiceLogItem;
-    fileName: string;
-    fileType: string;
-    fileSize: number;
-    containerName: string;
-    description?: string;
+    attachedFile?: string | undefined;
 }
 
 export class VehicleSpecificationsDto implements IVehicleSpecificationsDto {
