@@ -69,8 +69,8 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
     public async Task<Unit> Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
         var totalAmountOfVehicles = await _vehicleService.GetVehicleBasicsWithMOTRequirementCount();
-        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll ? totalAmountOfVehicles : request.MaxInsertAmount;
-        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleLookupsCommand.UpdateAll ? totalAmountOfVehicles : request.MaxUpdateAmount;
+        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll ? totalAmountOfVehicles : Math.Min(request.MaxInsertAmount, totalAmountOfVehicles);
+        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleLookupsCommand.UpdateAll ? totalAmountOfVehicles : Math.Min(request.MaxUpdateAmount, totalAmountOfVehicles);
 
         // Offset to start from
         var limit = request.BatchSize;
@@ -78,7 +78,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         var count = (request.StartRowIndex > 0) ? request.StartRowIndex : 0;
 
         // set end row index to total amount of vehicles if not set
-        if (request.EndRowIndex <= 0)
+        if (request.EndRowIndex <= 0 || request.EndRowIndex >= totalAmountOfVehicles)
         {
             request.EndRowIndex = totalAmountOfVehicles;
         }
