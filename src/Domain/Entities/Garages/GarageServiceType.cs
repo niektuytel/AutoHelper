@@ -67,11 +67,12 @@ public enum GarageServiceType
     /// </summary>
     LicensePlateManufactureService = 120,
 
-
-    Inspection = 131,                     // Probleem inspectie
-    SmallMaintenance = 132,               // Kleine beurt
-    GreatMaintenance = 133,               // Grote beurt
-    AirConditioningMaintenance = 134,     // Airco onderhoud
-    SeasonalTireChange = 135,             // Seizoens bandenwissel
+    Service = 129,                          // Onderhoud
+    Repair = 130,                           // Reperatie
+    Inspection = 131,                       // Probleem inspectie
+    SmallMaintenance = 132,                 // Kleine beurt
+    GreatMaintenance = 133,                 // Grote beurt
+    AirConditioningMaintenance = 134,       // Airco onderhoud
+    SeasonalTireChange = 135,               // Seizoens bandenwissel
 
 }

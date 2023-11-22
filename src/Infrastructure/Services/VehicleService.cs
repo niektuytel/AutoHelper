@@ -580,9 +580,31 @@ internal class VehicleService : IVehicleService
         return item;
     }
 
-    public async Task<(List<VehicleTimelineItem> serviceLogsChangedToInsert, List<VehicleTimelineItem> serviceLogsChangedToUpdate)> ServiceLogsChangedTimelineItem(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs)
+    public async Task<(List<VehicleTimelineItem> serviceLogsChangedToInsert, List<VehicleTimelineItem> serviceLogsChangedToUpdate)> ServiceLogsTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs)
     {
-        throw new NotImplementedException();
+        var itemsToInsert = new List<VehicleTimelineItem>();
+        var itemsToUpdate = new List<VehicleTimelineItem>();
+
+        // No serviceLogs found
+        if (serviceLogs?.Any() != true)
+        {
+            return (itemsToInsert, itemsToUpdate);
+        }
+
+        var items = new List<VehicleTimelineItem>();
+        foreach (var serviceLog in serviceLogs)
+        {
+            if (vehicle.Timeline?.Any(x => x.Date.Date == serviceLog!.Date.Date) == true)
+            {
+                // Already exists
+                continue;
+            }
+
+            var item = CreateServiceLogTimelineItem(vehicle.LicensePlate, serviceLog);
+            itemsToInsert.Add(item);
+        }
+
+        return (itemsToInsert, itemsToUpdate);
     }
 
     private VehicleTimelineItem CreateFailedMOTTimelineItem(string licensePlate, IGrouping<DateTime, RDWVehicleDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
@@ -653,6 +675,26 @@ internal class VehicleService : IVehicleService
             Type = VehicleTimelineType.OwnerChange,
             Priority = VehicleTimelinePriority.Low,
             ExtraData = new Dictionary<string, string>()
+        };
+
+        return timelineItem;
+    }
+
+    private VehicleTimelineItem CreateSucceededMOTTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog)
+    {
+        throw NotFiniteNumberException 
+        var timelineItem = new VehicleTimelineItem()
+        {
+            Id = Guid.NewGuid(),
+            VehicleLicensePlate = licensePlate,
+            Date = serviceLog.Date.Date,
+            Title = "APK goedgekeurd",
+            Description = "",
+            Type = serviceLog.Type == VehicleTimelineType.SucceededMOT,
+            Priority = VehicleTimelinePriority.Medium,
+            ExtraData = new Dictionary<string, string>() {
+                { "Verval datum", notification.ExpiryDateTime.ToShortDateString() }
+            }
         };
 
         return timelineItem;

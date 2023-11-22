@@ -24,6 +24,7 @@ public record UpsertVehicleTimelineCommand : IRequest<string>
 
     public UpsertVehicleTimelineCommand(string licensePlate)
     {
+        licensePlate = licensePlate.ToUpper().Replace(" ", "").Replace("-", "");
         LicensePlate = licensePlate;
     }
 
@@ -80,6 +81,9 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
         var licensePlates = batch.Keys.ToList();
         var defectsBatch = await _vehicleService.GetVehicleDetectedDefects(licensePlates);
         var inspectionsBatch = await _vehicleService.GetVehicleInspectionNotifications(licensePlates);
+        var serviceLogsBatch = await _dbContext.VehicleServiceLogs
+            .Where(x => x.VehicleLicensePlate == request.LicensePlate)
+            .ToListAsync(cancellationToken);
 
         var vehicleTimelinesToInsert = new List<VehicleTimelineItem>();
         var vehicleTimelinesToUpdate = new List<VehicleTimelineItem>();
@@ -89,7 +93,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
             {
                 // handle failed MOTs
                 var defects = defectsBatch!.Where(x => x.LicensePlate == vehicle.Key);
-                var (failedMOTsToInsert, failedMOTsToUpdate) = await _vehicleService.FailedMOTTimelineItems(vehicle.Value, defects, _defectDescriptions);
+                var (failedMOTsToInsert, _) = await _vehicleService.FailedMOTTimelineItems(vehicle.Value, defects, _defectDescriptions);
                 if (failedMOTsToInsert?.Any() == true)
                 {
                     vehicleTimelinesToInsert.AddRange(failedMOTsToInsert);
@@ -98,7 +102,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
 
                 // handle succeeded MOTs
                 var inspections = inspectionsBatch!.Where(x => x.LicensePlate == vehicle.Key);
-                var (succeededMOTsToInsert, succeededMOTsToUpdate) = await _vehicleService.SucceededMOTTimelineItems(vehicle.Value, inspections);
+                var (succeededMOTsToInsert, _) = await _vehicleService.SucceededMOTTimelineItems(vehicle.Value, inspections);
                 if (succeededMOTsToInsert?.Any() == true)
                 {
                     vehicleTimelinesToInsert.AddRange(succeededMOTsToInsert);
@@ -114,7 +118,8 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
                 }
 
                 // handle servicelogs changes
-                var (serviceLogsChangedToInsert, serviceLogsChangedToUpdate) = await _vehicleService.ServiceLogsChangedTimelineItem(vehicle.Value);  
+                var serviceLogs = serviceLogsBatch!.Where(x => x.VehicleLicensePlate == vehicle.Key);
+                var (serviceLogsChangedToInsert, _) = await _vehicleService.ServiceLogsTimelineItems(vehicle.Value, serviceLogs);  
                 if (serviceLogsChangedToInsert?.Any() == true)
                 {
                     vehicleTimelinesToInsert.AddRange(serviceLogsChangedToInsert);
