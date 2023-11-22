@@ -26,7 +26,14 @@ const VehicleStep = ({ control, isMaintenance }: IProps) => {
                             <DatePicker
                                 {...field}
                                 label={t("AddMaintenanceLog.Date.Label")}
-                                slotProps={{ textField: { fullWidth: true, size: 'small' } }}
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        size: 'small',
+                                        error: !!error,
+                                        helperText: error ? error.message : null
+                                    }
+                                }}
                                 format="dd/MM/yyyy"
                             />
                         )}

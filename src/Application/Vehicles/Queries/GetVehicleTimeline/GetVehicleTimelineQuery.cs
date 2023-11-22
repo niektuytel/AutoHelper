@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Vehicles;
@@ -16,12 +17,14 @@ namespace AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 
 public record GetVehicleTimelineQuery : IRequest<VehicleTimelineDtoItem[]>
 {
-    public GetVehicleTimelineQuery(string licensePlate)
+    public GetVehicleTimelineQuery(string licensePlate, int take)
     {
         LicensePlate = licensePlate;
+        Take = take;
     }
 
     public string LicensePlate { get; private set; }
+    public int Take { get; private set; }
 }
 
 public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimelineQuery, VehicleTimelineDtoItem[]>
@@ -40,28 +43,22 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 
     public async Task<VehicleTimelineDtoItem[]> Handle(GetVehicleTimelineQuery request, CancellationToken cancellationToken)
     {
-        // Include the timeline and perform ordering and limiting in the query itself
+        var licensePlate = request.LicensePlate.ToUpper().Replace(" ", "").Replace("-", "");
 
-
-
-        var vehicle = await _context.VehicleLookups
+        var entities = _context.VehicleTimelineItems
             .AsNoTracking()
-            .Select(v => new
-            {
-                v.LicensePlate,
-                Timeline = v.Timeline
-                                .OrderBy(t => t.Date)
-                                .Take(4)
-            })
-            .FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
+            .Where(x => x.VehicleLicensePlate == licensePlate);
 
-        if (vehicle == null)
+        if(request.Take > 0)
         {
-            throw new NotFoundException(nameof(VehicleLookupItem), request.LicensePlate);
+            entities = entities.Take(request.Take);
         }
 
-        var response = _mapper.Map<VehicleTimelineDtoItem[]>(vehicle.Timeline);
-        return response;
+        var result = await _mapper
+            .ProjectTo<VehicleTimelineDtoItem>(entities)
+            .ToArrayAsync(cancellationToken);
+
+        return result;
     }
 
 

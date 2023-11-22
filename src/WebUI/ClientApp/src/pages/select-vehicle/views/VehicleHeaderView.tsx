@@ -24,7 +24,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                     </Typography>
                     <SearchLocation licence_plate={license_plate} />
                 </Box>
-                <Grid container sx={{ minHeight: "50vh" }} >
+                <Grid container>
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "25px" }}>
                         <VehicleTimelineCard/>
                     </Grid>

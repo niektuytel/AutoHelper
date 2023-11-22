@@ -5,7 +5,7 @@ import {
     Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import GarageIcon from '@mui/icons-material/HomeWork';
+import GarageIcon from '@mui/icons-material/CarRepair';
 import CarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
 import CheckIcon from '@mui/icons-material/Check';
@@ -16,13 +16,13 @@ import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient } from '..
 import StepConfirmation from './StepConfirmation';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
-import { showOnError } from '../../../redux/slices/statusSnackbarSlice';
+import { showOnError, showOnSuccess } from '../../../redux/slices/statusSnackbarSlice';
 import { useDispatch } from 'react-redux';
 
 interface IServiceLogFormProps {
     licensePlate: string;
     drawerOpen: boolean;
-    toggleDrawer: (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => void;
+    toggleDrawer: (open: boolean) => void;
 }
 
 interface IServiceLogFormData {
@@ -31,8 +31,8 @@ interface IServiceLogFormData {
     description: string;
     date: Date | null;
     expectedNextDate: Date | null;
-    odometerReading: number | '';
-    expectedNextOdometerReading: number | '';
+    odometerReading: number | 0;
+    expectedNextOdometerReading: number | 0;
     createdby: string;
     phonenumber: string | null;
     emailaddress: string | null;
@@ -47,9 +47,11 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const { control, handleSubmit, formState: { errors }, reset, setError } = useForm<IServiceLogFormData>();
+    const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogFormData>();
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+
+
 
     const handleNext = (data: IServiceLogFormData) => {
 
@@ -65,13 +67,13 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
         } else if (activeStep === 1) {
 
             // Validate Dates
-            if (data.date && data.expectedNextDate && data.date > data.expectedNextDate) {
+            if (data.date && data.expectedNextDate && data.date < data.expectedNextDate) {
                 setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required')});
                 hasError = true;
             }
 
             // Validate Odometer Readings
-            if (data.odometerReading && data.expectedNextOdometerReading && data.odometerReading > data.expectedNextOdometerReading) {
+            if (data.odometerReading && data.expectedNextOdometerReading && data.odometerReading < data.expectedNextOdometerReading) {
                 setError('expectedNextOdometerReading', { type: 'manual', message: t('AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required')});
                 hasError = true;
             }
@@ -129,7 +131,19 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
                     null, 
                     file ? { data: file, fileName: file?.name || '' } : null
                 );
-                console.log(response);
+
+                dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
+
+                // Reset only specific form fields
+                setValue('type', '');
+                setValue('description', '');
+                setValue('date', null);
+                setValue('expectedNextDate', null);
+                setValue('odometerReading', 0);
+                setValue('expectedNextOdometerReading', 0);
+
+                setActiveStep(0); // Reset active step to 0
+                toggleDrawer(false); // Close drawer
             } catch (error) {
                 console.error('Error:', error);
 
@@ -149,7 +163,7 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
     return <Drawer
         anchor="right"
         open={drawerOpen}
-        onClose={toggleDrawer(false)}
+        onClose={() => toggleDrawer(false)}
         sx={{
             '& .MuiDrawer-paper': {
                 width: isMobile ? '100%' : '600px',
@@ -161,7 +175,7 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
                 <Typography variant="h6" component="div">
                     {t("AddMaintenanceLog.Title")}
                 </Typography>
-                <IconButton onClick={toggleDrawer(false)}>
+                <IconButton onClick={() => toggleDrawer(false)}>
                     <CloseIcon />
                 </IconButton>
             </Box>

@@ -1030,13 +1030,15 @@ export interface IVehicleClient {
 
     getBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
 
-    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]>;
-
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]>;
+
+    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]>;
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto>;
 
     upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
+
+    upsertTimeline(licensePlate: string | null | undefined): Promise<string>;
 
     upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
@@ -1098,14 +1100,10 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleBriefDtoItem>(null as any);
     }
 
-    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        if (maxAmount === null)
-            throw new Error("The parameter 'maxAmount' cannot be null.");
-        else if (maxAmount !== undefined)
-            url_ += "maxAmount=" + encodeURIComponent("" + maxAmount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1116,11 +1114,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetTimeline(_response);
+            return this.processGetServiceLogs(_response);
         });
     }
 
-    protected processGetTimeline(response: Response): Promise<VehicleServiceLogItemDto[]> {
+    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogItemDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1152,10 +1150,14 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
     }
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
+    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        if (maxAmount === null)
+            throw new Error("The parameter 'maxAmount' cannot be null.");
+        else if (maxAmount !== undefined)
+            url_ += "maxAmount=" + encodeURIComponent("" + maxAmount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1166,11 +1168,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetServiceLogs(_response);
+            return this.processGetTimeline(_response);
         });
     }
 
-    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogItemDto[]> {
+    protected processGetTimeline(response: Response): Promise<VehicleServiceLogItemDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1282,6 +1284,50 @@ export class VehicleClient implements IVehicleClient {
     }
 
     protected processUpsertLookups(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    upsertTimeline(licensePlate: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimeline?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertTimeline(_response);
+        });
+    }
+
+    protected processUpsertTimeline(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {

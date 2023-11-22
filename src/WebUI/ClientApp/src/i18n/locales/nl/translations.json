@@ -143,6 +143,7 @@
   "ConversationType.Technical.SampleMessage": "Zijn er bekende problemen die ik moet weten?",
   "ConversationType.RequestAQuote": "Offerte aanvragen",
   "ConversationType.RequestAQuote.SampleMessage": "Hallo, ik ben geïnteresseerd in uw diensten. Kunt u mij een offerte sturen en informatie geven over uw beschikbaarheid? Bedankt!",
+  "AddMaintenanceLog.Succeeded": "Succesvol toegevoegd",
   "AddMaintenanceLog.Title": "Onderhoud toevoegen",
   "AddMaintenanceLog.Tip": "Onderhoud gedaan is aan u auto",
   "AddMaintenanceLog.Step.Garage.Title": "Garage",

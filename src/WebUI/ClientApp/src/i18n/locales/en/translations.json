@@ -143,6 +143,7 @@
   "ConversationType.Technical.SampleMessage": "Are there any known issues I should be aware of?",
   "ConversationType.RequestAQuote": "Request a quote",
   "ConversationType.RequestAQuote.SampleMessage": "Hello, I am interested in your services and would like to request a quote. Could you please provide me with more information about your pricing and availability? Thank you!",
+  "AddMaintenanceLog.Succeeded": "Successfully added maintenance log",
   "AddMaintenanceLog.Title": "Add Maintenance",
   "AddMaintenanceLog.Tip": "Maintenance has been done to your car",
   "AddMaintenanceLog.Step.Garage.Title": "Garage",

@@ -2,6 +2,7 @@
 import { Box, Button, Card, IconButton, Paper, Tab, Table, TableBody, TableCell, TableRow, Tabs, Tooltip, Typography, Drawer, List, ListItem } from "@mui/material";
 import CarRepairIcon from '@mui/icons-material/CarRepair';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import TimelineIcon from '@mui/icons-material/History';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
@@ -13,6 +14,9 @@ import { useLocation, useNavigate } from 'react-router';
 import VehicleServiceLogs from '../components/VehicleServiceLogs';
 import VehicleSpecifications from '../components/VehicleSpecifications';
 import ServiceLogForm from '../components/ServiceLogForm';
+import { blue } from '@mui/material/colors';
+import VehicleTimeline from '../components/VehicleTimeline';
+import ServicelogsIcon from '@mui/icons-material/Notes';
 
 
 
@@ -24,8 +28,8 @@ const textStyles = {
 }
 
 const tabsConfig = [
-    { hash: "#service_logs", label: 'Maintenance logs', icon: <CarRepairIcon fontSize='medium' /> },
-    { hash: "#mot_history", label: 'Tijdlijn', icon: <DirectionsCarFilledIcon fontSize='medium' /> },
+    { hash: "#service_logs", label: 'Maintenance logs', icon: <ServicelogsIcon fontSize='medium' /> },
+    { hash: "#mot_history", label: 'Tijdlijn', icon: <TimelineIcon fontSize='medium' /> },
     { hash: "#information", label: 'Information', icon: <DirectionsCarFilledIcon fontSize='medium' /> },
 ];
 
@@ -43,64 +47,63 @@ export default ({ isMobile, license_plate }: IProps) => {
     const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
-    const [value, setValue] = useState(findTabValueByHash(location.hash));
+    const [activeTab, setActiveTab] = useState(findTabValueByHash(location.hash));
 
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
-            return;
-        }
+    const toggleDrawer = (open: boolean) => {
+        console.log("toggleDrawer");
         setDrawerOpen(open);
     };
 
-    const handleAddService = () => {
-        setDrawerOpen(true);
-    };
-
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValue(newValue);
-        navigate(tabsConfig[newValue].hash);
+    const handleCardClick = (index: number) => {
+        setActiveTab(index);
+        navigate(tabsConfig[index].hash);
     };
 
     return (
         <>
-            <Tabs value={value} onChange={handleChange} aria-label="icon label tabs example" sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
                 {tabsConfig.map((tab, index) => (
-                    <Tab
+                    <Card
                         key={index}
-                        icon={tab.icon}
-                        label={t(tab.label)}
-                        sx={{ textTransform: 'none' }}
-                    />
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 100,
+                            width: '100%',
+                            margin: 1,
+                            backgroundColor: activeTab === index ? 'primary.main' : 'background.paper',
+                            color: activeTab === index ? 'common.white' : 'text.primary',
+                            '&:hover': {
+                                backgroundColor: 'primary.light',
+                                color: 'common.white',
+                                cursor: 'pointer'
+                            },
+                            textTransform: 'none',
+                        }}
+                        onClick={() => handleCardClick(index)}
+                    >
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            {tab.icon}
+                            <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
+                                {t(tab.label)}
+                            </Typography>
+                        </Box>
+                    </Card>
                 ))}
-            </Tabs>
-            <Box sx={{ marginBottom: "40px" }}>
-                <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden" }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" padding={1}>
-                        <Typography variant={"h4"} sx={textStyles.root}>
-                            {t("Service logs")}
-                            <Tooltip title={t("Service logs.description")}>
-                                <IconButton size="small">
-                                    <InfoOutlinedIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        </Typography>
-                        <Button
-                            variant="outlined"
-                            onClick={handleAddService}
-                            startIcon={<AddCircleOutlineIcon />}
-                        >
-                            {t("AddMaintenanceLog.Title")}
-                        </Button>
-                    </Box>
-                    <Divider />
-                    {value === 0 ?
-                        <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} />
+            </Box>
+            <Box sx={{ marginBottom: "40px", mx:1 }}>
+                {activeTab === 0 ?
+                    <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} setDrawerOpen={setDrawerOpen} />
+                    :
+                    activeTab === 1 ?
+                        <VehicleTimeline isMobile={isMobile} license_plate={license_plate} />
                         :
                         <VehicleSpecifications isMobile={isMobile} license_plate={license_plate} />
-                    }
-                </Paper>
+                }
             </Box>
             <ServiceLogForm licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
         </>

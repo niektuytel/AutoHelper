@@ -19,6 +19,7 @@ public interface IApplicationDbContext
 
     DbSet<VehicleLookupItem> VehicleLookups { get; }
     DbSet<VehicleServiceLogItem> VehicleServiceLogs { get; }
+    DbSet<VehicleTimelineItem> VehicleTimelineItems { get; }
 
     DbSet<ConversationItem> Conversations { get; }
     DbSet<ConversationMessageItem> ConversationMessages { get; }

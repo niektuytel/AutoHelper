@@ -940,12 +940,12 @@
         }
       }
     },
-    "/api/Vehicle/GetTimeline": {
+    "/api/Vehicle/GetServiceLogs": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetTimeline",
+        "operationId": "Vehicle_GetServiceLogs",
         "parameters": [
           {
             "name": "licensePlate",
@@ -955,16 +955,6 @@
               "nullable": true
             },
             "x-position": 1
-          },
-          {
-            "name": "maxAmount",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 5
-            },
-            "x-position": 2
           }
         ],
         "responses": {
@@ -994,12 +984,12 @@
         }
       }
     },
-    "/api/Vehicle/GetServiceLogs": {
+    "/api/Vehicle/GetTimeline": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetServiceLogs",
+        "operationId": "Vehicle_GetTimeline",
         "parameters": [
           {
             "name": "licensePlate",
@@ -1009,6 +999,16 @@
               "nullable": true
             },
             "x-position": 1
+          },
+          {
+            "name": "maxAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            },
+            "x-position": 2
           }
         ],
         "responses": {
@@ -1135,6 +1135,47 @@
               "default": 10000
             },
             "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertTimeline": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_UpsertTimeline",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
           }
         ],
         "responses": {

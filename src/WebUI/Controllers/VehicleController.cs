@@ -8,6 +8,7 @@ using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
@@ -47,20 +48,20 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleBriefInfoQuery(licensePlate));
     }
 
-    [HttpGet($"{nameof(GetTimeline)}")]
-    [ProducesResponseType(typeof(VehicleServiceLogItemDto[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount=5)
-    {
-        return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate));
-    }
-
     [HttpGet($"{nameof(GetServiceLogs)}")]
     [ProducesResponseType(typeof(VehicleServiceLogItemDto[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogItemDto[]> GetServiceLogs([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleServiceLogsQuery(licensePlate));
+    }
+
+    [HttpGet($"{nameof(GetTimeline)}")]
+    [ProducesResponseType(typeof(VehicleServiceLogItemDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount=5)
+    {
+        return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
 
     //[HttpGet($"{nameof(GetMOTHistory)}")]
@@ -101,6 +102,16 @@ public class VehicleController : ApiControllerBase
         return $"Successfully start queue: {queue}";
     }
 
+    [Authorize]// TODO: (Policy="Admin")
+    [HttpPut($"{nameof(UpsertTimeline)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<string> UpsertTimeline([FromQuery] string licensePlate)
+    {
+        var command = new UpsertVehicleTimelineCommand(licensePlate);
+        return await Mediator.Send(command);
+    }
+
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize]// TODO: (Policy="Admin")
@@ -126,7 +137,7 @@ public class VehicleController : ApiControllerBase
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogItem> CreateServiceLog(
+    public async Task<VehicleServiceLogItemDto> CreateServiceLog(
         [FromForm] CreateVehicleServiceLogWithAttachmentDto commandWithAttachment, 
         CancellationToken cancellationToken
     )

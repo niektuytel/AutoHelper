@@ -19,13 +19,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
-public record CreateVehicleServiceLogWithAttachmentDto : IRequest<VehicleServiceLogItem>
+public record CreateVehicleServiceLogWithAttachmentDto : IRequest<VehicleServiceLogItemDto>
 {
     public CreateVehicleServiceLogCommand ServiceLogCommand { get; set; }
     public IFormFile AttachmentFile { get; set; }
 }
 
-public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItem>
+public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto>
 {
     public string VehicleLicensePlate { get; set; }
     public string GarageLookupIdentifier { get; set; }
@@ -58,7 +58,7 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItem>
     }
 }
 
-public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehicleServiceLogCommand, VehicleServiceLogItem>
+public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehicleServiceLogCommand, VehicleServiceLogItemDto>
 {
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
@@ -71,7 +71,7 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         _mapper = mapper;
     }
 
-    public async Task<VehicleServiceLogItem> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogItemDto> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
     {
         // Align license plate
         request.VehicleLicensePlate = request.VehicleLicensePlate.ToUpper().Replace("-", "");
@@ -115,6 +115,6 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
 
         _context.VehicleServiceLogs.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-        return entity;
+        return _mapper.Map<VehicleServiceLogItemDto>(entity);
     }
 }
