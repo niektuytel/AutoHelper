@@ -95,11 +95,6 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
                     vehicleTimelinesToInsert.AddRange(failedMOTsToInsert);
                     _maxInsertAmount -= failedMOTsToInsert.Count;
                 }
-                if (failedMOTsToUpdate?.Any() == true)
-                {
-                    vehicleTimelinesToUpdate.AddRange(failedMOTsToUpdate);
-                    _maxUpdateAmount -= failedMOTsToUpdate.Count;
-                }
 
                 // handle succeeded MOTs
                 var inspections = inspectionsBatch!.Where(x => x.LicensePlate == vehicle.Key);
@@ -109,11 +104,6 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
                     vehicleTimelinesToInsert.AddRange(succeededMOTsToInsert);
                     _maxInsertAmount -= succeededMOTsToInsert.Count;
                 }
-                if (succeededMOTsToUpdate?.Any() == true)
-                {
-                    vehicleTimelinesToUpdate.AddRange(succeededMOTsToUpdate);
-                    _maxUpdateAmount -= succeededMOTsToUpdate.Count;
-                }
 
                 // handle owner changes
                 var ownerChangedToInsert = await _vehicleService.OwnerChangedTimelineItem(vehicle.Value);
@@ -121,6 +111,14 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
                 {
                     vehicleTimelinesToInsert.Add(ownerChangedToInsert);
                     _maxInsertAmount--;
+                }
+
+                // handle servicelogs changes
+                var (serviceLogsChangedToInsert, serviceLogsChangedToUpdate) = await _vehicleService.ServiceLogsChangedTimelineItem(vehicle.Value);  
+                if (serviceLogsChangedToInsert?.Any() == true)
+                {
+                    vehicleTimelinesToInsert.AddRange(serviceLogsChangedToInsert);
+                    _maxInsertAmount -= serviceLogsChangedToInsert.Count;
                 }
 
                 if (_maxInsertAmount <= 0 && _maxUpdateAmount <= 0)

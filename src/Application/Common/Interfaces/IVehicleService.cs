@@ -29,4 +29,5 @@ public interface IVehicleService
     Task<VehicleTimelineItem?> OwnerChangedTimelineItem(VehicleLookupItem vehicle);
     Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasicsWithMOTRequirement(int offset, int limit);
     Task<int> GetVehicleBasicsWithMOTRequirementCount();
+    Task<(List<VehicleTimelineItem> serviceLogsChangedToInsert, List<VehicleTimelineItem> serviceLogsChangedToUpdate)> ServiceLogsChangedTimelineItem(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs);
 }

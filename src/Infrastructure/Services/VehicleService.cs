@@ -12,6 +12,7 @@ using AutoHelper.Infrastructure.Common.Models;
 using Azure;
 using Azure.Core;
 using Force.DeepCloner;
+using GoogleApi.Entities.Maps.Directions.Response;
 using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -506,41 +507,6 @@ internal class VehicleService : IVehicleService
         return await _rdwService.GetVehicleBasicsWithMOTRequirementCount();
     }
 
-    //public async Task<List<VehicleTimelineItem>> GetVehicleUpdatedTimeline(
-    //    List<VehicleTimelineItem> timeline, 
-    //    RDWVehicleBasics vehicle, 
-    //    IEnumerable<RDWDetectedDefectDescription> defectDescriptions
-    //)
-    //{
-    //    var items = timeline.DeepClone() ?? new List<VehicleTimelineItem>();
-    //    var defects = await _rdwService.GetVehicleDetectedDefects(vehicle.LicensePlate);
-    //    if (defects?.Any() == true)
-    //    {
-    //        var failedMOTs = UndefinedFailedMOTTimelineItems(vehicle.LicensePlate, items, defects, defectDescriptions);
-    //        if (failedMOTs?.Any() == true)
-    //        {
-    //            items.AddRange(failedMOTs);
-    //        }
-    //    }
-
-    //    var inspections = await _rdwService.GetVehicleInspectionNotifications(vehicle.LicensePlate);
-    //    if (inspections?.Any() == true)
-    //    {
-    //        var succeededMOTs = UndefinedSucceededMOTTimelineItems(vehicle.LicensePlate, items, inspections);
-    //        if (succeededMOTs?.Any() == true)
-    //        {
-    //            items.AddRange(succeededMOTs);
-    //        }
-    //    }
-
-    //    var ownerChanged = UndefinedOwnerChangedTimelineItem(vehicle.LicensePlate, items, vehicle.RegistrationDateDt);
-    //    if (ownerChanged != null)
-    //    {
-    //        items.Add(ownerChanged);
-    //    }
-
-    //    return items;
-    //}
 
     public async Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> FailedMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWVehicleDetectedDefect> detectedDefects, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
     {
@@ -612,6 +578,11 @@ internal class VehicleService : IVehicleService
 
         var item = CreateOwnerChangeTimelineItem(vehicle.LicensePlate, (DateTime)vehicle.DateOfAscription);
         return item;
+    }
+
+    public async Task<(List<VehicleTimelineItem> serviceLogsChangedToInsert, List<VehicleTimelineItem> serviceLogsChangedToUpdate)> ServiceLogsChangedTimelineItem(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs)
+    {
+        throw new NotImplementedException();
     }
 
     private VehicleTimelineItem CreateFailedMOTTimelineItem(string licensePlate, IGrouping<DateTime, RDWVehicleDetectedDefect> group, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
