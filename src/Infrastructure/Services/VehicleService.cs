@@ -617,7 +617,7 @@ internal class VehicleService : IVehicleService
             Title = "APK afgekeurd",
             Type = VehicleTimelineType.FailedMOT,
             Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new Dictionary<string, string>()
+            ExtraData = new List<Tuple<string, string>>()
         };
 
         // avoid repeated deserialization
@@ -632,7 +632,7 @@ internal class VehicleService : IVehicleService
                 description += $" ({defect.DetectedAmount}x)";
             }
 
-            extraData.Add(description, information.DefectArticleNumber);
+            extraData.Add(new (description, information.DefectArticleNumber));
         }
 
         // set the property back to serialize and store the updates
@@ -655,8 +655,9 @@ internal class VehicleService : IVehicleService
             Description = "",
             Type = VehicleTimelineType.SucceededMOT,
             Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new Dictionary<string, string>() {
-                { "Verval datum", notification.ExpiryDateTime.ToShortDateString() }
+            ExtraData = new List<Tuple<string, string>>()
+            {
+                new ("Verval datum", notification.ExpiryDateTime.ToShortDateString())
             }
         };
 
@@ -674,27 +675,46 @@ internal class VehicleService : IVehicleService
             Description = "",
             Type = VehicleTimelineType.OwnerChange,
             Priority = VehicleTimelinePriority.Low,
-            ExtraData = new Dictionary<string, string>()
+            ExtraData = new List<Tuple<string, string>>()
         };
 
         return timelineItem;
     }
 
-    private VehicleTimelineItem CreateSucceededMOTTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog)
+    private VehicleTimelineItem CreateServiceLogTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog)
     {
-        throw NotFiniteNumberException 
+        var type = VehicleTimelineType.Service;
+        var title = "Onderhoud";
+        if (serviceLog.Type == GarageServiceType.Repair)
+        {
+            type = VehicleTimelineType.Repair;
+            title = "Reparatie";
+        }
+
+        var extraData = new List<Tuple<string, string>>();
+        if (string.IsNullOrEmpty(serviceLog.Notes))
+        {
+            extraData.Add(new ("Notities", serviceLog.Notes));
+        }
+        else if (serviceLog.ExpectedNextDate != null && serviceLog.ExpectedNextDate != DateTime.MinValue)
+        {
+            extraData.Add(new("Volgende onderhoudsbeurt bij datum", ((DateTime)serviceLog.ExpectedNextDate).ToShortDateString()));
+        }
+        else if (serviceLog.ExpectedNextOdometerReading != null && serviceLog.ExpectedNextOdometerReading != 0)
+        {
+            extraData.Add(new("Volgende onderhoudsbeurt bij km", $"{serviceLog.ExpectedNextOdometerReading} km"));
+        }
+
         var timelineItem = new VehicleTimelineItem()
         {
             Id = Guid.NewGuid(),
             VehicleLicensePlate = licensePlate,
             Date = serviceLog.Date.Date,
-            Title = "APK goedgekeurd",
-            Description = "",
-            Type = serviceLog.Type == VehicleTimelineType.SucceededMOT,
+            Title = title,
+            Description = serviceLog.Description ?? "",
+            Type = type,
             Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new Dictionary<string, string>() {
-                { "Verval datum", notification.ExpiryDateTime.ToShortDateString() }
-            }
+            ExtraData = extraData
         };
 
         return timelineItem;

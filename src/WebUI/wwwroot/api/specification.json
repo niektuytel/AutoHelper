@@ -2426,9 +2426,9 @@
                 "type": "string"
               },
               "extraData": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TupleOfStringAndString"
                 }
               }
             }
@@ -2468,6 +2468,18 @@
           1,
           2
         ]
+      },
+      "TupleOfStringAndString": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "item1": {
+            "type": "string"
+          },
+          "item2": {
+            "type": "string"
+          }
+        }
       },
       "ConversationItem": {
         "allOf": [
@@ -2695,6 +2707,8 @@
           "DismantlingService",
           "TaxiComputerService",
           "LicensePlateManufactureService",
+          "Service",
+          "Repair",
           "Inspection",
           "SmallMaintenance",
           "GreatMaintenance",
@@ -2715,6 +2729,8 @@
           100,
           110,
           120,
+          129,
+          130,
           131,
           132,
           133,

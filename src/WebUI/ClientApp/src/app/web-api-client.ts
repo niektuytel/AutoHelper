@@ -2849,7 +2849,7 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
     type!: VehicleTimelineType;
     priority!: VehicleTimelinePriority;
     extraDataTableJson?: string;
-    extraData?: { [key: string]: string; };
+    extraData?: TupleOfStringAndString[];
 
     constructor(data?: IVehicleTimelineItem) {
         super(data);
@@ -2866,12 +2866,10 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
             this.type = _data["type"];
             this.priority = _data["priority"];
             this.extraDataTableJson = _data["extraDataTableJson"];
-            if (_data["extraData"]) {
-                this.extraData = {} as any;
-                for (let key in _data["extraData"]) {
-                    if (_data["extraData"].hasOwnProperty(key))
-                        (<any>this.extraData)![key] = _data["extraData"][key];
-                }
+            if (Array.isArray(_data["extraData"])) {
+                this.extraData = [] as any;
+                for (let item of _data["extraData"])
+                    this.extraData!.push(TupleOfStringAndString.fromJS(item));
             }
         }
     }
@@ -2893,12 +2891,10 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
         data["type"] = this.type;
         data["priority"] = this.priority;
         data["extraDataTableJson"] = this.extraDataTableJson;
-        if (this.extraData) {
-            data["extraData"] = {};
-            for (let key in this.extraData) {
-                if (this.extraData.hasOwnProperty(key))
-                    (<any>data["extraData"])[key] = (<any>this.extraData)[key];
-            }
+        if (Array.isArray(this.extraData)) {
+            data["extraData"] = [];
+            for (let item of this.extraData)
+                data["extraData"].push(item.toJSON());
         }
         super.toJSON(data);
         return data;
@@ -2914,7 +2910,7 @@ export interface IVehicleTimelineItem extends IBaseEntity {
     type: VehicleTimelineType;
     priority: VehicleTimelinePriority;
     extraDataTableJson?: string;
-    extraData?: { [key: string]: string; };
+    extraData?: TupleOfStringAndString[];
 }
 
 export enum VehicleTimelineType {
@@ -2930,6 +2926,46 @@ export enum VehicleTimelinePriority {
     Low = 0,
     Medium = 1,
     High = 2,
+}
+
+export class TupleOfStringAndString implements ITupleOfStringAndString {
+    item1?: string;
+    item2?: string;
+
+    constructor(data?: ITupleOfStringAndString) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.item1 = _data["item1"];
+            this.item2 = _data["item2"];
+        }
+    }
+
+    static fromJS(data: any): TupleOfStringAndString {
+        data = typeof data === 'object' ? data : {};
+        let result = new TupleOfStringAndString();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["item1"] = this.item1;
+        data["item2"] = this.item2;
+        return data;
+    }
+}
+
+export interface ITupleOfStringAndString {
+    item1?: string;
+    item2?: string;
 }
 
 export abstract class BaseAuditableEntity extends BaseEntity implements IBaseAuditableEntity {
@@ -3244,6 +3280,8 @@ export enum GarageServiceType {
     DismantlingService = 100,
     TaxiComputerService = 110,
     LicensePlateManufactureService = 120,
+    Service = 129,
+    Repair = 130,
     Inspection = 131,
     SmallMaintenance = 132,
     GreatMaintenance = 133,

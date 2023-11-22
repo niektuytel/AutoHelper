@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
@@ -31,18 +32,18 @@ public class VehicleTimelineItem: BaseEntity
     public VehicleTimelinePriority Priority { get; set; } = VehicleTimelinePriority.Low;
 
     [NotMapped]
-    private Dictionary<string, string> _extraDataCache;
+    private List<Tuple<string, string>> _extraDataCache;
 
     public string ExtraDataTableJson { get; private set; } = "{}";
 
     [NotMapped]
-    public Dictionary<string, string> ExtraData
+    public List<Tuple<string, string>> ExtraData
     {
         get
         {
             if (_extraDataCache == null)
             {
-                _extraDataCache = JsonConvert.DeserializeObject<Dictionary<string, string>>(ExtraDataTableJson) ?? new Dictionary<string, string>();
+                _extraDataCache = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(ExtraDataTableJson) ?? new List<Tuple<string, string>>();
             }
             return _extraDataCache;
         }
