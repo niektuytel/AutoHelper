@@ -59,7 +59,7 @@ export default ({ textColor="white", timelineItem }: IProps) => {
     }
 
     return (
-        <TimelineItem sx={{ width:"250px"}}>
+        <TimelineItem sx={{ width:"min-content"}}>
             <TimelineOppositeContent
                 sx={{ m: 'auto 0' }}
                 align="right"
@@ -80,7 +80,7 @@ export default ({ textColor="white", timelineItem }: IProps) => {
                 flexDirection: 'column',
                 justifyContent: 'center' // Center vertically
             }}>
-                <Typography variant="h6" component="span" color={textColor}>
+                <Typography variant="h6" component="span" color={textColor} sx={{ width: "max-content" }}>
                     {timelineItem.title}
                 </Typography>
                 {timelineItem?.description &&  
