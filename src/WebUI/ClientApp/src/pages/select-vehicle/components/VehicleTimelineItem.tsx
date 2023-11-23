@@ -37,10 +37,10 @@ export default ({ textColor="white", timelineItem }: IProps) => {
     const getTimelineDot = (type: VehicleTimelineType) => {
         switch (type) {
             case VehicleTimelineType.Repair:
+            case VehicleTimelineType.Service:
                 return <TimelineDot color="success" variant="outlined" sx={{ bgcolor: 'white' }} >
                     <BuildRoundedIcon sx={{ color: "#2E7D32" }} />
                 </TimelineDot>
-            case VehicleTimelineType.Service:
             case VehicleTimelineType.SucceededMOT:
                 return <TimelineDot color="success" variant="outlined" sx={{ bgcolor: 'white' }} >
                     <DoneOutlineRoundedIcon sx={{ color: "#2E7D32" }} />
@@ -59,7 +59,7 @@ export default ({ textColor="white", timelineItem }: IProps) => {
     }
 
     return (
-        <TimelineItem>
+        <TimelineItem sx={{ width:"250px"}}>
             <TimelineOppositeContent
                 sx={{ m: 'auto 0' }}
                 align="right"

@@ -12,6 +12,8 @@ import useVehicleInformation from "../useVehicleInformation";
 import useVehicleTimeline from "../useVehicleTimeline";
 import VehicleTimelineItemSkeleton from "./VehicleTimelineItemSkeleton";
 import VehicleTimelineItem from "./VehicleTimelineItem";
+import TimelineOppositeContent, { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent';
+import Timeline from "@mui/lab/Timeline";
 
 interface IProps {
     isMobile: boolean;
@@ -32,4 +34,12 @@ export default ({ isMobile, license_plate }: IProps) => {
             ))
         }
     </>
+        //<Timeline position="right"
+        //    sx={{
+        //        [`& .${timelineOppositeContentClasses.root}`]: {
+        //            flex: 0.2,
+        //            minWidth: "110px"
+        //        },
+        //    }}>
+        //</Timeline>
 }
