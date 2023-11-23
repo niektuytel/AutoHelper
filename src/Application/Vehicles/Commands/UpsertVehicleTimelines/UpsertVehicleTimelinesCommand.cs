@@ -139,6 +139,9 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
         var licensePlates = batch.Keys.ToList();
         var defectsBatch = await _vehicleService.GetVehicleDetectedDefects(licensePlates);
         var inspectionsBatch = await _vehicleService.GetVehicleInspectionNotifications(licensePlates);
+        var serviceLogsBatch = await _dbContext.VehicleServiceLogs
+            .Where(x => licensePlates.Contains(x.VehicleLicensePlate))
+            .ToListAsync(cancellationToken);
 
         var vehicleTimelinesToInsert = new List<VehicleTimelineItem>();
         var vehicleTimelinesToUpdate = new List<VehicleTimelineItem>();
@@ -146,40 +149,18 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
         {
             try
             {
-                // handle failed MOTs
-                var defects = defectsBatch!.Where(x => x.LicensePlate == vehicle.Key);
-                var (failedMOTsToInsert, failedMOTsToUpdate) = await _vehicleService.FailedMOTTimelineItems(vehicle.Value, defects, _defectDescriptions);
-                if (failedMOTsToInsert?.Any() == true)
-                {
-                    vehicleTimelinesToInsert.AddRange(failedMOTsToInsert);
-                    _maxInsertAmount -= failedMOTsToInsert.Count;
-                }
-                if (failedMOTsToUpdate?.Any() == true)
-                {
-                    vehicleTimelinesToUpdate.AddRange(failedMOTsToUpdate);
-                    _maxUpdateAmount -= failedMOTsToUpdate.Count;
-                }
+                var (itemsToInsert, _) = await _vehicleService.UpsertTimelineItems(
+                    vehicle.Value,
+                    defectsBatch,
+                    inspectionsBatch,
+                    serviceLogsBatch,
+                    _defectDescriptions
+                );
 
-                // handle succeeded MOTs
-                var inspections = inspectionsBatch!.Where(x => x.LicensePlate == vehicle.Key);
-                var (succeededMOTsToInsert, succeededMOTsToUpdate) = await _vehicleService.SucceededMOTTimelineItems(vehicle.Value, inspections);
-                if (succeededMOTsToInsert?.Any() == true)
+                if (itemsToInsert?.Any() == true)
                 {
-                    vehicleTimelinesToInsert.AddRange(succeededMOTsToInsert);
-                    _maxInsertAmount -= succeededMOTsToInsert.Count;
-                }
-                if (succeededMOTsToUpdate?.Any() == true)
-                {
-                    vehicleTimelinesToUpdate.AddRange(succeededMOTsToUpdate);
-                    _maxUpdateAmount -= succeededMOTsToUpdate.Count;
-                }
-
-                // handle owner changes
-                var ownerChangedToInsert = await _vehicleService.OwnerChangedTimelineItem(vehicle.Value);
-                if (ownerChangedToInsert != null)
-                {
-                    vehicleTimelinesToInsert.Add(ownerChangedToInsert);
-                    _maxInsertAmount--;
+                    vehicleTimelinesToInsert.AddRange(itemsToInsert);
+                    _maxInsertAmount -= itemsToInsert.Count;
                 }
 
                 if (_maxInsertAmount <= 0 && _maxUpdateAmount <= 0)

@@ -30,4 +30,5 @@ public interface IVehicleService
     Task<IEnumerable<RDWVehicleBasics>> GetVehicleBasicsWithMOTRequirement(int offset, int limit);
     Task<int> GetVehicleBasicsWithMOTRequirementCount();
     Task<(List<VehicleTimelineItem> serviceLogsChangedToInsert, List<VehicleTimelineItem> serviceLogsChangedToUpdate)> ServiceLogsTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs);
+    Task<(List<VehicleTimelineItem> itemsToInsert, List<VehicleTimelineItem> itemsToUpdate)> UpsertTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWVehicleDetectedDefect> defectsBatch, IEnumerable<RDWvehicleInspectionNotification> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<RDWDetectedDefectDescription> defectDescriptions);
 }

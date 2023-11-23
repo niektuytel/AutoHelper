@@ -757,4 +757,43 @@ internal class VehicleService : IVehicleService
         return inspections.ToArray();
     }
 
+
+    public async Task<(List<VehicleTimelineItem> itemsToInsert, List<VehicleTimelineItem> itemsToUpdate)> UpsertTimelineItems(VehicleLookupItem vehicle, IEnumerable<RDWVehicleDetectedDefect> defectsBatch, IEnumerable<RDWvehicleInspectionNotification> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<RDWDetectedDefectDescription> defectDescriptions)
+    {
+        var vehicleTimelinesToInsert = new List<VehicleTimelineItem>();
+        var vehicleTimelinesToUpdate = new List<VehicleTimelineItem>();
+
+        // handle failed MOTs
+        var defects = defectsBatch!.Where(x => x.LicensePlate == vehicle.LicensePlate);
+        var (failedMOTsToInsert, _) = await FailedMOTTimelineItems(vehicle, defects, defectDescriptions);
+        if (failedMOTsToInsert?.Any() == true)
+        {
+            vehicleTimelinesToInsert.AddRange(failedMOTsToInsert);
+        }
+
+        // handle succeeded MOTs
+        var inspections = inspectionsBatch!.Where(x => x.LicensePlate == vehicle.LicensePlate);
+        var (succeededMOTsToInsert, _) = await SucceededMOTTimelineItems(vehicle, inspections);
+        if (succeededMOTsToInsert?.Any() == true)
+        {
+            vehicleTimelinesToInsert.AddRange(succeededMOTsToInsert);
+        }
+
+        // handle owner changes
+        var ownerChangedToInsert = await OwnerChangedTimelineItem(vehicle);
+        if (ownerChangedToInsert != null)
+        {
+            vehicleTimelinesToInsert.Add(ownerChangedToInsert);
+        }
+
+        // handle servicelogs changes
+        var serviceLogs = serviceLogsBatch!.Where(x => x.VehicleLicensePlate == vehicle.LicensePlate);
+        var (serviceLogsChangedToInsert, _) = await ServiceLogsTimelineItems(vehicle, serviceLogs);
+        if (serviceLogsChangedToInsert?.Any() == true)
+        {
+            vehicleTimelinesToInsert.AddRange(serviceLogsChangedToInsert);
+        }
+
+        return (vehicleTimelinesToInsert, vehicleTimelinesToUpdate);
+    }
 }
