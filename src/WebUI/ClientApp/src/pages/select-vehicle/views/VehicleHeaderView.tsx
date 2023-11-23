@@ -26,7 +26,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                 </Box>
                 <Grid container>
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "25px" }}>
-                        <VehicleTimelineCard/>
+                        <VehicleTimelineCard license_plate={license_plate} />
                     </Grid>
                     <Grid item xs={6} sx={{ marginTop: "25px", paddingLeft:"50px" }}>
                         <VehicleSpecificationsCard isMobile={isMobile} license_plate={license_plate} />

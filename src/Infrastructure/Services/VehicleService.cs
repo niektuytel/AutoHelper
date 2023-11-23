@@ -67,7 +67,7 @@ internal class VehicleService : IVehicleService
         {
             var amount = fuelInfo.GetSafeDecimalValue("brandstofverbruik_gecombineerd");
             var consumptionText = amount != 0
-                ? $"{100M / (amount * 100M):F2}KM op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving").ToLower()}"
+                ? $"{(100 / (amount/100M)):F2}KM op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving").ToLower()}"
                 : "Niet geregistreerd";
             
             response.Consumption = consumptionText;
@@ -639,7 +639,7 @@ internal class VehicleService : IVehicleService
         timelineItem.ExtraData = extraData;
 
         var total = group.Select(x => x.DetectedAmount).Sum();
-        timelineItem.Description = $"op {total} plekken";
+        timelineItem.Description = $"Er waren {total} opmerkingen";
 
         return timelineItem;
     }

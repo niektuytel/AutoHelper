@@ -1032,7 +1032,7 @@ export interface IVehicleClient {
 
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]>;
 
-    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]>;
+    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto>;
 
@@ -1150,7 +1150,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
     }
 
-    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleServiceLogItemDto[]> {
+    getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
@@ -1172,7 +1172,7 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processGetTimeline(response: Response): Promise<VehicleServiceLogItemDto[]> {
+    protected processGetTimeline(response: Response): Promise<VehicleTimelineDtoItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1182,7 +1182,7 @@ export class VehicleClient implements IVehicleClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(VehicleServiceLogItemDto.fromJS(item));
+                    result200!.push(VehicleTimelineDtoItem.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1201,7 +1201,7 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
+        return Promise.resolve<VehicleTimelineDtoItem[]>(null as any);
     }
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto> {
@@ -5284,6 +5284,66 @@ export interface IVehicleServiceLogItemDto {
     odometerReading?: number;
     description?: string | undefined;
     attachedFile?: string | undefined;
+}
+
+export class VehicleTimelineDtoItem implements IVehicleTimelineDtoItem {
+    title?: string;
+    description?: string;
+    date?: Date;
+    type?: VehicleTimelineType;
+    extraData?: TupleOfStringAndString[];
+
+    constructor(data?: IVehicleTimelineDtoItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.type = _data["type"];
+            if (Array.isArray(_data["extraData"])) {
+                this.extraData = [] as any;
+                for (let item of _data["extraData"])
+                    this.extraData!.push(TupleOfStringAndString.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleTimelineDtoItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleTimelineDtoItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["type"] = this.type;
+        if (Array.isArray(this.extraData)) {
+            data["extraData"] = [];
+            for (let item of this.extraData)
+                data["extraData"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IVehicleTimelineDtoItem {
+    title?: string;
+    description?: string;
+    date?: Date;
+    type?: VehicleTimelineType;
+    extraData?: TupleOfStringAndString[];
 }
 
 export class VehicleSpecificationsDto implements IVehicleSpecificationsDto {

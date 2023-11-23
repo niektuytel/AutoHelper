@@ -4,6 +4,7 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities.Vehicles;
 using Newtonsoft.Json;
 using AutoMapper;
+using System;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 
@@ -17,7 +18,7 @@ public class VehicleTimelineDtoItem : IMapFrom<VehicleTimelineItem>
 
     public VehicleTimelineType Type { get; set; }
 
-    public Dictionary<string, string> ExtraData { get; set; }
+    public List<Tuple<string, string>> ExtraData { get; set; }
 
     public void Mapping(Profile profile)
     {

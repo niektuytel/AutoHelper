@@ -28,14 +28,14 @@ const textStyles = {
 }
 
 const tabsConfig = [
-    { hash: "#service_logs", label: 'Maintenance logs', icon: <ServicelogsIcon fontSize='medium' /> },
     { hash: "#mot_history", label: 'Tijdlijn', icon: <TimelineIcon fontSize='medium' /> },
+    { hash: "#service_logs", label: 'Maintenance logs', icon: <ServicelogsIcon fontSize='medium' /> },
     { hash: "#information", label: 'Information', icon: <DirectionsCarFilledIcon fontSize='medium' /> },
 ];
 
 const findTabValueByHash = (hash: string) => {
     const tabIndex = tabsConfig.findIndex(tab => tab.hash === hash);
-    return tabIndex !== -1 ? tabIndex : 0;
+    return tabIndex !== -1 ? tabIndex : 1;
 };
 
 interface IProps {
@@ -65,7 +65,8 @@ export default ({ isMobile, license_plate }: IProps) => {
         <>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
                 {tabsConfig.map((tab, index) => (
-                    <Card
+                    <Paper
+                        variant="outlined"
                         key={index}
                         sx={{
                             display: 'flex',
@@ -92,15 +93,15 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 {t(tab.label)}
                             </Typography>
                         </Box>
-                    </Card>
+                    </Paper>
                 ))}
             </Box>
             <Box sx={{ marginBottom: "40px", mx:1 }}>
                 {activeTab === 0 ?
-                    <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} setDrawerOpen={setDrawerOpen} />
+                    <VehicleTimeline isMobile={isMobile} license_plate={license_plate} />
                     :
                     activeTab === 1 ?
-                        <VehicleTimeline isMobile={isMobile} license_plate={license_plate} />
+                        <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} setDrawerOpen={setDrawerOpen} />
                         :
                         <VehicleSpecifications isMobile={isMobile} license_plate={license_plate} />
                 }

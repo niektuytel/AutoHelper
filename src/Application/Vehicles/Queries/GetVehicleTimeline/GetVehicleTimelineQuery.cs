@@ -47,7 +47,9 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 
         var entities = _context.VehicleTimelineItems
             .AsNoTracking()
-            .Where(x => x.VehicleLicensePlate == licensePlate);
+            .Where(x => x.VehicleLicensePlate == licensePlate)
+            .OrderByDescending(x => x.Date)
+            .AsQueryable();
 
         if(request.Take > 0)
         {

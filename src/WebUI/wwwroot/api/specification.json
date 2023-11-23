@@ -1019,7 +1019,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                    "$ref": "#/components/schemas/VehicleTimelineDtoItem"
                   }
                 }
               }
@@ -3915,6 +3915,31 @@
           "attachedFile": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "VehicleTimelineDtoItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "$ref": "#/components/schemas/VehicleTimelineType"
+          },
+          "extraData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TupleOfStringAndString"
+            }
           }
         }
       },

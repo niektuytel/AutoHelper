@@ -76,7 +76,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 </TableCell>
                                 :
                                 <TableCell style={cellStyle}>
-                                    {vehicleBriefInfo?.dateOfMOTExpiry?.toDateString()}
+                                    {vehicleBriefInfo?.dateOfMOTExpiry?.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                 </TableCell>
                             }
                         </TableRow>
