@@ -957,13 +957,11 @@
         "tags": [
           "Vehicle"
         ],
-        "summary": "Retrieves a detailed specifications card for a vehicle based on its license plate. This card includes comprehensive information like model, make, year, and technical specifications.",
         "operationId": "Vehicle_GetSpecificationsCard",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
-            "description": "The license plate of the vehicle to retrieve specifications for.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -973,7 +971,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A detailed vehicle specifications card.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1000,13 +998,11 @@
         "tags": [
           "Vehicle"
         ],
-        "summary": "Fetches basic vehicle specifications such as engine details, dimensions, and fuel efficiency based on the license plate.",
         "operationId": "Vehicle_GetSpecifications",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
-            "description": "The vehicle's license plate for identifying the specific vehicle.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1016,7 +1012,7 @@
         ],
         "responses": {
           "200": {
-            "description": "A set of basic vehicle specifications.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1043,13 +1039,11 @@
         "tags": [
           "Vehicle"
         ],
-        "summary": "Retrieves a list of service logs for a vehicle, detailing past maintenance and service history.",
         "operationId": "Vehicle_GetServiceLogs",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
-            "description": "License plate of the vehicle to obtain service logs for.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1059,7 +1053,7 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of service log entries.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1100,13 +1094,11 @@
         "tags": [
           "Vehicle"
         ],
-        "summary": "Provides a timeline of important events in the vehicle's history, such as services, accidents, and ownership changes.",
         "operationId": "Vehicle_GetTimeline",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
-            "description": "License plate of the vehicle.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1116,7 +1108,6 @@
           {
             "name": "maxAmount",
             "in": "query",
-            "description": "Maximum number of timeline entries to retrieve.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -1127,7 +1118,7 @@
         ],
         "responses": {
           "200": {
-            "description": "An array of timeline entries.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1163,12 +1154,222 @@
         }
       }
     },
+    "/api/Vehicle/UpsertLookups": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_UpsertLookups",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertTimeline": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_UpsertTimeline",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertTimelines": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_UpsertTimelines",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/CreateServiceLog": {
       "post": {
         "tags": [
           "Vehicle"
         ],
-        "summary": "Creates a new service log for a vehicle. This can include details of the service and an optional file attachment.",
         "operationId": "Vehicle_CreateServiceLog",
         "requestBody": {
           "content": {
@@ -1241,233 +1442,11 @@
         },
         "responses": {
           "200": {
-            "description": "The created vehicle service log entry.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertLookups": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "summary": "Updates or inserts vehicle lookup data in batches. This method can handle large sets of data efficiently.",
-        "description": "Authorization: Admin-level permissions required. This operation is intended for bulk data management.",
-        "operationId": "Vehicle_UpsertLookups",
-        "parameters": [
-          {
-            "name": "startRowIndex",
-            "in": "query",
-            "description": "The starting index for processing records.\n0",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "endRowIndex",
-            "in": "query",
-            "description": "The ending index for processing records. Use -1 to process all records.\n-1",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 2
-          },
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "description": "The maximum number of new records to insert. Use -1 to insert all.\n100",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 3
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "description": "The maximum number of records to update. Use -1 to update all.\n50",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 4
-          },
-          {
-            "name": "batchSize",
-            "in": "query",
-            "description": "The size of each batch for processing records.\n500",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10000
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A message indicating the start of the upsert process.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertTimeline": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "summary": "Updates or creates a timeline entry for a specific vehicle based on its license plate.",
-        "description": "Authorization: Requires admin-level permissions. This method is used for managing historical data of vehicles.",
-        "operationId": "Vehicle_UpsertTimeline",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "description": "The license plate of the vehicle for which the timeline is being updated or created.",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A confirmation message indicating the successful update or creation of the timeline entry.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertTimelines": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "summary": "Performs bulk updates or insertions of vehicle timeline entries. This is useful for large-scale data operations.",
-        "description": "Authorization: Admin-level permissions required. Intended for comprehensive data management.",
-        "operationId": "Vehicle_UpsertTimelines",
-        "parameters": [
-          {
-            "name": "startRowIndex",
-            "in": "query",
-            "description": "The starting index for processing timeline entries.",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "endRowIndex",
-            "in": "query",
-            "description": "The ending index for processing. Use -1 to process all entries.",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 2
-          },
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "description": "The maximum number of new timelines to insert. Use -1 for all.",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 3
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "description": "The maximum number of timelines to update. Use -1 for all.",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 4
-          },
-          {
-            "name": "batchSize",
-            "in": "query",
-            "description": "The size of each batch for processing records.",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1000
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A message indicating the start of the bulk operation on timelines.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -1490,15 +1469,12 @@
         "tags": [
           "Vehicle"
         ],
-        "summary": "Deletes a specific service log entry for a vehicle.",
-        "description": "Authorization: Requires admin-level permissions or ownership verification of the garage related to the service log.",
         "operationId": "Vehicle_DeleteServiceLog",
         "parameters": [
           {
             "name": "serviceLogId",
             "in": "path",
             "required": true,
-            "description": "The unique identifier of the service log entry to be deleted.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -1508,7 +1484,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The deleted vehicle service log entry.",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {

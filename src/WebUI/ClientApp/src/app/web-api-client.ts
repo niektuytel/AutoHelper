@@ -1036,94 +1036,36 @@ export class MessageClient implements IMessageClient {
 
 export interface IVehicleClient {
 
-    /**
-     * Retrieves a detailed specifications card for a vehicle based on its license plate. This card includes comprehensive information like model, make, year, and technical specifications.
-     * @param licensePlate (optional) The license plate of the vehicle to retrieve specifications for.
-     * @return A detailed vehicle specifications card.
-     */
     getSpecificationsCard(licensePlate: string | null | undefined): Promise<VehicleSpecificationsCardItem>;
 
-    /**
-     * Fetches basic vehicle specifications such as engine details, dimensions, and fuel efficiency based on the license plate.
-     * @param licensePlate (optional) The vehicle's license plate for identifying the specific vehicle.
-     * @return A set of basic vehicle specifications.
-     */
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDtoItem>;
 
-    /**
-     * Retrieves a list of service logs for a vehicle, detailing past maintenance and service history.
-     * @param licensePlate (optional) License plate of the vehicle to obtain service logs for.
-     * @return An array of service log entries.
-     */
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]>;
 
-    /**
-     * Provides a timeline of important events in the vehicle's history, such as services, accidents, and ownership changes.
-     * @param licensePlate (optional) License plate of the vehicle.
-     * @param maxAmount (optional) Maximum number of timeline entries to retrieve.
-     * @return An array of timeline entries.
-     */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
 
     /**
-     * Creates a new service log for a vehicle. This can include details of the service and an optional file attachment.
-     * @param serviceLogCommand_VehicleLicensePlate (optional) 
-     * @param serviceLogCommand_GarageLookupIdentifier (optional) 
-     * @param serviceLogCommand_Type (optional) 
-     * @param serviceLogCommand_Description (optional) 
-     * @param serviceLogCommand_Date (optional) 
-     * @param serviceLogCommand_ExpectedNextDate (optional) 
-     * @param serviceLogCommand_OdometerReading (optional) 
-     * @param serviceLogCommand_ExpectedNextOdometerReading (optional) 
-     * @param serviceLogCommand_ReporterName (optional) 
-     * @param serviceLogCommand_ReporterPhoneNumber (optional) 
-     * @param serviceLogCommand_ReporterEmailAddress (optional) 
-     * @param serviceLogCommand_Attachment_FileName (optional) 
-     * @param serviceLogCommand_Attachment_FileData (optional) 
-     * @param attachmentFile (optional) 
-     * @return The created vehicle service log entry.
-     */
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
-
-    /**
-     * Updates or inserts vehicle lookup data in batches. This method can handle large sets of data efficiently.
-     * @param startRowIndex (optional) The starting index for processing records.
-    0
-     * @param endRowIndex (optional) The ending index for processing records. Use -1 to process all records.
-    -1
-     * @param maxInsertAmount (optional) The maximum number of new records to insert. Use -1 to insert all.
-    100
-     * @param maxUpdateAmount (optional) The maximum number of records to update. Use -1 to update all.
-    50
-     * @param batchSize (optional) The size of each batch for processing records.
-    500
-     * @return A message indicating the start of the upsert process.
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
      */
     upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
-    /**
-     * Updates or creates a timeline entry for a specific vehicle based on its license plate.
-     * @param licensePlate (optional) The license plate of the vehicle for which the timeline is being updated or created.
-     * @return A confirmation message indicating the successful update or creation of the timeline entry.
-     */
     upsertTimeline(licensePlate: string | null | undefined): Promise<string>;
 
     /**
-     * Performs bulk updates or insertions of vehicle timeline entries. This is useful for large-scale data operations.
-     * @param startRowIndex (optional) The starting index for processing timeline entries.
-     * @param endRowIndex (optional) The ending index for processing. Use -1 to process all entries.
-     * @param maxInsertAmount (optional) The maximum number of new timelines to insert. Use -1 for all.
-     * @param maxUpdateAmount (optional) The maximum number of timelines to update. Use -1 for all.
-     * @param batchSize (optional) The size of each batch for processing records.
-     * @return A message indicating the start of the bulk operation on timelines.
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
      */
     upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
-    /**
-     * Deletes a specific service log entry for a vehicle.
-     * @param serviceLogId The unique identifier of the service log entry to be deleted.
-     * @return The deleted vehicle service log entry.
-     */
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
+
     deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogDtoItem>;
 }
 
@@ -1137,11 +1079,6 @@ export class VehicleClient implements IVehicleClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    /**
-     * Retrieves a detailed specifications card for a vehicle based on its license plate. This card includes comprehensive information like model, make, year, and technical specifications.
-     * @param licensePlate (optional) The license plate of the vehicle to retrieve specifications for.
-     * @return A detailed vehicle specifications card.
-     */
     getSpecificationsCard(licensePlate: string | null | undefined): Promise<VehicleSpecificationsCardItem> {
         let url_ = this.baseUrl + "/api/Vehicle/GetSpecificationsCard?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1185,11 +1122,6 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecificationsCardItem>(null as any);
     }
 
-    /**
-     * Fetches basic vehicle specifications such as engine details, dimensions, and fuel efficiency based on the license plate.
-     * @param licensePlate (optional) The vehicle's license plate for identifying the specific vehicle.
-     * @return A set of basic vehicle specifications.
-     */
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/GetSpecifications?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1233,11 +1165,6 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecificationsDtoItem>(null as any);
     }
 
-    /**
-     * Retrieves a list of service logs for a vehicle, detailing past maintenance and service history.
-     * @param licensePlate (optional) License plate of the vehicle to obtain service logs for.
-     * @return An array of service log entries.
-     */
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1288,12 +1215,6 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogDtoItem[]>(null as any);
     }
 
-    /**
-     * Provides a timeline of important events in the vehicle's history, such as services, accidents, and ownership changes.
-     * @param licensePlate (optional) License plate of the vehicle.
-     * @param maxAmount (optional) Maximum number of timeline entries to retrieve.
-     * @return An array of timeline entries.
-     */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1349,23 +1270,187 @@ export class VehicleClient implements IVehicleClient {
     }
 
     /**
-     * Creates a new service log for a vehicle. This can include details of the service and an optional file attachment.
-     * @param serviceLogCommand_VehicleLicensePlate (optional) 
-     * @param serviceLogCommand_GarageLookupIdentifier (optional) 
-     * @param serviceLogCommand_Type (optional) 
-     * @param serviceLogCommand_Description (optional) 
-     * @param serviceLogCommand_Date (optional) 
-     * @param serviceLogCommand_ExpectedNextDate (optional) 
-     * @param serviceLogCommand_OdometerReading (optional) 
-     * @param serviceLogCommand_ExpectedNextOdometerReading (optional) 
-     * @param serviceLogCommand_ReporterName (optional) 
-     * @param serviceLogCommand_ReporterPhoneNumber (optional) 
-     * @param serviceLogCommand_ReporterEmailAddress (optional) 
-     * @param serviceLogCommand_Attachment_FileName (optional) 
-     * @param serviceLogCommand_Attachment_FileData (optional) 
-     * @param attachmentFile (optional) 
-     * @return The created vehicle service log entry.
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
      */
+    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
+        if (startRowIndex === null)
+            throw new Error("The parameter 'startRowIndex' cannot be null.");
+        else if (startRowIndex !== undefined)
+            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
+        if (endRowIndex === null)
+            throw new Error("The parameter 'endRowIndex' cannot be null.");
+        else if (endRowIndex !== undefined)
+            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
+        if (maxInsertAmount === null)
+            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
+        else if (maxInsertAmount !== undefined)
+            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
+        if (batchSize === null)
+            throw new Error("The parameter 'batchSize' cannot be null.");
+        else if (batchSize !== undefined)
+            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertLookups(_response);
+        });
+    }
+
+    protected processUpsertLookups(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    upsertTimeline(licensePlate: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimeline?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertTimeline(_response);
+        });
+    }
+
+    protected processUpsertTimeline(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    /**
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
+     */
+    upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimelines?";
+        if (startRowIndex === null)
+            throw new Error("The parameter 'startRowIndex' cannot be null.");
+        else if (startRowIndex !== undefined)
+            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
+        if (endRowIndex === null)
+            throw new Error("The parameter 'endRowIndex' cannot be null.");
+        else if (endRowIndex !== undefined)
+            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
+        if (maxInsertAmount === null)
+            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
+        else if (maxInsertAmount !== undefined)
+            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
+        if (batchSize === null)
+            throw new Error("The parameter 'batchSize' cannot be null.");
+        else if (batchSize !== undefined)
+            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertTimelines(_response);
+        });
+    }
+
+    protected processUpsertTimelines(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
     createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
@@ -1442,207 +1527,6 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogDtoItem>(null as any);
     }
 
-    /**
-     * Updates or inserts vehicle lookup data in batches. This method can handle large sets of data efficiently.
-     * @param startRowIndex (optional) The starting index for processing records.
-    0
-     * @param endRowIndex (optional) The ending index for processing records. Use -1 to process all records.
-    -1
-     * @param maxInsertAmount (optional) The maximum number of new records to insert. Use -1 to insert all.
-    100
-     * @param maxUpdateAmount (optional) The maximum number of records to update. Use -1 to update all.
-    50
-     * @param batchSize (optional) The size of each batch for processing records.
-    500
-     * @return A message indicating the start of the upsert process.
-     */
-    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
-        if (startRowIndex === null)
-            throw new Error("The parameter 'startRowIndex' cannot be null.");
-        else if (startRowIndex !== undefined)
-            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
-        if (endRowIndex === null)
-            throw new Error("The parameter 'endRowIndex' cannot be null.");
-        else if (endRowIndex !== undefined)
-            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
-        if (maxInsertAmount === null)
-            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
-        else if (maxInsertAmount !== undefined)
-            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
-        if (maxUpdateAmount === null)
-            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
-        else if (maxUpdateAmount !== undefined)
-            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
-        if (batchSize === null)
-            throw new Error("The parameter 'batchSize' cannot be null.");
-        else if (batchSize !== undefined)
-            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertLookups(_response);
-        });
-    }
-
-    protected processUpsertLookups(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    /**
-     * Updates or creates a timeline entry for a specific vehicle based on its license plate.
-     * @param licensePlate (optional) The license plate of the vehicle for which the timeline is being updated or created.
-     * @return A confirmation message indicating the successful update or creation of the timeline entry.
-     */
-    upsertTimeline(licensePlate: string | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimeline?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertTimeline(_response);
-        });
-    }
-
-    protected processUpsertTimeline(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    /**
-     * Performs bulk updates or insertions of vehicle timeline entries. This is useful for large-scale data operations.
-     * @param startRowIndex (optional) The starting index for processing timeline entries.
-     * @param endRowIndex (optional) The ending index for processing. Use -1 to process all entries.
-     * @param maxInsertAmount (optional) The maximum number of new timelines to insert. Use -1 for all.
-     * @param maxUpdateAmount (optional) The maximum number of timelines to update. Use -1 for all.
-     * @param batchSize (optional) The size of each batch for processing records.
-     * @return A message indicating the start of the bulk operation on timelines.
-     */
-    upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimelines?";
-        if (startRowIndex === null)
-            throw new Error("The parameter 'startRowIndex' cannot be null.");
-        else if (startRowIndex !== undefined)
-            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
-        if (endRowIndex === null)
-            throw new Error("The parameter 'endRowIndex' cannot be null.");
-        else if (endRowIndex !== undefined)
-            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
-        if (maxInsertAmount === null)
-            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
-        else if (maxInsertAmount !== undefined)
-            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
-        if (maxUpdateAmount === null)
-            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
-        else if (maxUpdateAmount !== undefined)
-            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
-        if (batchSize === null)
-            throw new Error("The parameter 'batchSize' cannot be null.");
-        else if (batchSize !== undefined)
-            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertTimelines(_response);
-        });
-    }
-
-    protected processUpsertTimelines(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    /**
-     * Deletes a specific service log entry for a vehicle.
-     * @param serviceLogId The unique identifier of the service log entry to be deleted.
-     * @return The deleted vehicle service log entry.
-     */
     deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/DeleteServiceLog/{serviceLogId}";
         if (serviceLogId === undefined || serviceLogId === null)
