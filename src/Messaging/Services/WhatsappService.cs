@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -151,7 +151,7 @@ internal class WhatsappService : IWhatsappService
     /// <summary>
     /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=2664948603645930
     /// </summary>
-    public async Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleTechnicalBriefDtoItem vehicle, string content)
+    public async Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleTechnicalDtoItem vehicle, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
         var template = new TextTemplateMessageRequest

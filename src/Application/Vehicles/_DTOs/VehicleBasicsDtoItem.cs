@@ -2,7 +2,7 @@
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 
-public class RDWVehicleBasics
+public class VehicleBasicsDtoItem
 {
     [JsonProperty("kenteken")]
     public string LicensePlate { get; set; }

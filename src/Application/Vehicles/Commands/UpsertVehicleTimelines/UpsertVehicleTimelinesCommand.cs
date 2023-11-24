@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using Force.DeepCloner;
@@ -55,58 +56,98 @@ public record UpsertVehicleTimelinesCommand : IQueueRequest
 public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicleTimelinesCommand>
 {
     private readonly IApplicationDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
-    private readonly ILogger<UpsertVehicleTimelinesCommandHandler> _logger;
-    private IEnumerable<RDWDetectedDefectDescription> _defectDescriptions;
+    private IEnumerable<VehicleDetectedDefectDescriptionDtoItem> _defectDescriptions;
     private int _maxInsertAmount;
     private int _maxUpdateAmount;
 
-    public UpsertVehicleTimelinesCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, ILogger<UpsertVehicleTimelinesCommandHandler> logger)
+    public UpsertVehicleTimelinesCommandHandler(IApplicationDbContext dbContext, IVehicleService vehicleService)
     {
         _dbContext = dbContext;
-        _mapper = mapper;
         _vehicleService = vehicleService;
-        _logger = logger;
     }
 
     public async Task<Unit> Handle(UpsertVehicleTimelinesCommand request, CancellationToken cancellationToken)
     {
-        // Offset to start from
-        var batchSize = request.BatchSize;
-        var offset = (request.StartRowIndex > 0) ? (request.StartRowIndex / batchSize) : 0;
+        int totalRecords = await CalculateTotalRecords(request, cancellationToken);
+        SetMaxInsertAndUpdateAmounts(request, totalRecords);
+
+        _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
+        LogInformationBasedOnAmount(request);
+
+        int numberOfBatches = CalculateNumberOfBatches(request.BatchSize, totalRecords);
+        await ProcessBatchesAsync(request, numberOfBatches, cancellationToken);
+
+        var message = $"Operation finished. Inserted: {request.MaxInsertAmount - _maxInsertAmount}, Updated: {request.MaxUpdateAmount - _maxUpdateAmount}";
+        request.QueueService.LogInformation(message);
+        return Unit.Value;
+    }
+
+    private async Task<int> CalculateTotalRecords(UpsertVehicleTimelinesCommand request, CancellationToken cancellationToken)
+    {
         int totalRecords = await _dbContext.VehicleLookups.CountAsync(cancellationToken);
         if (request.EndRowIndex > 0)
         {
             totalRecords = request.EndRowIndex - request.StartRowIndex;
+            request.EndRowIndex = totalRecords;
+        }
+        return totalRecords;
+    }
+
+    private void SetMaxInsertAndUpdateAmounts(UpsertVehicleTimelinesCommand request, int totalRecords)
+    {
+        _maxInsertAmount = DetermineMaxAmount(request.MaxInsertAmount, totalRecords);
+        _maxUpdateAmount = DetermineMaxAmount(request.MaxUpdateAmount, totalRecords);
+    }
+
+    private void LogInformationBasedOnAmount(UpsertVehicleTimelinesCommand request)
+    {
+        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
+
+        if (request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll)
+        {
+            request.QueueService.LogInformation($"Insert all available vehicle timelines");
         }
         else
         {
-            request.EndRowIndex = totalRecords;
+            request.QueueService.LogInformation($"Insert {_maxInsertAmount} vehicle timelines");
         }
 
-        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll ? totalRecords : request.MaxInsertAmount;
-        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll ? totalRecords : request.MaxUpdateAmount;
-        _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
+        if (request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll)
+        {
+            request.QueueService.LogInformation($"Update all available vehicle timelines");
+        }
+        else
+        {
+            request.QueueService.LogInformation($"Update {_maxUpdateAmount} vehicle timelines");
+        }
+    }
 
-        LogInformationBasedOnAmount(request);
+    private int DetermineMaxAmount(int requestedAmount, int totalRecords)
+    {
+        return requestedAmount == UpsertVehicleTimelinesCommand.InsertAll ? totalRecords : requestedAmount;
+    }
 
-        int numberOfBatches = (totalRecords / batchSize) + (totalRecords % batchSize == 0 ? 0 : 1);
+    private int CalculateNumberOfBatches(int batchSize, int totalRecords)
+    {
+        return (totalRecords / batchSize) + (totalRecords % batchSize > 0 ? 1 : 0);
+    }
+
+    private async Task ProcessBatchesAsync(UpsertVehicleTimelinesCommand request, int numberOfBatches, CancellationToken cancellationToken)
+    {
         for (int i = 0; i < numberOfBatches; i++)
         {
-            var catchLimitToInsert = (request.MaxInsertAmount > 0 && _maxInsertAmount <= 0) || (request.MaxInsertAmount == -1 && _maxInsertAmount == 0);
-            var catchLimitToUpdate = (request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0) || (request.MaxUpdateAmount == -1 && _maxUpdateAmount == 0);
-            if (catchLimitToInsert && catchLimitToUpdate || cancellationToken.IsCancellationRequested)
+            if (ShouldStopProcessing(request, cancellationToken))
             {
                 break;
             }
 
-            var start = request.StartRowIndex + (i * batchSize);
+            var start = request.StartRowIndex + (i * request.BatchSize);
             var batch = await _dbContext.VehicleLookups
                 .Include(x => x.Timeline)
                 .OrderBy(x => x.LicensePlate) // Ensure a consistent order for paging
                 .Skip(start)
-                .Take(batchSize)
+                .Take(request.BatchSize)
                 .ToDictionaryAsync(x => x.LicensePlate, x => x, cancellationToken);
 
             var (vehicleTimelineItemsToInsert, vehicleTimelineItemsToUpdate) = await ProcessVehicleBatchAsync(batch, request, cancellationToken);
@@ -122,19 +163,12 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
             }
 
             request.QueueService.LogInformation(
-                $"[{(start + batchSize)}/{request.EndRowIndex}] insert: {vehicleTimelineItemsToInsert.Count} | update: {vehicleTimelineItemsToUpdate.Count} items"
+                $"[{(start + request.BatchSize)}/{request.EndRowIndex}] insert: {vehicleTimelineItemsToInsert.Count} | update: {vehicleTimelineItemsToUpdate.Count} items"
             );
         }
-
-        request.QueueService.LogInformation($"Operation finished. Inserted: {request.MaxInsertAmount - _maxInsertAmount}, Updated: {request.MaxUpdateAmount - _maxUpdateAmount}");
-        return Unit.Value;
     }
 
-
-    private async Task<(List<VehicleTimelineItem> InsertTimelineItems, List<VehicleTimelineItem> UpdateTimelineItems)> ProcessVehicleBatchAsync(
-        Dictionary<string, VehicleLookupItem> batch,
-        UpsertVehicleTimelinesCommand request,
-        CancellationToken cancellationToken)
+    private async Task<(List<VehicleTimelineItem> InsertTimelineItems, List<VehicleTimelineItem> UpdateTimelineItems)> ProcessVehicleBatchAsync(Dictionary<string, VehicleLookupItem> batch, UpsertVehicleTimelinesCommand request, CancellationToken cancellationToken)
     {
         var licensePlates = batch.Keys.ToList();
         var defectsBatch = await _vehicleService.GetVehicleDetectedDefects(licensePlates);
@@ -177,27 +211,18 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
         return (vehicleTimelinesToInsert, vehicleTimelinesToUpdate);
     }
 
-    private void LogInformationBasedOnAmount(UpsertVehicleTimelinesCommand request)
+    private bool ShouldStopProcessing(UpsertVehicleTimelinesCommand request, CancellationToken cancellationToken)
     {
-        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
-
-        if (request.MaxInsertAmount == UpsertVehicleTimelinesCommand.InsertAll)
-        {
-            request.QueueService.LogInformation($"Insert all available vehicle timelines");
-        }
-        else
-        {
-            request.QueueService.LogInformation($"Insert {_maxInsertAmount} vehicle timelines");
-        }
-
-        if (request.MaxUpdateAmount == UpsertVehicleTimelinesCommand.UpdateAll)
-        {
-            request.QueueService.LogInformation($"Update all available vehicle timelines");
-        }
-        else
-        {
-            request.QueueService.LogInformation($"Update {_maxUpdateAmount} vehicle timelines");
-        }
+        return (HasReachedInsertLimit(request) && HasReachedUpdateLimit(request)) || cancellationToken.IsCancellationRequested;
     }
 
+    private bool HasReachedInsertLimit(UpsertVehicleTimelinesCommand request)
+    {
+        return (request.MaxInsertAmount > 0 && _maxInsertAmount <= 0) || (request.MaxInsertAmount == -1 && _maxInsertAmount == 0);
+    }
+
+    private bool HasReachedUpdateLimit(UpsertVehicleTimelinesCommand request)
+    {
+        return (request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0) || (request.MaxUpdateAmount == -1 && _maxUpdateAmount == 0);
+    }
 }

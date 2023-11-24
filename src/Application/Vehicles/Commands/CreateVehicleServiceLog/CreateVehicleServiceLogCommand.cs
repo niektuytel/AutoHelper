@@ -19,13 +19,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
-public record CreateVehicleServiceLogWithAttachmentDto : IRequest<VehicleServiceLogItemDto>
+public record CreateVehicleServiceLogDto : IRequest<VehicleServiceLogDtoItem>
 {
     public CreateVehicleServiceLogCommand ServiceLogCommand { get; set; }
     public IFormFile AttachmentFile { get; set; }
 }
 
-public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto>
+public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem>
 {
     public string VehicleLicensePlate { get; set; }
     public string GarageLookupIdentifier { get; set; }
@@ -39,11 +39,11 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
 
-    public string CreatedBy { get; set; } = null!;
-    public string? PhoneNumber { get; set; } = null!;
-    public string? EmailAddress { get; set; } = null!;
+    public string ReporterName { get; set; } = null!;
+    public string? ReporterPhoneNumber { get; set; } = null!;
+    public string? ReporterEmailAddress { get; set; } = null!;
 
-    public VehicleServiceLogAttachmentItemOnCreateDto Attachment { get; set; }
+    public VehicleServiceLogAttachmentDtoItem Attachment { get; set; }
 
     [JsonIgnore]
     internal DateTime? ParsedDate { get; private set; }
@@ -58,7 +58,7 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogItemDto
     }
 }
 
-public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehicleServiceLogCommand, VehicleServiceLogItemDto>
+public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehicleServiceLogCommand, VehicleServiceLogDtoItem>
 {
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
@@ -71,7 +71,7 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         _mapper = mapper;
     }
 
-    public async Task<VehicleServiceLogItemDto> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogDtoItem> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
     {
         // Align license plate
         request.VehicleLicensePlate = request.VehicleLicensePlate.ToUpper().Replace("-", "");
@@ -88,13 +88,10 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
             OdometerReading = request.OdometerReading,
             ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
 
-            Verification = new VehicleServiceLogVerificationItem()
-            {
-                Type = ServiceLogVerificationType.NotVerified,
-                CreatedBy = request.CreatedBy,
-                PhoneNumber = request.PhoneNumber,
-                EmailAddress = request.EmailAddress
-            }
+            Status = VehicleServiceLogStatus.NotVerified,
+            ReporterName = request.ReporterName,
+            ReporterPhoneNumber = request.ReporterPhoneNumber,
+            ReporterEmailAddress = request.ReporterEmailAddress
         };
 
         // upload attached file
@@ -115,6 +112,6 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
 
         _context.VehicleServiceLogs.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<VehicleServiceLogItemDto>(entity);
+        return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }
 }

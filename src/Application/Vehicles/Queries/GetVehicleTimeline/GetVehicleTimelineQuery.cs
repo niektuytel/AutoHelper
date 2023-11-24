@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
@@ -31,21 +31,17 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly IVehicleService _vehicleService;
 
-
-    public GetVehicleTimelineQueryHandler(IApplicationDbContext context, IMapper mapper, IVehicleService vehicleService)
+    public GetVehicleTimelineQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
-        _vehicleService = vehicleService;
     }
 
     public async Task<VehicleTimelineDtoItem[]> Handle(GetVehicleTimelineQuery request, CancellationToken cancellationToken)
     {
         var licensePlate = request.LicensePlate.ToUpper().Replace(" ", "").Replace("-", "");
-
-        var entities = _context.VehicleTimelineItems
+        var query = _context.VehicleTimelineItems
             .AsNoTracking()
             .Where(x => x.VehicleLicensePlate == licensePlate)
             .OrderByDescending(x => x.Date)
@@ -53,11 +49,11 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 
         if(request.Take > 0)
         {
-            entities = entities.Take(request.Take);
+            query = query.Take(request.Take);
         }
 
         var result = await _mapper
-            .ProjectTo<VehicleTimelineDtoItem>(entities)
+            .ProjectTo<VehicleTimelineDtoItem>(query)
             .ToArrayAsync(cancellationToken);
 
         return result;

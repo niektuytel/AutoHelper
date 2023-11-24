@@ -225,11 +225,11 @@ internal class GarageService : IGarageService
     }
 
     // TODO: Need better investigation
-    public IEnumerable<GarageServiceType> GetRelatedServiceTypes(VehicleType vehicleType)
+    public IEnumerable<GarageServiceType> GetRelatedServiceTypes(VehicleLookupType vehicleType)
     {
         return vehicleType switch
         {
-            VehicleType.LightCar => new List<GarageServiceType>()
+            VehicleLookupType.LightCar => new List<GarageServiceType>()
             {
                 GarageServiceType.MOTServiceLightVehicle,
                 GarageServiceType.SmallMaintenance,

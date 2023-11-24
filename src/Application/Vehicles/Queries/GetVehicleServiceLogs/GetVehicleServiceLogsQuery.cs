@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 
-public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogItemDto[]>
+public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogDtoItem[]>
 {
     public GetVehicleServiceLogsQuery(string licensePlate)
     {
@@ -24,7 +24,7 @@ public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogItemDto[]>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogItemDto[]>
+public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogDtoItem[]>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -35,7 +35,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
         _mapper = mapper;
     }
 
-    public async Task<VehicleServiceLogItemDto[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogDtoItem[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
     {
         var licensePlate = request.LicensePlate.ToUpper().Replace(" ", "").Replace("-", "");
 
@@ -44,7 +44,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
             .Where(v => v.VehicleLicensePlate == licensePlate);
 
         var result = await _mapper
-            .ProjectTo<VehicleServiceLogItemDto>(entities)
+            .ProjectTo<VehicleServiceLogDtoItem>(entities)
             .ToArrayAsync(cancellationToken);
 
         return result;

@@ -5,11 +5,11 @@ using FluentValidation;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
 
-namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
+namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter
 {
-    public class UpsertVehicleLookupCommandValidator : AbstractValidator<UpsertVehicleLookupCommand>
+    public class UpsertVehicleLookupByReporterCommandValidator : AbstractValidator<UpsertVehicleLookupByReporterCommand>
     {
-        public UpsertVehicleLookupCommandValidator(IVehicleService vehicleInfoService)
+        public UpsertVehicleLookupByReporterCommandValidator(IVehicleService vehicleInfoService)
         {
             RuleFor(v => v.LicensePlate)
                 .NotEmpty().WithMessage("LicensePlate is required.")
@@ -23,17 +23,17 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
                 .NotEmpty().WithMessage("Location Longitude is required.")
                 .Must(lon => float.TryParse(lon, out _)).WithMessage("Invalid Longitude format.");
 
-            RuleFor(v => v.PhoneNumber)
+            RuleFor(v => v.ReporterPhoneNumber)
                 .MaximumLength(15).WithMessage("PhoneNumber must not exceed 15 characters.")
-                .When(v => !string.IsNullOrEmpty(v.PhoneNumber));
+                .When(v => !string.IsNullOrEmpty(v.ReporterPhoneNumber));
 
-            RuleFor(v => v.WhatsappNumber)
+            RuleFor(v => v.ReportWhatsappNumber)
                 .MaximumLength(15).WithMessage("WhatsappNumber must not exceed 15 characters.")
-                .When(v => !string.IsNullOrEmpty(v.WhatsappNumber));
+                .When(v => !string.IsNullOrEmpty(v.ReportWhatsappNumber));
 
-            RuleFor(v => v.EmailAddress)
+            RuleFor(v => v.ReporterEmailAddress)
                 .EmailAddress().WithMessage("Invalid Email Address format.")
-                .When(v => !string.IsNullOrEmpty(v.EmailAddress));
+                .When(v => !string.IsNullOrEmpty(v.ReporterEmailAddress));
 
             RuleFor(v => v)
                 .Must(HaveAtLeastOneContactMethod)
@@ -47,7 +47,7 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
                 .NotEmpty().WithMessage("LicensePlate is required.")
                 .CustomAsync(async (licensePlate, context, cancellationToken) => 
                 {
-                    var cmd = (UpsertVehicleLookupCommand)context.InstanceToValidate;
+                    var cmd = (UpsertVehicleLookupByReporterCommand)context.InstanceToValidate;
                     var vehicleInfo = await vehicleInfoService.GetVehicleByLicensePlateAsync(licensePlate);
 
                     // Store vehicleInfo in the validation context for reuse
@@ -66,7 +66,7 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
 
         }
 
-        private bool HaveValidLocation(UpsertVehicleLookupCommand command)
+        private bool HaveValidLocation(UpsertVehicleLookupByReporterCommand command)
         {
             if(
                 double.TryParse(command.Latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double lat) && 
@@ -81,11 +81,11 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup
             command.Location = null!;
             return false;
         }
-        private bool HaveAtLeastOneContactMethod(UpsertVehicleLookupCommand command)
+        private bool HaveAtLeastOneContactMethod(UpsertVehicleLookupByReporterCommand command)
         {
-            return !string.IsNullOrEmpty(command.EmailAddress) ||
-                   !string.IsNullOrEmpty(command.PhoneNumber) ||
-                   !string.IsNullOrEmpty(command.WhatsappNumber);
+            return !string.IsNullOrEmpty(command.ReporterEmailAddress) ||
+                   !string.IsNullOrEmpty(command.ReporterPhoneNumber) ||
+                   !string.IsNullOrEmpty(command.ReportWhatsappNumber);
         }
     }
 }

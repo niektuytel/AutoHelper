@@ -1,7 +1,7 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using Force.DeepCloner;
@@ -19,10 +19,6 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
     public const int DefaultDaysToCheck = -7;
     public const int DefaultStartingRowIndex = 0;
     public const int DefaultEndingRowIndex = -1;
-
-    public UpsertVehicleLookupsCommand()
-    {
-    }
 
     public UpsertVehicleLookupsCommand(
         int startRowIndex = DefaultStartingRowIndex,
@@ -52,18 +48,14 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
 public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleLookupsCommand>
 {
     private readonly IApplicationDbContext _dbContext;
-    private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
-    private readonly ILogger<UpsertVehicleLookupsCommandHandler> _logger;
     private int _maxInsertAmount;
     private int _maxUpdateAmount;
 
-    public UpsertVehicleLookupsCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, ILogger<UpsertVehicleLookupsCommandHandler> logger)
+    public UpsertVehicleLookupsCommandHandler(IApplicationDbContext dbContext, IVehicleService vehicleService)
     {
         _dbContext = dbContext;
-        _mapper = mapper;
         _vehicleService = vehicleService;
-        _logger = logger;
     }
 
     public async Task<Unit> Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
@@ -101,15 +93,15 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             count += vehicleBatch.Count();
             offset++;
 
+            // only unknown license plates are allowed
             if(_maxUpdateAmount == 0)
             {
-                // only unknown license plates are allowed
                 vehicleBatch = vehicleBatch.Where(x => licensePlates.ContainsKey(x.LicensePlate) == false);
             }
 
+            // only known license plates are allowed
             if(_maxInsertAmount == 0)
             {
-                // only known license plates are allowed
                 vehicleBatch = vehicleBatch.Where(x => licensePlates.ContainsKey(x.LicensePlate) == true);
             }
             
@@ -142,7 +134,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         return Unit.Value;
     }
 
-    private async Task<(List<VehicleLookupItem> Inserts, List<VehicleLookupItem> Updates)> ProcessLookupsAsync(IEnumerable<RDWVehicleBasics> vehicleBatch, UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
+    private async Task<(List<VehicleLookupItem> Inserts, List<VehicleLookupItem> Updates)> ProcessLookupsAsync(IEnumerable<VehicleBasicsDtoItem> vehicleBatch, UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
         var vehicleLookupsToUpdate = new List<VehicleLookupItem>();
         var vehicleLookupsToInsert = new List<VehicleLookupItem>();
@@ -208,7 +200,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         return (vehicleLookupsToInsert, vehicleLookupsToUpdate);
     }
 
-    private bool HasChanges(VehicleLookupItem? vehicleLookup, RDWVehicleBasics vehicle, DateTime upsertOnlyLastModifiedOlderThan)
+    private bool HasChanges(VehicleLookupItem? vehicleLookup, VehicleBasicsDtoItem vehicle, DateTime upsertOnlyLastModifiedOlderThan)
     {
         if (vehicleLookup == null)
         {

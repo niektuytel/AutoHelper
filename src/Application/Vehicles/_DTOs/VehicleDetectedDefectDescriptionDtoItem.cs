@@ -3,7 +3,7 @@
 namespace AutoHelper.Application.Vehicles._DTOs;
 
 
-public class RDWDetectedDefectDescription
+public class VehicleDetectedDefectDescriptionDtoItem
 {
     [JsonProperty("gebrek_identificatie")]
     public string Identification { get; set; }

@@ -3,7 +3,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "AutoHelper API",
-    "version": "1.0.0"
+    "version": "v1"
   },
   "paths": {
     "/api/GarageAccount/GetSettings": {
@@ -79,8 +79,19 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageServiceItemDto",
+                    "wrapped": true
+                  },
                   "items": {
-                    "$ref": "#/components/schemas/GarageServiceItemDto"
+                    "xml": {
+                      "name": "GarageServiceItemDto"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageServiceItemDto"
+                      }
+                    ]
                   }
                 }
               }
@@ -112,8 +123,19 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageEmployeeItemDto",
+                    "wrapped": true
+                  },
                   "items": {
-                    "$ref": "#/components/schemas/GarageEmployeeItemDto"
+                    "xml": {
+                      "name": "GarageEmployeeItemDto"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageEmployeeItemDto"
+                      }
+                    ]
                   }
                 }
               }
@@ -493,8 +515,19 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageServiceType",
+                    "wrapped": true
+                  },
                   "items": {
-                    "$ref": "#/components/schemas/GarageServiceType"
+                    "xml": {
+                      "name": "GarageServiceType"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageServiceType"
+                      }
+                    ]
                   }
                 }
               }
@@ -597,8 +630,15 @@
             "schema": {
               "type": "array",
               "nullable": true,
+              "xml": {
+                "name": "ArrayOfstring",
+                "wrapped": true
+              },
               "items": {
-                "type": "string"
+                "type": "string",
+                "xml": {
+                  "name": "string"
+                }
               }
             },
             "x-position": 8
@@ -662,8 +702,19 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageLookupSimplefiedDto",
+                    "wrapped": true
+                  },
                   "items": {
-                    "$ref": "#/components/schemas/GarageLookupSimplefiedDto"
+                    "xml": {
+                      "name": "GarageLookupSimplefiedDto"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageLookupSimplefiedDto"
+                      }
+                    ]
                   }
                 }
               }
@@ -773,6 +824,7 @@
           {
             "name": "maxInsertAmount",
             "in": "query",
+            "description": "-1 is all of them",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -783,6 +835,7 @@
           {
             "name": "maxUpdateAmount",
             "in": "query",
+            "description": "-1 is all of them",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -899,16 +952,18 @@
         }
       }
     },
-    "/api/Vehicle/GetBriefInfo": {
+    "/api/Vehicle/GetSpecificationsCard": {
       "get": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_GetBriefInfo",
+        "summary": "Retrieves a detailed specifications card for a vehicle based on its license plate. This card includes comprehensive information like model, make, year, and technical specifications.",
+        "operationId": "Vehicle_GetSpecificationsCard",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
+            "description": "The license plate of the vehicle to retrieve specifications for.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -918,11 +973,54 @@
         ],
         "responses": {
           "200": {
+            "description": "A detailed vehicle specifications card.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleSpecificationsCardItem"
+                }
+              }
+            }
+          },
+          "400": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleBriefDtoItem"
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/GetSpecifications": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "summary": "Fetches basic vehicle specifications such as engine details, dimensions, and fuel efficiency based on the license plate.",
+        "operationId": "Vehicle_GetSpecifications",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "description": "The vehicle's license plate for identifying the specific vehicle.",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A set of basic vehicle specifications.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleSpecificationsDtoItem"
                 }
               }
             }
@@ -945,11 +1043,13 @@
         "tags": [
           "Vehicle"
         ],
+        "summary": "Retrieves a list of service logs for a vehicle, detailing past maintenance and service history.",
         "operationId": "Vehicle_GetServiceLogs",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
+            "description": "License plate of the vehicle to obtain service logs for.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -959,13 +1059,24 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "An array of service log entries.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "xml": {
+                    "name": "ArrayOfVehicleServiceLogDtoItem",
+                    "wrapped": true
+                  },
                   "items": {
-                    "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                    "xml": {
+                      "name": "VehicleServiceLogDtoItem"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
+                      }
+                    ]
                   }
                 }
               }
@@ -989,11 +1100,13 @@
         "tags": [
           "Vehicle"
         ],
+        "summary": "Provides a timeline of important events in the vehicle's history, such as services, accidents, and ownership changes.",
         "operationId": "Vehicle_GetTimeline",
         "parameters": [
           {
             "name": "licensePlate",
             "in": "query",
+            "description": "License plate of the vehicle.",
             "schema": {
               "type": "string",
               "nullable": true
@@ -1003,6 +1116,7 @@
           {
             "name": "maxAmount",
             "in": "query",
+            "description": "Maximum number of timeline entries to retrieve.",
             "schema": {
               "type": "integer",
               "format": "int32",
@@ -1013,260 +1127,25 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "An array of timeline entries.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "xml": {
+                    "name": "ArrayOfVehicleTimelineDtoItem",
+                    "wrapped": true
+                  },
                   "items": {
-                    "$ref": "#/components/schemas/VehicleTimelineDtoItem"
+                    "xml": {
+                      "name": "VehicleTimelineDtoItem"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/VehicleTimelineDtoItem"
+                      }
+                    ]
                   }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/GetSpecifications": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetSpecifications",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VehicleSpecificationsDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertLookups": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertLookups",
-        "parameters": [
-          {
-            "name": "startRowIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "endRowIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 2
-          },
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 3
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 4
-          },
-          {
-            "name": "batchSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10000
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertTimeline": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertTimeline",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertTimelines": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertTimelines",
-        "parameters": [
-          {
-            "name": "startRowIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "endRowIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 2
-          },
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 3
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 4
-          },
-          {
-            "name": "batchSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1000
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
                 }
               }
             }
@@ -1289,6 +1168,7 @@
         "tags": [
           "Vehicle"
         ],
+        "summary": "Creates a new service log for a vehicle. This can include details of the service and an optional file attachment.",
         "operationId": "Vehicle_CreateServiceLog",
         "requestBody": {
           "content": {
@@ -1328,15 +1208,15 @@
                     "format": "int32",
                     "nullable": true
                   },
-                  "ServiceLogCommand.CreatedBy": {
+                  "ServiceLogCommand.ReporterName": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.PhoneNumber": {
+                  "ServiceLogCommand.ReporterPhoneNumber": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.EmailAddress": {
+                  "ServiceLogCommand.ReporterEmailAddress": {
                     "type": "string",
                     "nullable": true
                   },
@@ -1361,11 +1241,233 @@
         },
         "responses": {
           "200": {
+            "description": "The created vehicle service log entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
+                }
+              }
+            }
+          },
+          "400": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertLookups": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "summary": "Updates or inserts vehicle lookup data in batches. This method can handle large sets of data efficiently.",
+        "description": "Authorization: Admin-level permissions required. This operation is intended for bulk data management.",
+        "operationId": "Vehicle_UpsertLookups",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "description": "The starting index for processing records.\n0",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "description": "The ending index for processing records. Use -1 to process all records.\n-1",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "The maximum number of new records to insert. Use -1 to insert all.\n100",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "The maximum number of records to update. Use -1 to update all.\n50",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "description": "The size of each batch for processing records.\n500",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A message indicating the start of the upsert process.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertTimeline": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "summary": "Updates or creates a timeline entry for a specific vehicle based on its license plate.",
+        "description": "Authorization: Requires admin-level permissions. This method is used for managing historical data of vehicles.",
+        "operationId": "Vehicle_UpsertTimeline",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "description": "The license plate of the vehicle for which the timeline is being updated or created.",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A confirmation message indicating the successful update or creation of the timeline entry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/UpsertTimelines": {
+      "put": {
+        "tags": [
+          "Vehicle"
+        ],
+        "summary": "Performs bulk updates or insertions of vehicle timeline entries. This is useful for large-scale data operations.",
+        "description": "Authorization: Admin-level permissions required. Intended for comprehensive data management.",
+        "operationId": "Vehicle_UpsertTimelines",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "description": "The starting index for processing timeline entries.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "description": "The ending index for processing. Use -1 to process all entries.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "The maximum number of new timelines to insert. Use -1 for all.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "The maximum number of timelines to update. Use -1 for all.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "description": "The size of each batch for processing records.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A message indicating the start of the bulk operation on timelines.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -1388,12 +1490,15 @@
         "tags": [
           "Vehicle"
         ],
+        "summary": "Deletes a specific service log entry for a vehicle.",
+        "description": "Authorization: Requires admin-level permissions or ownership verification of the garage related to the service log.",
         "operationId": "Vehicle_DeleteServiceLog",
         "parameters": [
           {
             "name": "serviceLogId",
             "in": "path",
             "required": true,
+            "description": "The unique identifier of the service log entry to be deleted.",
             "schema": {
               "type": "string",
               "format": "guid"
@@ -1403,11 +1508,11 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The deleted vehicle service log entry.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleServiceLogItemDto"
+                  "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
                 }
               }
             }
@@ -1591,8 +1696,18 @@
           },
           "domainEvents": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/BaseEvent"
+              "xml": {
+                "name": "BaseEvent"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/BaseEvent"
+                }
+              ]
             }
           }
         }
@@ -1658,8 +1773,18 @@
           },
           "vehicles": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/VehicleLookupItem"
+              "xml": {
+                "name": "VehicleLookupItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/VehicleLookupItem"
+                }
+              ]
             }
           }
         }
@@ -1700,15 +1825,15 @@
               }
             ]
           },
-          "phoneNumber": {
+          "reporterPhoneNumber": {
             "type": "string",
             "nullable": true
           },
-          "whatsappNumber": {
+          "reporterWhatsappNumber": {
             "type": "string",
             "nullable": true
           },
-          "emailAddress": {
+          "reporterEmailAddress": {
             "type": "string",
             "nullable": true
           },
@@ -1732,20 +1857,50 @@
           },
           "timeline": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/VehicleTimelineItem"
+              "xml": {
+                "name": "VehicleTimelineItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/VehicleTimelineItem"
+                }
+              ]
             }
           },
           "conversations": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/ConversationItem"
+              "xml": {
+                "name": "ConversationItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ConversationItem"
+                }
+              ]
             }
           },
           "serviceLogs": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/VehicleServiceLogItem"
+              "xml": {
+                "name": "VehicleServiceLogItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/VehicleServiceLogItem"
+                }
+              ]
             }
           }
         }
@@ -2103,8 +2258,18 @@
               "coordinates": {
                 "type": "array",
                 "nullable": true,
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/Coordinate"
+                  "xml": {
+                    "name": "Coordinate"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Coordinate"
+                    }
+                  ]
                 }
               },
               "numPoints": {
@@ -2427,8 +2592,18 @@
               },
               "extraData": {
                 "type": "array",
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/TupleOfStringAndString"
+                  "xml": {
+                    "name": "Tuple`2"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/TupleOfStringAndString"
+                    }
+                  ]
                 }
               }
             }
@@ -2464,9 +2639,9 @@
           "High"
         ],
         "enum": [
-          0,
           1,
-          2
+          2,
+          3
         ]
       },
       "TupleOfStringAndString": {
@@ -2515,8 +2690,18 @@
               },
               "relatedServiceTypes": {
                 "type": "array",
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/GarageServiceType"
+                  "xml": {
+                    "name": "GarageServiceType"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GarageServiceType"
+                    }
+                  ]
                 }
               },
               "relatedServiceTypesString": {
@@ -2528,8 +2713,18 @@
               },
               "messages": {
                 "type": "array",
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/ConversationMessageItem"
+                  "xml": {
+                    "name": "ConversationMessageItem"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ConversationMessageItem"
+                    }
+                  ]
                 }
               }
             }
@@ -2582,8 +2777,18 @@
           },
           "knownServices": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
+              "xml": {
+                "name": "GarageServiceType"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageServiceType"
+                }
+              ]
             }
           },
           "knownServicesString": {
@@ -2616,9 +2821,15 @@
           "daysOfWeek": {
             "type": "array",
             "nullable": true,
+            "xml": {
+              "wrapped": true
+            },
             "items": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "xml": {
+                "name": "int"
+              }
             }
           },
           "daysOfWeekString": {
@@ -2676,8 +2887,18 @@
           },
           "conversations": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/ConversationItem"
+              "xml": {
+                "name": "ConversationItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ConversationItem"
+                }
+              ]
             }
           },
           "largeData": {
@@ -2902,7 +3123,8 @@
               "type",
               "date",
               "odometerReading",
-              "verification"
+              "status",
+              "reporterName"
             ],
             "properties": {
               "vehicleLicensePlate": {
@@ -2957,8 +3179,20 @@
                 "format": "int32",
                 "nullable": true
               },
-              "verification": {
-                "$ref": "#/components/schemas/VehicleServiceLogVerificationItem"
+              "status": {
+                "$ref": "#/components/schemas/VehicleServiceLogStatus"
+              },
+              "reporterName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reporterPhoneNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "reporterEmailAddress": {
+                "type": "string",
+                "nullable": true
               },
               "metaData": {
                 "type": "string"
@@ -2967,52 +3201,16 @@
           }
         ]
       },
-      "VehicleServiceLogVerificationItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "type",
-              "createdBy"
-            ],
-            "properties": {
-              "type": {
-                "$ref": "#/components/schemas/ServiceLogVerificationType"
-              },
-              "createdBy": {
-                "type": "string",
-                "minLength": 1
-              },
-              "phoneNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "emailAddress": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "ServiceLogVerificationType": {
+      "VehicleServiceLogStatus": {
         "type": "integer",
         "description": "",
         "x-enumNames": [
           "NotVerified",
-          "VerifiedByGarage",
-          "VerifiedByOwner",
-          "VerifiedByBoth"
+          "VerifiedByGarage"
         ],
         "enum": [
           0,
-          1,
-          2,
-          3
+          1
         ]
       },
       "GarageServiceItemDto": {
@@ -3059,14 +3257,34 @@
           },
           "workSchema": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+              "xml": {
+                "name": "GarageEmployeeWorkSchemaItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+                }
+              ]
             }
           },
           "workExperiences": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+              "xml": {
+                "name": "GarageEmployeeWorkExperienceItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                }
+              ]
             }
           }
         }
@@ -3215,8 +3433,18 @@
               },
               "employees": {
                 "type": "array",
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeItem"
+                  "xml": {
+                    "name": "GarageEmployeeItem"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GarageEmployeeItem"
+                    }
+                  ]
                 }
               }
             }
@@ -3250,14 +3478,34 @@
               },
               "workSchema": {
                 "type": "array",
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+                  "xml": {
+                    "name": "GarageEmployeeWorkSchemaItem"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItem"
+                    }
+                  ]
                 }
               },
               "workExperiences": {
                 "type": "array",
+                "xml": {
+                  "wrapped": true
+                },
                 "items": {
-                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                  "xml": {
+                    "name": "GarageEmployeeWorkExperienceItem"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItem"
+                    }
+                  ]
                 }
               }
             }
@@ -3402,14 +3650,34 @@
           },
           "workSchema": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItemDto"
+              "xml": {
+                "name": "GarageEmployeeWorkSchemaItemDto"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItemDto"
+                }
+              ]
             }
           },
           "workExperiences": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItemDto"
+              "xml": {
+                "name": "GarageEmployeeWorkExperienceItemDto"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItemDto"
+                }
+              ]
             }
           }
         }
@@ -3531,14 +3799,34 @@
           },
           "workSchema": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItemDto"
+              "xml": {
+                "name": "GarageEmployeeWorkSchemaItemDto"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkSchemaItemDto"
+                }
+              ]
             }
           },
           "workExperiences": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItemDto"
+              "xml": {
+                "name": "GarageEmployeeWorkExperienceItemDto"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageEmployeeWorkExperienceItemDto"
+                }
+              ]
             }
           }
         }
@@ -3549,8 +3837,18 @@
         "properties": {
           "items": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageLookupBriefDto"
+              "xml": {
+                "name": "GarageLookupBriefDto"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageLookupBriefDto"
+                }
+              ]
             }
           },
           "pageNumber": {
@@ -3600,15 +3898,31 @@
           },
           "daysOfWeek": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "xml": {
+                "name": "int"
+              }
             }
           },
           "knownServices": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
+              "xml": {
+                "name": "GarageServiceType"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageServiceType"
+                }
+              ]
             }
           },
           "rating": {
@@ -3675,15 +3989,31 @@
           },
           "knownServices": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
+              "xml": {
+                "name": "GarageServiceType"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageServiceType"
+                }
+              ]
             }
           },
           "daysOfWeek": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
               "type": "integer",
-              "format": "int32"
+              "format": "int32",
+              "xml": {
+                "name": "int"
+              }
             }
           },
           "phoneNumber": {
@@ -3772,8 +4102,18 @@
           },
           "services": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/SelectedService"
+              "xml": {
+                "name": "SelectedService"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SelectedService"
+                }
+              ]
             }
           }
         }
@@ -3827,8 +4167,18 @@
           },
           "relatedServiceTypes": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/GarageServiceType"
+              "xml": {
+                "name": "GarageServiceType"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageServiceType"
+                }
+              ]
             }
           },
           "senderWhatsAppNumberOrEmail": {
@@ -3859,12 +4209,15 @@
         "x-abstract": true,
         "additionalProperties": false
       },
-      "VehicleBriefDtoItem": {
+      "VehicleSpecificationsCardItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "licensePlate": {
             "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/VehicleLookupType"
           },
           "brand": {
             "type": "string"
@@ -3887,7 +4240,84 @@
           }
         }
       },
-      "VehicleServiceLogItemDto": {
+      "VehicleLookupType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "LightCar",
+          "HeavyCar",
+          "Taxi",
+          "Bus",
+          "Truck",
+          "Motorcycle",
+          "Tractor",
+          "Trailer",
+          "Caravan"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "VehicleSpecificationsDtoItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "VehicleInfoSectionItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/VehicleInfoSectionItem"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "VehicleInfoSectionItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "type": "array",
+              "xml": {
+                "name": "List`1"
+              },
+              "items": {
+                "type": "string",
+                "xml": {
+                  "name": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VehicleServiceLogDtoItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3937,38 +4367,18 @@
           },
           "extraData": {
             "type": "array",
+            "xml": {
+              "wrapped": true
+            },
             "items": {
-              "$ref": "#/components/schemas/TupleOfStringAndString"
-            }
-          }
-        }
-      },
-      "VehicleSpecificationsDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/VehicleInfoSectionItem"
-            }
-          }
-        }
-      },
-      "VehicleInfoSectionItem": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "values": {
-            "type": "array",
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "xml": {
+                "name": "Tuple`2"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TupleOfStringAndString"
+                }
+              ]
             }
           }
         }

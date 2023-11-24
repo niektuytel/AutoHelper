@@ -1,4 +1,5 @@
-﻿using App.Authorization;
+﻿using System.Reflection;
+using App.Authorization;
 using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire;
@@ -100,6 +101,13 @@ public static class ConfigureServices
         services.AddOpenApiDocument(configure =>
         {
             configure.Title = "AutoHelper API";
+            configure.Version = "v1";
+            configure.XmlDocumentationFormatting = Namotion.Reflection.XmlDocsFormattingMode.Markdown;
+            configure.IgnoreObsoleteProperties = true;
+            configure.GenerateXmlObjects = true;
+            configure.GenerateExamples = true;
+
+
             configure.AddSecurity("OAuth2", new[] { audience }, new OpenApiSecurityScheme
             {
                 Type = OpenApiSecuritySchemeType.OAuth2,

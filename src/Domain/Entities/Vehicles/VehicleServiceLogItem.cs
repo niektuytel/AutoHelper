@@ -9,7 +9,6 @@ public class VehicleServiceLogItem: BaseAuditableEntity
 {
     public VehicleServiceLogItem()
     {
-        Verification = new VehicleServiceLogVerificationItem();
     }
 
     [Required]
@@ -44,7 +43,14 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
     [Required]
-    public VehicleServiceLogVerificationItem Verification { get; set; }
+    public VehicleServiceLogStatus Status { get; set; } = VehicleServiceLogStatus.NotVerified;
+
+    [Required]
+    public string ReporterName { get; set; } = null!;
+
+    public string? ReporterPhoneNumber { get; set; } = null!;
+
+    public string? ReporterEmailAddress { get; set; } = null!;
 
     public string MetaData { get; set; } = "";
 

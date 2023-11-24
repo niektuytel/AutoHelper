@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages.Commands.StartConversation;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.WebUI.Models;
 using GoogleApi.Entities.Search.Common;
@@ -39,7 +39,7 @@ public class MessageController : ApiControllerBase
         string[] jobNames = { "" };
         foreach (var vehicle in vehicles)
         {
-            var upsertVehicle = new UpsertVehicleLookupCommand(
+            var upsertVehicle = new UpsertVehicleLookupByReporterCommand(
                 vehicle.LicensePlate,
                 vehicle.Latitude,
                 vehicle.Longitude,

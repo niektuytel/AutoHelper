@@ -16,7 +16,7 @@ using AutoMapper;
 namespace AutoHelper.Application.Vehicles._DTOs;
 
 
-public class VehicleServiceLogItemDto : IMapFrom<VehicleServiceLogItem>
+public class VehicleServiceLogDtoItem : IMapFrom<VehicleServiceLogItem>
 {
     public string GarageLookupName { get; set; }
     public string GarageLookupIdentifier { get; set; }
@@ -28,7 +28,7 @@ public class VehicleServiceLogItemDto : IMapFrom<VehicleServiceLogItem>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<VehicleServiceLogItem, VehicleServiceLogItemDto>()
+        profile.CreateMap<VehicleServiceLogItem, VehicleServiceLogDtoItem>()
             .ForMember(d => d.GarageLookupName, opt => opt.MapFrom(s => s.GarageLookup!.Name))
             .ForMember(d => d.GarageLookupIdentifier, opt => opt.MapFrom(s => s.GarageLookupIdentifier))
             .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))

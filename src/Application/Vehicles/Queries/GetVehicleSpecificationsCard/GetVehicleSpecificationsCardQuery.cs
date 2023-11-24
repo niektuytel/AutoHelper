@@ -5,17 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities;
 using AutoMapper;
 using FluentValidation.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 
-public record GetVehicleBriefInfoQuery : IRequest<VehicleBriefDtoItem>
+public record GetVehicleSpecificationsCardQuery : IRequest<VehicleSpecificationsCardItem>
 {
-    public GetVehicleBriefInfoQuery(string licensePlate)
+    public GetVehicleSpecificationsCardQuery(string licensePlate)
     {
         LicensePlate = licensePlate;
     }
@@ -23,7 +24,7 @@ public record GetVehicleBriefInfoQuery : IRequest<VehicleBriefDtoItem>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefInfoQuery, VehicleBriefDtoItem>
+public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleSpecificationsCardQuery, VehicleSpecificationsCardItem>
 {
     private readonly IVehicleService _vehicleService;
 
@@ -32,7 +33,7 @@ public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefIn
         _vehicleService = vehicleService;
     }
 
-    public async Task<VehicleBriefDtoItem> Handle(GetVehicleBriefInfoQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleSpecificationsCardItem> Handle(GetVehicleSpecificationsCardQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -42,7 +43,7 @@ public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleBriefIn
         catch (Exception)
         {
             throw new ValidationException(new List<ValidationFailure>() {
-                new(nameof(VehicleBriefDtoItem), $"Search.LicensePlate.NotFound")
+                new(nameof(VehicleSpecificationsCardItem), $"Search.LicensePlate.NotFound")// use localization
             });
         }
     }

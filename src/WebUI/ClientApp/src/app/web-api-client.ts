@@ -594,6 +594,10 @@ export interface IGarageClient {
 
     getLookupsStatus(): Promise<GarageLookupsStatusDto>;
 
+    /**
+     * @param maxInsertAmount (optional) -1 is all of them
+     * @param maxUpdateAmount (optional) -1 is all of them
+     */
     upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string>;
 }
 
@@ -865,6 +869,10 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageLookupsStatusDto>(null as any);
     }
 
+    /**
+     * @param maxInsertAmount (optional) -1 is all of them
+     * @param maxUpdateAmount (optional) -1 is all of them
+     */
     upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Garage/UpsertLookups?";
         if (maxInsertAmount === null)
@@ -1028,23 +1036,95 @@ export class MessageClient implements IMessageClient {
 
 export interface IVehicleClient {
 
-    getBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem>;
+    /**
+     * Retrieves a detailed specifications card for a vehicle based on its license plate. This card includes comprehensive information like model, make, year, and technical specifications.
+     * @param licensePlate (optional) The license plate of the vehicle to retrieve specifications for.
+     * @return A detailed vehicle specifications card.
+     */
+    getSpecificationsCard(licensePlate: string | null | undefined): Promise<VehicleSpecificationsCardItem>;
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]>;
+    /**
+     * Fetches basic vehicle specifications such as engine details, dimensions, and fuel efficiency based on the license plate.
+     * @param licensePlate (optional) The vehicle's license plate for identifying the specific vehicle.
+     * @return A set of basic vehicle specifications.
+     */
+    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDtoItem>;
 
+    /**
+     * Retrieves a list of service logs for a vehicle, detailing past maintenance and service history.
+     * @param licensePlate (optional) License plate of the vehicle to obtain service logs for.
+     * @return An array of service log entries.
+     */
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]>;
+
+    /**
+     * Provides a timeline of important events in the vehicle's history, such as services, accidents, and ownership changes.
+     * @param licensePlate (optional) License plate of the vehicle.
+     * @param maxAmount (optional) Maximum number of timeline entries to retrieve.
+     * @return An array of timeline entries.
+     */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
 
-    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto>;
+    /**
+     * Creates a new service log for a vehicle. This can include details of the service and an optional file attachment.
+     * @param serviceLogCommand_VehicleLicensePlate (optional) 
+     * @param serviceLogCommand_GarageLookupIdentifier (optional) 
+     * @param serviceLogCommand_Type (optional) 
+     * @param serviceLogCommand_Description (optional) 
+     * @param serviceLogCommand_Date (optional) 
+     * @param serviceLogCommand_ExpectedNextDate (optional) 
+     * @param serviceLogCommand_OdometerReading (optional) 
+     * @param serviceLogCommand_ExpectedNextOdometerReading (optional) 
+     * @param serviceLogCommand_ReporterName (optional) 
+     * @param serviceLogCommand_ReporterPhoneNumber (optional) 
+     * @param serviceLogCommand_ReporterEmailAddress (optional) 
+     * @param serviceLogCommand_Attachment_FileName (optional) 
+     * @param serviceLogCommand_Attachment_FileData (optional) 
+     * @param attachmentFile (optional) 
+     * @return The created vehicle service log entry.
+     */
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
 
+    /**
+     * Updates or inserts vehicle lookup data in batches. This method can handle large sets of data efficiently.
+     * @param startRowIndex (optional) The starting index for processing records.
+    0
+     * @param endRowIndex (optional) The ending index for processing records. Use -1 to process all records.
+    -1
+     * @param maxInsertAmount (optional) The maximum number of new records to insert. Use -1 to insert all.
+    100
+     * @param maxUpdateAmount (optional) The maximum number of records to update. Use -1 to update all.
+    50
+     * @param batchSize (optional) The size of each batch for processing records.
+    500
+     * @return A message indicating the start of the upsert process.
+     */
     upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
+    /**
+     * Updates or creates a timeline entry for a specific vehicle based on its license plate.
+     * @param licensePlate (optional) The license plate of the vehicle for which the timeline is being updated or created.
+     * @return A confirmation message indicating the successful update or creation of the timeline entry.
+     */
     upsertTimeline(licensePlate: string | null | undefined): Promise<string>;
 
+    /**
+     * Performs bulk updates or insertions of vehicle timeline entries. This is useful for large-scale data operations.
+     * @param startRowIndex (optional) The starting index for processing timeline entries.
+     * @param endRowIndex (optional) The ending index for processing. Use -1 to process all entries.
+     * @param maxInsertAmount (optional) The maximum number of new timelines to insert. Use -1 for all.
+     * @param maxUpdateAmount (optional) The maximum number of timelines to update. Use -1 for all.
+     * @param batchSize (optional) The size of each batch for processing records.
+     * @return A message indicating the start of the bulk operation on timelines.
+     */
     upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_CreatedBy: string | null | undefined, serviceLogCommand_PhoneNumber: string | null | undefined, serviceLogCommand_EmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto>;
-
-    deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogItemDto>;
+    /**
+     * Deletes a specific service log entry for a vehicle.
+     * @param serviceLogId The unique identifier of the service log entry to be deleted.
+     * @return The deleted vehicle service log entry.
+     */
+    deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogDtoItem>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1057,8 +1137,13 @@ export class VehicleClient implements IVehicleClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getBriefInfo(licensePlate: string | null | undefined): Promise<VehicleBriefDtoItem> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetBriefInfo?";
+    /**
+     * Retrieves a detailed specifications card for a vehicle based on its license plate. This card includes comprehensive information like model, make, year, and technical specifications.
+     * @param licensePlate (optional) The license plate of the vehicle to retrieve specifications for.
+     * @return A detailed vehicle specifications card.
+     */
+    getSpecificationsCard(licensePlate: string | null | undefined): Promise<VehicleSpecificationsCardItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetSpecificationsCard?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -1071,18 +1156,18 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetBriefInfo(_response);
+            return this.processGetSpecificationsCard(_response);
         });
     }
 
-    protected processGetBriefInfo(response: Response): Promise<VehicleBriefDtoItem> {
+    protected processGetSpecificationsCard(response: Response): Promise<VehicleSpecificationsCardItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleBriefDtoItem.fromJS(resultData200);
+            result200 = VehicleSpecificationsCardItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -1097,10 +1182,63 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleBriefDtoItem>(null as any);
+        return Promise.resolve<VehicleSpecificationsCardItem>(null as any);
     }
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogItemDto[]> {
+    /**
+     * Fetches basic vehicle specifications such as engine details, dimensions, and fuel efficiency based on the license plate.
+     * @param licensePlate (optional) The vehicle's license plate for identifying the specific vehicle.
+     * @return A set of basic vehicle specifications.
+     */
+    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDtoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetSpecifications?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSpecifications(_response);
+        });
+    }
+
+    protected processGetSpecifications(response: Response): Promise<VehicleSpecificationsDtoItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleSpecificationsDtoItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleSpecificationsDtoItem>(null as any);
+    }
+
+    /**
+     * Retrieves a list of service logs for a vehicle, detailing past maintenance and service history.
+     * @param licensePlate (optional) License plate of the vehicle to obtain service logs for.
+     * @return An array of service log entries.
+     */
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
@@ -1118,7 +1256,7 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogItemDto[]> {
+    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogDtoItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1128,7 +1266,7 @@ export class VehicleClient implements IVehicleClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(VehicleServiceLogItemDto.fromJS(item));
+                    result200!.push(VehicleServiceLogDtoItem.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1147,9 +1285,15 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleServiceLogItemDto[]>(null as any);
+        return Promise.resolve<VehicleServiceLogDtoItem[]>(null as any);
     }
 
+    /**
+     * Provides a timeline of important events in the vehicle's history, such as services, accidents, and ownership changes.
+     * @param licensePlate (optional) License plate of the vehicle.
+     * @param maxAmount (optional) Maximum number of timeline entries to retrieve.
+     * @return An array of timeline entries.
+     */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1204,32 +1348,83 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleTimelineDtoItem[]>(null as any);
     }
 
-    getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/GetSpecifications?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+    /**
+     * Creates a new service log for a vehicle. This can include details of the service and an optional file attachment.
+     * @param serviceLogCommand_VehicleLicensePlate (optional) 
+     * @param serviceLogCommand_GarageLookupIdentifier (optional) 
+     * @param serviceLogCommand_Type (optional) 
+     * @param serviceLogCommand_Description (optional) 
+     * @param serviceLogCommand_Date (optional) 
+     * @param serviceLogCommand_ExpectedNextDate (optional) 
+     * @param serviceLogCommand_OdometerReading (optional) 
+     * @param serviceLogCommand_ExpectedNextOdometerReading (optional) 
+     * @param serviceLogCommand_ReporterName (optional) 
+     * @param serviceLogCommand_ReporterPhoneNumber (optional) 
+     * @param serviceLogCommand_ReporterEmailAddress (optional) 
+     * @param serviceLogCommand_Attachment_FileName (optional) 
+     * @param serviceLogCommand_Attachment_FileData (optional) 
+     * @param attachmentFile (optional) 
+     * @return The created vehicle service log entry.
+     */
+    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
+        let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = new FormData();
+        if (serviceLogCommand_VehicleLicensePlate !== null && serviceLogCommand_VehicleLicensePlate !== undefined)
+            content_.append("ServiceLogCommand.VehicleLicensePlate", serviceLogCommand_VehicleLicensePlate.toString());
+        if (serviceLogCommand_GarageLookupIdentifier !== null && serviceLogCommand_GarageLookupIdentifier !== undefined)
+            content_.append("ServiceLogCommand.GarageLookupIdentifier", serviceLogCommand_GarageLookupIdentifier.toString());
+        if (serviceLogCommand_Type === null || serviceLogCommand_Type === undefined)
+            throw new Error("The parameter 'serviceLogCommand_Type' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.Type", serviceLogCommand_Type.toString());
+        if (serviceLogCommand_Description !== null && serviceLogCommand_Description !== undefined)
+            content_.append("ServiceLogCommand.Description", serviceLogCommand_Description.toString());
+        if (serviceLogCommand_Date !== null && serviceLogCommand_Date !== undefined)
+            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toString());
+        if (serviceLogCommand_ExpectedNextDate !== null && serviceLogCommand_ExpectedNextDate !== undefined)
+            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toString());
+        if (serviceLogCommand_OdometerReading === null || serviceLogCommand_OdometerReading === undefined)
+            throw new Error("The parameter 'serviceLogCommand_OdometerReading' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.OdometerReading", serviceLogCommand_OdometerReading.toString());
+        if (serviceLogCommand_ExpectedNextOdometerReading !== null && serviceLogCommand_ExpectedNextOdometerReading !== undefined)
+            content_.append("ServiceLogCommand.ExpectedNextOdometerReading", serviceLogCommand_ExpectedNextOdometerReading.toString());
+        if (serviceLogCommand_ReporterName !== null && serviceLogCommand_ReporterName !== undefined)
+            content_.append("ServiceLogCommand.ReporterName", serviceLogCommand_ReporterName.toString());
+        if (serviceLogCommand_ReporterPhoneNumber !== null && serviceLogCommand_ReporterPhoneNumber !== undefined)
+            content_.append("ServiceLogCommand.ReporterPhoneNumber", serviceLogCommand_ReporterPhoneNumber.toString());
+        if (serviceLogCommand_ReporterEmailAddress !== null && serviceLogCommand_ReporterEmailAddress !== undefined)
+            content_.append("ServiceLogCommand.ReporterEmailAddress", serviceLogCommand_ReporterEmailAddress.toString());
+        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
+        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
+        if (attachmentFile !== null && attachmentFile !== undefined)
+            content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
+
         let options_: RequestInit = {
-            method: "GET",
+            body: content_,
+            method: "POST",
             headers: {
                 "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetSpecifications(_response);
+            return this.processCreateServiceLog(_response);
         });
     }
 
-    protected processGetSpecifications(response: Response): Promise<VehicleSpecificationsDto> {
+    protected processCreateServiceLog(response: Response): Promise<VehicleServiceLogDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleSpecificationsDto.fromJS(resultData200);
+            result200 = VehicleServiceLogDtoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -1244,9 +1439,23 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleSpecificationsDto>(null as any);
+        return Promise.resolve<VehicleServiceLogDtoItem>(null as any);
     }
 
+    /**
+     * Updates or inserts vehicle lookup data in batches. This method can handle large sets of data efficiently.
+     * @param startRowIndex (optional) The starting index for processing records.
+    0
+     * @param endRowIndex (optional) The ending index for processing records. Use -1 to process all records.
+    -1
+     * @param maxInsertAmount (optional) The maximum number of new records to insert. Use -1 to insert all.
+    100
+     * @param maxUpdateAmount (optional) The maximum number of records to update. Use -1 to update all.
+    50
+     * @param batchSize (optional) The size of each batch for processing records.
+    500
+     * @return A message indicating the start of the upsert process.
+     */
     upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
         if (startRowIndex === null)
@@ -1309,6 +1518,11 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<string>(null as any);
     }
 
+    /**
+     * Updates or creates a timeline entry for a specific vehicle based on its license plate.
+     * @param licensePlate (optional) The license plate of the vehicle for which the timeline is being updated or created.
+     * @return A confirmation message indicating the successful update or creation of the timeline entry.
+     */
     upsertTimeline(licensePlate: string | null | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Vehicle/UpsertTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)
@@ -1353,6 +1567,15 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<string>(null as any);
     }
 
+    /**
+     * Performs bulk updates or insertions of vehicle timeline entries. This is useful for large-scale data operations.
+     * @param startRowIndex (optional) The starting index for processing timeline entries.
+     * @param endRowIndex (optional) The ending index for processing. Use -1 to process all entries.
+     * @param maxInsertAmount (optional) The maximum number of new timelines to insert. Use -1 for all.
+     * @param maxUpdateAmount (optional) The maximum number of timelines to update. Use -1 for all.
+     * @param batchSize (optional) The size of each batch for processing records.
+     * @return A message indicating the start of the bulk operation on timelines.
+     */
     upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Vehicle/UpsertTimelines?";
         if (startRowIndex === null)
@@ -1415,83 +1638,12 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<string>(null as any);
     }
 
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_CreatedBy: string | null | undefined, serviceLogCommand_PhoneNumber: string | null | undefined, serviceLogCommand_EmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogItemDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = new FormData();
-        if (serviceLogCommand_VehicleLicensePlate !== null && serviceLogCommand_VehicleLicensePlate !== undefined)
-            content_.append("ServiceLogCommand.VehicleLicensePlate", serviceLogCommand_VehicleLicensePlate.toString());
-        if (serviceLogCommand_GarageLookupIdentifier !== null && serviceLogCommand_GarageLookupIdentifier !== undefined)
-            content_.append("ServiceLogCommand.GarageLookupIdentifier", serviceLogCommand_GarageLookupIdentifier.toString());
-        if (serviceLogCommand_Type === null || serviceLogCommand_Type === undefined)
-            throw new Error("The parameter 'serviceLogCommand_Type' cannot be null.");
-        else
-            content_.append("ServiceLogCommand.Type", serviceLogCommand_Type.toString());
-        if (serviceLogCommand_Description !== null && serviceLogCommand_Description !== undefined)
-            content_.append("ServiceLogCommand.Description", serviceLogCommand_Description.toString());
-        if (serviceLogCommand_Date !== null && serviceLogCommand_Date !== undefined)
-            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toString());
-        if (serviceLogCommand_ExpectedNextDate !== null && serviceLogCommand_ExpectedNextDate !== undefined)
-            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toString());
-        if (serviceLogCommand_OdometerReading === null || serviceLogCommand_OdometerReading === undefined)
-            throw new Error("The parameter 'serviceLogCommand_OdometerReading' cannot be null.");
-        else
-            content_.append("ServiceLogCommand.OdometerReading", serviceLogCommand_OdometerReading.toString());
-        if (serviceLogCommand_ExpectedNextOdometerReading !== null && serviceLogCommand_ExpectedNextOdometerReading !== undefined)
-            content_.append("ServiceLogCommand.ExpectedNextOdometerReading", serviceLogCommand_ExpectedNextOdometerReading.toString());
-        if (serviceLogCommand_CreatedBy !== null && serviceLogCommand_CreatedBy !== undefined)
-            content_.append("ServiceLogCommand.CreatedBy", serviceLogCommand_CreatedBy.toString());
-        if (serviceLogCommand_PhoneNumber !== null && serviceLogCommand_PhoneNumber !== undefined)
-            content_.append("ServiceLogCommand.PhoneNumber", serviceLogCommand_PhoneNumber.toString());
-        if (serviceLogCommand_EmailAddress !== null && serviceLogCommand_EmailAddress !== undefined)
-            content_.append("ServiceLogCommand.EmailAddress", serviceLogCommand_EmailAddress.toString());
-        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
-            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
-        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
-            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
-        if (attachmentFile !== null && attachmentFile !== undefined)
-            content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateServiceLog(_response);
-        });
-    }
-
-    protected processCreateServiceLog(response: Response): Promise<VehicleServiceLogItemDto> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleServiceLogItemDto.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<VehicleServiceLogItemDto>(null as any);
-    }
-
-    deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogItemDto> {
+    /**
+     * Deletes a specific service log entry for a vehicle.
+     * @param serviceLogId The unique identifier of the service log entry to be deleted.
+     * @return The deleted vehicle service log entry.
+     */
+    deleteServiceLog(serviceLogId: string): Promise<VehicleServiceLogDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/DeleteServiceLog/{serviceLogId}";
         if (serviceLogId === undefined || serviceLogId === null)
             throw new Error("The parameter 'serviceLogId' must be defined.");
@@ -1510,14 +1662,14 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processDeleteServiceLog(response: Response): Promise<VehicleServiceLogItemDto> {
+    protected processDeleteServiceLog(response: Response): Promise<VehicleServiceLogDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleServiceLogItemDto.fromJS(resultData200);
+            result200 = VehicleServiceLogDtoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -1532,7 +1684,7 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleServiceLogItemDto>(null as any);
+        return Promise.resolve<VehicleServiceLogDtoItem>(null as any);
     }
 }
 
@@ -1980,9 +2132,9 @@ export class VehicleLookupItem implements IVehicleLookupItem {
     dateOfMOTExpiry!: Date;
     dateOfAscription!: Date;
     location?: Geometry | undefined;
-    phoneNumber?: string | undefined;
-    whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
+    reporterPhoneNumber?: string | undefined;
+    reporterWhatsappNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
     created!: Date;
     createdBy?: string | undefined;
     lastModified!: Date;
@@ -2011,9 +2163,9 @@ export class VehicleLookupItem implements IVehicleLookupItem {
             this.dateOfMOTExpiry = _data["dateOfMOTExpiry"] ? new Date(_data["dateOfMOTExpiry"].toString()) : <any>undefined;
             this.dateOfAscription = _data["dateOfAscription"] ? new Date(_data["dateOfAscription"].toString()) : <any>undefined;
             this.location = _data["location"] ? Geometry.fromJS(_data["location"]) : <any>undefined;
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsappNumber = _data["whatsappNumber"];
-            this.emailAddress = _data["emailAddress"];
+            this.reporterPhoneNumber = _data["reporterPhoneNumber"];
+            this.reporterWhatsappNumber = _data["reporterWhatsappNumber"];
+            this.reporterEmailAddress = _data["reporterEmailAddress"];
             this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
             this.createdBy = _data["createdBy"];
             this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
@@ -2049,9 +2201,9 @@ export class VehicleLookupItem implements IVehicleLookupItem {
         data["dateOfMOTExpiry"] = this.dateOfMOTExpiry ? this.dateOfMOTExpiry.toISOString() : <any>undefined;
         data["dateOfAscription"] = this.dateOfAscription ? this.dateOfAscription.toISOString() : <any>undefined;
         data["location"] = this.location ? this.location.toJSON() : <any>undefined;
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsappNumber"] = this.whatsappNumber;
-        data["emailAddress"] = this.emailAddress;
+        data["reporterPhoneNumber"] = this.reporterPhoneNumber;
+        data["reporterWhatsappNumber"] = this.reporterWhatsappNumber;
+        data["reporterEmailAddress"] = this.reporterEmailAddress;
         data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         data["createdBy"] = this.createdBy;
         data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
@@ -2080,9 +2232,9 @@ export interface IVehicleLookupItem {
     dateOfMOTExpiry: Date;
     dateOfAscription: Date;
     location?: Geometry | undefined;
-    phoneNumber?: string | undefined;
-    whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
+    reporterPhoneNumber?: string | undefined;
+    reporterWhatsappNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
     created: Date;
     createdBy?: string | undefined;
     lastModified: Date;
@@ -2923,9 +3075,9 @@ export enum VehicleTimelineType {
 }
 
 export enum VehicleTimelinePriority {
-    Low = 0,
-    Medium = 1,
-    High = 2,
+    Low = 1,
+    Medium = 2,
+    High = 3,
 }
 
 export class TupleOfStringAndString implements ITupleOfStringAndString {
@@ -3421,14 +3573,14 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
     expectedNextDate?: Date | undefined;
     odometerReading!: number;
     expectedNextOdometerReading?: number | undefined;
-    verification!: VehicleServiceLogVerificationItem;
+    status!: VehicleServiceLogStatus;
+    reporterName!: string;
+    reporterPhoneNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
     metaData?: string;
 
     constructor(data?: IVehicleServiceLogItem) {
         super(data);
-        if (!data) {
-            this.verification = new VehicleServiceLogVerificationItem();
-        }
     }
 
     init(_data?: any) {
@@ -3446,7 +3598,10 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
             this.expectedNextDate = _data["expectedNextDate"] ? new Date(_data["expectedNextDate"].toString()) : <any>undefined;
             this.odometerReading = _data["odometerReading"];
             this.expectedNextOdometerReading = _data["expectedNextOdometerReading"];
-            this.verification = _data["verification"] ? VehicleServiceLogVerificationItem.fromJS(_data["verification"]) : new VehicleServiceLogVerificationItem();
+            this.status = _data["status"];
+            this.reporterName = _data["reporterName"];
+            this.reporterPhoneNumber = _data["reporterPhoneNumber"];
+            this.reporterEmailAddress = _data["reporterEmailAddress"];
             this.metaData = _data["metaData"];
         }
     }
@@ -3472,7 +3627,10 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
         data["expectedNextDate"] = this.expectedNextDate ? this.expectedNextDate.toISOString() : <any>undefined;
         data["odometerReading"] = this.odometerReading;
         data["expectedNextOdometerReading"] = this.expectedNextOdometerReading;
-        data["verification"] = this.verification ? this.verification.toJSON() : <any>undefined;
+        data["status"] = this.status;
+        data["reporterName"] = this.reporterName;
+        data["reporterPhoneNumber"] = this.reporterPhoneNumber;
+        data["reporterEmailAddress"] = this.reporterEmailAddress;
         data["metaData"] = this.metaData;
         super.toJSON(data);
         return data;
@@ -3492,60 +3650,16 @@ export interface IVehicleServiceLogItem extends IBaseAuditableEntity {
     expectedNextDate?: Date | undefined;
     odometerReading: number;
     expectedNextOdometerReading?: number | undefined;
-    verification: VehicleServiceLogVerificationItem;
+    status: VehicleServiceLogStatus;
+    reporterName: string;
+    reporterPhoneNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
     metaData?: string;
 }
 
-export class VehicleServiceLogVerificationItem extends BaseEntity implements IVehicleServiceLogVerificationItem {
-    type!: ServiceLogVerificationType;
-    createdBy!: string;
-    phoneNumber?: string | undefined;
-    emailAddress?: string | undefined;
-
-    constructor(data?: IVehicleServiceLogVerificationItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.type = _data["type"];
-            this.createdBy = _data["createdBy"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.emailAddress = _data["emailAddress"];
-        }
-    }
-
-    static fromJS(data: any): VehicleServiceLogVerificationItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleServiceLogVerificationItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["type"] = this.type;
-        data["createdBy"] = this.createdBy;
-        data["phoneNumber"] = this.phoneNumber;
-        data["emailAddress"] = this.emailAddress;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IVehicleServiceLogVerificationItem extends IBaseEntity {
-    type: ServiceLogVerificationType;
-    createdBy: string;
-    phoneNumber?: string | undefined;
-    emailAddress?: string | undefined;
-}
-
-export enum ServiceLogVerificationType {
+export enum VehicleServiceLogStatus {
     NotVerified = 0,
     VerifiedByGarage = 1,
-    VerifiedByOwner = 2,
-    VerifiedByBoth = 3,
 }
 
 export class GarageServiceItemDto implements IGarageServiceItemDto {
@@ -5170,15 +5284,16 @@ export abstract class IQueueService implements IIQueueService {
 export interface IIQueueService {
 }
 
-export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
+export class VehicleSpecificationsCardItem implements IVehicleSpecificationsCardItem {
     licensePlate?: string;
+    type?: VehicleLookupType;
     brand?: string;
     consumption?: string;
     mileage?: string;
     dateOfMOTExpiry?: Date | undefined;
     dateOfAscription?: Date | undefined;
 
-    constructor(data?: IVehicleBriefDtoItem) {
+    constructor(data?: IVehicleSpecificationsCardItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5190,6 +5305,7 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     init(_data?: any) {
         if (_data) {
             this.licensePlate = _data["licensePlate"];
+            this.type = _data["type"];
             this.brand = _data["brand"];
             this.consumption = _data["consumption"];
             this.mileage = _data["mileage"];
@@ -5198,9 +5314,9 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
         }
     }
 
-    static fromJS(data: any): VehicleBriefDtoItem {
+    static fromJS(data: any): VehicleSpecificationsCardItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleBriefDtoItem();
+        let result = new VehicleSpecificationsCardItem();
         result.init(data);
         return result;
     }
@@ -5208,6 +5324,7 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["licensePlate"] = this.licensePlate;
+        data["type"] = this.type;
         data["brand"] = this.brand;
         data["consumption"] = this.consumption;
         data["mileage"] = this.mileage;
@@ -5217,8 +5334,9 @@ export class VehicleBriefDtoItem implements IVehicleBriefDtoItem {
     }
 }
 
-export interface IVehicleBriefDtoItem {
+export interface IVehicleSpecificationsCardItem {
     licensePlate?: string;
+    type?: VehicleLookupType;
     brand?: string;
     consumption?: string;
     mileage?: string;
@@ -5226,7 +5344,112 @@ export interface IVehicleBriefDtoItem {
     dateOfAscription?: Date | undefined;
 }
 
-export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
+export enum VehicleLookupType {
+    Other = 0,
+    LightCar = 1,
+    HeavyCar = 2,
+    Taxi = 3,
+    Bus = 4,
+    Truck = 5,
+    Motorcycle = 6,
+    Tractor = 7,
+    Trailer = 8,
+    Caravan = 9,
+}
+
+export class VehicleSpecificationsDtoItem implements IVehicleSpecificationsDtoItem {
+    data?: VehicleInfoSectionItem[];
+
+    constructor(data?: IVehicleSpecificationsDtoItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(VehicleInfoSectionItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleSpecificationsDtoItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleSpecificationsDtoItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IVehicleSpecificationsDtoItem {
+    data?: VehicleInfoSectionItem[];
+}
+
+export class VehicleInfoSectionItem implements IVehicleInfoSectionItem {
+    title?: string;
+    values?: string[][];
+
+    constructor(data?: IVehicleInfoSectionItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            if (Array.isArray(_data["values"])) {
+                this.values = [] as any;
+                for (let item of _data["values"])
+                    this.values!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): VehicleInfoSectionItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleInfoSectionItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        if (Array.isArray(this.values)) {
+            data["values"] = [];
+            for (let item of this.values)
+                data["values"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IVehicleInfoSectionItem {
+    title?: string;
+    values?: string[][];
+}
+
+export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
     garageLookupName?: string;
     garageLookupIdentifier?: string;
     type?: GarageServiceType;
@@ -5235,7 +5458,7 @@ export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
     description?: string | undefined;
     attachedFile?: string | undefined;
 
-    constructor(data?: IVehicleServiceLogItemDto) {
+    constructor(data?: IVehicleServiceLogDtoItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5256,9 +5479,9 @@ export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
         }
     }
 
-    static fromJS(data: any): VehicleServiceLogItemDto {
+    static fromJS(data: any): VehicleServiceLogDtoItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleServiceLogItemDto();
+        let result = new VehicleServiceLogDtoItem();
         result.init(data);
         return result;
     }
@@ -5276,7 +5499,7 @@ export class VehicleServiceLogItemDto implements IVehicleServiceLogItemDto {
     }
 }
 
-export interface IVehicleServiceLogItemDto {
+export interface IVehicleServiceLogDtoItem {
     garageLookupName?: string;
     garageLookupIdentifier?: string;
     type?: GarageServiceType;
@@ -5344,98 +5567,6 @@ export interface IVehicleTimelineDtoItem {
     date?: Date;
     type?: VehicleTimelineType;
     extraData?: TupleOfStringAndString[];
-}
-
-export class VehicleSpecificationsDto implements IVehicleSpecificationsDto {
-    data?: VehicleInfoSectionItem[];
-
-    constructor(data?: IVehicleSpecificationsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["data"])) {
-                this.data = [] as any;
-                for (let item of _data["data"])
-                    this.data!.push(VehicleInfoSectionItem.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): VehicleSpecificationsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleSpecificationsDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.data)) {
-            data["data"] = [];
-            for (let item of this.data)
-                data["data"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IVehicleSpecificationsDto {
-    data?: VehicleInfoSectionItem[];
-}
-
-export class VehicleInfoSectionItem implements IVehicleInfoSectionItem {
-    title?: string;
-    values?: string[][];
-
-    constructor(data?: IVehicleInfoSectionItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            if (Array.isArray(_data["values"])) {
-                this.values = [] as any;
-                for (let item of _data["values"])
-                    this.values!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): VehicleInfoSectionItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleInfoSectionItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        if (Array.isArray(this.values)) {
-            data["values"] = [];
-            for (let item of this.values)
-                data["values"].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IVehicleInfoSectionItem {
-    title?: string;
-    values?: string[][];
 }
 
 export interface FileParameter {

@@ -1,5 +1,4 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Vehicles._DTOs;
 using Microsoft.Extensions.Configuration;
 using SparkPost;
 using WhatsappBusiness.CloudApi.Exceptions;
@@ -7,6 +6,7 @@ using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Webhook;
 using System.Net.Mail;
+using AutoHelper.Application.Messages._DTOs;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -99,7 +99,7 @@ internal class SparkpostService : IMailingService
     /// <summary>
     /// https://app.eu.sparkpost.com/templates/edit/send_message_with_vehicle_information
     /// </summary>
-    public async Task SendVehicleRelatedEmailAsync(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalBriefDtoItem vehicleInfo, string messageContent)
+    public async Task SendVehicleRelatedEmailAsync(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicleInfo, string messageContent)
     {
         var transmission = new Transmission();
         transmission.Content.TemplateId = TemplateVehicleInfoId;

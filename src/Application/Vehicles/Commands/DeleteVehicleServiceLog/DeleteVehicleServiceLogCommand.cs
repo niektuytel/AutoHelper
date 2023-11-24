@@ -31,7 +31,6 @@ public class DeleteVehicleServiceLogCommandHandler : IRequestHandler<DeleteVehic
     public async Task<VehicleServiceLogItem> Handle(DeleteVehicleServiceLogCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.VehicleServiceLogs.FindAsync(request.Id);
-
         if (entity == null)
         {
             throw new NotFoundException(nameof(VehicleServiceLogItem), request.Id);

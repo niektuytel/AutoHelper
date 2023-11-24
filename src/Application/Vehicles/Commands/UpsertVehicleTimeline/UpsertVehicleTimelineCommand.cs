@@ -4,7 +4,7 @@ using System.Linq;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using Force.DeepCloner;
@@ -18,10 +18,6 @@ namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 
 public record UpsertVehicleTimelineCommand : IRequest<string>
 {
-    public UpsertVehicleTimelineCommand()
-    {
-    }
-
     public UpsertVehicleTimelineCommand(string licensePlate)
     {
         licensePlate = licensePlate.ToUpper().Replace(" ", "").Replace("-", "");
@@ -38,7 +34,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
     private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
     private readonly ILogger<UpsertVehicleTimelinesCommandHandler> _logger;
-    private IEnumerable<RDWDetectedDefectDescription> _defectDescriptions;
+    private IEnumerable<VehicleDetectedDefectDescriptionDtoItem> _defectDescriptions;
     private int _maxInsertAmount;
     private int _maxUpdateAmount;
 
@@ -52,71 +48,45 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
 
     public async Task<string> Handle(UpsertVehicleTimelineCommand request, CancellationToken cancellationToken)
     {
+        var vehicle = await _dbContext.VehicleLookups.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate, cancellationToken);
+        if (vehicle == null)
+        {
+            return "Vehicle not found";
+        }
+
         _defectDescriptions = await _vehicleService.GetDetectedDefectDescriptionsAsync();
-
-        var batch = await _dbContext.VehicleLookups
-            .Where(x => x.LicensePlate == request.LicensePlate)
-            .ToDictionaryAsync(x => x.LicensePlate, x => x, cancellationToken);
-
-        var (vehicleTimelineItemsToInsert, vehicleTimelineItemsToUpdate) = await ProcessVehicleBatchAsync(batch, request, cancellationToken);
-
-        if (vehicleTimelineItemsToInsert.Any())
-        {
-            await _dbContext.BulkInsertAsync(vehicleTimelineItemsToInsert, cancellationToken);
-        }
-
-        if (vehicleTimelineItemsToUpdate.Any())
-        {
-            await _dbContext.BulkUpdateAsync(vehicleTimelineItemsToUpdate, cancellationToken);
-        }
-
-        return $"insert: {vehicleTimelineItemsToInsert.Count} | update: {vehicleTimelineItemsToUpdate.Count} items";
-    }
-
-    private async Task<(List<VehicleTimelineItem> InsertTimelineItems, List<VehicleTimelineItem> UpdateTimelineItems)> ProcessVehicleBatchAsync(
-        Dictionary<string, VehicleLookupItem> batch,
-        UpsertVehicleTimelineCommand request,
-        CancellationToken cancellationToken)
-    {
-        var licensePlates = batch.Keys.ToList();
-        var defectsBatch = await _vehicleService.GetVehicleDetectedDefects(licensePlates);
-        var inspectionsBatch = await _vehicleService.GetVehicleInspectionNotifications(licensePlates);
+        var defectsBatch = await _vehicleService.GetVehicleDetectedDefects(new() { request.LicensePlate });
+        var inspectionsBatch = await _vehicleService.GetVehicleInspectionNotifications(new() { request.LicensePlate });
         var serviceLogsBatch = await _dbContext.VehicleServiceLogs
             .Where(x => x.VehicleLicensePlate == request.LicensePlate)
             .ToListAsync(cancellationToken);
 
         var vehicleTimelinesToInsert = new List<VehicleTimelineItem>();
         var vehicleTimelinesToUpdate = new List<VehicleTimelineItem>();
-        foreach (var vehicle in batch)
+        try
         {
-            try
-            {
-                var (itemsToInsert, _) = await _vehicleService.UpsertTimelineItems(
-                    vehicle.Value, 
-                    defectsBatch, 
-                    inspectionsBatch, 
-                    serviceLogsBatch,
-                    _defectDescriptions
-                );
+            var (itemsToInsert, itemsToUpdate) = await _vehicleService.UpsertTimelineItems(
+                vehicle,
+                defectsBatch,
+                inspectionsBatch,
+                serviceLogsBatch,
+                _defectDescriptions
+            );
 
-                if (itemsToInsert?.Any() == true)
-                {
-                    vehicleTimelinesToInsert.AddRange(itemsToInsert);
-                    _maxInsertAmount -= itemsToInsert.Count;
-                }
-
-                if (_maxInsertAmount <= 0 && _maxUpdateAmount <= 0)
-                {
-                    break;
-                }
-            }
-            catch (Exception ex)
+            if (itemsToInsert.Any() == true)
             {
-                _logger.LogError($"[{vehicle.Key}]:{ex.Message}");
+                await _dbContext.BulkInsertAsync(itemsToInsert, cancellationToken);
             }
+
+            return $"insert: {itemsToInsert.Count} | update: {itemsToUpdate.Count} items";
         }
+        catch (Exception ex)
+        {
+            var message = $"[{request.LicensePlate}]:{ex.Message}";
 
-        return (vehicleTimelinesToInsert, vehicleTimelinesToUpdate);
+            _logger.LogError(message);
+            return message;
+        }
     }
 
 }

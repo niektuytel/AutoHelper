@@ -22,11 +22,11 @@ public class VehicleLookupItem
 
     public Geometry? Location { get; set; }
 
-    public string? PhoneNumber { get; set; }
+    public string? ReporterPhoneNumber { get; set; }
 
-    public string? WhatsappNumber { get; set; }
+    public string? ReporterWhatsappNumber { get; set; }
 
-    public string? EmailAddress { get; set; }
+    public string? ReporterEmailAddress { get; set; }
 
     [Required]
     public DateTime Created { get; set; }

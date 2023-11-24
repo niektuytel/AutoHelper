@@ -1,6 +1,6 @@
-﻿namespace AutoHelper.Application.Vehicles._DTOs;
+﻿namespace AutoHelper.Application.Messages._DTOs;
 
-public class VehicleTechnicalBriefDtoItem
+public class VehicleTechnicalDtoItem
 {
     public string LicensePlate { get; set; }
     public string Brand { get; set; }

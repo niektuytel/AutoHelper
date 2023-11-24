@@ -16,25 +16,27 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
     {
         _context = applicationDbContext;
 
-        // Add this new rule for license plate existence check
         RuleFor(x => x.VehicleLicensePlate)
             .NotEmpty().WithMessage("Vehicle license plate is required.")
-            .MustAsync(BeValidAndExistingLicensePlate)
-            .WithMessage("Invalid or non-existent vehicle license plate.");
+            .MustAsync(BeValidAndExistingVehicle)
+            .WithMessage("Invalid or non-existent vehicle.");
 
         RuleFor(x => x.GarageLookupIdentifier)
-            .NotEmpty().WithMessage("Garage identifier is required.");
+            .NotEmpty().WithMessage("Garage identifier is required.")
+            .MustAsync(BeValidAndExistingGarage)
+            .WithMessage("Invalid or non-existent garage."); ;
 
-        RuleFor(x => x.CreatedBy)
-            .NotEmpty().WithMessage("Created by is required.");
+        RuleFor(x => x.Description)
+            .NotEmpty().WithMessage("Description is required.")
+            .When(x => x.Type == GarageServiceType.Other);
 
         RuleFor(x => x.Date)
-            .Must(BeAValidDate)
+            .Must(ValidDate)
             .WithMessage("Invalid date format.")
             .DependentRules(() =>
             {
                 RuleFor(x => x.ExpectedNextDate)
-                    .Must(BeAValidDate)
+                    .Must(ValidDate)
                     .WithMessage("Invalid expected next date format.")
                     .When(x => !string.IsNullOrEmpty(x.ExpectedNextDate))
                     .DependentRules(() =>
@@ -46,22 +48,6 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
                     });
             });
 
-        RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description is required.")
-            .When(x => x.Type == GarageServiceType.Other);
-
-        RuleFor(x => x)
-            .Must(x => !string.IsNullOrEmpty(x.PhoneNumber) || !string.IsNullOrEmpty(x.EmailAddress))
-            .WithMessage("Either phone number or email address is required.");
-
-        RuleFor(x => x.PhoneNumber)
-            .Matches(@"^\+?[0-9]+$").WithMessage("Invalid phone number format.")
-            .When(x => !string.IsNullOrEmpty(x.PhoneNumber));
-
-        RuleFor(x => x.EmailAddress)
-            .EmailAddress().WithMessage("Invalid email address format.")
-            .When(x => !string.IsNullOrEmpty(x.EmailAddress));
-
         RuleFor(x => x.OdometerReading)
             .GreaterThanOrEqualTo(0).WithMessage("Odometer reading must be non-negative.");
 
@@ -70,16 +56,37 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
             .WithMessage("Expected next odometer reading must be greater than or equal to the current odometer reading.")
             .When(x => x.ExpectedNextOdometerReading.HasValue);
 
+        RuleFor(x => x.ReporterName)
+            .NotEmpty().WithMessage("Created by is required.");
+
+        RuleFor(x => x.ReporterPhoneNumber)
+            .Matches(@"^\+?[0-9]+$").WithMessage("Invalid phone number format.")
+            .When(x => !string.IsNullOrEmpty(x.ReporterPhoneNumber));
+
+        RuleFor(x => x.ReporterEmailAddress)
+            .EmailAddress().WithMessage("Invalid email address format.")
+            .When(x => !string.IsNullOrEmpty(x.ReporterEmailAddress));
+
+        RuleFor(x => x)
+            .Must(x => !string.IsNullOrEmpty(x.ReporterPhoneNumber) || !string.IsNullOrEmpty(x.ReporterEmailAddress))
+            .WithMessage("Either phone number or email address is required.");
+
     }
 
-    private async Task<bool> BeValidAndExistingLicensePlate(string licensePlate, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingVehicle(string licensePlate, CancellationToken cancellationToken)
     {
         licensePlate = licensePlate.ToUpper().Replace("-", "");
         var vehicle = await _context.VehicleLookups.FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
         return vehicle != null;
     }
 
-    private bool BeAValidDate(CreateVehicleServiceLogCommand command, string date)
+    private async Task<bool> BeValidAndExistingGarage(string lookupIdentifier, CancellationToken cancellationToken)
+    {
+        var vehicle = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
+        return vehicle != null;
+    }
+
+    private bool ValidDate(CreateVehicleServiceLogCommand command, string date)
     {
         bool isValid = DateTime.TryParse(date, out var parsedDate);
         if (isValid)
@@ -90,6 +97,7 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
             else
                 command.SetParsedDates(command.ParsedDate, parsedDate);
         }
+
         return isValid;
     }
 

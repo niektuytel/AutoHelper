@@ -16,11 +16,11 @@ using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
 
-namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter;
 
-public class UpsertVehicleLookupCommand : IRequest<VehicleLookupDtoItem>
+public class UpsertVehicleLookupByReporterCommand : IRequest<VehicleLookupDtoItem>
 {
-    public UpsertVehicleLookupCommand(
+    public UpsertVehicleLookupByReporterCommand(
         string licensePlate,
         string latitude,
         string longitude,
@@ -32,9 +32,9 @@ public class UpsertVehicleLookupCommand : IRequest<VehicleLookupDtoItem>
         LicensePlate = licensePlate;
         Latitude = latitude;
         Longitude = longitude;
-        PhoneNumber = phoneNumber;
-        WhatsappNumber = whatsappNumber;
-        EmailAddress = emailAddress;
+        ReporterPhoneNumber = phoneNumber;
+        ReportWhatsappNumber = whatsappNumber;
+        ReporterEmailAddress = emailAddress;
     }
 
     [Required]
@@ -50,27 +50,27 @@ public class UpsertVehicleLookupCommand : IRequest<VehicleLookupDtoItem>
     public string Latitude { get; set; } = null!;
     public Point Location { get; internal set; }
 
-    public string? PhoneNumber { get; set; } = null!;
+    public string? ReporterPhoneNumber { get; set; } = null!;
 
-    public string? WhatsappNumber { get; set; } = null!;
+    public string? ReportWhatsappNumber { get; set; } = null!;
 
-    public string? EmailAddress { get; set; } = null!;
+    public string? ReporterEmailAddress { get; set; } = null!;
 
 }
 
-public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLookupCommand, VehicleLookupDtoItem>
+public class UpsertVehicleLookupByReporterCommandHandler : IRequestHandler<UpsertVehicleLookupByReporterCommand, VehicleLookupDtoItem>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleInfoService;
 
-    public UpsertVehicleLookupCommandHandler(IApplicationDbContext context, IMapper mapper, IVehicleService vehicleInfoService)
+    public UpsertVehicleLookupByReporterCommandHandler(IApplicationDbContext context, IMapper mapper, IVehicleService vehicleInfoService)
     {
         _context = context;
         _mapper = mapper;
         _vehicleInfoService = vehicleInfoService;
     }
-    public async Task<VehicleLookupDtoItem> Handle(UpsertVehicleLookupCommand request, CancellationToken cancellationToken)
+    public async Task<VehicleLookupDtoItem> Handle(UpsertVehicleLookupByReporterCommand request, CancellationToken cancellationToken)
     {
         var entity = _context.VehicleLookups.FirstOrDefault(v => v.LicensePlate == request.LicensePlate);
         if (entity == null)
@@ -82,9 +82,9 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
                 DateOfMOTExpiry = request.MOTExpiryDate,
                 DateOfAscription = request.DateOfAscription,
                 Location = request.Location,
-                PhoneNumber = request.PhoneNumber,
-                WhatsappNumber = request.WhatsappNumber,
-                EmailAddress = request.EmailAddress
+                ReporterPhoneNumber = request.ReporterPhoneNumber,
+                ReporterWhatsappNumber = request.ReportWhatsappNumber,
+                ReporterEmailAddress = request.ReporterEmailAddress
             };
 
             _context.VehicleLookups.Add(entity);
@@ -94,14 +94,12 @@ public class UpsertVehicleLookupCommandHandler : IRequestHandler<UpsertVehicleLo
             entity.DateOfMOTExpiry = request.MOTExpiryDate;
             entity.DateOfAscription = request.DateOfAscription;
             entity.Location = request.Location;
-            entity.PhoneNumber = request.PhoneNumber;
-            entity.WhatsappNumber = request.WhatsappNumber;
-            entity.EmailAddress = request.EmailAddress;
+            entity.ReporterPhoneNumber = request.ReporterPhoneNumber;
+            entity.ReporterWhatsappNumber = request.ReportWhatsappNumber;
+            entity.ReporterEmailAddress = request.ReporterEmailAddress;
 
             _context.VehicleLookups.Update(entity);
         }
-
-        // TODO: also upsert timeline and service logs
 
         await _context.SaveChangesAsync(cancellationToken);
 

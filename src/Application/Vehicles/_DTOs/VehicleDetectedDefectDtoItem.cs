@@ -15,9 +15,9 @@ using Newtonsoft.Json;
 namespace AutoHelper.Application.Vehicles._DTOs;
 
 
-public class RDWVehicleDetectedDefect
+public class VehicleDetectedDefectDtoItem
 {
-    public RDWVehicleDetectedDefect()
+    public VehicleDetectedDefectDtoItem()
     {
 
     }

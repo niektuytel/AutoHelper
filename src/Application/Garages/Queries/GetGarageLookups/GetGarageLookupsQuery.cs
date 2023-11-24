@@ -56,14 +56,14 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupBriefDt
 
 public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQuery, PaginatedList<GarageLookupBriefDto>>
 {
-    private readonly IVehicleService _vehicleInfoService;
+    private readonly IVehicleService _vehicleService;
     private readonly IGarageService _garageInfoService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
     public GetGaragesBySearchQueryHandler(IVehicleService vehicleInfoService, IGarageService garageInfoService, IApplicationDbContext context, IMapper mapper)
     {
-        _vehicleInfoService = vehicleInfoService;
+        _vehicleService = vehicleInfoService;
         _garageInfoService = garageInfoService;
         _context = context;
         _mapper = mapper;
@@ -126,7 +126,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         // set vehicle related filters if not set by user.
         if (filters?.Any() != true && !string.IsNullOrEmpty(licensePlate))
         {
-            var type = await _vehicleInfoService.GetVehicleTypeByLicensePlateAsync(licensePlate);
+            var type = await _vehicleService.GetVehicleType(licensePlate);
             filters = _garageInfoService.GetRelatedServiceTypes(type).Select(x => ((int)x).ToString()).ToArray();
             filtersFromLicensePlate = true;
         }

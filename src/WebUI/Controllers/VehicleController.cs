@@ -6,13 +6,12 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLog;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleBriefInfo;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Conversations;
@@ -25,9 +24,14 @@ using Newtonsoft.Json.Linq;
 using WebUI.Extensions;
 using WebUI.Models;
 using YamlDotNet.Core.Tokens;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
+using System;
 
 namespace AutoHelper.WebUI.Controllers;
 
+/// <summary>
+/// Manages vehicle-related operations such as retrieving vehicle specifications, service logs, and timelines, as well as updating vehicle data.
+/// </summary>
 public class VehicleController : ApiControllerBase
 {
     private readonly IVehicleService _vehicleService;
@@ -37,21 +41,27 @@ public class VehicleController : ApiControllerBase
         _vehicleService = vehicleService;
     }
 
-    [HttpGet($"{nameof(GetBriefInfo)}")]
-    [ProducesResponseType(typeof(VehicleBriefDtoItem), StatusCodes.Status200OK)]
+    [HttpGet($"{nameof(GetSpecificationsCard)}")]
+    [ProducesResponseType(typeof(VehicleSpecificationsCardItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleBriefDtoItem> GetBriefInfo([FromQuery] string licensePlate)
+    public async Task<VehicleSpecificationsCardItem> GetSpecificationsCard([FromQuery] string licensePlate)
     {
-        // TODO: add type vehicle for example car, truck, motorcycle or hatchback, sedan, suv
-        // TODO: add total number of owners has owned this vehicle
         // TODO: advice on service of the car at given mileage
-        return await Mediator.Send(new GetVehicleBriefInfoQuery(licensePlate));
+        return await Mediator.Send(new GetVehicleSpecificationsCardQuery(licensePlate));
+    }
+
+    [HttpGet($"{nameof(GetSpecifications)}")]
+    [ProducesResponseType(typeof(VehicleSpecificationsDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleSpecificationsDtoItem> GetSpecifications([FromQuery] string licensePlate)
+    {
+        return await Mediator.Send(new GetVehicleSpecificationsQuery(licensePlate));
     }
 
     [HttpGet($"{nameof(GetServiceLogs)}")]
-    [ProducesResponseType(typeof(VehicleServiceLogItemDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleServiceLogDtoItem[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogItemDto[]> GetServiceLogs([FromQuery] string licensePlate)
+    public async Task<VehicleServiceLogDtoItem[]> GetServiceLogs([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleServiceLogsQuery(licensePlate));
     }
@@ -64,24 +74,9 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
 
-    //[HttpGet($"{nameof(GetMOTHistory)}")]
-    //[ProducesResponseType(typeof(RDWDetectedDefect[]), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    //public async Task<RDWDetectedDefect[]> GetMOTHistory([FromQuery] string licensePlate)
-    //{
-    //    return await Mediator.Send(new GetVehicleMOTHistoryQuery(licensePlate));
-    //}
-
-    [HttpGet($"{nameof(GetSpecifications)}")]
-    [ProducesResponseType(typeof(VehicleSpecificationsDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleSpecificationsDto> GetSpecifications([FromQuery] string licensePlate)
-    {
-        return await Mediator.Send(new GetVehicleSpecsQuery(licensePlate));
-    }
-
-    /// <param name="maxInsertAmount">-1 is all of them</param>
-    /// <param name="maxUpdateAmount">-1 is all of them</param>
+    /// <param name="endRowIndex">-1 means all of them</param>
+    /// <param name="maxInsertAmount">-1 means all of them</param>
+    /// <param name="maxUpdateAmount">-1 means all of them</param>
     [Authorize]// TODO: (Policy="Admin")
     [HttpPut($"{nameof(UpsertLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
@@ -99,7 +94,7 @@ public class VehicleController : ApiControllerBase
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
         Mediator.Enqueue(queue, title, command);
-        return $"Successfully start queue: {queue}";
+        return $"Successfully start new queue: {queue}";
     }
 
     [Authorize]// TODO: (Policy="Admin")
@@ -112,8 +107,9 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    /// <param name="maxInsertAmount">-1 is all of them</param>
-    /// <param name="maxUpdateAmount">-1 is all of them</param>
+    /// <param name="endRowIndex">-1 means all of them</param>
+    /// <param name="maxInsertAmount">-1 means all of them</param>
+    /// <param name="maxUpdateAmount">-1 means all of them</param>
     [Authorize]// TODO: (Policy="Admin")
     [HttpPut($"{nameof(UpsertTimelines)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
@@ -135,12 +131,9 @@ public class VehicleController : ApiControllerBase
     }
 
     [HttpPost($"{nameof(CreateServiceLog)}")]
-    [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogItemDto> CreateServiceLog(
-        [FromForm] CreateVehicleServiceLogWithAttachmentDto commandWithAttachment, 
-        CancellationToken cancellationToken
-    )
+    public async Task<VehicleServiceLogDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceLogDto commandWithAttachment, CancellationToken cancellationToken)
     {
         var command = commandWithAttachment.ServiceLogCommand;
 
@@ -150,7 +143,7 @@ public class VehicleController : ApiControllerBase
             using var memoryStream = new MemoryStream();
             await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
 
-            command.Attachment = new VehicleServiceLogAttachmentItemOnCreateDto
+            command.Attachment = new VehicleServiceLogAttachmentDtoItem
             {
                 FileName = commandWithAttachment.AttachmentFile.FileName,
                 FileData = memoryStream.ToArray()
@@ -161,12 +154,13 @@ public class VehicleController : ApiControllerBase
     }
 
     [HttpDelete($"{nameof(DeleteServiceLog)}/{{serviceLogId}}")]
-    [Authorize]// TODO: (Policy="Admin")
-    [ProducesResponseType(typeof(VehicleServiceLogItemDto), StatusCodes.Status200OK)]
+    [Authorize]// TODO: (Policy="Admin") or garage owner matched with service log
+    [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogItem> DeleteServiceLog([FromRoute] Guid serviceLogId, CancellationToken cancellationToken)
     {
         var command = new DeleteVehicleServiceLogCommand(serviceLogId);
         return await Mediator.Send(command, cancellationToken);
     }
+
 }

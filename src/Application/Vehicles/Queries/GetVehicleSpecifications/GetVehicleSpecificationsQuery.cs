@@ -5,16 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecs;
+namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 
-public record GetVehicleSpecsQuery : IRequest<VehicleSpecificationsDto>
+public record GetVehicleSpecificationsQuery : IRequest<VehicleSpecificationsDtoItem>
 {
-    public GetVehicleSpecsQuery(string licensePlate)
+    public GetVehicleSpecificationsQuery(string licensePlate)
     {
         LicensePlate = licensePlate;
     }
@@ -22,21 +23,21 @@ public record GetVehicleSpecsQuery : IRequest<VehicleSpecificationsDto>
     public string LicensePlate { get; private set; }
 }
 
-public class GetVehicleInfoQueryQueryHandler : IRequestHandler<GetVehicleSpecsQuery, VehicleSpecificationsDto>
+public class GetVehicleSpecificationsQueryHandler : IRequestHandler<GetVehicleSpecificationsQuery, VehicleSpecificationsDtoItem>
 {
     private readonly IVehicleService _vehicleService;
 
-    public GetVehicleInfoQueryQueryHandler(IVehicleService vehicleService)
+    public GetVehicleSpecificationsQueryHandler(IVehicleService vehicleService)
     {
         _vehicleService = vehicleService;
     }
 
-    public async Task<VehicleSpecificationsDto> Handle(GetVehicleSpecsQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleSpecificationsDtoItem> Handle(GetVehicleSpecificationsQuery request, CancellationToken cancellationToken)
     {
         var info = await _vehicleService.GetSpecificationsByLicensePlateAsync(request.LicensePlate);
         if (info == null)
         {
-            throw new NotFoundException(nameof(VehicleSpecificationsDto), request.LicensePlate);
+            throw new NotFoundException(nameof(VehicleSpecificationsDtoItem), request.LicensePlate);
         }
 
         return info;
