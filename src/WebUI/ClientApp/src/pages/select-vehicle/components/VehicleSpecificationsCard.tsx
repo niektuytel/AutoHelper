@@ -1,9 +1,11 @@
-﻿import React, { useEffect } from "react";
-import { Box, Card, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import LicensePlateTextField from "./EditableLicensePlate";
-import { CSSProperties } from "react";
-import useSearchVehicle from "../useSearchVehicle";
+﻿import React, { CSSProperties } from "react";
 import { useQuery } from "react-query";
+import { Box, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+
+// own imports
+import LicensePlateTextField from "./EditableLicensePlate";
+import useSearchVehicle from "../useSearchVehicle";
+import { useTranslation } from "react-i18next";
 
 interface IProps {
     isMobile: boolean;
@@ -11,6 +13,7 @@ interface IProps {
 }
 
 export default ({ isMobile, license_plate }: IProps) => {
+    const { t } = useTranslation();
     const { loading, fetchVehicleByPlate } = useSearchVehicle();
     const { data: vehicleBriefInfo } = useQuery(
         [`vehicleBriefInfo-${license_plate}`],
@@ -31,65 +34,65 @@ export default ({ isMobile, license_plate }: IProps) => {
                 <Table>
                     <TableBody>
                         <TableRow>
-                            <TableCell style={{ textAlign: 'left' }}>
-                                Kenteken
+                            <TableCell key={`cell-licenseplate`} style={{ textAlign: 'left' }}>
+                                {t("VehiclePage.SpecificationsCard.LicensePlate")}
                             </TableCell>
-                            <TableCell style={cellStyle}>
+                            <TableCell key={`cell-licenseplate-value`} style={cellStyle}>
                                 <LicensePlateTextField license_plate={license_plate} />
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ textAlign: 'left' }}>
-                                Merk
+                            <TableCell key={`cell-mark`} style={{ textAlign: 'left' }}>
+                                {t("VehiclePage.SpecificationsCard.Mark")}
                             </TableCell>
                             {loading ?
-                                <TableCell style={cellStyle}>
+                                <TableCell key={`cell-mark-value`} style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell  style={cellStyle}>
+                                <TableCell key={`cell-mark-value`} style={cellStyle}>
                                     {vehicleBriefInfo?.brand}
                                 </TableCell>
                             }
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ textAlign: 'left' }}>
-                                Verbruik
+                            <TableCell key={`cell-consumption`} style={{ textAlign: 'left' }}>
+                                {t("VehiclePage.SpecificationsCard.Consumption")}
                             </TableCell>
                             {loading ?
-                                <TableCell style={cellStyle}>
+                                <TableCell key={`cell-consumption-value`} style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell  style={cellStyle}>
+                                <TableCell key={`cell-consumption-value`} style={cellStyle}>
                                     {vehicleBriefInfo?.consumption}
                                 </TableCell>
                             }
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ textAlign: 'left' }}>
-                                Vervaldatum APK
+                            <TableCell key={`cell-expirydate`} style={{ textAlign: 'left' }}>
+                                {t("VehiclePage.SpecificationsCard.MotExpiryDate")}
                             </TableCell>
                             {loading ?
-                                <TableCell style={cellStyle}>
+                                <TableCell key={`cell-expirydate-value`} style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell style={cellStyle}>
+                                <TableCell key={`cell-expirydate-value`} style={cellStyle}>
                                     {vehicleBriefInfo?.dateOfMOTExpiry?.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                                 </TableCell>
                             }
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ textAlign: 'left' }}>
-                                Kilometer stand
+                            <TableCell key={`cell-mileage`} style={{ textAlign: 'left' }}>
+                                {t("VehiclePage.SpecificationsCard.Mileage")}
                             </TableCell>
                             {loading ?
-                                <TableCell style={cellStyle}>
+                                <TableCell key={`cell-mileage-value`} style={cellStyle}>
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell style={cellStyle}>
+                                <TableCell key={`cell-mileage-value`} style={cellStyle}>
                                     {vehicleBriefInfo?.mileage}
                                 </TableCell>
                             }
@@ -99,7 +102,7 @@ export default ({ isMobile, license_plate }: IProps) => {
             </Paper>
             <Typography variant="body2" style={{ textAlign: 'right', margin: "5px" }}>
                 <i>
-                    (bron: <Link href="https://ovi.rdw.nl" target="_blank" rel="noopener noreferrer">rdw.nl</Link>)
+                    ({t("VehiclePage.SpecificationsCard.Source")}: <Link href="https://ovi.rdw.nl" target="_blank" rel="noopener noreferrer">rdw.nl</Link>)
                 </i>
             </Typography>
         </Box>

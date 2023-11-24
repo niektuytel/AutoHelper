@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
@@ -39,7 +40,13 @@ internal class VehicleService : IVehicleService
 
         var from = data.GetSafeDateYearValue("datum_eerste_toelating_dt");
         var fromText = from != 0 ? $" uit {from}" : string.Empty;
-        var brandText = $"{data.GetSafeValue("merk")} ({data.GetSafeValue("handelsbenaming")}){fromText}";
+
+        var mark = data.GetSafeValue("merk").ToUpper();
+        var tradingMark = data.GetSafeValue("handelsbenaming").ToUpper()
+            .Replace($"{mark} ", "");
+            
+            //.ToCamelCase()
+        var brandText = $"{mark.ToPascalCase()} ({tradingMark.ToPascalCase()}){fromText}";
         var mileage = data.GetSafeValue("tellerstandoordeel");
         var response = new VehicleSpecificationsCardItem
         {
@@ -64,7 +71,7 @@ internal class VehicleService : IVehicleService
         {
             var amount = fuelInfo.GetSafeDecimalValue("brandstofverbruik_gecombineerd");
             var consumptionText = amount != 0
-                ? $"{(100 / (amount/100M)):F2}KM op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving").ToLower()}"
+                ? $"{(100 / (amount/100M)):F0}km op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving").ToLower()}"
                 : "Niet geregistreerd";
             
             response.Consumption = consumptionText;

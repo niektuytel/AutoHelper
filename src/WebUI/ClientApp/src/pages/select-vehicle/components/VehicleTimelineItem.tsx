@@ -1,24 +1,19 @@
 ﻿import * as React from 'react';
-import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineOppositeContent, { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent';
+import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import TimelineDot from '@mui/lab/TimelineDot';
-import FastfoodIcon from '@mui/icons-material/Fastfood';
 import Person4OutlinedIcon from '@mui/icons-material/Person4Outlined';
-import LaptopMacIcon from '@mui/icons-material/LaptopMac';
-import HotelIcon from '@mui/icons-material/Hotel';
-import RepeatIcon from '@mui/icons-material/Repeat';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import PriorityHighRoundedIcon from '@mui/icons-material/PriorityHighRounded';
 import DoneOutlineRoundedIcon from '@mui/icons-material/DoneOutlineRounded';
 import Typography from '@mui/material/Typography';
-import useVehicleTimelineCard from '../useVehicleTimelineCard';
-import { VehicleTimelineDtoItem, VehicleTimelineType } from '../../../app/web-api-client';
 import { Tooltip } from '@mui/material';
+
+// custom imports
+import { VehicleTimelineDtoItem, VehicleTimelineType } from '../../../app/web-api-client';
 
 // CSS for the ellipsis
 const ellipsisStyle:any = {
@@ -59,7 +54,7 @@ export default ({ textColor="white", timelineItem }: IProps) => {
     }
 
     return (
-        <TimelineItem sx={{ width:"min-content"}}>
+        <TimelineItem sx={{ width: "min-content" }} key={`TimelineItem-${timelineItem.date?.toDateString()}`}>
             <TimelineOppositeContent
                 sx={{ m: 'auto 0' }}
                 align="right"
@@ -78,7 +73,7 @@ export default ({ textColor="white", timelineItem }: IProps) => {
                 px: 2,
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'center' // Center vertically
+                justifyContent: 'center'
             }}>
                 <Typography variant="h6" component="span" color={textColor} sx={{ width: "max-content" }}>
                     {timelineItem.title}

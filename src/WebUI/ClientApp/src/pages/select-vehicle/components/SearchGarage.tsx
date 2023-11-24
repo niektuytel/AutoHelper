@@ -1,6 +1,8 @@
 ﻿import React, { useEffect, useState, useCallback, memo } from 'react';
 import { FieldError } from 'react-hook-form';
 import { Autocomplete, TextField, CircularProgress, debounce } from '@mui/material';
+
+// own imports
 import { GarageClient, GarageLookupSimplefiedDto } from '../../../app/web-api-client';
 
 interface ISearchGarageProps {

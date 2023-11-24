@@ -66,6 +66,7 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleServiceLogsQuery(licensePlate));
     }
 
+    /// <param name="maxAmount">-1 means all of them</param>
     [HttpGet($"{nameof(GetTimeline)}")]
     [ProducesResponseType(typeof(VehicleTimelineDtoItem[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]

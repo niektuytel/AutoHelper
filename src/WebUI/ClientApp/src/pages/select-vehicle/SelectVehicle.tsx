@@ -1,26 +1,8 @@
 ﻿import React from "react";
-import {
-    Box,
-    Hidden,
-    Container,
-    Typography,
-    Grid,
-    Card,
-    CardMedia,
-    CardContent,
-    AppBar,
-    Toolbar,
-    Button,
-    styled,
-    Paper,
-    Theme,
-    useTheme,
-    useMediaQuery} from "@mui/material";
-import Slider from "react-slick";
+import { Container, useTheme, useMediaQuery} from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 // own imports
 import GradientBox from "./components/GradientBox";
@@ -32,13 +14,10 @@ import { ROUTES } from "../../constants/routes";
 
 interface IProps {}
 
-
 export default ({ }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { license_plate } = useParams();
-
-    // TODO: Change search icon
 
     return (
         <>

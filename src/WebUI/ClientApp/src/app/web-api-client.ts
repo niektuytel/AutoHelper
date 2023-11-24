@@ -1042,6 +1042,10 @@ export interface IVehicleClient {
 
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]>;
 
+    /**
+     * @param licensePlate (optional) 
+     * @param maxAmount (optional) -1 means all of them
+     */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
 
     /**
@@ -1215,6 +1219,10 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogDtoItem[]>(null as any);
     }
 
+    /**
+     * @param licensePlate (optional) 
+     * @param maxAmount (optional) -1 means all of them
+     */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)

@@ -1,8 +1,12 @@
 ﻿import React from 'react';
 import { Box, Grid, Hidden, Typography } from "@mui/material";
+import { useTranslation } from 'react-i18next';
+
+// custom imports
 import SearchLicensePlate from '../components/SearchLicensePlate';
 
 export default () => {
+    const { t } = useTranslation();
 
     return (
         <>
@@ -11,10 +15,10 @@ export default () => {
                 <Grid container sx={{ minHeight: "50vh" }} >
                     <Grid item xs={6} sx={{ textAlign: 'left', marginTop: "30px" }}>
                         <Typography variant="h2" color="white">
-                            <b>Bekijk voertuig</b>
+                            <b>{t("HomePage.Title")}</b>
                         </Typography>
                         <Typography variant="h6" color="white">
-                            <b>voor je onderhoud en informatie</b>
+                            <b>{t("HomePage.SubTitle")}</b>
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sx={{ alignSelf: "center" }}>
@@ -29,10 +33,10 @@ export default () => {
             <Hidden mdUp>
                 <Box sx={{ alignSelf: "center", marginTop: "20px" }}>
                     <Typography variant="h4" color="white">
-                        <b>Bekijk voertuig</b>
+                        <b>{t("HomePage.Title")}</b>
                     </Typography>
                     <Typography variant="body1" color="white">
-                        <b>voor je onderhoud en informatie</b>
+                        <b>{t("HomePage.SubTitle")}</b>
                     </Typography>
                     <SearchLicensePlate />
                     <img

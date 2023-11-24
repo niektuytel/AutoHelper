@@ -23,7 +23,7 @@ public record GetVehicleTimelineQuery : IRequest<VehicleTimelineDtoItem[]>
         Take = take;
     }
 
-    public string LicensePlate { get; private set; }
+    public string LicensePlate { get; set; }
     public int Take { get; private set; }
 }
 
@@ -40,10 +40,9 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
 
     public async Task<VehicleTimelineDtoItem[]> Handle(GetVehicleTimelineQuery request, CancellationToken cancellationToken)
     {
-        var licensePlate = request.LicensePlate.ToUpper().Replace(" ", "").Replace("-", "");
         var query = _context.VehicleTimelineItems
             .AsNoTracking()
-            .Where(x => x.VehicleLicensePlate == licensePlate)
+            .Where(x => x.VehicleLicensePlate == request.LicensePlate)
             .OrderByDescending(x => x.Date)
             .AsQueryable();
 

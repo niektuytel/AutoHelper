@@ -83,6 +83,7 @@
       <None Remove="ClientApp\src\pages\garage\overview\GarageOverview.tsx" />
       <None Remove="ClientApp\src\pages\select-vehicle\components\NavSection.tsx" />
       <None Remove="ClientApp\src\pages\select-vehicle\components\VehicleHeaderBar.tsx" />
+      <None Remove="ClientApp\src\pages\select-vehicle\SelectVehicleStyle.ts" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

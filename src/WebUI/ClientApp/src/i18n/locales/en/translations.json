@@ -119,6 +119,17 @@
 
 
 
+  "VehiclePage.Title": "Search Garage",
+  "VehiclePage.SubTitle": "for services",
+  "VehiclePage.SpecificationsCard.LicensePlate": "Licenseplate",
+  "VehiclePage.SpecificationsCard.Mark": "Mark",
+  "VehiclePage.SpecificationsCard.Consumption": "Consumption",
+  "VehiclePage.SpecificationsCard.MotExpiryDate": "MOT Expiry Date",
+  "VehiclePage.SpecificationsCard.Mileage": "Mileage",
+  "VehiclePage.SpecificationsCard.Source": "source",
+  "HomePage.Title": "Search Vehicle",
+  "HomePage.SubTitle": "for services and information",
+
 
   "Search.LicensePlate.NotFound": "Specified vehicle license plate not found",
   "Request a quote": "Request a Quote",

@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, VehicleBriefDtoItem, VehicleClient } from "../../app/web-api-client";
+import { BadRequestResponse, VehicleSpecificationsCardItem, VehicleClient } from "../../app/web-api-client";
 import { useState } from "react";
 import { showOnError } from "../../redux/slices/statusSnackbarSlice";
 
@@ -20,7 +20,7 @@ function useSearchVehicle() {
     const fetchVehicleBriefInfoData = async (licensePlate: string) => {
         setLoading(true);
         try {
-            const response = await vehicleClient.getBriefInfo(licensePlate);
+            const response = await vehicleClient.getSpecificationsCard(licensePlate);
             setLoading(false);
             return response;
         } catch (error) {
@@ -42,7 +42,7 @@ function useSearchVehicle() {
         );
 
         if (cachedData) {
-            return cachedData as VehicleBriefDtoItem;
+            return cachedData as VehicleSpecificationsCardItem;
         }
 
         const response = await fetchVehicleBriefInfoData(licensePlate);

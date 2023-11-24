@@ -196,12 +196,12 @@ internal class WhatsappService : IWhatsappService
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = vehicle.FuelType.ToCamelCase()// Benzine
+                                Text = vehicle.FuelType.ToPascalCase()// Benzine
                             },
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = $"{vehicle.Brand.ToCamelCase()} {vehicle.Model.ToCamelCase()}({vehicle.YearOfFirstAdmission})"// Dacia Sandero (2008)
+                                Text = $"{vehicle.Brand.ToPascalCase()} {vehicle.Model.ToPascalCase()}({vehicle.YearOfFirstAdmission})"// Dacia Sandero (2008)
                             },
                             new TextMessageParameter
                             {
@@ -211,7 +211,7 @@ internal class WhatsappService : IWhatsappService
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = vehicle.Mileage.ToCamelCase()// Logisch
+                                Text = vehicle.Mileage.ToPascalCase()// Logisch
                             },
                             new TextMessageParameter
                             {

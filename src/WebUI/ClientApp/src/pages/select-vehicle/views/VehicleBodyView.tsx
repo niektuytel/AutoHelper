@@ -1,31 +1,15 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, IconButton, Paper, Tab, Table, TableBody, TableCell, TableRow, Tabs, Tooltip, Typography, Drawer, List, ListItem } from "@mui/material";
-import CarRepairIcon from '@mui/icons-material/CarRepair';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useLocation, useNavigate } from 'react-router';
+import { Box, Paper, Typography } from "@mui/material";
 import TimelineIcon from '@mui/icons-material/History';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import CloseIcon from '@mui/icons-material/Close';
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
-import Divider from '@mui/material/Divider';
+import ServicelogsIcon from '@mui/icons-material/Notes';
+import { useTranslation } from 'react-i18next';
 
 // own imports
-import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router';
 import VehicleServiceLogs from '../components/VehicleServiceLogs';
 import VehicleSpecifications from '../components/VehicleSpecifications';
-import ServiceLogForm from '../components/ServiceLogForm';
-import { blue } from '@mui/material/colors';
 import VehicleTimeline from '../components/VehicleTimeline';
-import ServicelogsIcon from '@mui/icons-material/Notes';
-
-
-
-const textStyles = {
-    root: {
-        color: "black",
-        fontFamily: "'Nunito', sans-serif",
-    }
-}
 
 const tabsConfig = [
     { hash: "#mot_history", label: 'Tijdlijn', icon: <TimelineIcon fontSize='medium' /> },
@@ -48,14 +32,6 @@ export default ({ isMobile, license_plate }: IProps) => {
     const location = useLocation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(findTabValueByHash(location.hash));
-
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const toggleDrawer = (open: boolean) => {
-        console.log("toggleDrawer");
-        setDrawerOpen(open);
-    };
-
     const handleCardClick = (index: number) => {
         setActiveTab(index);
         navigate(tabsConfig[index].hash);
@@ -79,7 +55,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                             backgroundColor: activeTab === index ? 'primary.main' : 'background.paper',
                             color: activeTab === index ? 'common.white' : 'text.primary',
                             '&:hover': {
-                                backgroundColor: 'primary.light',
+                                backgroundColor: 'primary.main',
                                 color: 'common.white',
                                 cursor: 'pointer'
                             },
@@ -101,12 +77,11 @@ export default ({ isMobile, license_plate }: IProps) => {
                     <VehicleTimeline isMobile={isMobile} license_plate={license_plate} />
                     :
                     activeTab === 1 ?
-                        <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} setDrawerOpen={setDrawerOpen} />
+                        <VehicleServiceLogs isMobile={isMobile} license_plate={license_plate} />
                         :
                         <VehicleSpecifications isMobile={isMobile} license_plate={license_plate} />
                 }
             </Box>
-            <ServiceLogForm licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
         </>
     );
 }

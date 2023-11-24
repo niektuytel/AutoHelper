@@ -9,21 +9,19 @@ import {
     useTheme,
     useMediaQuery
 } from "@mui/material";
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useOnclickOutside from "react-cool-onclickoutside";
-
+import { useDispatch } from "react-redux";
 
 // own imports
-import { useAuth0 } from "@auth0/auth0-react";
-import { VehicleClient } from "../../../app/web-api-client";
 import { getFormatedLicense } from "../../../app/LicensePlateUtils";
 import useSearchVehicle from "../useSearchVehicle";
 import { ROUTES } from "../../../constants/routes";
+import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 
 
 interface IProps {
@@ -33,6 +31,7 @@ export default ({ }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [value, setValue] = React.useState<string>("");
     const ref = useOnclickOutside(() => handleClearInput());
@@ -56,7 +55,6 @@ export default ({ }: IProps) => {
 
             navigate(`${ROUTES.SELECT_VEHICLE}/${value}`);
         } else {
-            // TODO: trigger snackbar
             console.error("Failed to get vehicle by license plate");
         }
     }

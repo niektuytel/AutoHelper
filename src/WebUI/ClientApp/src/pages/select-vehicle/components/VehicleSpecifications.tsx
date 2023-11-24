@@ -1,14 +1,13 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Box, Card, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import { CSSProperties } from "react";
+import { Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
-import MuiAccordionSummary, {
-    AccordionSummaryProps,
-} from '@mui/material/AccordionSummary';
+import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import useVehicleInformation from "../useVehicleInformation";
+
+// custom imports
+import useVehicleInformation from "../useVehicleSpecifications";
 
 interface IProps {
     isMobile: boolean;
@@ -17,57 +16,55 @@ interface IProps {
 
 export default ({ isMobile, license_plate }: IProps) => {
     const { loading, vehicleInfo } = useVehicleInformation(license_plate);
-    const [expanded, setExpanded] = useState<string[]>([]);
+    const [expanded, setExpanded] = useState<string | undefined>(undefined);
 
     const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-        if (newExpanded) {
-            setExpanded((prev) => [...prev, panel]);
-        } else {
-            setExpanded((prev) => prev.filter((item) => item !== panel));
-        }
+        setExpanded(newExpanded ? panel : undefined);
     };
 
-    return <>
-        {loading ?
-            Array.from({ length: 10 }).map((_, index) => (
-                <Accordion key={index}>
-                    <AccordionSummary>
-                        <Skeleton sx={{ width: "100%" }} />
-                    </AccordionSummary>
-                </Accordion>
-            ))
-        : vehicleInfo?.data?.map((section, index) => (
-            <Accordion expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
-                <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
-                    <Typography>{section.title}</Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ padding: "0" }}>
-                    <Table>
-                        <TableBody>
-                            {section.values!.map((line, rowIndex) => (
-                                <TableRow
-                                    key={rowIndex}
-                                    sx={{
-                                        backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
-                                    }}
-                                >
-                                    {line!.map((value, cellIndex) => (
-
-                                        <TableCell
-                                            style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
+    return (
+        <>
+            {loading ?
+                Array.from({ length: 10 }).map((_, index) => (
+                    <Accordion expanded={false} key={`Accordion-${index}`}>
+                        <AccordionSummary>
+                            <Skeleton sx={{ width: "100%" }} />
+                        </AccordionSummary>
+                    </Accordion>
+                ))
+                : vehicleInfo?.data?.map((section, index) => (
+                    <Accordion key={`Accordion-${index}`} expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+                        <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
+                            <Typography>{section.title}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ padding: "0" }}>
+                            <Table>
+                                <TableBody>
+                                    {section.values!.map((line, rowIndex) => (
+                                        <TableRow
+                                            key={rowIndex}
+                                            sx={{
+                                                backgroundColor: rowIndex % 2 === 0 ? 'grey.100' : 'white'
+                                            }}
                                         >
-                                            {value}
-                                        </TableCell>
+                                            {line!.map((value, cellIndex) => (
+                                                <TableCell key={`specifications-cell-${cellIndex}`}
+                                                    style={{ width: `${(line.length / 100)}%`, textAlign: 'left' }}
+                                                >
+                                                    {value}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
                                     ))}
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </AccordionDetails>
-            </Accordion>
-        ))}
-    </>
+                                </TableBody>
+                            </Table>
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
+        </>
+    );
 }
+
 
 const Accordion = styled(({ ...props }: AccordionProps) => (
     <MuiAccordion elevation={0} square {...props} />

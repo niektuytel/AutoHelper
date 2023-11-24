@@ -1,27 +1,19 @@
 ﻿import React from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery } from "@mui/material";
-import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
+import { Box, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery } from "@mui/material";
+import { Paper, Typography, Grid } from '@mui/material';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import SearchIcon from '@mui/icons-material/Search';
-import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import usePlacesAutocomplete, {
-    getGeocode,
-    getLatLng,
-    HookArgs,
-    Suggestion,
-} from "use-places-autocomplete";
+import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from "use-places-autocomplete";
 import useOnclickOutside from "react-cool-onclickoutside";
-
+import { useDispatch } from "react-redux";
 
 // own imports
-import { useDispatch } from "react-redux";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
-
-
+import { ROUTES } from "../../../constants/routes";
 
 interface IProps {
     licence_plate: string
@@ -44,7 +36,7 @@ export default ({ licence_plate }: IProps) => {
         requestOptions: {
             types: ["address"],
             componentRestrictions: {
-                country: "nl",//t('country_code')
+                country: "nl",// should stay on the netherlands
             }
         },
         debounce: 250
@@ -58,7 +50,7 @@ export default ({ licence_plate }: IProps) => {
 
                 // TODO: Set input string value to the the cookie: named 'recently_used_place'
                 const { lat, lng } = getLatLng(results[0]);
-                navigate(`/select-garage/${licence_plate}/${lat}/${lng}`);
+                navigate(`${ROUTES.SELECT_GARAGE}/${licence_plate}/${lat}/${lng}`);
             })
             .catch(error => {
                 dispatch(showOnError(t("Error on getting address location")));
@@ -83,7 +75,7 @@ export default ({ licence_plate }: IProps) => {
     const ref = useOnclickOutside(() => handleClearInput());
 
     const handleBackNavigation = () => {
-        navigate(`/select-vehicle`);
+        navigate(`${ROUTES.SELECT_VEHICLE}`);
     };
 
     return <>
@@ -155,9 +147,6 @@ export default ({ licence_plate }: IProps) => {
             {status == "OK" && ready &&
                 <Box position="absolute" width="100%" zIndex={2} mt="5px">
                     <Paper elevation={3}>
-                        {/*<Typography paddingLeft="20px" paddingTop="5px" variant="subtitle1" textAlign="left">*/}
-                        {/*    <b>{t("suggestions_camelcase")}</b>*/}
-                        {/*</Typography>*/}
                         <List dense disablePadding>
                             {data.filter((x: Suggestion) => x.terms.length > 2).map((suggestion: Suggestion) => {
                                 const { place_id, terms, types } = suggestion;

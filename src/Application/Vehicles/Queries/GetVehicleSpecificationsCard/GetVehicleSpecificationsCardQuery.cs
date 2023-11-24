@@ -21,7 +21,7 @@ public record GetVehicleSpecificationsCardQuery : IRequest<VehicleSpecifications
         LicensePlate = licensePlate;
     }
 
-    public string LicensePlate { get; private set; }
+    public string LicensePlate { get; set; }
 }
 
 public class GetVehicleBriefInfoQueryHandler : IRequestHandler<GetVehicleSpecificationsCardQuery, VehicleSpecificationsCardItem>

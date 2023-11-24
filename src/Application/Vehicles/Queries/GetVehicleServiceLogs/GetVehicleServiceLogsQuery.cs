@@ -21,7 +21,7 @@ public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogDtoItem[]>
         LicensePlate = licensePlate;
     }
 
-    public string LicensePlate { get; private set; }
+    public string LicensePlate { get; set; }
 }
 
 public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogDtoItem[]>
@@ -37,11 +37,9 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
 
     public async Task<VehicleServiceLogDtoItem[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
     {
-        var licensePlate = request.LicensePlate.ToUpper().Replace(" ", "").Replace("-", "");
-
         var entities = _context.VehicleServiceLogs
             .AsNoTracking()
-            .Where(v => v.VehicleLicensePlate == licensePlate);
+            .Where(v => v.VehicleLicensePlate == request.LicensePlate);
 
         var result = await _mapper
             .ProjectTo<VehicleServiceLogDtoItem>(entities)

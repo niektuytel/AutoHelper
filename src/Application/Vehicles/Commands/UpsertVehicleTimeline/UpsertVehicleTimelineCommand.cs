@@ -20,7 +20,6 @@ public record UpsertVehicleTimelineCommand : IRequest<string>
 {
     public UpsertVehicleTimelineCommand(string licensePlate)
     {
-        licensePlate = licensePlate.ToUpper().Replace(" ", "").Replace("-", "");
         LicensePlate = licensePlate;
     }
 

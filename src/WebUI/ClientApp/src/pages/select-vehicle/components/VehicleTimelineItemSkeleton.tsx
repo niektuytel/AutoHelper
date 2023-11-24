@@ -38,14 +38,14 @@ export default ({ usedIndex }:IProps) => {
     }
 
     return (
-        <TimelineItem>
+        <TimelineItem sx={{ width: "min-content" }} key={`TimelineItem-${usedIndex}`}>
             <TimelineOppositeContent
                 sx={{ m: 'auto 0' }}
                 align="right"
                 variant="body2"
                 color="white"
             >
-                <Skeleton sx={{ width: "100%" }} />
+                <Skeleton sx={{ width: "75px" }} />
             </TimelineOppositeContent>
             <TimelineSeparator>
                 <TimelineConnector />

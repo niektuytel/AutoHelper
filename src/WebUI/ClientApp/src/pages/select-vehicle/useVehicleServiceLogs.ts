@@ -11,8 +11,6 @@ function useVehicleServiceLogs(license_plate: string) {
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { t } = useTranslation();
 
     const fetchVehicleServiceLogsData = async (licensePlate: string) => {
         try {
@@ -25,6 +23,9 @@ function useVehicleServiceLogs(license_plate: string) {
             if (error instanceof BadRequestResponse && error.errors) {
                 dispatch(showOnError(Object.entries(error.errors)[0][1]));
             }
+
+            // Re-throw the error to let React Query's useQuery handle it
+            throw error;
         }
     }
 

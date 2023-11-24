@@ -119,6 +119,17 @@
 
 
 
+  "VehiclePage.Title": "Zoek Garage",
+  "VehiclePage.SubTitle": "voor onderhoud",
+  "VehiclePage.SpecificationsCard.LicensePlate": "Kenteken",
+  "VehiclePage.SpecificationsCard.Mark": "Merk",
+  "VehiclePage.SpecificationsCard.Consumption": "Verbruik",
+  "VehiclePage.SpecificationsCard.MotExpiryDate": "APK vervaldatum",
+  "VehiclePage.SpecificationsCard.Mileage": "Kilometerstand",
+  "VehiclePage.SpecificationsCard.Source": "bron",
+  "HomePage.Title": "Bekijk voertuig",
+  "HomePage.SubTitle": "voor je onderhoud en informatie",
+
 
   "Search.LicensePlate.NotFound": "Opgegeven kentekenplaat niet gevonden",
   "Request a quote": "Offerte aanvragen",
