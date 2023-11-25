@@ -3,8 +3,6 @@
 - Make register more clear on address that user need to select an address 
 - In register page the select bank has as default value also his label.... (when input is empty on first time opened)
 - create service dialog contains an scroll overflow when to small in vertical size 
-- 400 bad request need to be handled in the frontend on the snackbar redux:
-    Remove for example: 'setValue("id", service.id);' from the GarageServiceDialog that is required on update.
 
 <h1>AutoHelper: THINKS ABOUT</h1>
 - Hamburger on the left as the menu also opened on the left.

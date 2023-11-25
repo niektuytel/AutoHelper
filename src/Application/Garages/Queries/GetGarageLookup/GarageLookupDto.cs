@@ -4,6 +4,7 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities.Garages;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
+using AutoHelper.Domain.Entities.Conversations.Enums;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageLookup;
 
@@ -45,6 +46,14 @@ public class GarageLookupDto: IMapFrom<GarageLookupItem>
     public string Address { get; set; }
 
     public string City { get; set; }
+
+    /// <summary>
+    /// Contact identifier for the conversation with the garage.
+    /// This can be a email address or whatsapp number.
+    /// When defined, the garage is available for conversation.
+    /// </summary>
+    public string? ConversationContactIdentifier { get; set; }
+    public ContactType? ConversationContactType { get; set; }
 
     public bool HasPickupService { get; set; } = false;// TODO: Implement pickup service
 

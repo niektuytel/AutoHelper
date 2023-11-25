@@ -35,6 +35,7 @@ import { getDefaultCreateGarageServices, getDefaultGarageServicesInfo, getTitleF
 // own imports
 
 interface IProps {
+    showConversationActions: boolean;
     serviceType: GarageServiceType;
     selectedItem: any | null;
     setSelectedItem: (serviceType: any) => void;
@@ -42,7 +43,7 @@ interface IProps {
     hasQuestionItem: (serviceType: GarageServiceType) => void;
 }
 
-export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
+export default ({ showConversationActions, serviceType, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
     const { t } = useTranslation('serviceTypes');
 
     const defaultAvailableServices = getDefaultGarageServicesInfo(t);
@@ -62,7 +63,7 @@ export default ({ serviceType, selectedItem, setSelectedItem, addCartItem, hasQu
             onClick={() => setSelectedItem(service)}
         >
             <CardHeader
-                action={
+                action={ showConversationActions &&
                     <>
                         <IconButton
                             onClick={(e) => {

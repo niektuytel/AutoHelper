@@ -2,6 +2,7 @@
 import { Autocomplete, Box, Button, CircularProgress, Container, Divider, Pagination, Paper, Skeleton, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 
 // local
 import ImageLogo from "../../components/logo/ImageLogo";
@@ -19,6 +20,7 @@ const inMeterRange = 150000;
 const pageSize = 10;
 
 export default ({ }: IProps) => {
+    const { t } = useTranslation();
     const { license_plate, lat, lng } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize);
@@ -33,13 +35,21 @@ export default ({ }: IProps) => {
         setGaragesData(data);
     };
 
-    // Batch locations that is faster search?
+    const onBackClick = () => {
+        console.log("onBackClick");
+        //navigate(`/select-vehicle/${}`);
+    };
+
+    // TODO: Batch locations that is faster search?
 
     return <>
         <Container maxWidth="lg" sx={{ minHeight: "70vh" }}>
             <Box sx={{ marginBottom: "75px" }}>
                 <Box flexGrow={1}>
                     <Box sx={{ backgroundColor: COLORS.BLUE, borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px", p:1 }}>
+                        <Button variant="outlined" startIcon={<ArrowBackIosNewRoundedIcon />} sx={{ color: "white" }} onClick={() => onBackClick()}>
+                            {t("Delete")}
+                        </Button>
                         <Paper
                             elevation={2}
                             sx={{ p: 1, width: "initial", position: "relative", marginTop:"90px" }}

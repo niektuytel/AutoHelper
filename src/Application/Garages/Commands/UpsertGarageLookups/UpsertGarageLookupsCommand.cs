@@ -77,7 +77,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
             var currentLookup = await currentLookups.FirstOrDefaultAsync(cancellationToken);
             if (request.MaxInsertAmount != 0 && currentLookup == null)
             {
-                newLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
+                newLookup = await _garageInfoService.UpdateByLocation(newLookup);
 
                 _dbContext.GarageLookups.Add(newLookup);
 
@@ -91,7 +91,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
                 currentLookup.Address = newLookup.Address;
                 currentLookup.City = newLookup.City;
 
-                currentLookup = await _garageInfoService.UpdateByAddressAndCity(newLookup);
+                currentLookup = await _garageInfoService.UpdateByLocation(newLookup);
 
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 request.MaxUpdateAmount--;

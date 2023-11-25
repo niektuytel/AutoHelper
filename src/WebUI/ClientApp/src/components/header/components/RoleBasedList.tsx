@@ -6,6 +6,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import BuildIcon from '@mui/icons-material/Build';
 import GroupIcon from '@mui/icons-material/Group';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ServicelogsIcon from '@mui/icons-material/Notes';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -62,8 +63,10 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         return (
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
-                <ListItemLink disabled={configurationIndex < 4} primary={t('planning_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE_ACCOUNT.PLANNING} />
-                <ListItemLink disabled={configurationIndex < 3} primary={t('Employees')} icon={<GroupIcon />} to={ROUTES.GARAGE_ACCOUNT.EMPLOYEES} />
+                {/*// TODO: uncomment when planning is ready to use*/}
+                {/*<ListItemLink disabled={configurationIndex < 4} primary={t('planning_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE_ACCOUNT.PLANNING} />*/}
+                {/*<ListItemLink disabled={configurationIndex < 3} primary={t('Employees')} icon={<GroupIcon />} to={ROUTES.GARAGE_ACCOUNT.EMPLOYEES} />*/}
+                <ListItemLink disabled={configurationIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
                 <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
                 <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
             </List>

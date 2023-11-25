@@ -7,7 +7,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { EnumValues } from 'enum-values';
 
 // custom imports
-import { ConversationType, GarageServiceType, MessageClient, SelectedService, SelectedServices } from '../app/web-api-client';
+import { ConversationType, GarageServiceType, ConversationClient, SelectedService, SelectedServices } from '../app/web-api-client';
 import { showOnSuccess } from '../redux/slices/statusSnackbarSlice';
 
 const isValidEmail = (input: string): boolean => {
@@ -51,7 +51,7 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
     });
 
     const [loading, setLoading] = useState<boolean>(false);
-    const conversationClient = new MessageClient(process.env.PUBLIC_URL);
+    const conversationClient = new ConversationClient(process.env.PUBLIC_URL);
 
     const startConversations = async (command: SelectedServices) => {
         setLoading(true);
@@ -174,8 +174,8 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                     <Grid item xs={6}>
                         <TextField
                             fullWidth
-                            label="To: whatsapp/email"
-                            value={[...new Set(services?.map(x => x.receiverWhatsAppNumberOrEmail))].join(' & ')}
+                            label="To:"
+                            value={[...new Set(services?.map(x => x.garageContactIdentifier))].join(' & ')}
                             disabled
                             sx={requestQuote ? {} : { marginBottom: 2 }}
                         />

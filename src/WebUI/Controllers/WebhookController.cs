@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages.Commands.StartConversation;
+using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter;
 using AutoHelper.Hangfire.MediatR;
 using HtmlAgilityPack;

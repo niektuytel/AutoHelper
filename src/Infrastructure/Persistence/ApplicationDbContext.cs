@@ -38,7 +38,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
 
-
     public DbSet<GarageItem> Garages => Set<GarageItem>();
     public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();
     public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();

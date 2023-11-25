@@ -5,6 +5,7 @@ using System;
 using AutoHelper.Domain.Entities.Vehicles;
 using NetTopologySuite.Geometries;
 using AutoHelper.Domain.Entities.Conversations;
+using AutoHelper.Domain.Entities.Conversations.Enums;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -87,6 +88,14 @@ public class GarageLookupItem
     public string? WhatsappNumber { get; set; }
 
     public string? EmailAddress { get; set; }
+
+    /// <summary>
+    /// Contact identifier for the conversation with the garage.
+    /// This can be a email address or whatsapp number.
+    /// When defined, the garage is available for conversation.
+    /// </summary>
+    public string? ConversationContactIdentifier { get; set; }
+    public ContactType? ConversationContactType { get; set; }
 
     public string? Website { get; set; }
 

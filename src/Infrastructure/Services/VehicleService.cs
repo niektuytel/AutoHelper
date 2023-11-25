@@ -2,7 +2,7 @@
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
+using AutoHelper.Application.Conversations._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
@@ -494,7 +494,11 @@ internal class VehicleService : IVehicleService
         }
 
         // handle servicelogs changes
-        var serviceLogs = serviceLogsBatch!.Where(x => x.VehicleLicensePlate == vehicle.LicensePlate);
+        var serviceLogs = serviceLogsBatch!.Where(x => 
+            x.VehicleLicensePlate == vehicle.LicensePlate && 
+            x.Status != Domain.VehicleServiceLogStatus.NotVerified
+        );
+
         var (serviceLogsChangedToInsert, _) = await ServiceLogsTimelineItems(vehicle, serviceLogs);
         if (serviceLogsChangedToInsert?.Any() == true)
         {

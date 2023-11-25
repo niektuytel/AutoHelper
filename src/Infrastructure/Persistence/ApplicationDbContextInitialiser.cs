@@ -1,4 +1,6 @@
 ﻿using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -108,4 +110,62 @@ public class ApplicationDbContextInitialiser
         //}
 
     }
+
+    private static VehicleLookupItem GetTestVehicleLookup()
+    {
+        return new VehicleLookupItem
+        {
+            //Id = Guid.NewGuid(),
+            //VehicleType = VehicleLookupType.Car,
+            //Make = "Honda",
+            //Model = "Civic",
+            //Year = 2010,
+            //Engine = "1.8L",
+            //Transmission = "Automatic",
+            //FuelType = "Petrol",
+            //BodyType = "Sedan",
+            //DriveType = "FWD",
+            //Colour = "Black",
+            //Vin = "12345678901234567",
+            //Registration = "ABC123",
+            //RegistrationExpiry = DateTime.UtcNow.AddYears(1),
+            //Odometer = 100000,
+            //OdometerUnit = "km",
+            //ImageUrl = "https://www.honda.com.au/content/dam/honda/cars/models/civic-sedan/overview/hero/hero-civic-sedan-1.5l-vti-lx-pearl-white-pearl.jpg"
+        };
+    }
+
+    private static VehicleServiceLogItem[] GetTestVehicleServiceLogs()
+    {
+        return new[]
+        {
+            new VehicleServiceLogItem
+            {
+            }
+        };
+    }
+
+    private static VehicleTimelineItem[] GetTestVehicleTimeline()
+    {
+        return new[]
+        {
+            new VehicleTimelineItem
+            {
+            }
+        };
+    }
+
+    /// <summary>
+    /// We can start conversations with this garage.
+    /// </summary>
+    private static GarageLookupItem GetTestGarageLookup()
+    {
+        return new GarageLookupItem
+        {
+
+        };
+    }
+
+
+
 }

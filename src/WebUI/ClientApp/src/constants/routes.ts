@@ -7,8 +7,9 @@ export const ROUTES = {
     GARAGE_ACCOUNT: {
         OVERVIEW: "/garage/overview",
         PLANNING: "/garage/planning",
-        SERVICES: "/garage/services",
         EMPLOYEES: "/garage/employees",
+        SERVICES: "/garage/services",
+        SERVICELOGS: "/garage/servicelogs",
         SETTINGS: "/garage/settings"
     },
     USER: {

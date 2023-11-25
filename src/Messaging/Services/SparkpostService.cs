@@ -6,7 +6,7 @@ using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Webhook;
 using System.Net.Mail;
-using AutoHelper.Application.Messages._DTOs;
+using AutoHelper.Application.Conversations._DTOs;
 
 namespace AutoHelper.Messaging.Services;
 

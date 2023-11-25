@@ -52,8 +52,4 @@
         <ProjectReference Include="..\Domain\AutoHelper.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Garages\Queries\GetGarageAvailableWorkSlots\" />
-    </ItemGroup>
-
 </Project>

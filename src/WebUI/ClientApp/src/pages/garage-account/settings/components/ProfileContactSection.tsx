@@ -76,6 +76,24 @@ export default (
                     )}
                 />
             </Grid>
+            <Grid item xs={12} sm={6}>
+                <Controller
+                    name="conversationContactIdentifier"
+                    control={control}
+                    rules={{ required: t("Your email/whatsapp that is been used for conversations") }}
+                    defaultValue={""}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            fullWidth
+                            label={t("Conversation email/whatsapp")}
+                            variant="outlined"
+                            error={Boolean(errors.email)}
+                            helperText={errors.email ? t(errors.email.message as string) : undefined}
+                        />
+                    )}
+                />
+            </Grid>
         </>
     );
 }

@@ -11,14 +11,14 @@ import {
 import GarageIcon from '@mui/icons-material/CarRepair';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import useVehicleServiceLogs from "../useVehicleServiceLogs";
-import { GarageServiceType } from "../../../app/web-api-client";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { ROUTES } from "../../../constants/routes";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 // own imports
+import useVehicleServiceLogs from "../useVehicleServiceLogs";
+import { GarageServiceType, VehicleServiceLogDtoItem } from "../../../app/web-api-client";
+import { ROUTES } from "../../../constants/routes";
 import ServiceLogForm from '../components/ServiceLogForm';
 
 const textStyles = {
@@ -34,7 +34,7 @@ interface IProps {
 }
 
 export default ({ isMobile, license_plate }: IProps) => {
-    const { loading, vehicleServiceLogs, isError } = useVehicleServiceLogs(license_plate);
+    const { loading, vehicleServiceLogs, isError, addServiceLog } = useVehicleServiceLogs(license_plate);
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const navigate = useNavigate();
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -45,6 +45,13 @@ export default ({ isMobile, license_plate }: IProps) => {
 
     const handleAddService = () => {
         setDrawerOpen(true);
+    };
+
+    const handleNewService = (newServiceLog: VehicleServiceLogDtoItem) => {
+        console.log("Handle new service", newServiceLog);
+
+        addServiceLog(newServiceLog);
+        setDrawerOpen(false);
     };
 
     const getServiceTypeLabel = (type: GarageServiceType): string => {
@@ -142,6 +149,6 @@ export default ({ isMobile, license_plate }: IProps) => {
                 ))
             }
         </Paper>
-        <ServiceLogForm licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} />
+        <ServiceLogForm licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleNewService={handleNewService} />
     </>
 }

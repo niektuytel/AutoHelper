@@ -4,8 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text.Json;
 using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
+using AutoHelper.Domain.Entities.Conversations.Enums;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
@@ -27,17 +29,20 @@ namespace AutoHelper.Infrastructure.Services;
 
 internal class GarageService : IGarageService
 {
+    private readonly IApplicationDbContext _context;
     private readonly IBlobStorageService _blobStorageService;
     private readonly WebScraperClient _webScraperClient;
     private readonly GoogleApiClient _googleApiClient;
     private readonly RDWApiClient _rdwApiClient;
 
     public GarageService(
+        IApplicationDbContext context,
         IBlobStorageService blobStorageService,
         WebScraperClient webScraperClient,
         GoogleApiClient googleApiClient,
         RDWApiClient rdwApiClient
     ) {
+        _context = context;
         _blobStorageService = blobStorageService;
         _webScraperClient = webScraperClient;
         _googleApiClient = googleApiClient;
@@ -68,13 +73,14 @@ internal class GarageService : IGarageService
                 continue;
             }
 
+            // Capitalize the first letter of the street
             var garageLookup = new GarageLookupItem
             {
                 Identifier = rdwCompany.Volgnummer.ToString(),
-                Name = rdwCompany.Naambedrijf,
+                Name = rdwCompany.Naambedrijf.ToPascalCase(),
                 KnownServices = services,
                 Address = FormatAddress(rdwCompany.Straat, rdwCompany.Huisnummer.ToString(), rdwCompany.Huisnummertoevoeging),
-                City = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(rdwCompany.Plaats.ToLower()),
+                City = rdwCompany.Plaats.ToPascalCase(),
                 CreatedBy = "System",
                 Created = DateTime.UtcNow,
                 LastModifiedBy = "System",
@@ -118,13 +124,7 @@ internal class GarageService : IGarageService
         }
     }
 
-    public int CalculateDistanceInKm(float garageLatitude, float garageLongitude, float latitude, float longitude)
-    {
-        var preciseDistance = LocationExtentions.CalculateDistance(garageLatitude, garageLongitude, latitude, longitude);
-        return (int)Math.Round(preciseDistance);
-    }
-
-    public async Task<GarageLookupItem> UpdateByAddressAndCity(GarageLookupItem item)
+    public async Task<GarageLookupItem> UpdateByLocation(GarageLookupItem item)
     {
         // Get place id from the given name, address and city
         var placeId = await _googleApiClient.SearchPlaceIdFromTextQuery($"{item.Name} in {item.Address}, {item.City}");
@@ -206,13 +206,40 @@ internal class GarageService : IGarageService
         }
 
         // TODO: Get opening hours from website
-        // TODO: store photos in blob and store url inside here
         // TODO: Validate Email* and phone numbers that really has valid value
 
         return item;
     }
 
-    public byte[] CreateThumbnail(byte[] originalImage, int thumbnailHeight)
+    public async Task<GarageLookupItem> SetConversationSettings(string garageIdentifier, string contactIdentifier, ContactType contactType, GarageServiceType[] services, CancellationToken cancellationToken)
+    {
+        var entity = _context.GarageLookups.FirstOrDefault(x => x.Identifier == garageIdentifier);
+        if (entity == null)
+        {
+            throw new Exception("Garage lookup not found");
+        }
+
+        var knownServices = new List<GarageServiceType>();
+        knownServices.AddRange(entity.KnownServices);
+        foreach (var service in services)
+        {
+            if (entity.KnownServices.Contains(service) == false)
+            {
+                knownServices.Add(service);
+            }
+        }
+
+        entity.KnownServices = knownServices.ToArray();
+        entity.ConversationContactIdentifier = contactIdentifier;
+        entity.ConversationContactType = contactType;
+        entity.LastModifiedBy = "System:SetConversationSettings";
+        entity.LastModified = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return entity;
+    }
+
+    private static byte[] CreateThumbnail(byte[] originalImage, int thumbnailHeight)
     {
         using var image = Image.Load(originalImage);
         // Calculate the new width while maintaining the aspect ratio

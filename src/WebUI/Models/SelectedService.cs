@@ -1,4 +1,5 @@
-﻿using AutoHelper.Domain.Entities.Garages;
+﻿using AutoHelper.Domain.Entities.Conversations.Enums;
+using AutoHelper.Domain.Entities.Garages;
 
 namespace AutoHelper.WebUI.Models;
 
@@ -17,6 +18,8 @@ public class SelectedService
 
     public string VehicleLatitude { get; set; }
 
-    public string? ReceiverWhatsAppNumberOrEmail { get; set; }
+    public string? GarageContactIdentifier { get; set; }
+
+    public ContactType? GarageContactType { get; set; }
 
 }

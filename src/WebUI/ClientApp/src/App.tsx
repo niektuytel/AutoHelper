@@ -24,6 +24,7 @@ import { COLORS } from './constants/colors';
 import theme from './constants/theme';
 import GarageAgenda from './pages/garage-account/agenda/GarageAgenda';
 import Garage from './pages/garage/Garage';
+import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
 
 export default () => {
     const location = useLocation();
@@ -117,6 +118,16 @@ export default () => {
                             <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                                 <GarageRouteContent>
                                     <GarageAgenda />
+                                </GarageRouteContent>
+                            </AuthenticatedRoute>
+                        </>
+                    } />
+                    <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICELOGS}`} element={
+                        <>
+                            <Header showStaticDrawer={showStaticDrawer} />
+                            <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
+                                <GarageRouteContent>
+                                    <GarageServicelogs />
                                 </GarageRouteContent>
                             </AuthenticatedRoute>
                         </>

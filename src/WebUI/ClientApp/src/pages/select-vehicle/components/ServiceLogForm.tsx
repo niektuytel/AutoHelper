@@ -12,7 +12,7 @@ import CheckIcon from '@mui/icons-material/Check';
 
 
 // own imports
-import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient } from '../../../app/web-api-client';
+import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../app/web-api-client';
 import StepConfirmation from './StepConfirmation';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
@@ -23,6 +23,7 @@ interface IServiceLogFormProps {
     licensePlate: string;
     drawerOpen: boolean;
     toggleDrawer: (open: boolean) => void;
+    handleNewService: (newServiceLog: VehicleServiceLogDtoItem) => void;
 }
 
 interface IServiceLogFormData {
@@ -40,7 +41,7 @@ interface IServiceLogFormData {
 
 const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
 
-export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps) => {
+export default ({ licensePlate, drawerOpen, toggleDrawer, handleNewService }: IServiceLogFormProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const dispatch = useDispatch();
     const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
@@ -50,8 +51,6 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
     const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogFormData>();
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-
-
 
     const handleNext = (data: IServiceLogFormData) => {
 
@@ -143,7 +142,7 @@ export default ({ licensePlate, drawerOpen, toggleDrawer }: IServiceLogFormProps
                 setValue('expectedNextOdometerReading', 0);
 
                 setActiveStep(0); // Reset active step to 0
-                toggleDrawer(false); // Close drawer
+                handleNewService(response);
             } catch (error) {
                 console.error('Error:', error);
 

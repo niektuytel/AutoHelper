@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, VehicleClient } from "../../app/web-api-client";
+import { BadRequestResponse, VehicleClient, VehicleServiceLogDtoItem } from "../../app/web-api-client";
 import { showOnError } from "../../redux/slices/statusSnackbarSlice";
 
 function useVehicleServiceLogs(license_plate: string) {
@@ -54,11 +54,17 @@ function useVehicleServiceLogs(license_plate: string) {
         return fetchVehicleServiceLogsData(licensePlate);
     }
 
+    const addServiceLog = (newServiceLog: VehicleServiceLogDtoItem) => {
+        // Optimistically update the cache with the new log at the beginning of the list
+        queryClient.setQueryData<VehicleServiceLogDtoItem[]>([`vehicleServiceLogs-${license_plate}`], (oldLogs) => [newServiceLog, ...(oldLogs ?? [])]);
+    };
+
+
 
     // only reset the form when the data is loaded
     const loading = isLoading;
     return {
-        loading, isError, vehicleServiceLogs, fetchVehicleByPlate
+        loading, isError, vehicleServiceLogs, fetchVehicleByPlate, addServiceLog
     }
 }
 

@@ -34,8 +34,6 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
     private readonly IVehicleService _vehicleService;
     private readonly ILogger<UpsertVehicleTimelinesCommandHandler> _logger;
     private IEnumerable<VehicleDetectedDefectDescriptionDtoItem> _defectDescriptions;
-    private int _maxInsertAmount;
-    private int _maxUpdateAmount;
 
     public UpsertVehicleTimelinesCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, ILogger<UpsertVehicleTimelinesCommandHandler> logger)
     {
