@@ -787,6 +787,71 @@
                 "schema": {
                   "type": "array",
                   "xml": {
+                    "name": "ArrayOfGarageLookupDtoItem",
+                    "wrapped": true
+                  },
+                  "items": {
+                    "xml": {
+                      "name": "GarageLookupDtoItem"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageLookupDtoItem"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/SearchLookupCardsByName": {
+      "get": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_SearchLookupCardsByName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "maxSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "xml": {
                     "name": "ArrayOfGarageLookupSimplefiedDto",
                     "wrapped": true
                   },
@@ -850,7 +915,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageLookupDto"
+                  "$ref": "#/components/schemas/GarageLookupDtoItem"
                 }
               }
             }
@@ -4075,22 +4140,7 @@
           }
         }
       },
-      "GarageLookupSimplefiedDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "identifier": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "city": {
-            "type": "string"
-          }
-        }
-      },
-      "GarageLookupDto": {
+      "GarageLookupDtoItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -4193,6 +4243,21 @@
           },
           "hasReplacementTransportService": {
             "type": "boolean"
+          }
+        }
+      },
+      "GarageLookupSimplefiedDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "identifier": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
           }
         }
       },

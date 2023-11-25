@@ -1,17 +1,15 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Autocomplete, Box, Button, CircularProgress, Container, Divider, Pagination, Paper, Skeleton, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Pagination, Paper, Skeleton } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 
 // local
-import ImageLogo from "../../components/logo/ImageLogo";
 import useGarageSearch from "./useGarageSearch";
 import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";
-import { GarageLookupDto, PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
+import { PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
 import GarageSearchField from "./components/GarageSearchField";
-import { useQueryClient } from "react-query";
 
 interface IProps {
 }
@@ -35,24 +33,16 @@ export default ({ }: IProps) => {
         setGaragesData(data);
     };
 
-    const onBackClick = () => {
-        console.log("onBackClick");
-        //navigate(`/select-vehicle/${}`);
-    };
-
-    // TODO: Batch locations that is faster search?
-
     return <>
         <Container maxWidth="lg" sx={{ minHeight: "70vh" }}>
             <Box sx={{ marginBottom: "75px" }}>
                 <Box flexGrow={1}>
-                    <Box sx={{ backgroundColor: COLORS.BLUE, borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px", p:1 }}>
-                        <Button variant="outlined" startIcon={<ArrowBackIosNewRoundedIcon />} sx={{ color: "white" }} onClick={() => onBackClick()}>
-                            {t("Delete")}
-                        </Button>
+                    <Box sx={{ backgroundColor: COLORS.BLUE, borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px", p: 1 }}>
+                        <Box sx={{ height: "90px"}}>
+                        </Box>
                         <Paper
                             elevation={2}
-                            sx={{ p: 1, width: "initial", position: "relative", marginTop:"90px" }}
+                            sx={{ p: 1, width: "initial", position: "relative" }}
                         >
                             <GarageSearchField
                                 license_plate={license_plate!}

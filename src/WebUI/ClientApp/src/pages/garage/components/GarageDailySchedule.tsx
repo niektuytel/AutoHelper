@@ -31,7 +31,7 @@ export default ({ openDaysOfWeek }: IProps) => {
                         <TableRow>
                             <TableCell>
                                 <CalendarTodayIcon style={{ marginRight: '8px' }} fontSize='small' />
-                                Openings tijden
+                                {t("Opening hours")}
                             </TableCell>
                             <TableCell></TableCell>
                         </TableRow>

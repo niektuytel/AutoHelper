@@ -19,7 +19,7 @@ using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using Newtonsoft.Json.Linq;
 
-namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
+namespace AutoHelper.Application.Garages.Queries.GetGarageLookups;
 
 public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupBriefDto>>
 {
@@ -76,7 +76,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
             .Where(x => x.Location != null
                         && !string.IsNullOrEmpty(x.KnownServicesString)
                         && !string.IsNullOrEmpty(x.DaysOfWeekString)
-                        && (!string.IsNullOrEmpty(x.Website) || x.GarageId != null)
+                        && (!string.IsNullOrEmpty(x.Website))
             );
 
         queryable = WhenHasRelatedGarageName(queryable, request.AutoCompleteOnGarageName);

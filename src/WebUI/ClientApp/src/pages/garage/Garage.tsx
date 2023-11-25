@@ -1,21 +1,11 @@
 ﻿import React, { useEffect, useState } from "react";
 import { Autocomplete, Box, Button, ButtonGroup, CircularProgress, Container, Divider, Grid, IconButton, Pagination, Paper, Skeleton, TextField, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import PhoneIcon from '@mui/icons-material/Phone';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 // local
-import ImageLogo from "../../components/logo/ImageLogo";
-import { COLORS } from "../../constants/colors";
-import { GarageLookupDto, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
-import { useQueryClient } from "react-query";
+import { GarageLookupDtoItem, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
 import useGarage from "./useGarage";
 import Header from "../../components/header/Header";
 import GarageServiceInfoCard from "./components/GarageServiceInfoCard";

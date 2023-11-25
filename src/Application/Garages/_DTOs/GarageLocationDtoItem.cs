@@ -1,16 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
+namespace AutoHelper.Application.Garages._DTOs;
 
-public class BriefLocationDto
+public class GarageLocationDtoItem
 {
     public string Address { get; set; }
 
-    public string PostalCode { get; set; }
-
     public string City { get; set; }
-
-    public string Country { get; set; }
 
     public float Longitude { get; set; }
 

@@ -6,9 +6,9 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageLookup;
+namespace AutoHelper.Application.Garages._DTOs;
 
-public class GarageLookupDto: IMapFrom<GarageLookupItem>
+public class GarageLookupDtoItem : IMapFrom<GarageLookupItem>
 {
     public Guid Id { get; set; }
 

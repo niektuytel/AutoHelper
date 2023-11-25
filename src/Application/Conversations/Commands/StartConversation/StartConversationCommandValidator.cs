@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
@@ -9,9 +10,6 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
 {
     public class StartConversationCommandValidator : AbstractValidator<StartConversationCommand>
     {
-        private const string EmailPattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
-        private const string WhatsappPattern = @"^(\+?[1-9]{1}[0-9]{3,14}|[0-9]{9,10})$";
-
 
         private readonly IApplicationDbContext _context;
 
@@ -87,7 +85,7 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
 
             try
             {
-                command.SenderContactType = GetContactType(input);
+                command.SenderContactType = input.GetContactType();
                 return true;
             }
             catch (Exception)
@@ -106,7 +104,7 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
 
             try
             {
-                command.ReceiverContactType = GetContactType(input);
+                command.ReceiverContactType = input.GetContactType();
                 return true;
             }
             catch (Exception)
@@ -116,20 +114,20 @@ namespace AutoHelper.Application.Conversations.Commands.StartConversation
             }
         }
 
-        private ContactType GetContactType(string senderWhatsAppNumberOrEmail)
-        {
-            if (Regex.IsMatch(senderWhatsAppNumberOrEmail, EmailPattern))
-            {
-                return ContactType.Email;
-            }
-            else if (Regex.IsMatch(senderWhatsAppNumberOrEmail, WhatsappPattern))
-            {
-                return ContactType.WhatsApp;
-            }
-            else
-            {
-                throw new ArgumentException("Invalid sender contact type");
-            }
-        }
+        //private ContactType GetContactType(string senderWhatsAppNumberOrEmail)
+        //{
+        //    if (Regex.IsMatch(senderWhatsAppNumberOrEmail, EmailPattern))
+        //    {
+        //        return ContactType.Email;
+        //    }
+        //    else if (Regex.IsMatch(senderWhatsAppNumberOrEmail, WhatsappPattern))
+        //    {
+        //        return ContactType.WhatsApp;
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentException("Invalid sender contact type");
+        //    }
+        //}
     }
 }

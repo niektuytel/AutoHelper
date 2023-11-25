@@ -1,30 +1,44 @@
-﻿using AutoHelper.Domain.Entities;
+﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
+using AutoHelper.Domain.Entities;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
 public class CreateGarageCommandValidator : AbstractValidator<CreateGarageCommand>
 {
-    public CreateGarageCommandValidator()
+    private readonly IApplicationDbContext _context;
+
+    public CreateGarageCommandValidator(IApplicationDbContext context)
     {
-        RuleFor(v => v.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(200).WithMessage("Name must not exceed 200 characters.");
+        _context = context;
+
+        RuleFor(x => x.GarageLookupIdentifier)
+            .NotEmpty().WithMessage("Garage identifier is required.")
+            .MustAsync(BeValidAndExistingGarage)
+            .WithMessage("Invalid or non-existent garage lookup."); ;
 
         RuleFor(v => v.PhoneNumber)
             .NotEmpty().WithMessage("PhoneNumber is required.");
 
-        RuleFor(v => v.Email)
+        RuleFor(v => v.EmailAddress)
             .NotEmpty().WithMessage("Email is required.");
 
         RuleFor(v => v.Location)
             .SetValidator(new BriefLocationValidator());
 
-        RuleFor(v => v.BankingDetails)
-            .SetValidator(new BriefBankingDetailsValidator());
     }
 
-    public class BriefLocationValidator : AbstractValidator<BriefLocationDto>
+    private async Task<bool> BeValidAndExistingGarage(CreateGarageCommand command, string lookupIdentifier, CancellationToken cancellationToken)
+    {
+        var lookup = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
+        command.GarageLookup = lookup;
+
+        return lookup != null;
+    }
+
+    public class BriefLocationValidator : AbstractValidator<GarageLocationDtoItem>
     {
         public BriefLocationValidator()
         {
@@ -34,33 +48,12 @@ public class CreateGarageCommandValidator : AbstractValidator<CreateGarageComman
             RuleFor(v => v.City)
                 .MaximumLength(100).WithMessage("City must not exceed 100 characters.");
 
-            RuleFor(v => v.Country)
-                .NotEmpty().WithMessage("Country is required.");
-
             RuleFor(v => v.Longitude)
                 .NotEmpty().WithMessage("Longitude is required.");
 
             RuleFor(v => v.Latitude)
                 .NotEmpty().WithMessage("Latitude is required.");
 
-        }
-    }
-
-    public class BriefBankingDetailsValidator : AbstractValidator<BriefBankingDetailsDto>
-    {
-        public BriefBankingDetailsValidator()
-        {
-            RuleFor(v => v.BankName)
-                .NotEmpty().WithMessage("BankName is required.");
-
-            RuleFor(v => v.KvKNumber)
-                .NotEmpty().WithMessage("KvKNumber is required.");
-
-            RuleFor(v => v.AccountHolderName)
-                .NotEmpty().WithMessage("AccountHolderName is required.");
-
-            RuleFor(v => v.IBAN)
-                .NotEmpty().WithMessage("IBAN is required.");
         }
     }
 

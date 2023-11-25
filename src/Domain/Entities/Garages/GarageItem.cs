@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Domain.Entities.Conversations;
+using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -11,20 +13,20 @@ public class GarageItem : BaseAuditableEntity
     /// <summary>
     /// UserId of the garage owner
     /// </summary>
-    public string UserId { get; set; }
+    [Required]
+    public string UserId { get; set; } = null!;
 
-    public string Name { get; set; }
+    [Required]
+    public string GarageLookupIdentifier { get; set; } = null!;
 
-    public string Email { get; set; }
+    [ForeignKey(nameof(GarageLookupIdentifier))]
+    public virtual GarageLookupItem GarageLookup { get; set; } = null!;
 
-    public string PhoneNumber { get; set; }
-
-    public string WhatsAppNumber { get; set; } = "";
-
-    public GarageLocationItem Location { get; set; } = new GarageLocationItem();
-
-    public GarageBankingDetailsItem BankingDetails { get; set; } = new GarageBankingDetailsItem();
+    public GarageBankingDetailsItem? BankingDetails { get; set; } = null!;
 
     public ICollection<GarageEmployeeItem> Employees { get; set; } = new List<GarageEmployeeItem>();
+
+    [Required]
+    public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
 
 }

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 // own imports
-import { GarageLookupDto, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
+import { GarageLookupDtoItem, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
 import useGarageServiceTypes from "../useGarageSearchServiceTypes";
 
 
@@ -32,7 +32,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [isLoading, setIsLoading] = useState(false);
     const [value, setValue] = useState("");
     const [filters, setFilters] = useState<string[]>([]);
-    const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDto[]>([]);
+    const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDtoItem[]>([]);
 
     const { loading, garageServiceTypes } = useGarageServiceTypes(license_plate!);
     const useGarageClient = new GarageClient(process.env.PUBLIC_URL);

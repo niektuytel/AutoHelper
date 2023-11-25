@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoHelper.Application.Garages._DTOs;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageService;
@@ -27,4 +28,23 @@ public class UpdateGarageServiceCommandValidator : AbstractValidator<UpdateGarag
             .NotEmpty()
             .WithMessage("UserId cannot be empty.");
     }
+
+    public class BriefBankingDetailsValidator : AbstractValidator<BriefBankingDetailsDtoItem>
+    {
+        public BriefBankingDetailsValidator()
+        {
+            RuleFor(v => v.BankName)
+                .NotEmpty().WithMessage("BankName is required.");
+
+            RuleFor(v => v.KvKNumber)
+                .NotEmpty().WithMessage("KvKNumber is required.");
+
+            RuleFor(v => v.AccountHolderName)
+                .NotEmpty().WithMessage("AccountHolderName is required.");
+
+            RuleFor(v => v.IBAN)
+                .NotEmpty().WithMessage("IBAN is required.");
+        }
+    }
+
 }

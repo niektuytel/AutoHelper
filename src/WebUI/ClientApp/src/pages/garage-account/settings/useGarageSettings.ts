@@ -154,26 +154,20 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
 
     const createGarage = (data: any) => {
         var command = new CreateGarageCommand();
-        command.name = data.name;
+        command.garageLookupIdentifier = data.garageLookup.identifier;
         command.phoneNumber = data.phoneNumber;
-        command.whatsAppNumber = data.whatsAppNumber;
-        command.email = data.email;
+        command.whatsappNumber = data.whatsappNumber;
+        command.emailAddress = data.emailAddress;
+        command.emailAddress = data.emailAddress;
+        command.conversationEmail = data.conversationEmail;
+        command.conversationWhatsappNumber = data.conversationWhatsappNumber;
 
         const cleanAddress = data.address.replace(`, ${data.city}`, '');
         command.location = new BriefLocationDto({
             address: cleanAddress,
-            postalCode: data.postalCode,
             city: data.city,
-            country: "Netherlands",
             longitude: data.longitude,
             latitude: data.latitude
-
-        });
-        command.bankingDetails = new BriefBankingDetailsDto({
-            bankName: data.bankName,
-            kvKNumber: data.kvKNumber,
-            accountHolderName: data.accountHolderName,
-            iban: data.iban
         });
 
         console.log(command.toJSON());
@@ -191,18 +185,18 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         command.location = new GarageLocationItem();
         command.location.id = garageSettings?.location?.id,
         command.location.address = data.address.replace(`, ${data.city}`, ''),
-        command.location.postalCode = data.postalCode,
+        //command.location.postalCode = data.postalCode,
         command.location.city = data.city,
-        command.location.country = data.country,
+        //command.location.country = data.country,
         command.location.longitude = data.longitude,
         command.location.latitude = data.latitude
 
-        command.bankingDetails = new GarageBankingDetailsItem();
-        command.bankingDetails.id = garageSettings?.bankingDetails?.id;
-        command.bankingDetails.bankName = data.bankName;
-        command.bankingDetails.kvKNumber = data.kvKNumber;
-        command.bankingDetails.accountHolderName = data.accountHolderName;
-        command.bankingDetails.iban = data.iban;
+        //command.bankingDetails = new GarageBankingDetailsItem();
+        //command.bankingDetails.id = garageSettings?.bankingDetails?.id;
+        //command.bankingDetails.bankName = data.bankName;
+        //command.bankingDetails.kvKNumber = data.kvKNumber;
+        //command.bankingDetails.accountHolderName = data.accountHolderName;
+        //command.bankingDetails.iban = data.iban;
 
         console.log(command.toJSON());
         updateMutation.mutate(command);

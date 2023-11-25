@@ -8,6 +8,23 @@ import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
 // custom imports
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
+//if (t("Select a bank...").match(data.bankName)) {
+//    setError("bankName", {
+//        type: "manual",
+//        message: t("Select a bank...")
+//    });
+
+//    return;
+//}
+//else
+
+//command.bankingDetails = new BriefBankingDetailsDto({
+//    bankName: data.bankName,
+//    kvKNumber: data.kvKNumber,
+//    accountHolderName: data.accountHolderName,
+//    iban: data.iban
+//});
+
 interface BankingSectionProps {
     control: any;
     errors: FieldErrors<FieldValues>;

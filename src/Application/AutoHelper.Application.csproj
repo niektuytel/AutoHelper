@@ -30,7 +30,7 @@
     <ItemGroup>
       <Compile Remove="Common\Interfaces\ICsvFileBuilder.cs" />
       <Compile Remove="Common\Models\LookupDto.cs" />
-      <Compile Remove="Garages\Queries\GetGarageLookups\GarageEmployeeItemSearchDto.cs" />
+      <Compile Remove="Garages\Queries\GetGarageLookupCards\GarageEmployeeItemSearchDto.cs" />
       <Compile Remove="Vehicles\Queries\GetVehicleServiceLogs\VehicleGarageServiceItemDto.cs" />
     </ItemGroup>
 

@@ -28,6 +28,34 @@ public class GarageLookupItem
     [Required]
     public string Name { get; set; }
 
+    [Required]
+    public string Address { get; set; }
+
+    [Required]
+    public string City { get; set; }
+
+    [Required]
+    public Geometry Location { get; set; }
+
+    public string? Image { get; set; } = null;
+    public string? ImageThumbnail { get; set; } = null;
+
+    public string? Status { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
+    public string? WhatsappNumber { get; set; }
+
+    public string? EmailAddress { get; set; }
+
+    /// <summary>
+    /// Contact identifier for the conversation with the garage.
+    /// This can be a email address or whatsapp number.
+    /// When defined, the garage is available for conversation.
+    /// </summary>
+    public string? ConversationContactEmail { get; set; }
+    public string? ConversationContactWhatsappNumber { get; set; }
+
     [NotMapped]
     public GarageServiceType[] KnownServices
     {
@@ -51,20 +79,6 @@ public class GarageLookupItem
     [Required]
     public string KnownServicesString { get; set; } = "";
 
-    [Required]
-    public string Address { get; set; }
-
-    [Required]
-    public string City { get; set; }
-
-    [Required]
-    public Geometry Location { get; set; }
-
-    public string? Image { get; set; } = null;
-    public string? ImageThumbnail { get; set; } = null;
-
-    public string? Status { get; set; }
-
     [NotMapped]
     public int[]? DaysOfWeek
     {
@@ -78,24 +92,10 @@ public class GarageLookupItem
         }
         set
         {
-            DaysOfWeekString = value == null? "" : string.Join(",", value);
+            DaysOfWeekString = value == null ? "" : string.Join(",", value);
         }
     }
     public string DaysOfWeekString { get; set; } = "";
-
-    public string? PhoneNumber { get; set; }
-
-    public string? WhatsappNumber { get; set; }
-
-    public string? EmailAddress { get; set; }
-
-    /// <summary>
-    /// Contact identifier for the conversation with the garage.
-    /// This can be a email address or whatsapp number.
-    /// When defined, the garage is available for conversation.
-    /// </summary>
-    public string? ConversationContactIdentifier { get; set; }
-    public ContactType? ConversationContactType { get; set; }
 
     public string? Website { get; set; }
 
@@ -116,9 +116,6 @@ public class GarageLookupItem
     public DateTime? LastModified { get; set; }
 
     public string? LastModifiedBy { get; set; }
-
-    [Required]
-    public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
 
     public GarageLookupLargeItem? LargeData { get; set; } = null;
 

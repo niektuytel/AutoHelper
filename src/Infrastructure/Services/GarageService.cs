@@ -213,30 +213,31 @@ internal class GarageService : IGarageService
 
     public async Task<GarageLookupItem> SetConversationSettings(string garageIdentifier, string contactIdentifier, ContactType contactType, GarageServiceType[] services, CancellationToken cancellationToken)
     {
-        var entity = _context.GarageLookups.FirstOrDefault(x => x.Identifier == garageIdentifier);
-        if (entity == null)
-        {
-            throw new Exception("Garage lookup not found");
-        }
+        throw new NotImplementedException();
+        //var entity = _context.GarageLookups.FirstOrDefault(x => x.Identifier == garageIdentifier);
+        //if (entity == null)
+        //{
+        //    throw new Exception("Garage lookup not found");
+        //}
 
-        var knownServices = new List<GarageServiceType>();
-        knownServices.AddRange(entity.KnownServices);
-        foreach (var service in services)
-        {
-            if (entity.KnownServices.Contains(service) == false)
-            {
-                knownServices.Add(service);
-            }
-        }
+        //var knownServices = new List<GarageServiceType>();
+        //knownServices.AddRange(entity.KnownServices);
+        //foreach (var service in services)
+        //{
+        //    if (entity.KnownServices.Contains(service) == false)
+        //    {
+        //        knownServices.Add(service);
+        //    }
+        //}
 
-        entity.KnownServices = knownServices.ToArray();
-        entity.ConversationContactIdentifier = contactIdentifier;
-        entity.ConversationContactType = contactType;
-        entity.LastModifiedBy = "System:SetConversationSettings";
-        entity.LastModified = DateTime.UtcNow;
+        //entity.KnownServices = knownServices.ToArray();
+        //entity.ConversationContactIdentifier = contactIdentifier;
+        //entity.ConversationContactType = contactType;
+        //entity.LastModifiedBy = "System:SetConversationSettings";
+        //entity.LastModified = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync(cancellationToken);
-        return entity;
+        //await _context.SaveChangesAsync(cancellationToken);
+        //return entity;
     }
 
     private static byte[] CreateThumbnail(byte[] originalImage, int thumbnailHeight)

@@ -10,6 +10,8 @@ import { useDispatch } from 'react-redux';
 
 // custom imports
 import { showOnError } from '../../../../redux/slices/statusSnackbarSlice';
+import SearchGarageLookup from './SearchGarageLookup';
+import { ContactType, GarageLookupDtoItem } from '../../../../app/web-api-client';
 
 interface LocationSectionProps {
     control: any;
@@ -32,11 +34,38 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
         requestOptions: {
             types: ["address"],
             componentRestrictions: {
-                country: 'nl',//t('country_code')
+                country: 'nl',
             }
         },
         debounce: 250
     });
+
+    const handleSearchByAddress = (address: string, city: string) => {
+        getGeocode({ address: `${address}, ${city}` })
+            .then(results => {
+                const { lat, lng } = getLatLng(results[0]);
+
+                // Set the values to useForm directly
+                var newAddress = `${address}, ${city}`;
+                setFormValue("address", newAddress);
+                setFormValue("city", city);
+                setFormValue("latitude", lat);
+                setFormValue("longitude", lng);
+
+                console.log("handleSearchByAddress", address, city, lat, lng);
+
+                setPreviousValue({
+                    address: address,
+                    city: city,
+                    latitude: lat,
+                    longitude: lng
+                });
+            })
+            .catch(error => {
+                dispatch(showOnError(t("Error on getting address location")));
+                console.error("Error fetching geocode:", error);
+            });
+    }
 
     const handleSearch = (place_id: string, address: string, city: string, postalCode: string) => {
         getGeocode({ placeId: place_id })
@@ -121,23 +150,38 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
         }
     };
 
+    const garageLookupChanged = (value: GarageLookupDtoItem) => {
+        setFormValue("garageLookup", value);
+
+        // General
+        handleSearchByAddress(value.address!, value.city!);
+
+        // Contact
+        setFormValue("phoneNumber", value.phoneNumber);
+        setFormValue("whatsAppNumber", value.whatsappNumber);
+        setFormValue("email", value.emailAddress);
+        
+        if (value.conversationContactType == ContactType.Email) {
+            setFormValue("conversationEmail", value);
+            setFormValue("conversationWhatsAppNumber", "");
+        } else if (value.conversationContactType == ContactType.WhatsApp) {
+            setFormValue("conversationEmail", "");
+            setFormValue("conversationWhatsAppNumber", value);
+        }
+    }
 
     return (
         <>
             <Grid item xs={12}>
                 <Controller
-                    name="name"
+                    name="garageLookup"
                     control={control}
-                    rules={{ required: t("What is your garage name?") }}
-                    defaultValue={""}
-                    render={({ field }) => (
-                        <TextField
-                            {...field}
-                            fullWidth
-                            label={t("Name")}
-                            variant="outlined"
-                            error={Boolean(errors.name)}
-                            helperText={errors.name ? t(errors.name.message as string) : undefined}
+                    rules={{ required: t('GarageAccount.GarageLookup.Requried') }}
+                    render={({ field, fieldState: { error } }) => (
+                        <SearchGarageLookup
+                            value={field.value}
+                            onChange={(value) => garageLookupChanged(value)}
+                            error={error}
                         />
                     )}
                 />
@@ -159,6 +203,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                                 onFocus={handleFocus}
                                 onBlur={handleBlur}
                                 fullWidth
+                                size="small"
                                 autoComplete="new-password"
                                 autoFocus={true}
                                 disabled={!ready}

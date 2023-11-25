@@ -698,9 +698,11 @@ export interface IGarageClient {
 
     searchLookups(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto>;
 
-    searchLookupsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupSimplefiedDto[]>;
+    searchLookupsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupDtoItem[]>;
 
-    getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDto>;
+    searchLookupCardsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupSimplefiedDto[]>;
+
+    getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDtoItem>;
 
     getLookupsStatus(): Promise<GarageLookupsStatusDto>;
 
@@ -838,7 +840,7 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<PaginatedListOfGarageLookupBriefDto>(null as any);
     }
 
-    searchLookupsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupSimplefiedDto[]> {
+    searchLookupsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupDtoItem[]> {
         let url_ = this.baseUrl + "/api/Garage/SearchLookupsByName?";
         if (name !== undefined && name !== null)
             url_ += "name=" + encodeURIComponent("" + name) + "&";
@@ -860,7 +862,61 @@ export class GarageClient implements IGarageClient {
         });
     }
 
-    protected processSearchLookupsByName(response: Response): Promise<GarageLookupSimplefiedDto[]> {
+    protected processSearchLookupsByName(response: Response): Promise<GarageLookupDtoItem[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(GarageLookupDtoItem.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageLookupDtoItem[]>(null as any);
+    }
+
+    searchLookupCardsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupSimplefiedDto[]> {
+        let url_ = this.baseUrl + "/api/Garage/SearchLookupCardsByName?";
+        if (name !== undefined && name !== null)
+            url_ += "name=" + encodeURIComponent("" + name) + "&";
+        if (maxSize === null)
+            throw new Error("The parameter 'maxSize' cannot be null.");
+        else if (maxSize !== undefined)
+            url_ += "maxSize=" + encodeURIComponent("" + maxSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSearchLookupCardsByName(_response);
+        });
+    }
+
+    protected processSearchLookupCardsByName(response: Response): Promise<GarageLookupSimplefiedDto[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -892,7 +948,7 @@ export class GarageClient implements IGarageClient {
         return Promise.resolve<GarageLookupSimplefiedDto[]>(null as any);
     }
 
-    getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDto> {
+    getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDtoItem> {
         let url_ = this.baseUrl + "/api/Garage/GetLookup/{identifier}?";
         if (identifier === undefined || identifier === null)
             throw new Error("The parameter 'identifier' must be defined.");
@@ -913,14 +969,14 @@ export class GarageClient implements IGarageClient {
         });
     }
 
-    protected processGetLookup(response: Response): Promise<GarageLookupDto> {
+    protected processGetLookup(response: Response): Promise<GarageLookupDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GarageLookupDto.fromJS(resultData200);
+            result200 = GarageLookupDtoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -935,7 +991,7 @@ export class GarageClient implements IGarageClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<GarageLookupDto>(null as any);
+        return Promise.resolve<GarageLookupDtoItem>(null as any);
     }
 
     getLookupsStatus(): Promise<GarageLookupsStatusDto> {
@@ -4976,6 +5032,134 @@ export interface IGarageLookupBriefDto {
     hasReplacementTransportService?: boolean;
 }
 
+export class GarageLookupDtoItem implements IGarageLookupDtoItem {
+    id?: string;
+    garageId?: string | undefined;
+    identifier?: string;
+    name?: string;
+    image?: string;
+    imageThumbnail?: string;
+    knownServices?: GarageServiceType[];
+    daysOfWeek?: number[];
+    phoneNumber?: string | undefined;
+    whatsappNumber?: string | undefined;
+    emailAddress?: string | undefined;
+    website?: string | undefined;
+    rating?: number | undefined;
+    userRatingsTotal?: number | undefined;
+    address?: string;
+    city?: string;
+    conversationContactIdentifier?: string | undefined;
+    conversationContactType?: ContactType | undefined;
+    hasPickupService?: boolean;
+    hasReplacementTransportService?: boolean;
+
+    constructor(data?: IGarageLookupDtoItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.garageId = _data["garageId"];
+            this.identifier = _data["identifier"];
+            this.name = _data["name"];
+            this.image = _data["image"];
+            this.imageThumbnail = _data["imageThumbnail"];
+            if (Array.isArray(_data["knownServices"])) {
+                this.knownServices = [] as any;
+                for (let item of _data["knownServices"])
+                    this.knownServices!.push(item);
+            }
+            if (Array.isArray(_data["daysOfWeek"])) {
+                this.daysOfWeek = [] as any;
+                for (let item of _data["daysOfWeek"])
+                    this.daysOfWeek!.push(item);
+            }
+            this.phoneNumber = _data["phoneNumber"];
+            this.whatsappNumber = _data["whatsappNumber"];
+            this.emailAddress = _data["emailAddress"];
+            this.website = _data["website"];
+            this.rating = _data["rating"];
+            this.userRatingsTotal = _data["userRatingsTotal"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.conversationContactIdentifier = _data["conversationContactIdentifier"];
+            this.conversationContactType = _data["conversationContactType"];
+            this.hasPickupService = _data["hasPickupService"];
+            this.hasReplacementTransportService = _data["hasReplacementTransportService"];
+        }
+    }
+
+    static fromJS(data: any): GarageLookupDtoItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageLookupDtoItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["garageId"] = this.garageId;
+        data["identifier"] = this.identifier;
+        data["name"] = this.name;
+        data["image"] = this.image;
+        data["imageThumbnail"] = this.imageThumbnail;
+        if (Array.isArray(this.knownServices)) {
+            data["knownServices"] = [];
+            for (let item of this.knownServices)
+                data["knownServices"].push(item);
+        }
+        if (Array.isArray(this.daysOfWeek)) {
+            data["daysOfWeek"] = [];
+            for (let item of this.daysOfWeek)
+                data["daysOfWeek"].push(item);
+        }
+        data["phoneNumber"] = this.phoneNumber;
+        data["whatsappNumber"] = this.whatsappNumber;
+        data["emailAddress"] = this.emailAddress;
+        data["website"] = this.website;
+        data["rating"] = this.rating;
+        data["userRatingsTotal"] = this.userRatingsTotal;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["conversationContactIdentifier"] = this.conversationContactIdentifier;
+        data["conversationContactType"] = this.conversationContactType;
+        data["hasPickupService"] = this.hasPickupService;
+        data["hasReplacementTransportService"] = this.hasReplacementTransportService;
+        return data;
+    }
+}
+
+export interface IGarageLookupDtoItem {
+    id?: string;
+    garageId?: string | undefined;
+    identifier?: string;
+    name?: string;
+    image?: string;
+    imageThumbnail?: string;
+    knownServices?: GarageServiceType[];
+    daysOfWeek?: number[];
+    phoneNumber?: string | undefined;
+    whatsappNumber?: string | undefined;
+    emailAddress?: string | undefined;
+    website?: string | undefined;
+    rating?: number | undefined;
+    userRatingsTotal?: number | undefined;
+    address?: string;
+    city?: string;
+    conversationContactIdentifier?: string | undefined;
+    conversationContactType?: ContactType | undefined;
+    hasPickupService?: boolean;
+    hasReplacementTransportService?: boolean;
+}
+
 export class GarageLookupSimplefiedDto implements IGarageLookupSimplefiedDto {
     identifier?: string;
     name?: string;
@@ -5018,134 +5202,6 @@ export interface IGarageLookupSimplefiedDto {
     identifier?: string;
     name?: string;
     city?: string;
-}
-
-export class GarageLookupDto implements IGarageLookupDto {
-    id?: string;
-    garageId?: string | undefined;
-    identifier?: string;
-    name?: string;
-    image?: string;
-    imageThumbnail?: string;
-    knownServices?: GarageServiceType[];
-    daysOfWeek?: number[];
-    phoneNumber?: string | undefined;
-    whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
-    website?: string | undefined;
-    rating?: number | undefined;
-    userRatingsTotal?: number | undefined;
-    address?: string;
-    city?: string;
-    conversationContactIdentifier?: string | undefined;
-    conversationContactType?: ContactType | undefined;
-    hasPickupService?: boolean;
-    hasReplacementTransportService?: boolean;
-
-    constructor(data?: IGarageLookupDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.garageId = _data["garageId"];
-            this.identifier = _data["identifier"];
-            this.name = _data["name"];
-            this.image = _data["image"];
-            this.imageThumbnail = _data["imageThumbnail"];
-            if (Array.isArray(_data["knownServices"])) {
-                this.knownServices = [] as any;
-                for (let item of _data["knownServices"])
-                    this.knownServices!.push(item);
-            }
-            if (Array.isArray(_data["daysOfWeek"])) {
-                this.daysOfWeek = [] as any;
-                for (let item of _data["daysOfWeek"])
-                    this.daysOfWeek!.push(item);
-            }
-            this.phoneNumber = _data["phoneNumber"];
-            this.whatsappNumber = _data["whatsappNumber"];
-            this.emailAddress = _data["emailAddress"];
-            this.website = _data["website"];
-            this.rating = _data["rating"];
-            this.userRatingsTotal = _data["userRatingsTotal"];
-            this.address = _data["address"];
-            this.city = _data["city"];
-            this.conversationContactIdentifier = _data["conversationContactIdentifier"];
-            this.conversationContactType = _data["conversationContactType"];
-            this.hasPickupService = _data["hasPickupService"];
-            this.hasReplacementTransportService = _data["hasReplacementTransportService"];
-        }
-    }
-
-    static fromJS(data: any): GarageLookupDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageLookupDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["garageId"] = this.garageId;
-        data["identifier"] = this.identifier;
-        data["name"] = this.name;
-        data["image"] = this.image;
-        data["imageThumbnail"] = this.imageThumbnail;
-        if (Array.isArray(this.knownServices)) {
-            data["knownServices"] = [];
-            for (let item of this.knownServices)
-                data["knownServices"].push(item);
-        }
-        if (Array.isArray(this.daysOfWeek)) {
-            data["daysOfWeek"] = [];
-            for (let item of this.daysOfWeek)
-                data["daysOfWeek"].push(item);
-        }
-        data["phoneNumber"] = this.phoneNumber;
-        data["whatsappNumber"] = this.whatsappNumber;
-        data["emailAddress"] = this.emailAddress;
-        data["website"] = this.website;
-        data["rating"] = this.rating;
-        data["userRatingsTotal"] = this.userRatingsTotal;
-        data["address"] = this.address;
-        data["city"] = this.city;
-        data["conversationContactIdentifier"] = this.conversationContactIdentifier;
-        data["conversationContactType"] = this.conversationContactType;
-        data["hasPickupService"] = this.hasPickupService;
-        data["hasReplacementTransportService"] = this.hasReplacementTransportService;
-        return data;
-    }
-}
-
-export interface IGarageLookupDto {
-    id?: string;
-    garageId?: string | undefined;
-    identifier?: string;
-    name?: string;
-    image?: string;
-    imageThumbnail?: string;
-    knownServices?: GarageServiceType[];
-    daysOfWeek?: number[];
-    phoneNumber?: string | undefined;
-    whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
-    website?: string | undefined;
-    rating?: number | undefined;
-    userRatingsTotal?: number | undefined;
-    address?: string;
-    city?: string;
-    conversationContactIdentifier?: string | undefined;
-    conversationContactType?: ContactType | undefined;
-    hasPickupService?: boolean;
-    hasReplacementTransportService?: boolean;
 }
 
 export class GarageLookupsStatusDto implements IGarageLookupsStatusDto {

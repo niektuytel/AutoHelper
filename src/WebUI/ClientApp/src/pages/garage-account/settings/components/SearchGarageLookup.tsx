@@ -1,20 +1,21 @@
 ﻿import React, { useEffect, useState, useCallback, memo } from 'react';
 import { FieldError } from 'react-hook-form';
 import { Autocomplete, TextField, CircularProgress, debounce } from '@mui/material';
+import { GarageClient, GarageLookupDtoItem, GarageLookupSimplefiedDto } from '../../../../app/web-api-client';
+import { useTranslation } from 'react-i18next';
 
 // own imports
-import { GarageClient, GarageLookupSimplefiedDto } from '../../../app/web-api-client';
 
 interface ISearchGarageProps {
-    value: GarageLookupSimplefiedDto;
-    onChange: (value: GarageLookupSimplefiedDto) => void;
+    value: GarageLookupDtoItem;
+    onChange: (value: GarageLookupDtoItem) => void;
     error?: FieldError;
 }
 
 const fetchGarages = async (garageClient: GarageClient, search: string) => {
     if (!search) return [];
     try {
-        const response = await garageClient.searchLookupCardsByName(search, 5);
+        const response = await garageClient.searchLookupsByName(search, 5);
         return response;
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -22,11 +23,12 @@ const fetchGarages = async (garageClient: GarageClient, search: string) => {
     }
 };
 
-const SearchGarage = memo(({ value, onChange, error }: ISearchGarageProps) => {
+export default memo(({ value, onChange, error }: ISearchGarageProps) => {
     const [options, setOptions] = useState<GarageLookupSimplefiedDto[]>([]);
     const garageClient = new GarageClient(process.env.PUBLIC_URL);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
 
     const debouncedFetch = useCallback(debounce(async (searchValue: string) => {
         setLoading(true);
@@ -58,7 +60,7 @@ const SearchGarage = memo(({ value, onChange, error }: ISearchGarageProps) => {
                     {...params}
                     error={!!error}
                     helperText={error ? error.message : ''}
-                    label="Garage"
+                    label={t("Name")}
                     size='small'
                     InputProps={{
                         ...params.InputProps,
@@ -75,4 +77,3 @@ const SearchGarage = memo(({ value, onChange, error }: ISearchGarageProps) => {
     );
 });
 
-export default SearchGarage;

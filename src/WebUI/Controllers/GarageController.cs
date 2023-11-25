@@ -66,6 +66,8 @@ public class GarageController : ApiControllerBase
         [FromQuery] string[]? filters = null
     )
     {
+
+        // TODO: Batch locations that is faster search?
         var query = new GetGarageLookupsQuery(
             licensePlate,
             latitude,
@@ -81,21 +83,34 @@ public class GarageController : ApiControllerBase
     }
 
     [HttpGet($"{nameof(SearchLookupsByName)}")]
-    [ProducesResponseType(typeof(GarageLookupSimplefiedDto[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GarageLookupDtoItem[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<GarageLookupSimplefiedDto[]> SearchLookupsByName(
-        [FromQuery] string name, 
-        [FromQuery] int maxSize = 10, 
+    public async Task<GarageLookupDtoItem[]> SearchLookupsByName(
+        [FromQuery] string name,
+        [FromQuery] int maxSize = 10,
         CancellationToken cancellationToken = default
-    ){
+    )
+    {
         var query = new GetGarageLookupsByNameQuery(name, maxSize);
         return await Mediator.Send(query, cancellationToken);
     }
 
-    [HttpGet($"{nameof(GetLookup)}/{{identifier}}")]
-    [ProducesResponseType(typeof(GarageLookupDto), StatusCodes.Status200OK)]
+    [HttpGet($"{nameof(SearchLookupCardsByName)}")]
+    [ProducesResponseType(typeof(GarageLookupSimplefiedDto[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<GarageLookupDto> GetLookup([FromRoute] string identifier, [FromQuery] string licensePlate)
+    public async Task<GarageLookupSimplefiedDto[]> SearchLookupCardsByName(
+        [FromQuery] string name, 
+        [FromQuery] int maxSize = 10, 
+        CancellationToken cancellationToken = default
+    ){
+        var query = new GetGarageLookupCardsByNameQuery(name, maxSize);
+        return await Mediator.Send(query, cancellationToken);
+    }
+
+    [HttpGet($"{nameof(GetLookup)}/{{identifier}}")]
+    [ProducesResponseType(typeof(GarageLookupDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<GarageLookupDtoItem> GetLookup([FromRoute] string identifier, [FromQuery] string licensePlate)
     {
         var request = new GetGarageLookupQuery(identifier, licensePlate);
         return await Mediator.Send(request);

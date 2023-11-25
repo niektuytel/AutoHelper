@@ -24,13 +24,13 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { GarageLookupDto } from '../../../app/web-api-client';
+import { GarageLookupDtoItem } from '../../../app/web-api-client';
 import GarageDailySchedule from './GarageDailySchedule';
 
 interface IProps
 {
     loading: boolean;
-    garageLookup: GarageLookupDto | undefined;
+    garageLookup: GarageLookupDtoItem | undefined;
 }
 
 export default ({ loading, garageLookup }: IProps) => {

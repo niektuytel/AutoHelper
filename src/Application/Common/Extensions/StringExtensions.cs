@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AutoHelper.Application.Common.Extensions;
+
 public static class StringExtensions
 {
     public static string ToPascalCase(this string str)

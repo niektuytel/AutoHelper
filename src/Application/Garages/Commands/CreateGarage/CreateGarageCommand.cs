@@ -3,12 +3,16 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Index.HPRtree;
+using NetTopologySuite;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
@@ -17,17 +21,23 @@ public record CreateGarageCommand : IRequest<GarageItem>
     [JsonIgnore]
     public string? UserId { get; set; }
 
-    public string Name { get; set; }
+    [JsonIgnore]
+    public GarageLookupItem GarageLookup { get; set; } = new GarageLookupItem();
 
-    public string PhoneNumber { get; set; }
+    public string GarageLookupIdentifier { get; set; } = "";
 
-    public string WhatsAppNumber { get; set; } = "";
+    public string? PhoneNumber { get; set; }
 
-    public string Email { get; set; }
+    public string? WhatsappNumber { get; set; } 
 
-    public BriefLocationDto Location { get; set; }
+    public string? EmailAddress { get; set; }
 
-    public BriefBankingDetailsDto BankingDetails { get; set; }
+    public string? ConversationEmail { get; set; }
+
+    public string? ConversationWhatsappNumber { get; set; }
+
+    public GarageLocationDtoItem Location { get; set; }
+
 }
 
 public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageCommand, GarageItem>
@@ -43,36 +53,35 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
 
     public async Task<GarageItem> Handle(CreateGarageCommand request, CancellationToken cancellationToken)
     {
+        // Create garage
         var entity = new GarageItem
         {
-            UserId = request.UserId,
-            Name = request.Name,
-            PhoneNumber = request.PhoneNumber,
-            WhatsAppNumber = request.WhatsAppNumber,
-            Email = request.Email,
-            Location = new GarageLocationItem
-            {
-                Address = request.Location.Address,
-                PostalCode = request.Location.PostalCode,
-                City = request.Location.City,
-                Country = request.Location.Country,
-                Longitude = request.Location.Longitude,
-                Latitude = request.Location.Latitude
-            },
-            BankingDetails = new GarageBankingDetailsItem
-            {
-                BankName = request.BankingDetails.BankName,
-                KvKNumber = request.BankingDetails.KvKNumber,
-                AccountHolderName = request.BankingDetails.AccountHolderName,
-                IBAN = request.BankingDetails.IBAN
-            }
+            UserId = request.UserId!,
+            GarageLookupIdentifier = request.GarageLookupIdentifier
         };
+
+        _context.Garages.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        // Update lookup
+        request.GarageLookup.GarageId = entity.Id;
+        request.GarageLookup.PhoneNumber = request.PhoneNumber;
+        request.GarageLookup.WhatsappNumber = request.WhatsappNumber;
+        request.GarageLookup.EmailAddress = request.EmailAddress;
+        request.GarageLookup.ConversationContactEmail = request.ConversationEmail;
+        request.GarageLookup.ConversationContactWhatsappNumber = request.ConversationWhatsappNumber;
+        request.GarageLookup.Address = request.Location.Address;
+        request.GarageLookup.City = request.Location.City;
+
+        var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+        request.GarageLookup.Location = geometryFactory.CreatePoint(new Coordinate(request.Location.Longitude, request.Location.Latitude));
+
+        _context.GarageLookups.Update(request.GarageLookup);
+        await _context.SaveChangesAsync(cancellationToken);
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        _context.Garages.Add(entity);
-        await _context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 }

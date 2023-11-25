@@ -72,12 +72,6 @@ export default ({ licence_plate }: IProps) => {
         clearSuggestions();
     };
 
-    const ref = useOnclickOutside(() => handleClearInput());
-
-    const handleBackNavigation = () => {
-        navigate(`${ROUTES.SELECT_VEHICLE}`);
-    };
-
     return <>
         <Box position="relative">
             <TextField
@@ -92,9 +86,6 @@ export default ({ licence_plate }: IProps) => {
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <IconButton onClick={handleBackNavigation}>
-                                <ArrowBackIosIcon color="action" />
-                            </IconButton>
                             <LocationOnOutlinedIcon color="action" />
                         </InputAdornment>
                     ),

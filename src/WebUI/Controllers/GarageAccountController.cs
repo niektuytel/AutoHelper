@@ -75,14 +75,14 @@ public class GarageAccountController : ApiControllerBase
     }
 
     [Authorize]
-    [HttpPost($"{nameof(Create)}")]
+    [HttpPost($"{nameof(CreateGarage)}")]
     [ProducesResponseType(typeof(GarageItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<GarageItem>> Create([FromBody] CreateGarageCommand command)
+    public async Task<ActionResult<GarageItem>> CreateGarage([FromBody] CreateGarageCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
-        var userName = _currentUser.UserName ?? command.Name;
-        var userEmail = _currentUser.UserEmail ?? command.Email;
+        var userName = _currentUser.UserName ?? command.GarageLookupIdentifier;
+        var userEmail = _currentUser.UserEmail ?? command.EmailAddress;
         var result = await Mediator.Send(command);
         if (result != null)
         {

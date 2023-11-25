@@ -16,6 +16,7 @@ import ServicesGeneralSection from "./components/ServicesGeneralSection";
 import ServicesDeliverySection from "./components/ServicesDeliverySection";
 import { COLORS } from "../../../constants/colors";
 import { ROLES } from "../../../constants/roles";
+import ProfileConversationSection from "./components/ProfileConversationSection";
 
 interface IProps
 {
@@ -57,15 +58,7 @@ export default ({ }: IProps) => {
     }
 
     const onSubmit = async (data: any) => {
-        if (t("Select a bank...").match(data.bankName)) {
-            setError("bankName", {
-                type: "manual",
-                message: t("Select a bank...")
-            });
-
-            return;
-        }
-        else if (!data.longitude) {
+        if (!data.longitude) {
             dispatch(showOnError(t("Select an address")));
             setError("address", {
                 type: "manual",
@@ -123,10 +116,11 @@ export default ({ }: IProps) => {
                         <>
                             <ProfileGeneralSection errors={errors} control={control} setFormValue={setValue} defaultLocation={garageSettings} />
                             <ProfileContactSection errors={errors} control={control} />
-                            <ProfileBankingSection errors={errors} control={control} />
+                            <ProfileConversationSection errors={errors} control={control} />
                         </>
                         : activeSection === 'services' ?
                             <>
+                                <ProfileBankingSection errors={errors} control={control} />
                                 <ServicesGeneralSection errors={errors} control={control} />
                                 <ServicesDeliverySection errors={errors} control={control} />
                             </>

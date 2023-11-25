@@ -1,6 +1,7 @@
-﻿using FluentValidation;
+﻿using AutoHelper.Application.Garages.Queries.GetGarageLookups;
+using FluentValidation;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageLookups;
+namespace AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 
 public class GetGarageLookupCardsQueryValidator : AbstractValidator<GetGarageLookupsQuery>
 {

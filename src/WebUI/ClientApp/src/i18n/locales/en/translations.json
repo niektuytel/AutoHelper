@@ -131,6 +131,10 @@
   "HomePage.Title": "Search Vehicle",
   "HomePage.SubTitle": "for services and information",
 
+  "GarageAccount.GarageLookup.Requried": "Select your garage",
+  "GarageAccount.Conversation.Title": "Direct Customer Contact",
+  "GarageAccount.Conversation.Description": "Easily communicate with customers via email or WhatsApp. For quick responses to customer inquiries.",
+
 
   "Search.LicensePlate.NotFound": "Specified vehicle license plate not found",
   "Request a quote": "Request a Quote",

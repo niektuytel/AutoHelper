@@ -7,9 +7,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageLookups;
-public class GetGarageLookupsByNameQuery : IRequest<GarageLookupDtoItem[]>
+public class GetGarageLookupCardsByNameQuery : IRequest<GarageLookupSimplefiedDto[]>
 {
-    public GetGarageLookupsByNameQuery(string name, int maxSize = 10)
+    public GetGarageLookupCardsByNameQuery(string name, int maxSize = 10)
     {
         Name = name;
         MaxSize = maxSize;
@@ -19,26 +19,30 @@ public class GetGarageLookupsByNameQuery : IRequest<GarageLookupDtoItem[]>
     public int MaxSize { get; private set; }
 }
 
-public class GetGaragesByNameQueryHandler : IRequestHandler<GetGarageLookupsByNameQuery, GarageLookupDtoItem[]>
+public class GetGarageLookupCardsByNameQueryHandler : IRequestHandler<GetGarageLookupCardsByNameQuery, GarageLookupSimplefiedDto[]>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetGaragesByNameQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetGarageLookupCardsByNameQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
 
-    public async Task<GarageLookupDtoItem[]> Handle(GetGarageLookupsByNameQuery request, CancellationToken cancellationToken)
+    public async Task<GarageLookupSimplefiedDto[]> Handle(GetGarageLookupCardsByNameQuery request, CancellationToken cancellationToken)
     {
         var garages = await _context.GarageLookups
             .AsNoTracking()
             .Where(g => g.Name.ToLower().Contains(request.Name.ToLower()))
             .Take(request.MaxSize)
+            .Select(g => new GarageLookupSimplefiedDto() {
+                Identifier = g.Identifier,
+                Name = g.Name,
+                City = g.City,
+            })
             .ToArrayAsync(cancellationToken);
 
-        var entities = _mapper.Map<GarageLookupDtoItem[]>(garages);
-        return entities ?? Array.Empty<GarageLookupDtoItem>();
+        return garages ?? Array.Empty<GarageLookupSimplefiedDto>();
     }
 }

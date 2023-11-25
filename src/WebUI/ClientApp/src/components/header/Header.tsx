@@ -20,7 +20,7 @@ import { COLORS } from "../../constants/colors";
 import { useNavigate, useParams } from "react-router";
 import HeaderLicensePlateSearch from "./components/HeaderLicensePlateSearch";
 import { ROUTES } from "../../constants/routes";
-import { GarageLookupDto, SelectedService } from "../../app/web-api-client";
+import { GarageLookupDtoItem, SelectedService } from "../../app/web-api-client";
 import { getServices, removeService } from "../../redux/slices/storedServicesSlice";
 import SelectedServicesCard from "./components/SelectedServicesCard";
 
@@ -28,7 +28,7 @@ import SelectedServicesCard from "./components/SelectedServicesCard";
 interface IProps {
     showStaticDrawer: boolean;
     garageLookupIsLoading?: boolean | undefined;
-    garageLookup?: GarageLookupDto | undefined;
+    garageLookup?: GarageLookupDtoItem | undefined;
 }
 
 const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProps) => {

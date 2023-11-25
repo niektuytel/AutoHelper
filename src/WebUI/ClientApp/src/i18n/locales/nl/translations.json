@@ -131,6 +131,9 @@
   "HomePage.Title": "Bekijk voertuig",
   "HomePage.SubTitle": "voor je onderhoud en informatie",
 
+  "GarageAccount.GarageLookup.Requried": "Selecteer u garage",
+  "GarageAccount.Conversation.Title": "Direct Klantencontact",
+  "GarageAccount.Conversation.Description": " Eenvoudig contact met klanten via e-mail of WhatsApp. Communicatie loopt via ons, zodat wij meer informatie kunnen geven over de auto.",
 
   "Search.LicensePlate.NotFound": "Opgegeven kentekenplaat niet gevonden",
   "Request a quote": "Offerte aanvragen",
