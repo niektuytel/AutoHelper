@@ -58,8 +58,6 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
             setValue("title", getTitleForServiceType(t, service.type!));
             setValue("type", service.type);
             setValue("description", service.description);
-            setValue("durationInMinutes", service.durationInMinutes);
-            setValue("price", service.price);
         }
         else {
             setDialogMode('create');
@@ -67,7 +65,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         }
     }, [service, mode, setValue]);
 
-    type ServiceProperty = 'type' | 'description' | 'durationInMinutes' | 'price';
+    type ServiceProperty = 'type' | 'description';
 
     const handleTitleChange = (event: any) => {
         const service = defaultAvailableServices.find(item => item.type === event.target.value) as UpdateGarageServiceCommand;
@@ -77,7 +75,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         setSelectedService(service);
 
         const item = watch();
-        const propertiesToUpdate: ServiceProperty[] = ['type', 'description', 'durationInMinutes', 'price'];
+        const propertiesToUpdate: ServiceProperty[] = ['type', 'description'];
         propertiesToUpdate.forEach(property => {
             if (!item[property] || (prevService && item[property] == prevService[property])) {
                 setValue(property, service[property]);
@@ -155,92 +153,6 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                     error={Boolean(errors.description)}
                                     helperText={errors.description ? t(errors.description.message as string) : ' '}
                                     margin="normal"
-                                />
-                            )}
-                        />
-                        <Controller
-                            name="durationInMinutes"
-                            control={control}
-                            rules={{ required: t("How much time does it take?") }}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label={t("Duration")}
-                                    fullWidth
-                                    size="small"
-                                    type="number"
-                                    inputProps={{ min: 0 }}
-                                    variant="outlined"
-                                    error={Boolean(errors.durationInMinutes)}
-                                    helperText={errors.durationInMinutes ? t(errors.durationInMinutes.message as string) : ' '}
-                                    margin="normal"
-                                     
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <AccessTimeIcon />
-                                            </InputAdornment>
-                                        ),
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <Select
-                                                    value={timeUnit}
-                                                    onChange={(e) => setTimeUnit(e.target.value)}
-                                                    sx={{
-                                                        minWidth: "100%",
-                                                        fontSize: '0.8rem',
-                                                        border: 'none',
-                                                        boxShadow: 'none',
-                                                        '&:focus': {
-                                                            border: 'none',
-                                                            boxShadow: 'none',
-                                                            outline: 'none',   // Remove the outline when focused
-                                                        },
-                                                        '& .MuiOutlinedInput-notchedOutline': {   // Remove the outline for the outlined variant
-                                                            border: 'none',
-                                                        },
-                                                        '&:hover .MuiOutlinedInput-notchedOutline': {   // Remove the outline when hovered
-                                                            border: 'none',
-                                                        },
-                                                    }}
-                                                    size="small"
-                                                >
-                                                    <MenuItem value="minutes">{t("minutes")}</MenuItem>
-                                                    <MenuItem value="hours">{t("hours")}</MenuItem>
-                                                </Select>
-                                            </InputAdornment>
-                                        ),
-                                        style: { paddingRight: '0' } // Reducing the padding to give more space
-                                    }}
-                                />
-                            )}
-                        />
-
-                        <Controller
-                            name="price"
-                            control={control}
-                            rules={{ required: t("How much is it?") }}
-                            defaultValue=""
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label={t("Price")}
-                                    fullWidth
-                                    size="small"
-                                    type="number"
-                                    inputProps={{ step: '0.01' }}
-                                    variant="outlined"
-                                    error={Boolean(errors.price)}
-                                    helperText={errors.price ? t(errors.price.message as string) : ' '}
-                                    margin="none"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                €
-                                            </InputAdornment>
-                                        ),
-                                    }}
                                 />
                             )}
                         />
