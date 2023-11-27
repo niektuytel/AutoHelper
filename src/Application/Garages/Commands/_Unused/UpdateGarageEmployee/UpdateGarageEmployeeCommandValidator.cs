@@ -1,15 +1,15 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Application.Garages.Commands._Unused.CreateGarageEmployee;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Commands.CreateGarageEmployee;
+namespace AutoHelper.Application.Garages.Commands._Unused.UpdateGarageEmployee;
 
-public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGarageEmployeeCommand>
+public class UpdateGarageEmployeeCommandValidator : AbstractValidator<UpdateGarageEmployeeCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public CreateGarageEmployeeCommandValidator(IApplicationDbContext context)
+    public UpdateGarageEmployeeCommandValidator(IApplicationDbContext context)
     {
         _context = context;
 
@@ -31,7 +31,7 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
                     item.RuleFor(ws => ws.DayOfWeek).NotNull();
                     item.RuleFor(ws => ws.StartTime).NotNull();
                     item.RuleFor(ws => ws.EndTime).NotNull();
-                }); 
+                });
             });
 
         RuleFor(v => v.WorkExperiences)
@@ -41,23 +41,22 @@ public class CreateGarageEmployeeCommandValidator : AbstractValidator<CreateGara
                 workExperienceItemRule.ChildRules(item =>
                 {
                     item.RuleFor(we => we.ServiceId)
-                        .NotNull()
-                        .MustAsync(async (serviceId, cancellationToken) =>
-                        {
-                            return await _context.GarageServices.AnyAsync(x => x.Id == serviceId, cancellationToken);
-                        })
-                        .WithMessage("No found defined service for this user.");
-
+                    .NotNull()
+                    .MustAsync(async (serviceId, cancellationToken) =>
+                    {
+                        return await _context.GarageServices.AnyAsync(x => x.Id == serviceId, cancellationToken);
+                    })
+                    .WithMessage("No found defined service for this user.");
                 });
             });
 
+        RuleFor(v => v.Id)
+            .NotEmpty()
+            .WithMessage("Id cannot be empty.");
+
         RuleFor(v => v.UserId)
             .NotEmpty()
-            .WithMessage("UserId cannot be empty.")
-            .MustAsync(async (userId, cancellationToken) =>
-            {
-                return await _context.Garages.AnyAsync(x => x.UserId == userId, cancellationToken);
-            })
-            .WithMessage("No garage found for this user.");
+            .WithMessage("UserId cannot be empty.");
+
     }
 }

@@ -4,16 +4,12 @@ import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues, useForm } from 'react-hook-form';
-import { GarageItem, GarageLocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 
 interface IProps {
     control: any;
-    errors: FieldErrors<FieldValues>;
 }
-export default (
-    { control, errors }: IProps
-) => {
+export default ({ control }: IProps) => {
     const { t } = useTranslation();
 
 
@@ -29,22 +25,22 @@ export default (
                     control={control}
                     rules={{ required: t("What is your garage telephone number?") }}
                     defaultValue={""}
-                    render={({ field }) => (
+                    render={({ field, fieldState: { error } }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="small"
                             label={t("Telephone number")}
                             variant="outlined"
-                            error={Boolean(errors.phoneNumber)}
-                            helperText={errors.phoneNumber ? t(errors.phoneNumber.message as string) : undefined}
+                            error={!!error}
+                            helperText={error ? t(error.message as string) : undefined}
                         />
                     )}
                 />
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Controller
-                    name="whatsAppNumber"
+                    name="whatsappNumber"
                     control={control}
                     defaultValue={""}
                     render={({ field }) => (
@@ -60,19 +56,19 @@ export default (
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Controller
-                    name="email"
+                    name="emailAddress"
                     control={control}
                     rules={{ required: t("What is your garage email?") }}
                     defaultValue={""}
-                    render={({ field }) => (
+                    render={({ field, fieldState: { error } }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="small"
                             label={t("Email")}
                             variant="outlined"
-                            error={Boolean(errors.email)}
-                            helperText={errors.email ? t(errors.email.message as string) : undefined}
+                            error={!!error}
+                            helperText={error ? t(error.message as string) : undefined}
                         />
                     )}
                 />

@@ -34,8 +34,10 @@ public class GarageLookupItem
     [Required]
     public string City { get; set; }
 
-    [Required]
-    public Geometry Location { get; set; }
+    /// <summary>
+    /// It is possible that the garage location is not known.
+    /// </summary>
+    public Geometry? Location { get; set; }
 
     public string? Image { get; set; } = null;
     public string? ImageThumbnail { get; set; } = null;
@@ -61,7 +63,7 @@ public class GarageLookupItem
     {
         get
         {
-            if (KnownServicesString == null)
+            if (string.IsNullOrEmpty(KnownServicesString))
             {
                 return new GarageServiceType[0];
             }
@@ -102,10 +104,6 @@ public class GarageLookupItem
     public float? Rating { get; set; }
 
     public int? UserRatingsTotal { get; set; }
-
-    public bool HasPickupService { get; set; } = false;// TODO: Implement pickup service
-
-    public bool HasReplacementTransportService { get; set; } = false;// TODO: Implement replacement transport service
 
     [Required]
     public DateTime Created { get; set; }

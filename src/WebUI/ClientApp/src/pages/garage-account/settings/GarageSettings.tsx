@@ -8,15 +8,15 @@ import { useDispatch } from "react-redux";
 
 // own imports
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
-import ProfileGeneralSection from "./components/ProfileGeneralSection";
-import ProfileBankingSection from "./components/ProfileBankingSection";
-import ProfileContactSection from "./components/ProfileContactSection";
+import ProfileGeneralBox from "./components/ProfileGeneralBox";
+import ProfileContactBox from "./components/ProfileContactBox";
+import ProfileConversationSection from "./components/ProfileConversationBox";
 import useGarageSettings from "./useGarageSettings";
+import ServicesBankingSection from "./components/ServicesBankingSection";
 import ServicesGeneralSection from "./components/ServicesGeneralSection";
 import ServicesDeliverySection from "./components/ServicesDeliverySection";
 import { COLORS } from "../../../constants/colors";
 import { ROLES } from "../../../constants/roles";
-import ProfileConversationSection from "./components/ProfileConversationSection";
 
 interface IProps
 {
@@ -58,17 +58,18 @@ export default ({ }: IProps) => {
     }
 
     const onSubmit = async (data: any) => {
-        if (!data.longitude) {
-            dispatch(showOnError(t("Select an address")));
-            setError("address", {
-                type: "manual",
-                message: t("Select an address")
-            });
-
-            return;
-        }
 
         if (notFound) {
+            if (!data.longitude) {
+                dispatch(showOnError(t("Select an address")));
+                setError("address", {
+                    type: "manual",
+                    message: t("Select an address")
+                });
+
+                return;
+            }
+
             createGarage(data);
         } else {
             updateGarageSettings(data);
@@ -114,13 +115,13 @@ export default ({ }: IProps) => {
                 {
                     activeSection === 'profile' ?
                         <>
-                            <ProfileGeneralSection errors={errors} control={control} setFormValue={setValue} defaultLocation={garageSettings} />
-                            <ProfileContactSection errors={errors} control={control} />
-                            <ProfileConversationSection errors={errors} control={control} />
+                            <ProfileGeneralBox control={control} setFormValue={setValue} defaultLocation={garageSettings} notFound={notFound} />
+                            <ProfileContactBox control={control} />
+                            <ProfileConversationSection control={control} />
                         </>
                         : activeSection === 'services' ?
                             <>
-                                <ProfileBankingSection errors={errors} control={control} />
+                                <ServicesBankingSection errors={errors} control={control} />
                                 <ServicesGeneralSection errors={errors} control={control} />
                                 <ServicesDeliverySection errors={errors} control={control} />
                             </>

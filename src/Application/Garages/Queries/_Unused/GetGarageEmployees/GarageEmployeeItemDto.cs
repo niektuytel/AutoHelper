@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
-using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Garages.Unused;
 using AutoMapper;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageEmployees;
+namespace AutoHelper.Application.Garages.Queries._Unused.GetGarageEmployees;
 
 public class GarageEmployeeItemDto : IMapFrom<GarageEmployeeItem>
 {

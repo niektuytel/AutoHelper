@@ -2,7 +2,6 @@
 using System.Text;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter;
 using AutoHelper.Hangfire.MediatR;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Hosting;

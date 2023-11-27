@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 // own imports
 
 interface ISearchGarageProps {
-    value: GarageLookupDtoItem;
-    onChange: (value: GarageLookupDtoItem) => void;
+    value: GarageLookupDtoItem | undefined;
+    onChange: (value: GarageLookupDtoItem | undefined) => void;
     error?: FieldError;
 }
 
@@ -49,9 +49,7 @@ export default memo(({ value, onChange, error }: ISearchGarageProps) => {
             getOptionLabel={(option: any) => option?.name || ''}
             onInputChange={(event, newInputValue) => {
                 const garageLookup = options.find(option => option.name === newInputValue);
-                if (garageLookup) {
-                    onChange(garageLookup);
-                }
+                onChange(garageLookup);
 
                 setSearch(newInputValue);
             }}

@@ -10,7 +10,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageEmployees;
+namespace AutoHelper.Application.Garages.Queries._Unused.GetGarageEmployees;
 
 public record GetGarageEmployeesQuery : IRequest<IEnumerable<GarageEmployeeItemDto>>
 {

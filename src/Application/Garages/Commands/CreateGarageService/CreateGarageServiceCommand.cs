@@ -14,16 +14,15 @@ namespace AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 
 public record CreateGarageServiceCommand : IRequest<GarageServiceItem>
 {
+    [JsonIgnore]
+    public string UserId { get; set; }
+
+    [JsonIgnore]
+    public GarageItem? Garage { get; set; } = new GarageItem();
+
     public GarageServiceType Type { get; set; }
 
     public string Description { get; set; }
-
-    public int DurationInMinutes { get; set; }
-
-    public decimal Price { get; set; }
-
-    [JsonIgnore]
-    public string UserId { get; set; }
 
 }
 
@@ -39,21 +38,12 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
     }
     public async Task<GarageServiceItem> Handle(CreateGarageServiceCommand request, CancellationToken cancellationToken)
     {
-        var garageEntity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId, cancellationToken);
-        if (garageEntity == null)
-        {
-            throw new NotFoundException($"{nameof(GarageItem)} on UserId:", request.UserId);
-        }
-
         var entity = new GarageServiceItem
         {
             UserId = request.UserId,
-            GarageId = garageEntity.Id,
+            GarageId = request.Garage!.Id,
             Type = request.Type,
-            Description = request.Description,
-            DurationInMinutes = request.DurationInMinutes,
-            Price = request.Price,
-            Status = 0
+            Description = request.Description
         };
 
         // If you wish to use domain events, then you can add them here:

@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookupByReporter;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.WebUI.Models;
 using GoogleApi.Entities.Search.Common;
@@ -39,17 +38,6 @@ public class ConversationController : ApiControllerBase
         string[] jobNames = { "" };
         foreach (var vehicle in vehicles)
         {
-            var upsertVehicle = new UpsertVehicleLookupByReporterCommand(
-                vehicle.LicensePlate,
-                vehicle.Latitude,
-                vehicle.Longitude,
-                selectedServices.SenderPhoneNumber,
-                selectedServices.SenderWhatsappNumber,
-                selectedServices.SenderEmailAddress
-            );
-
-            var vehicleLookup = await Mediator.Send(upsertVehicle, cancellationToken);
-
             var garages = selectedServices.Services
                 .Where(item => item.VehicleLicensePlate == vehicle.LicensePlate);
 
@@ -65,7 +53,7 @@ public class ConversationController : ApiControllerBase
 
                 var command = new StartConversationCommand(
                     garage.RelatedGarageLookupIdentifier,
-                    vehicleLookup.LicensePlate,
+                    vehicle.LicensePlate,
                     services,
                     selectedServices.SenderPhoneNumber,
                     garage.GarageContactIdentifier,

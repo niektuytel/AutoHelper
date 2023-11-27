@@ -1,10 +1,10 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.CreateGarageEmployee;
+using AutoHelper.Application.Garages.Commands._Unused.CreateGarageEmployee;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Commands.DeleteGarageEmployee;
+namespace AutoHelper.Application.Garages.Commands._Unused.DeleteGarageEmployee;
 
 public class DeleteGarageEmployeeCommandValidator : AbstractValidator<DeleteGarageEmployeeCommand>
 {

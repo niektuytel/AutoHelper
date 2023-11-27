@@ -73,7 +73,7 @@ public class StartConversationCommandHandler : IRequestHandler<StartConversation
     {
         var conversation = new ConversationItem
         {
-            RelatedGarageLookupIdentifier = request.RelatedGarageLookupIdentifier,
+            GarageLookupIdentifier = request.RelatedGarageLookupIdentifier,
             VehicleLicensePlate = request.RelatedVehicleLicensePlate,
             RelatedServiceTypes = request.RelatedServiceTypes,
             ConversationType = request.ConversationType,

@@ -90,17 +90,17 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
                 titleTypographyProps={{ variant: "body1" }}
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
-            <CardActions style={{ padding: "0", justifyContent: "space-between" }}>
-                <Box display="flex" alignItems="center">
-                    <AccessTimeIcon color="action" fontSize="small" />
-                    <DurationDisplay durationInMinutes={service.durationInMinutes} />
-                </Box>
-                <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >
-                    <Typography variant="body2" align="right">
-                        €{Number(service.price).toFixed(2)}
-                    </Typography>
-                </Box>
-            </CardActions>
+            {/*<CardActions style={{ padding: "0", justifyContent: "space-between" }}>*/}
+            {/*    <Box display="flex" alignItems="center">*/}
+            {/*        <AccessTimeIcon color="action" fontSize="small" />*/}
+            {/*        <DurationDisplay durationInMinutes={service.durationInMinutes} />*/}
+            {/*    </Box>*/}
+            {/*    <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >*/}
+            {/*        <Typography variant="body2" align="right">*/}
+            {/*            €{Number(service.price).toFixed(2)}*/}
+            {/*        </Typography>*/}
+            {/*    </Box>*/}
+            {/*</CardActions>*/}
         </Card>
     );
 }

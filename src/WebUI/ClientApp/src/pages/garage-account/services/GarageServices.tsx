@@ -30,7 +30,6 @@ import { GarageServiceItemDto , GarageServiceType } from "../../../app/web-api-
 import GarageServiceDialog from "./components/GarageServiceDialog";
 import { getTitleForServiceType } from "../defaultGarageService";
 import { COLORS } from "../../../constants/colors";
-import GarageServiceCardOther from "./components/GarageServiceCardOther";
 import GarageServiceCard from "./components/GarageServiceCard";
 import GarageServiceDeleteDialog from "./components/GarageServiceDeleteDialog";
 import GarageServicesCollectionCard from "./components/GarageServicesCollectionCard";
@@ -146,7 +145,6 @@ export default ({ }: IProps) => {
                 }
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
-            <GarageServiceCardOther addCartItem={(item) => setCartItems([...cartItems, item])} />
             {garageServices?.map((item) => item &&
                 <GarageServiceCard
                     key={`service-card-${item.id}`}

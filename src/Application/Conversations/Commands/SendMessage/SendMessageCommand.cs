@@ -110,7 +110,7 @@ public class StartConversationCommandHandler : IRequestHandler<SendMessageComman
     public async Task<SendConfirmationMessageCommand?> Handle(SendMessageCommand request, CancellationToken cancellationToken)
     {
         var conversation = _context.Conversations
-            .Include(x => x.RelatedGarageLookup)
+            .Include(x => x.RelatedGarage)
             .Include(x => x.RelatedVehicleLookup)
             .FirstOrDefault(x => x.Id == request.ConversationId);
 
@@ -119,7 +119,7 @@ public class StartConversationCommandHandler : IRequestHandler<SendMessageComman
             throw new InvalidDataException("Conversation not found");
         }
 
-        var sendToGarage = request.ReceiverContactIdentifier == conversation.RelatedGarageLookup.ConversationContactIdentifier;
+        var sendToGarage = request.ReceiverContactIdentifier == conversation.RelatedGarage.ConversationContactEmail || request.ReceiverContactIdentifier == conversation.RelatedGarage.ConversationContactWhatsappNumber;
         var senderContactName = GetSenderContactName(conversation, sendToGarage);
 
         await SendMessage(request, conversation, sendToGarage, senderContactName);
@@ -227,6 +227,6 @@ public class StartConversationCommandHandler : IRequestHandler<SendMessageComman
             return conversation.RelatedVehicleLookup.LicensePlate;
         }
 
-        return conversation.RelatedGarageLookup.Name;
+        return conversation.RelatedGarage.Name;
     }
 }

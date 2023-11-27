@@ -111,8 +111,8 @@ function useGarageServices(onResponse: (data: any) => void) {
         var command = new CreateGarageServiceCommand();
         command.type = data.type;
         command.description = data.description;
-        command.price = data.price;
-        command.durationInMinutes = data.durationInMinutes;
+        //command.price = data.price;
+        //command.durationInMinutes = data.durationInMinutes;
 
         console.log(command.toJSON());
         createMutation.mutate(command);
@@ -123,8 +123,8 @@ function useGarageServices(onResponse: (data: any) => void) {
         command.id = data.id;
         command.type = data.type;
         command.description = data.description;
-        command.price = data.price;
-        command.durationInMinutes = data.durationInMinutes;
+        //command.price = data.price;
+        //command.durationInMinutes = data.durationInMinutes;
 
         console.log(command.toJSON());
         updateMutation.mutate(command);

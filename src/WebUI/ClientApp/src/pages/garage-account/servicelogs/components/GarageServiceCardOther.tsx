@@ -56,8 +56,8 @@ export default ({ addCartItem }: IProps) => {
         addCartItem(new CreateGarageServiceCommand({
             type: GarageServiceType.Other,
             description: otherServiceDescription,
-            durationInMinutes: convertDurationToMinutes(),
-            price: otherServicePrice
+            //durationInMinutes: convertDurationToMinutes(),
+            //price: otherServicePrice
         }));
     };
 

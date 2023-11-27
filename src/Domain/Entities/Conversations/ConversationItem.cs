@@ -24,10 +24,10 @@ public class ConversationItem : BaseAuditableEntity
     public VehicleLookupItem RelatedVehicleLookup { get; set; } = null!;
 
     [Required]
-    public string RelatedGarageLookupIdentifier { get; set; }
+    public string GarageLookupIdentifier { get; set; }
     
-    [ForeignKey(nameof(RelatedGarageLookupIdentifier))]
-    public GarageLookupItem RelatedGarageLookup { get; set; } = null!;
+    [ForeignKey(nameof(GarageLookupIdentifier))]
+    public GarageLookupItem RelatedGarage { get; set; } = null!;
 
     [NotMapped]
     public GarageServiceType[] RelatedServiceTypes

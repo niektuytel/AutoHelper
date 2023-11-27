@@ -14,19 +14,15 @@ namespace AutoHelper.Application.Garages.Commands.UpdateGarageService;
 
 public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
 {
-    public Guid Id { get; set; }
+    [JsonIgnore]
+    public string UserId { get; set; }
 
+    public Guid Id { get; set; }
 
     public GarageServiceType Type { get; set; }
 
     public string Description { get; set; }
 
-    public int DurationInMinutes { get; set; }
-
-    public decimal Price { get; set; }
-
-    [JsonIgnore]
-    public string UserId { get; set; }
 }
 
 public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageServiceCommand, GarageServiceItem>
@@ -50,8 +46,6 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
 
         entity.Type = request.Type;
         entity.Description = request.Description;
-        entity.DurationInMinutes = request.DurationInMinutes;
-        entity.Price = request.Price;
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));

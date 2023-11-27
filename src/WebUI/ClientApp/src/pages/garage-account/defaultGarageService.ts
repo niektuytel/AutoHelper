@@ -50,32 +50,32 @@ export function getDefaultCreateGarageServices(t: TFunction) {
         new CreateGarageServiceCommand({
             type: GarageServiceType.Inspection,
             description: t("Inspection.Description"),
-            durationInMinutes: 25,
-            price: 35.00
+            //durationInMinutes: 25,
+            //price: 35.00/
         }),
         new CreateGarageServiceCommand({
             type: GarageServiceType.SmallMaintenance,
             description: t("SmallMaintenance.Description"),
-            durationInMinutes: 45,
-            price: 125.00
+            //durationInMinutes: 45,
+            //price: 125.00
         }),
         new CreateGarageServiceCommand({
             type: GarageServiceType.GreatMaintenance,
             description: t("GreatMaintenance.Description"),
-            durationInMinutes: 360,
-            price: 300.00
+            //durationInMinutes: 360,
+            //price: 300.00
         }),
         new CreateGarageServiceCommand({
             type: GarageServiceType.AirConditioningMaintenance,
             description: t("AirConditioningMaintenance.Description"),
-            durationInMinutes: 90,
-            price: 200.00
+            //durationInMinutes: 90,
+            //price: 200.00
         }),
         new CreateGarageServiceCommand({ 
             type: GarageServiceType.SeasonalTireChange, 
             description: t("SeasonalTireChange.Description"), 
-            durationInMinutes: 60, 
-            price: 115.00
+            //durationInMinutes: 60, 
+            //price: 115.00
         })
     ];
 

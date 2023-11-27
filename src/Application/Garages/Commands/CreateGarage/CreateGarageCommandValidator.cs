@@ -1,7 +1,9 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.Threading;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Domain.Entities;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
@@ -16,8 +18,10 @@ public class CreateGarageCommandValidator : AbstractValidator<CreateGarageComman
 
         RuleFor(x => x.GarageLookupIdentifier)
             .NotEmpty().WithMessage("Garage identifier is required.")
-            .MustAsync(BeValidAndExistingGarage)
-            .WithMessage("Invalid or non-existent garage lookup."); ;
+            .MustAsync(BeValidAndExistingGarageLookup)
+            .WithMessage("Invalid or non-existent garage lookup.")
+            .MustAsync(BeNonExistingGarage)
+            .WithMessage("Garage already exists, is this your company? (contact support please)");
 
         RuleFor(v => v.PhoneNumber)
             .NotEmpty().WithMessage("PhoneNumber is required.");
@@ -30,12 +34,18 @@ public class CreateGarageCommandValidator : AbstractValidator<CreateGarageComman
 
     }
 
-    private async Task<bool> BeValidAndExistingGarage(CreateGarageCommand command, string lookupIdentifier, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingGarageLookup(CreateGarageCommand command, string lookupIdentifier, CancellationToken cancellationToken)
     {
         var lookup = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
         command.GarageLookup = lookup;
 
         return lookup != null;
+    }
+
+    private async Task<bool> BeNonExistingGarage(CreateGarageCommand command, string lookupIdentifier, CancellationToken cancellationToken)
+    {
+        var garage = await _context.Garages.FirstOrDefaultAsync(x => x.GarageLookupIdentifier == lookupIdentifier, cancellationToken);
+        return garage == null;
     }
 
     public class BriefLocationValidator : AbstractValidator<GarageLocationDtoItem>

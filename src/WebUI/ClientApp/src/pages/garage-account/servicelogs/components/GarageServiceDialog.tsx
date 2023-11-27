@@ -58,8 +58,8 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
             setValue("title", getTitleForServiceType(t, service.type!));
             setValue("type", service.type);
             setValue("description", service.description);
-            setValue("durationInMinutes", service.durationInMinutes);
-            setValue("price", service.price);
+            //setValue("durationInMinutes", service.durationInMinutes);
+            //setValue("price", service.price);
         }
         else {
             setDialogMode('create');
@@ -67,7 +67,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         }
     }, [service, mode, setValue]);
 
-    type ServiceProperty = 'type' | 'description' | 'durationInMinutes' | 'price';
+    type ServiceProperty = 'type' | 'description';// | 'durationInMinutes' | 'price';
 
     const handleTitleChange = (event: any) => {
         const service = defaultAvailableServices.find(item => item.type === event.target.value) as UpdateGarageServiceCommand;
@@ -77,7 +77,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         setSelectedService(service);
 
         const item = watch();
-        const propertiesToUpdate: ServiceProperty[] = ['type', 'description', 'durationInMinutes', 'price'];
+        const propertiesToUpdate: ServiceProperty[] = ['type', 'description'];//, 'durationInMinutes', 'price'];
         propertiesToUpdate.forEach(property => {
             if (!item[property] || (prevService && item[property] == prevService[property])) {
                 setValue(property, service[property]);

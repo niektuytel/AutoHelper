@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Domain.Entities.Garages;
+namespace AutoHelper.Domain.Entities.Garages.Unused;
 
 public class GarageEmployeeWorkExperienceItem : BaseEntity
 {

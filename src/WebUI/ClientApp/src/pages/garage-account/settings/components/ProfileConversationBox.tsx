@@ -4,17 +4,13 @@ import ClearIcon from '@mui/icons-material/Clear';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useTranslation } from "react-i18next";
 import { Controller, FieldErrors, FieldValues, useForm } from 'react-hook-form';
-import { GarageItem, GarageLocationItem } from '../../../../app/web-api-client';
 import { idealBanks, idealIcon } from '../../../../constants/banking';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 interface BankingSectionProps {
     control: any;
-    errors: FieldErrors<FieldValues>;
 }
-export default (
-    { control, errors }: BankingSectionProps
-) => {
+export default ({ control }: BankingSectionProps) => {
     const { t } = useTranslation();
 
 
@@ -33,18 +29,19 @@ export default (
             </Grid>
             <Grid item xs={12} sm={6}>
                 <Controller
-                    name="conversationWhatsAppNumber"
+                    name="conversationWhatsappNumber"
                     control={control}
                     defaultValue={""}
-                    render={({ field }) => (
+                    render={({ field, fieldState: { error } }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="small"
                             label={t("Whatsapp number")}
                             variant="outlined"
-                            error={Boolean(errors.email)}
-                            helperText={errors.email ? t(errors.email.message as string) : undefined}
+                            type="tel"
+                            error={!!error}
+                            helperText={error ? t(error.message as string) : undefined}
                         />
                     )}
                 />
@@ -54,15 +51,16 @@ export default (
                     name="conversationEmail"
                     control={control}
                     defaultValue={""}
-                    render={({ field }) => (
+                    render={({ field, fieldState: { error } }) => (
                         <TextField
                             {...field}
                             fullWidth
                             size="small"
                             label={t("Email")}
                             variant="outlined"
-                            error={Boolean(errors.email)}
-                            helperText={errors.email ? t(errors.email.message as string) : undefined}
+                            type="email"
+                            error={!!error}
+                            helperText={error ? t(error.message as string) : undefined}
                         />
                     )}
                 />

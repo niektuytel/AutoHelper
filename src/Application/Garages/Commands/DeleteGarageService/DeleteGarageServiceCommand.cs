@@ -7,6 +7,7 @@ using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.DeleteGarageService;
 
@@ -38,7 +39,7 @@ public class DeleteGarageServiceCommandHandler : IRequestHandler<DeleteGarageSer
 
     public async Task<GarageServiceItem> Handle(DeleteGarageServiceCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageServices.FindAsync(request.Id);
+        var entity = await _context.GarageServices.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
         if (entity == null)
         {
             throw new NotFoundException(nameof(GarageServiceItem), request.Id);

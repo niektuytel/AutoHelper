@@ -22,8 +22,6 @@ public class GarageLookupBriefDto
         DistanceInMeter = (int)distanceInMeters;
         Rating = garageLookupItem.Rating;
         UserRatingsTotal = garageLookupItem.UserRatingsTotal;
-        HasPickupService = garageLookupItem.HasPickupService;
-        HasReplacementTransportService = garageLookupItem.HasReplacementTransportService;
     }
 
     public Guid? GarageId { get; set; }

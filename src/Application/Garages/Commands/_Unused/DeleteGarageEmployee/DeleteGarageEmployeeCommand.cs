@@ -5,12 +5,12 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
-using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Garages.Unused;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Commands.DeleteGarageEmployee;
+namespace AutoHelper.Application.Garages.Commands._Unused.DeleteGarageEmployee;
 
 
 public record DeleteGarageEmployeeCommand : IRequest<GarageEmployeeItem>

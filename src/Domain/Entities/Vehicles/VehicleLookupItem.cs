@@ -20,14 +20,6 @@ public class VehicleLookupItem
     [Required]
     public DateTime? DateOfAscription { get; set; }
 
-    public Geometry? Location { get; set; }
-
-    public string? ReporterPhoneNumber { get; set; }
-
-    public string? ReporterWhatsappNumber { get; set; }
-
-    public string? ReporterEmailAddress { get; set; }
-
     [Required]
     public DateTime Created { get; set; }
 

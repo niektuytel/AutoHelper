@@ -69,11 +69,6 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
                 .Include(x => x.LargeData)
                 .Where(x => x.Identifier == newLookup.Identifier.ToString());
 
-            if(currentLookups.Count() > 1)
-            {
-                await Console.Out.WriteLineAsync(   );
-            }
-
             var currentLookup = await currentLookups.FirstOrDefaultAsync(cancellationToken);
             if (request.MaxInsertAmount != 0 && currentLookup == null)
             {

@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,12 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
     {
         _context = context;
 
+        RuleFor(v => v.UserId)
+            .NotEmpty()
+            .WithMessage("UserId cannot be empty.")
+            .MustAsync(BeValidAndExistingGarageLookup)
+            .WithMessage("No garage found for this user.");
+
         RuleFor(v => v.Type)
             .NotEmpty().WithMessage("Type is required.")
             .MustAsync(TitleNotAlreadyExist)
@@ -22,20 +29,6 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(800).WithMessage("Description must not exceed 200 characters.");
 
-        RuleFor(v => v.DurationInMinutes)
-            .NotEmpty().WithMessage("Duration is required.");
-
-        RuleFor(v => v.Price)
-            .NotEmpty().WithMessage("Price is required.");
-
-        RuleFor(v => v.UserId)
-            .NotEmpty()
-            .WithMessage("UserId cannot be empty.")
-            .MustAsync(async (userId, cancellationToken) =>
-            {
-                return await _context.Garages.AnyAsync(x => x.UserId == userId, cancellationToken);
-            })
-            .WithMessage("No garage found for this user.");
     }
 
     private async Task<bool> TitleNotAlreadyExist(CreateGarageServiceCommand request, GarageServiceType type, CancellationToken cancellationToken)
@@ -43,4 +36,15 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
         var foundSome = await _context.GarageServices.AnyAsync(x => x.UserId == request.UserId && x.Type == type, cancellationToken);
         return foundSome == false;
     }
+
+    private async Task<bool> BeValidAndExistingGarageLookup(CreateGarageServiceCommand command, string? userId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.Garages
+            .Include(x => x.Services)
+            .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+        command.Garage = entity;
+        return command.Garage != null;
+    }
+
 }

@@ -3,61 +3,66 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
+using AutoHelper.Application.Garages.Queries._Unused.GetGarageEmployees;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Garages.Unused;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Commands.UpdateGarageEmployee;
+namespace AutoHelper.Application.Garages.Commands._Unused.CreateGarageEmployee;
 
-
-public record UpdateGarageEmployeeCommand : IRequest<GarageEmployeeItem>
+public record CreateGarageEmployeeCommand : IRequest<GarageEmployeeItem>
 {
-    public Guid Id { get; set; }
-
     public bool IsActive { get; set; } = false;
 
     public GarageEmployeeContactItem Contact { get; set; }
 
-    public IEnumerable<GarageEmployeeWorkSchemaItemDto> WorkSchema { get; set; }
+    public IEnumerable<GarageEmployeeWorkSchemaItemDto> WorkSchema { get; set; } = new List<GarageEmployeeWorkSchemaItemDto>();
 
-    public IEnumerable<GarageEmployeeWorkExperienceItemDto> WorkExperiences { get; set; }
+    public IEnumerable<GarageEmployeeWorkExperienceItemDto> WorkExperiences { get; set; } = new List<GarageEmployeeWorkExperienceItemDto>();
 
     [JsonIgnore]
-    public string? UserId { get; set; }
+    public string UserId { get; set; }
 
 }
 
-public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEmployeeCommand, GarageEmployeeItem>
+public class CreateGarageEmployeeItemCommandHandler : IRequestHandler<CreateGarageEmployeeCommand, GarageEmployeeItem>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateGarageEmployeeCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public CreateGarageEmployeeItemCommandHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
-    public async Task<GarageEmployeeItem> Handle(UpdateGarageEmployeeCommand request, CancellationToken cancellationToken)
-    {
-        var entity = await _context.GarageEmployees
-            .Include(item => item.WorkSchema)
-            .Include(item => item.WorkExperiences)
-            .FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
 
-        if (entity == null)
+    public async Task<GarageEmployeeItem> Handle(CreateGarageEmployeeCommand request, CancellationToken cancellationToken)
+    {
+        var garageEntity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId, cancellationToken);
+        if (garageEntity == null)
         {
-            throw new NotFoundException(nameof(GarageEmployeeItem), request.Id);
+            throw new NotFoundException($"{nameof(GarageItem)} on UserId:", request.UserId);
         }
 
-        // Update fields
-        entity.Contact = request.Contact;
-        entity.IsActive = request.IsActive;
-        
-        _context.GarageEmployeeWorkSchemaItems.RemoveRange(entity.WorkSchema);
+        var entity = new GarageEmployeeItem
+        {
+            UserId = request.UserId,
+            GarageId = garageEntity.Id,
+            Contact = request.Contact,
+            IsActive = true,
+            WorkSchema = new List<GarageEmployeeWorkSchemaItem>(),
+            WorkExperiences = new List<GarageEmployeeWorkExperienceItem>()
+        };
+
+        // Guid will been used in work schema and work experience
+        _context.GarageEmployees.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+
         if (request.WorkSchema?.Any() == true)
         {
             entity.WorkSchema = request.WorkSchema.Select(item => new GarageEmployeeWorkSchemaItem
@@ -76,12 +81,11 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
             entity.IsActive = false;
         }
 
-        _context.GarageEmployeeWorkExperienceItems.RemoveRange(entity.WorkExperiences);
-        if(request.WorkExperiences?.Any() == true)
+        if (request.WorkExperiences?.Any() == true)
         {
             entity.WorkExperiences = request.WorkExperiences.Select(item => new GarageEmployeeWorkExperienceItem
             {
-                GarageId = entity.GarageId,
+                GarageId = garageEntity.Id,
                 EmployeeId = entity.Id,
                 ServiceId = item.ServiceId,
                 Description = item.Description
@@ -93,10 +97,12 @@ public class UpdateGarageEmployeeCommandHandler : IRequestHandler<UpdateGarageEm
             entity.IsActive = false;
         }
 
+
+
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        // Since we fetched the entity directly from the DbContext, it's already tracked. 
+        // update employee
         await _context.SaveChangesAsync(cancellationToken);
         return entity;
     }

@@ -5,6 +5,7 @@ using System;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Domain.Entities.Conversations;
 using NetTopologySuite.Geometries;
+using AutoHelper.Domain.Entities.Garages.Unused;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -20,11 +21,9 @@ public class GarageItem : BaseAuditableEntity
     public string GarageLookupIdentifier { get; set; } = null!;
 
     [ForeignKey(nameof(GarageLookupIdentifier))]
-    public virtual GarageLookupItem GarageLookup { get; set; } = null!;
+    public virtual GarageLookupItem Lookup { get; set; } = null!;
 
-    public GarageBankingDetailsItem? BankingDetails { get; set; } = null!;
-
-    public ICollection<GarageEmployeeItem> Employees { get; set; } = new List<GarageEmployeeItem>();
+    public ICollection<GarageServiceItem> Services { get; set; } = new List<GarageServiceItem>();
 
     [Required]
     public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();

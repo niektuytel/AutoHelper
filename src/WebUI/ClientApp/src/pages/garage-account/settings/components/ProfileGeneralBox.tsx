@@ -15,12 +15,12 @@ import { ContactType, GarageLookupDtoItem } from '../../../../app/web-api-client
 
 interface LocationSectionProps {
     control: any;
-    errors: FieldErrors<FieldValues>;
     setFormValue: UseFormSetValue<FieldValues>;
     defaultLocation: any;
+    notFound: boolean;
 }
 
-export default ({ control, errors, setFormValue, defaultLocation }: LocationSectionProps) => {
+export default ({ control, setFormValue, defaultLocation, notFound }: LocationSectionProps) => {
     const [previousValue, setPreviousValue] = useState<any | null>(null);
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -78,7 +78,6 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                 setFormValue("city", city);
                 setFormValue("latitude", lat);
                 setFormValue("longitude", lng);
-                setFormValue("postalCode", postalCode);
 
                 setPreviousValue({
                     address: address,
@@ -104,10 +103,13 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
     };
 
     const handleClearInput = () => {
+
         // When user selects a place, we can replace the keyword without request data from API
         // by setting the second parameter to "false"
         setValue("", false);
         clearSuggestions();
+
+        setFormValue("garageLookup", undefined);
     };
 
     const handleFocus = () => {
@@ -150,8 +152,9 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
         }
     };
 
-    const garageLookupChanged = (value: GarageLookupDtoItem) => {
+    const garageLookupChanged = (value: GarageLookupDtoItem|undefined) => {
         setFormValue("garageLookup", value);
+        if (!value) return;
 
         // General
         handleSearchByAddress(value.address!, value.city!);
@@ -173,18 +176,38 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
     return (
         <>
             <Grid item xs={12}>
-                <Controller
-                    name="garageLookup"
-                    control={control}
-                    rules={{ required: t('GarageAccount.GarageLookup.Requried') }}
-                    render={({ field, fieldState: { error } }) => (
-                        <SearchGarageLookup
-                            value={field.value}
-                            onChange={(value) => garageLookupChanged(value)}
-                            error={error}
-                        />
-                    )}
-                />
+                {notFound ? 
+                    <Controller
+                        name="garageLookup"
+                        control={control}
+                        rules={{ required: t('GarageAccount.GarageLookup.Requried') }}
+                        render={({ field, fieldState: { error } }) => (
+                            <SearchGarageLookup
+                                value={field.value}
+                                onChange={(value) => garageLookupChanged(value)}
+                                error={error}
+                            />
+                        )}
+                    />
+                    :
+                    <Controller
+                        name="name"
+                        control={control}
+                        defaultValue=""
+                        rules={{ required: t('GarageAccount.GarageLookup.Requried') }}
+                        render={({ field, fieldState: { error } }) => (
+                            <TextField
+                                {...field}
+                                fullWidth
+                                size="small"
+                                label={t("Name")}
+                                variant="outlined"
+                                error={!!error}
+                                helperText={error ? t(error.message as string) : undefined}
+                            />
+                        )}
+                    />
+                }
             </Grid>
             <Grid item xs={12}>
                 <Box position="relative">
@@ -193,7 +216,7 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                         control={control}
                         rules={{ required: t("Select an address") }}
                         defaultValue={""}
-                        render={({ field }) => (
+                        render={({ field, fieldState: { error } }) => (
                             <TextField
                                 {...field}
                                 onChange={(e) => {
@@ -221,8 +244,8 @@ export default ({ control, errors, setFormValue, defaultLocation }: LocationSect
                                         </InputAdornment>
                                     ),
                                 }}
-                                error={Boolean(errors.address)}
-                                helperText={errors.address ? (errors.address.message as string) : undefined}
+                                error={!!error}
+                                helperText={error ? t(error.message as string) : undefined}
                             />
                         )}
                     />
