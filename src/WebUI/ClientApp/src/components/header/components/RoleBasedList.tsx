@@ -63,9 +63,6 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         return (
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
-                {/*// TODO: uncomment when planning is ready to use*/}
-                {/*<ListItemLink disabled={configurationIndex < 4} primary={t('planning_camelcase')} icon={<CalendarTodayIcon />} to={ROUTES.GARAGE_ACCOUNT.PLANNING} />*/}
-                {/*<ListItemLink disabled={configurationIndex < 3} primary={t('Employees')} icon={<GroupIcon />} to={ROUTES.GARAGE_ACCOUNT.EMPLOYEES} />*/}
                 <ListItemLink disabled={configurationIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
                 <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
                 <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />

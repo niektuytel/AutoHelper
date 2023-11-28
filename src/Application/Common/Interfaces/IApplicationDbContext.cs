@@ -22,12 +22,6 @@ public interface IApplicationDbContext
     DbSet<ConversationItem> Conversations { get; }
     DbSet<ConversationMessageItem> ConversationMessages { get; }
 
-#if DEBUG
-    DbSet<GarageEmployeeItem> GarageEmployees { get; }
-    DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems { get; }
-    DbSet<GarageEmployeeWorkExperienceItem> GarageEmployeeWorkExperienceItems { get; }
-#endif
-
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task BulkInsertAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class;
     Task BulkUpdateAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class;

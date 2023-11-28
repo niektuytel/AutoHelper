@@ -50,12 +50,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
     public DbSet<ConversationMessageItem> ConversationMessages => Set<ConversationMessageItem>();
 
-#if DEBUG
-    public DbSet<GarageEmployeeItem> GarageEmployees => Set<GarageEmployeeItem>();
-    public DbSet<GarageEmployeeWorkSchemaItem> GarageEmployeeWorkSchemaItems => Set<GarageEmployeeWorkSchemaItem>();
-    public DbSet<GarageEmployeeWorkExperienceItem> GarageEmployeeWorkExperienceItems => Set<GarageEmployeeWorkExperienceItem>();
-#endif
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

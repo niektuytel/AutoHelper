@@ -15,14 +15,12 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { ROUTES } from './constants/routes';
 import GarageOverview from './pages/garage-account/overview/GarageOverview';
 import GarageSettings from './pages/garage-account/settings/GarageSettings';
-import GarageEmployees from './pages/garage-account/employees/GarageEmployees';
 import GarageServices from './pages/garage-account/services/GarageServices';
 import { ROLES } from './constants/roles';
 import AuthenticatedRoute from './components/AuthenticatedRoute';
 import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
 import theme from './constants/theme';
-import GarageAgenda from './pages/garage-account/agenda/GarageAgenda';
 import Garage from './pages/garage/Garage';
 import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
 
@@ -112,16 +110,6 @@ export default () => {
                             </AuthenticatedRoute>
                         </>
                     } />
-                    <Route path={`${ROUTES.GARAGE_ACCOUNT.PLANNING}`} element={
-                        <>
-                            <Header showStaticDrawer={showStaticDrawer} />
-                            <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                                <GarageRouteContent>
-                                    <GarageAgenda />
-                                </GarageRouteContent>
-                            </AuthenticatedRoute>
-                        </>
-                    } />
                     <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICELOGS}`} element={
                         <>
                             <Header showStaticDrawer={showStaticDrawer} />
@@ -138,16 +126,6 @@ export default () => {
                             <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                                 <GarageRouteContent>
                                     <GarageServices />
-                                </GarageRouteContent>
-                            </AuthenticatedRoute>
-                        </>
-                    } />
-                    <Route path={`${ROUTES.GARAGE_ACCOUNT.EMPLOYEES}`} element={
-                        <>
-                            <Header showStaticDrawer={showStaticDrawer} />
-                            <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
-                                <GarageRouteContent>
-                                    <GarageEmployees />
                                 </GarageRouteContent>
                             </AuthenticatedRoute>
                         </>
