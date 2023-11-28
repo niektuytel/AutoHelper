@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceType, GarageServiceItemDto } from "../../../../app/web-api-client";
+import { GarageServiceType, GarageServiceDtoItem } from "../../../../app/web-api-client";
 import { COLORS } from "../../../../constants/colors";
 import { getTitleForServiceType } from "../../defaultGarageService";
 
@@ -34,24 +34,11 @@ type ServiceProps = {
     durationInMinutes?: number;
 };
 
-const DurationDisplay: React.FC<ServiceProps> = ({ durationInMinutes = 0 }) => {
-    const { t } = useTranslation();
-    const hours = Math.floor(durationInMinutes / 60);
-    const minutes = durationInMinutes % 60;
-
-    return (
-        <Typography variant="caption" color="textSecondary" style={{ marginLeft: "8px" }}>
-            {hours > 0 && `${hours} ${t('hours')}${minutes > 0 ? ',' : ''} `}
-            {minutes > 0 && `${minutes} ${t('minutes')}`}
-        </Typography>
-    );
-};
-
 interface IProps {
-    service: GarageServiceItemDto;
-    selectedItem: GarageServiceItemDto;
-    setSelectedItem: (service: GarageServiceItemDto) => void;
-    addCartItem: (service: GarageServiceItemDto) => void;
+    service: GarageServiceDtoItem;
+    selectedItem: GarageServiceDtoItem;
+    setSelectedItem: (service: GarageServiceDtoItem) => void;
+    addCartItem: (service: GarageServiceDtoItem) => void;
 }
 
 export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps) => {
@@ -64,6 +51,20 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
         service.description
     );
 
+    // TODO: This is an feature that is not yet implemented
+    // To make it possible to use service to create an order.
+    // Then on the confirm button they can send an tikkie
+    // action={
+    //
+    //    <IconButton
+    //        onClick={(e) => {
+    //            e.stopPropagation();
+    //            addCartItem(service);
+    //        }}
+    //    >
+    //        <AddIcon />
+    //    </IconButton>
+    // }
     return (
         <Card
             style={{
@@ -76,31 +77,16 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
             onClick={() => setSelectedItem(service)}
         >
             <CardHeader
-                action={
-                    <IconButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            addCartItem(service);
-                        }}
-                    >
-                        <AddIcon />
-                    </IconButton>
-                }
                 title={title}
                 titleTypographyProps={{ variant: "body1" }}
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
-            {/*<CardActions style={{ padding: "0", justifyContent: "space-between" }}>*/}
-            {/*    <Box display="flex" alignItems="center">*/}
-            {/*        <AccessTimeIcon color="action" fontSize="small" />*/}
-            {/*        <DurationDisplay durationInMinutes={service.durationInMinutes} />*/}
-            {/*    </Box>*/}
-            {/*    <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >*/}
-            {/*        <Typography variant="body2" align="right">*/}
-            {/*            €{Number(service.price).toFixed(2)}*/}
-            {/*        </Typography>*/}
-            {/*    </Box>*/}
-            {/*</CardActions>*/}
+            <CardContent style={{ paddingTop: "4px", paddingBottom: "4px", paddingLeft: "4px" }}>
+                <Box display="flex" alignItems="center">
+                    {service.description}
+                </Box>
+            </CardContent>
+
         </Card>
     );
 }

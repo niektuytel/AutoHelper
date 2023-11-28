@@ -124,17 +124,17 @@ export interface IGarageAccountClient {
 
     getOverview(): Promise<GarageOverview>;
 
-    getServices(): Promise<GarageServiceItemDto[]>;
+    getServices(): Promise<GarageServiceDtoItem[]>;
 
     createGarage(command: CreateGarageCommand): Promise<GarageSettingsDtoItem>;
 
-    createService(command: CreateGarageServiceCommand): Promise<GarageServiceItem>;
+    createService(command: CreateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
     updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettingsDtoItem>;
 
-    updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceItem>;
+    updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
-    deleteService(id: string): Promise<GarageServiceItem>;
+    deleteService(id: string): Promise<GarageServiceDtoItem>;
 }
 
 export class GarageAccountClient implements IGarageAccountClient {
@@ -229,7 +229,7 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageOverview>(null as any);
     }
 
-    getServices(): Promise<GarageServiceItemDto[]> {
+    getServices(): Promise<GarageServiceDtoItem[]> {
         let url_ = this.baseUrl + "/api/GarageAccount/GetServices";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -245,7 +245,7 @@ export class GarageAccountClient implements IGarageAccountClient {
         });
     }
 
-    protected processGetServices(response: Response): Promise<GarageServiceItemDto[]> {
+    protected processGetServices(response: Response): Promise<GarageServiceDtoItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -255,7 +255,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(GarageServiceItemDto.fromJS(item));
+                    result200!.push(GarageServiceDtoItem.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -274,7 +274,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<GarageServiceItemDto[]>(null as any);
+        return Promise.resolve<GarageServiceDtoItem[]>(null as any);
     }
 
     createGarage(command: CreateGarageCommand): Promise<GarageSettingsDtoItem> {
@@ -322,7 +322,7 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageSettingsDtoItem>(null as any);
     }
 
-    createService(command: CreateGarageServiceCommand): Promise<GarageServiceItem> {
+    createService(command: CreateGarageServiceCommand): Promise<GarageServiceDtoItem> {
         let url_ = this.baseUrl + "/api/GarageAccount/CreateService";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -342,14 +342,14 @@ export class GarageAccountClient implements IGarageAccountClient {
         });
     }
 
-    protected processCreateService(response: Response): Promise<GarageServiceItem> {
+    protected processCreateService(response: Response): Promise<GarageServiceDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GarageServiceItem.fromJS(resultData200);
+            result200 = GarageServiceDtoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -364,7 +364,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<GarageServiceItem>(null as any);
+        return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 
     updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettingsDtoItem> {
@@ -412,7 +412,7 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageSettingsDtoItem>(null as any);
     }
 
-    updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceItem> {
+    updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceDtoItem> {
         let url_ = this.baseUrl + "/api/GarageAccount/UpdateService";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -432,14 +432,14 @@ export class GarageAccountClient implements IGarageAccountClient {
         });
     }
 
-    protected processUpdateService(response: Response): Promise<GarageServiceItem> {
+    protected processUpdateService(response: Response): Promise<GarageServiceDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GarageServiceItem.fromJS(resultData200);
+            result200 = GarageServiceDtoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -454,10 +454,10 @@ export class GarageAccountClient implements IGarageAccountClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<GarageServiceItem>(null as any);
+        return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 
-    deleteService(id: string): Promise<GarageServiceItem> {
+    deleteService(id: string): Promise<GarageServiceDtoItem> {
         let url_ = this.baseUrl + "/api/GarageAccount/DeleteService/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -476,14 +476,14 @@ export class GarageAccountClient implements IGarageAccountClient {
         });
     }
 
-    protected processDeleteService(response: Response): Promise<GarageServiceItem> {
+    protected processDeleteService(response: Response): Promise<GarageServiceDtoItem> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GarageServiceItem.fromJS(resultData200);
+            result200 = GarageServiceDtoItem.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -498,7 +498,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<GarageServiceItem>(null as any);
+        return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 }
 
@@ -3559,15 +3559,12 @@ export interface IGarageOverview {
     vehicles?: VehicleLookupItem[];
 }
 
-export class GarageServiceItemDto implements IGarageServiceItemDto {
+export class GarageServiceDtoItem implements IGarageServiceDtoItem {
     id?: string;
     type?: GarageServiceType;
     description?: string;
-    durationInMinutes?: number;
-    price?: number;
-    status?: number;
 
-    constructor(data?: IGarageServiceItemDto) {
+    constructor(data?: IGarageServiceDtoItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3581,15 +3578,12 @@ export class GarageServiceItemDto implements IGarageServiceItemDto {
             this.id = _data["id"];
             this.type = _data["type"];
             this.description = _data["description"];
-            this.durationInMinutes = _data["durationInMinutes"];
-            this.price = _data["price"];
-            this.status = _data["status"];
         }
     }
 
-    static fromJS(data: any): GarageServiceItemDto {
+    static fromJS(data: any): GarageServiceDtoItem {
         data = typeof data === 'object' ? data : {};
-        let result = new GarageServiceItemDto();
+        let result = new GarageServiceDtoItem();
         result.init(data);
         return result;
     }
@@ -3599,20 +3593,14 @@ export class GarageServiceItemDto implements IGarageServiceItemDto {
         data["id"] = this.id;
         data["type"] = this.type;
         data["description"] = this.description;
-        data["durationInMinutes"] = this.durationInMinutes;
-        data["price"] = this.price;
-        data["status"] = this.status;
         return data;
     }
 }
 
-export interface IGarageServiceItemDto {
+export interface IGarageServiceDtoItem {
     id?: string;
     type?: GarageServiceType;
     description?: string;
-    durationInMinutes?: number;
-    price?: number;
-    status?: number;
 }
 
 export class CreateGarageCommand implements ICreateGarageCommand {
@@ -3725,123 +3713,6 @@ export interface IGarageLocationDtoItem {
     city?: string;
     longitude?: number;
     latitude?: number;
-}
-
-export class GarageServiceItem extends BaseEntity implements IGarageServiceItem {
-    userId!: string;
-    garageId!: string;
-    garage?: GarageItem;
-    type!: GarageServiceType;
-    description!: string;
-
-    constructor(data?: IGarageServiceItem) {
-        super(data);
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.userId = _data["userId"];
-            this.garageId = _data["garageId"];
-            this.garage = _data["garage"] ? GarageItem.fromJS(_data["garage"]) : <any>undefined;
-            this.type = _data["type"];
-            this.description = _data["description"];
-        }
-    }
-
-    static fromJS(data: any): GarageServiceItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageServiceItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["garageId"] = this.garageId;
-        data["garage"] = this.garage ? this.garage.toJSON() : <any>undefined;
-        data["type"] = this.type;
-        data["description"] = this.description;
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageServiceItem extends IBaseEntity {
-    userId: string;
-    garageId: string;
-    garage?: GarageItem;
-    type: GarageServiceType;
-    description: string;
-}
-
-export class GarageItem extends BaseAuditableEntity implements IGarageItem {
-    userId!: string;
-    garageLookupIdentifier!: string;
-    lookup?: GarageLookupItem;
-    services?: GarageServiceItem[];
-    conversations!: ConversationItem[];
-
-    constructor(data?: IGarageItem) {
-        super(data);
-        if (!data) {
-            this.conversations = [];
-        }
-    }
-
-    init(_data?: any) {
-        super.init(_data);
-        if (_data) {
-            this.userId = _data["userId"];
-            this.garageLookupIdentifier = _data["garageLookupIdentifier"];
-            this.lookup = _data["lookup"] ? GarageLookupItem.fromJS(_data["lookup"]) : <any>undefined;
-            if (Array.isArray(_data["services"])) {
-                this.services = [] as any;
-                for (let item of _data["services"])
-                    this.services!.push(GarageServiceItem.fromJS(item));
-            }
-            if (Array.isArray(_data["conversations"])) {
-                this.conversations = [] as any;
-                for (let item of _data["conversations"])
-                    this.conversations!.push(ConversationItem.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): GarageItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["garageLookupIdentifier"] = this.garageLookupIdentifier;
-        data["lookup"] = this.lookup ? this.lookup.toJSON() : <any>undefined;
-        if (Array.isArray(this.services)) {
-            data["services"] = [];
-            for (let item of this.services)
-                data["services"].push(item.toJSON());
-        }
-        if (Array.isArray(this.conversations)) {
-            data["conversations"] = [];
-            for (let item of this.conversations)
-                data["conversations"].push(item.toJSON());
-        }
-        super.toJSON(data);
-        return data;
-    }
-}
-
-export interface IGarageItem extends IBaseAuditableEntity {
-    userId: string;
-    garageLookupIdentifier: string;
-    lookup?: GarageLookupItem;
-    services?: GarageServiceItem[];
-    conversations: ConversationItem[];
 }
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {

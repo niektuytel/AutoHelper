@@ -164,16 +164,16 @@
                 "schema": {
                   "type": "array",
                   "xml": {
-                    "name": "ArrayOfGarageServiceItemDto",
+                    "name": "ArrayOfGarageServiceDtoItem",
                     "wrapped": true
                   },
                   "items": {
                     "xml": {
-                      "name": "GarageServiceItemDto"
+                      "name": "GarageServiceDtoItem"
                     },
                     "oneOf": [
                       {
-                        "$ref": "#/components/schemas/GarageServiceItemDto"
+                        "$ref": "#/components/schemas/GarageServiceDtoItem"
                       }
                     ]
                   }
@@ -260,7 +260,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageServiceItem"
+                  "$ref": "#/components/schemas/GarageServiceDtoItem"
                 }
               }
             }
@@ -344,7 +344,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageServiceItem"
+                  "$ref": "#/components/schemas/GarageServiceDtoItem"
                 }
               }
             }
@@ -386,7 +386,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GarageServiceItem"
+                  "$ref": "#/components/schemas/GarageServiceDtoItem"
                 }
               }
             }
@@ -3146,7 +3146,7 @@
           }
         }
       },
-      "GarageServiceItemDto": {
+      "GarageServiceDtoItem": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3159,18 +3159,6 @@
           },
           "description": {
             "type": "string"
-          },
-          "durationInMinutes": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
@@ -3229,105 +3217,6 @@
             "format": "float"
           }
         }
-      },
-      "GarageServiceItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "userId",
-              "garageId",
-              "type",
-              "description"
-            ],
-            "properties": {
-              "userId": {
-                "type": "string",
-                "minLength": 1
-              },
-              "garageId": {
-                "type": "string",
-                "format": "guid",
-                "minLength": 1
-              },
-              "garage": {
-                "$ref": "#/components/schemas/GarageItem"
-              },
-              "type": {
-                "$ref": "#/components/schemas/GarageServiceType"
-              },
-              "description": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          }
-        ]
-      },
-      "GarageItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "userId",
-              "garageLookupIdentifier",
-              "conversations"
-            ],
-            "properties": {
-              "userId": {
-                "type": "string",
-                "minLength": 1
-              },
-              "garageLookupIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "lookup": {
-                "$ref": "#/components/schemas/GarageLookupItem"
-              },
-              "services": {
-                "type": "array",
-                "xml": {
-                  "wrapped": true
-                },
-                "items": {
-                  "xml": {
-                    "name": "GarageServiceItem"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/GarageServiceItem"
-                    }
-                  ]
-                }
-              },
-              "conversations": {
-                "type": "array",
-                "xml": {
-                  "wrapped": true
-                },
-                "items": {
-                  "xml": {
-                    "name": "ConversationItem"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ConversationItem"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        ]
       },
       "CreateGarageServiceCommand": {
         "type": "object",

@@ -61,7 +61,7 @@ export default ({ addCartItem }: IProps) => {
         }));
     };
 
-    // INFO: This is an feature that is not yet implemented
+    // TODO: This is an feature that is not yet implemented
     // To make it possible to use service to create an order.
     // Then on the confirm button they can send an tikkie
     return (

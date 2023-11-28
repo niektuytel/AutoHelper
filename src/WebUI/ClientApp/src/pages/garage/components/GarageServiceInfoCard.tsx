@@ -28,7 +28,7 @@ import QuestionMark from '@mui/icons-material/QuestionMark';
 import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceItemDto, GarageServiceType, SelectedService } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType, SelectedService } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
 import { getDefaultCreateGarageServices, getDefaultGarageServicesInfo, getTitleForServiceType } from "../../garage-account/defaultGarageService";
 

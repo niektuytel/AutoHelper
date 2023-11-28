@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageService;
 
 
-public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
+public record UpdateGarageServiceCommand : IRequest<GarageServiceDtoItem>
 {
     [JsonIgnore]
     public string UserId { get; set; }
@@ -25,7 +26,7 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceItem>
 
 }
 
-public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageServiceCommand, GarageServiceItem>
+public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageServiceCommand, GarageServiceDtoItem>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -36,7 +37,7 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
         _mapper = mapper;
     }
 
-    public async Task<GarageServiceItem> Handle(UpdateGarageServiceCommand request, CancellationToken cancellationToken)
+    public async Task<GarageServiceDtoItem> Handle(UpdateGarageServiceCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.GarageServices.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
         if (entity == null)
@@ -53,6 +54,6 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
         // Since we fetched the entity directly from the DbContext, it's already tracked. 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity;
+        return _mapper.Map<GarageServiceDtoItem>(entity);
     }
 }

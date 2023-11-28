@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // local
-import { GarageLookupDtoItem, GarageServiceItem, GarageServiceItemDto, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
+import { GarageLookupDtoItem, GarageServiceDtoItem, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
 import useGarage from "./useGarage";
 import Header from "../../components/header/Header";
 import GarageServiceInfoCard from "./components/GarageServiceInfoCard";
@@ -27,7 +27,7 @@ export default ({ }: IProps) => {
     const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [relatedServiceTypes, setRelatedServiceTypes] = useState<GarageServiceType[]>([]);
-    const [selectedItem, setSelectedItem] = useState<GarageServiceItemDto | null>(null);
+    const [selectedItem, setSelectedItem] = useState<GarageServiceDtoItem | null>(null);
     const queryParams = new URLSearchParams(location.search);
     const { identifier } = useParams();
     const licensePlate = queryParams.get('licensePlate');

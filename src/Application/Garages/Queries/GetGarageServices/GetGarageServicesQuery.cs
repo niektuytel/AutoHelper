@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
@@ -12,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
 
-public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceItemDto>>
+public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
     public GetGarageServicesQuery(string userId)
     {
@@ -22,7 +23,7 @@ public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceItemDto
     public string UserId { get; private set; }
 }
 
-public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQuery, IEnumerable<GarageServiceItemDto>>
+public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQuery, IEnumerable<GarageServiceDtoItem>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -33,7 +34,7 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<GarageServiceItemDto>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
     {
         var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
         if (entity == null)
@@ -48,7 +49,7 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
             )
             .AsEnumerable();
 
-        return _mapper.Map<IEnumerable<GarageServiceItemDto>>(entities) ?? new List<GarageServiceItemDto>();
+        return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
     }
 
 }

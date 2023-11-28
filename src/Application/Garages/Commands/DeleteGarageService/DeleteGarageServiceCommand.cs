@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AutoHelper.Application.Garages.Commands.DeleteGarageService;
 
 
-public record DeleteGarageServiceCommand : IRequest<GarageServiceItem>
+public record DeleteGarageServiceCommand : IRequest<GarageServiceDtoItem>
 {
 
     public DeleteGarageServiceCommand(Guid id, string userId)
@@ -26,7 +26,7 @@ public record DeleteGarageServiceCommand : IRequest<GarageServiceItem>
     public string? UserId { get; set; }
 }
 
-public class DeleteGarageServiceCommandHandler : IRequestHandler<DeleteGarageServiceCommand, GarageServiceItem>
+public class DeleteGarageServiceCommandHandler : IRequestHandler<DeleteGarageServiceCommand, GarageServiceDtoItem>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -37,12 +37,12 @@ public class DeleteGarageServiceCommandHandler : IRequestHandler<DeleteGarageSer
         _mapper = mapper;
     }
 
-    public async Task<GarageServiceItem> Handle(DeleteGarageServiceCommand request, CancellationToken cancellationToken)
+    public async Task<GarageServiceDtoItem> Handle(DeleteGarageServiceCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.GarageServices.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
         if (entity == null)
         {
-            throw new NotFoundException(nameof(GarageServiceItem), request.Id);
+            throw new NotFoundException(nameof(GarageServiceDtoItem), request.Id);
         }
 
         // If you wish to use domain events, then you can add them here:
@@ -51,6 +51,6 @@ public class DeleteGarageServiceCommandHandler : IRequestHandler<DeleteGarageSer
         _context.GarageServices.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity;
+        return _mapper.Map<GarageServiceDtoItem>(entity);
     }
 }

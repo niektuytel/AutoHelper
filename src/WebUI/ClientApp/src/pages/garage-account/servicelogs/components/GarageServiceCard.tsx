@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceType, GarageServiceItemDto } from "../../../../app/web-api-client";
+import { GarageServiceType, GarageServiceDtoItem } from "../../../../app/web-api-client";
 import { COLORS } from "../../../../constants/colors";
 import { getTitleForServiceType } from "../../defaultGarageService";
 
@@ -48,10 +48,10 @@ const DurationDisplay: React.FC<ServiceProps> = ({ durationInMinutes = 0 }) => {
 };
 
 interface IProps {
-    service: GarageServiceItemDto;
-    selectedItem: GarageServiceItemDto;
-    setSelectedItem: (service: GarageServiceItemDto) => void;
-    addCartItem: (service: GarageServiceItemDto) => void;
+    service: GarageServiceDtoItem;
+    selectedItem: GarageServiceDtoItem;
+    setSelectedItem: (service: GarageServiceDtoItem) => void;
+    addCartItem: (service: GarageServiceDtoItem) => void;
 }
 
 export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps) => {
@@ -64,6 +64,20 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
         service.description
     );
 
+    // INFO: This is an feature that is not yet implemented
+    // To make it possible to use service to create an order.
+    // Then on the confirm button they can send an tikkie
+    // action={
+    //
+    //    <IconButton
+    //        onClick={(e) => {
+    //            e.stopPropagation();
+    //            addCartItem(service);
+    //        }}
+    //    >
+    //        <AddIcon />
+    //    </IconButton>
+    // }
     return (
         <Card
             style={{
@@ -76,31 +90,10 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
             onClick={() => setSelectedItem(service)}
         >
             <CardHeader
-                action={
-                    <IconButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            addCartItem(service);
-                        }}
-                    >
-                        <AddIcon />
-                    </IconButton>
-                }
                 title={title}
                 titleTypographyProps={{ variant: "body1" }}
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
-            <CardActions style={{ padding: "0", justifyContent: "space-between" }}>
-                <Box display="flex" alignItems="center">
-                    <AccessTimeIcon color="action" fontSize="small" />
-                    <DurationDisplay durationInMinutes={service.durationInMinutes} />
-                </Box>
-                <Box display="flex" alignItems="center" style={{ marginRight: "10px" }} >
-                    <Typography variant="body2" align="right">
-                        €{Number(service.price).toFixed(2)}
-                    </Typography>
-                </Box>
-            </CardActions>
         </Card>
     );
 }

@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next";
 //import AccessTimeIcon from '@mui/icons-material/AccessTime';
 //import EuroIcon from '@mui/icons-material/Euro';
 //import { useNavigate, useParams } from "react-router";
-import { GarageServiceItemDto , GarageServiceType } from "../../../app/web-api-client";
+import { GarageServiceDtoItem , GarageServiceType } from "../../../app/web-api-client";
 //import GarageServiceDialog from "./components/GarageServiceDialog";
 //import { getTitleForServiceType } from "../defaultGarageService";
 //import { COLORS } from "../../../constants/colors";
@@ -50,7 +50,7 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [cartItems, setCartItems] = useState<GarageServiceItemDto[]>([]);
+    const [cartItems, setCartItems] = useState<GarageServiceDtoItem[]>([]);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -90,7 +90,7 @@ export default ({ }: IProps) => {
         setDialogDeleteOpen(true);
     }
 
-    const tryAddCartItem = (itemToAdd: GarageServiceItemDto) => {
+    const tryAddCartItem = (itemToAdd: GarageServiceDtoItem) => {
         if (cartItems.some(cartItem => cartItem.id === itemToAdd.id))
         {
             dispatch(showOnError(t("Cart item already exist")));

@@ -3,6 +3,7 @@ using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Conversations;

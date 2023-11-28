@@ -78,6 +78,7 @@
 
     <ItemGroup>
       <None Remove="ClientApp\src\components\ProtectedRoute.tsx" />
+      <None Remove="ClientApp\src\pages\garage-account\servicelogs\components\GarageServicesCollectionCard.tsx" />
       <None Remove="ClientApp\src\pages\garage\agenda\GarageAgenda.tsx" />
       <None Remove="ClientApp\src\pages\garage\car-service-book\CarServiceBook.tsx" />
       <None Remove="ClientApp\src\pages\garage\overview\GarageOverview.tsx" />

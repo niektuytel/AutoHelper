@@ -1,6 +1,6 @@
 ﻿import { TFunction, useTranslation } from "react-i18next";
 import { enumToKeyValueArray } from "../../app/utils";
-import { CreateGarageServiceCommand, GarageServiceItem, GarageServiceItemDto, GarageServiceType } from "../../app/web-api-client";
+import { CreateGarageServiceCommand, GarageServiceDtoItem, GarageServiceType } from "../../app/web-api-client";
 
 // TODO: Check at this file and remove unused code, or modify it as wel l on the readme to edit it wehn changing services
 export function getTitleForServiceType(t: TFunction, serviceType: GarageServiceType, altValue: string = "")

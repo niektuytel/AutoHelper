@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
+import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -63,8 +63,12 @@ function useGarageServices(onResponse: (data: any) => void) {
             onResponse(response);
         },
         onError: (response) => {
-            console.error(response)
-            //guardHttpResponse(response, setError, t, dispatch);
+            console.error('Error:', response);
+
+            // Display specific error message from server response
+            if (response instanceof BadRequestResponse && response.errors) {
+                dispatch(showOnError(Object.entries(response.errors)[0][1]));
+            }
         }
     });
 
@@ -85,8 +89,12 @@ function useGarageServices(onResponse: (data: any) => void) {
             onResponse(response);
         },
         onError: (response) => {
-            console.error(response)
-            //guardHttpResponse(response, setError, t, dispatch);
+            console.error('Error:', response);
+
+            // Display specific error message from server response
+            if (response instanceof BadRequestResponse && response.errors) {
+                dispatch(showOnError(Object.entries(response.errors)[0][1]));
+            }
         }
     });
 
@@ -102,8 +110,12 @@ function useGarageServices(onResponse: (data: any) => void) {
             onResponse(response);
         },
         onError: (response) => {
-            console.error(response)
-            //guardHttpResponse(response, setError, t, dispatch);
+            console.error('Error:', response);
+
+            // Display specific error message from server response
+            if (response instanceof BadRequestResponse && response.errors) {
+                dispatch(showOnError(Object.entries(response.errors)[0][1]));
+            }
         }
     });
 
@@ -111,9 +123,7 @@ function useGarageServices(onResponse: (data: any) => void) {
         var command = new CreateGarageServiceCommand();
         command.type = data.type;
         command.description = data.description;
-        //command.price = data.price;
-        //command.durationInMinutes = data.durationInMinutes;
-
+        
         console.log(command.toJSON());
         createMutation.mutate(command);
     }
@@ -123,9 +133,7 @@ function useGarageServices(onResponse: (data: any) => void) {
         command.id = data.id;
         command.type = data.type;
         command.description = data.description;
-        //command.price = data.price;
-        //command.durationInMinutes = data.durationInMinutes;
-
+        
         console.log(command.toJSON());
         updateMutation.mutate(command);
     }
