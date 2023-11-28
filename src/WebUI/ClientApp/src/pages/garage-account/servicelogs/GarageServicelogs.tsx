@@ -25,7 +25,11 @@ import { useTranslation } from "react-i18next";
 //import AccessTimeIcon from '@mui/icons-material/AccessTime';
 //import EuroIcon from '@mui/icons-material/Euro';
 //import { useNavigate, useParams } from "react-router";
-import { GarageServiceDtoItem , GarageServiceType } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType } from "../../../app/web-api-client";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 //import GarageServiceDialog from "./components/GarageServiceDialog";
 //import { getTitleForServiceType } from "../defaultGarageService";
 //import { COLORS } from "../../../constants/colors";
@@ -36,6 +40,9 @@ import { GarageServiceDtoItem , GarageServiceType } from "../../../app/web-api-
 import { useDispatch } from "react-redux";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 import useGarageServicelogs from "./useGarageServicelogs";
+import GarageServiceLogCard from "./components/GarageServiceLogCard";
+import GarageServiceLogDeleteDialog from "./components/GarageServiceLogDeleteDialog";
+import GarageServiceLogDialog from "./components/GarageServiceLogDialog";
 
 // own imports
 
@@ -103,82 +110,75 @@ export default ({ }: IProps) => {
 
     return (
         <>
-        TESTTTTT
+
+            <Box pt={4}>
+                <Typography variant="h4" gutterBottom display="flex" alignItems="center">
+                    {t("Services")}
+                    {loading ?
+                        <CircularProgress size={20} style={{ marginLeft: '10px' }} />
+                        :
+                        <Tooltip title={t("Services.Description")}>
+                            <IconButton size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>
+                    }
+                </Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                {isMobile ?
+                    <div>
+                        <IconButton onClick={() => handleAddClick()}>
+                            <AddIcon />
+                        </IconButton>
+                        <IconButton disabled={!selectedItem} onClick={() => handleEditClick()}>
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton disabled={!selectedItem} onClick={() => handleDeleteClick()}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </div>
+                    :
+                    <ButtonGroup aria-label="Buttons used for create, edit and delete">
+                        <Button onClick={() => handleAddClick()}>
+                            <AddIcon />{t("add")}
+                        </Button>
+                        <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
+                            <EditIcon />{t("edit")}
+                        </Button>
+                        <Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>
+                            <DeleteIcon />{t("delete")}
+                        </Button>
+                    </ButtonGroup>
+
+                }
+            </Box>
+            <Divider style={{ marginBottom: "20px" }} />
+            {garageServices?.map((item) => item &&
+                <GarageServiceLogCard
+                    key={`service-card-${item.id}`}
+                    service={item}
+                    selectedItem={selectedItem}
+                    setSelectedItem={setSelectedItem}
+                    addCartItem={tryAddCartItem}
+                />
+            )}
+            <GarageServiceLogDeleteDialog
+                service={selectedItem}
+                confirmDeleteOpen={dialogDeleteOpen}
+                setConfirmDeleteOpen={setDialogDeleteOpen}
+                deleteService={deleteService}
+                loading={loading}
+            />
+            <GarageServiceLogDialog
+                mode={dialogMode}
+                service={selectedItem}
+                dialogOpen={dialogOpen}
+                setDialogOpen={setDialogOpen}
+                createService={createService}
+                updateService={updateService}
+                loading={loading}
+            />
         </>
     );
-            //<Box pt={4}>
-            //    <Typography variant="h4" gutterBottom display="flex" alignItems="center">
-            //        {t("Services")}
-            //        {loading ?
-            //            <CircularProgress size={20} style={{ marginLeft: '10px' }} />
-            //            :
-            //            <Tooltip title={t("Services.Description")}>
-            //                <IconButton size="small">
-            //                    <InfoOutlinedIcon fontSize="inherit" />
-            //                </IconButton>
-            //            </Tooltip>
-            //        }
-            //    </Typography>
-            //</Box>
-            //<Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-            //    {isMobile ?
-            //        <div>
-            //            <IconButton onClick={() => handleAddClick()}>
-            //                <AddIcon />
-            //            </IconButton>
-            //            <IconButton disabled={!selectedItem} onClick={() => handleEditClick()}>
-            //                <EditIcon />
-            //            </IconButton>
-            //            <IconButton disabled={!selectedItem} onClick={() => handleDeleteClick()}>
-            //                <DeleteIcon />
-            //            </IconButton>
-            //        </div>
-            //        :
-            //        <ButtonGroup aria-label="Buttons used for create, edit and delete">
-            //            <Button onClick={() => handleAddClick()}>
-            //                <AddIcon />{t("add")}
-            //            </Button>
-            //            <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
-            //                <EditIcon />{t("edit")}
-            //            </Button>
-            //            <Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>
-            //                <DeleteIcon />{t("delete")}
-            //            </Button>
-            //        </ButtonGroup>
-
-            //    }
-            //</Box>
-            //<Divider style={{ marginBottom: "20px" }} />
-            //<GarageServiceCardOther addCartItem={(item) => setCartItems([...cartItems, item])} />
-            //{garageServices?.map((item) => item &&
-            //    <GarageServiceCard
-            //        key={`service-card-${item.id}`}
-            //        service={item}
-            //        selectedItem={selectedItem}
-            //        setSelectedItem={setSelectedItem}
-            //        addCartItem={tryAddCartItem}
-            //    />
-            //)}
-            //{cartItems.length > 0 && 
-            //    <GarageServicesCollectionCard
-            //        items={cartItems}
-            //        setItems={setCartItems}
-            //    />
-            //}
-            //<GarageServiceDeleteDialog
-            //    service={selectedItem}
-            //    confirmDeleteOpen={dialogDeleteOpen}
-            //    setConfirmDeleteOpen={setDialogDeleteOpen}
-            //    deleteService={deleteService}
-            //    loading={loading}
-            ///>
-            //<GarageServiceDialog
-            //    mode={dialogMode}
-            //    service={selectedItem}
-            //    dialogOpen={dialogOpen}
-            //    setDialogOpen={setDialogOpen}
-            //    createService={createService}
-            //    updateService={updateService}
-            //    loading={loading}
-            ///>
 }
