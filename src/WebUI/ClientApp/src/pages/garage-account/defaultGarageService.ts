@@ -39,6 +39,17 @@ export function getDefaultGarageServicesInfo(t: any) {
     );
 }
 
+export function getAllGarageServiceTypes(t: any) {
+    return enumToKeyValueArray(GarageServiceType).map(({ key, value }) =>
+    ({
+        type: key,
+        title: t(`serviceTypes:${value}.Title`),
+        description: t(`serviceTypes:${value}.Description`),
+        filter: t(`serviceTypes:${value}.Filter`)
+    })
+    );
+}
+
 export function getDefaultCreateGarageServices(t: TFunction) {
     const defaultServices: CreateGarageServiceCommand[] = [
         //new CreateGarageServiceCommand({

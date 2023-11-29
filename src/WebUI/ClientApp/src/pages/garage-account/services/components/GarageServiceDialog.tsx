@@ -22,7 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
 import { UpdateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServices";
-import { getDefaultCreateGarageServices, getTitleForServiceType } from "../../defaultGarageService";
+import { getAllGarageServiceTypes, getTitleForServiceType } from "../../defaultGarageService";
 
 // own imports
 
@@ -39,7 +39,7 @@ interface IProps {
 }
 
 export default ({ dialogOpen, setDialogOpen, mode, service, createService, updateService, loading }: IProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['serviceTypes']);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -48,7 +48,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
     const [timeUnit, setTimeUnit] = useState("minutes");
 
 
-    const defaultAvailableServices = getDefaultCreateGarageServices(t);
+    const defaultAvailableServices = getAllGarageServiceTypes(t);
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm();
 
     useEffect(() => {
@@ -68,7 +68,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
     type ServiceProperty = 'type' | 'description';
 
     const handleTitleChange = (event: any) => {
-        const service = defaultAvailableServices.find(item => item.type === event.target.value) as UpdateGarageServiceCommand;
+        const service = defaultAvailableServices.find(item => item.type === event.target.value) as any;
         if (!service) return;
 
         const prevService = selectedService;
@@ -117,7 +117,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                             rules={{ required: t("What type of service do you need?") }}
                             defaultValue=""
                             render={({ field }) => (
-                                <FormControl fullWidth variant="outlined" error={Boolean(errors.type)}>
+                                <FormControl fullWidth size='small'>
                                     <InputLabel htmlFor="select-title">{t("Service type")}</InputLabel>
                                     <Select
                                         {...field}
@@ -125,11 +125,13 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                             field.onChange(event);
                                             handleTitleChange(event);
                                         }}
+                                        labelId="service-type-label"
                                         label={t("Service type")}
+                                        size="small"
                                     >
                                         {defaultAvailableServices.map(item => (
                                             <MenuItem key={item.type} value={item.type}>
-                                                {getTitleForServiceType(t, item.type!)}
+                                                {item.title}
                                             </MenuItem>
                                         ))}
                                     </Select>

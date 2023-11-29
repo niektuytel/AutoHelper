@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next";
 //import AccessTimeIcon from '@mui/icons-material/AccessTime';
 //import EuroIcon from '@mui/icons-material/Euro';
 //import { useNavigate, useParams } from "react-router";
-import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem } from "../../../app/web-api-client";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -43,6 +43,7 @@ import useGarageServicelogs from "./useGarageServicelogs";
 import GarageServiceLogCard from "./components/GarageServiceLogCard";
 import GarageServiceLogDeleteDialog from "./components/GarageServiceLogDeleteDialog";
 import GarageServiceLogDialog from "./components/GarageServiceLogDialog";
+import ServiceLogDrawer from "./components/ServiceLogDrawer";
 
 // own imports
 
@@ -58,13 +59,13 @@ export default ({ }: IProps) => {
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
     //const [cartItems, setCartItems] = useState<GarageServiceDtoItem[]>([]);
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    //const [dialogOpen, setDrawerOpen] = useState<boolean>(false);
     const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
     const handleFormSubmit = (data: any) => {
         if (dialogMode == "create" || dialogMode == "edit") {
-            setDialogOpen(false);
+            setDrawerOpen(false);
         }
 
         if (selectedItem) {
@@ -75,12 +76,28 @@ export default ({ }: IProps) => {
     };
 
     const { loading, createServiceLog, updateServiceLog, deleteServiceLog, isError, garageServiceLogs } = useGarageServicelogs(handleFormSubmit);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const toggleDrawer = (open: boolean) => {
+        setDrawerOpen(open);
+    };
+
+    const handleAddService = () => {
+        setDrawerOpen(true);
+    };
+
+    const handleNewService = (newServiceLog: VehicleServiceLogDtoItem) => {
+        console.log("Handle new service", newServiceLog);
+
+        createServiceLog(newServiceLog);
+        setDrawerOpen(false);
+    };
 
     // Sample data
     const handleAddClick = () => {
         setSelectedItem(undefined);
         setDialogMode("create");
-        setDialogOpen(true);
+        setDrawerOpen(true);
     }
 
     const handleEditClick = () => {
@@ -88,7 +105,7 @@ export default ({ }: IProps) => {
 
         setSelectedItem(selectedItem);
         setDialogMode("edit");
-        setDialogOpen(true);
+        setDrawerOpen(true);
     }
 
     const handleDeleteClick = () => {
@@ -170,15 +187,17 @@ export default ({ }: IProps) => {
                 deleteService={deleteServiceLog}
                 loading={loading}
             />
-            <GarageServiceLogDialog
-                mode={dialogMode}
-                service={selectedItem}
-                dialogOpen={dialogOpen}
-                setDialogOpen={setDialogOpen}
-                createService={createServiceLog}
-                updateService={updateServiceLog}
-                loading={loading}
-            />
+
+            <ServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleNewService={handleNewService} />
         </>
     );
+    //<GarageServiceLogDialog
+    //    mode={dialogMode}
+    //    service={selectedItem}
+    //    dialogOpen={dialogOpen}
+    //    setDrawerOpen={setDrawerOpen}
+    //    createService={createServiceLog}
+    //    updateService={updateServiceLog}
+    //    loading={loading}
+    ///>
 }
