@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceType, GarageServiceDtoItem } from "../../../../app/web-api-client";
+import { GarageServiceType, VehicleServiceLogAsGarageDtoItem } from "../../../../app/web-api-client";
 import { COLORS } from "../../../../constants/colors";
 import { getTitleForServiceType } from "../../defaultGarageService";
 
@@ -48,10 +48,10 @@ const DurationDisplay: React.FC<ServiceProps> = ({ durationInMinutes = 0 }) => {
 };
 
 interface IProps {
-    service: GarageServiceDtoItem;
-    selectedItem: GarageServiceDtoItem;
-    setSelectedItem: (service: GarageServiceDtoItem) => void;
-    addCartItem: (service: GarageServiceDtoItem) => void;
+    service: VehicleServiceLogAsGarageDtoItem;
+    selectedItem: VehicleServiceLogAsGarageDtoItem;
+    setSelectedItem: (service: VehicleServiceLogAsGarageDtoItem) => void;
+    addCartItem: (service: VehicleServiceLogAsGarageDtoItem) => void;
 }
 
 export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps) => {

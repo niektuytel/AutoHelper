@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
-import { UpdateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
+import { UpdateVehicleServiceLogAsGarageCommand, GarageServiceType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServicelogs";
 import { getDefaultCreateGarageServices, getTitleForServiceType } from "../../defaultGarageService";
 
@@ -30,7 +30,7 @@ import { getDefaultCreateGarageServices, getTitleForServiceType } from "../../de
 
 interface IProps {
     mode: 'create' | 'edit';
-    service?: UpdateGarageServiceCommand;
+    service?: UpdateVehicleServiceLogAsGarageCommand;
     dialogOpen: boolean;
     setDialogOpen: (dialogOpen: boolean) => void;
     createService: (data: any) => void;
@@ -43,7 +43,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [selectedService, setSelectedService] = useState<UpdateGarageServiceCommand | undefined>(service);
+    const [selectedService, setSelectedService] = useState<UpdateVehicleServiceLogAsGarageCommand | undefined>(service);
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
     const [timeUnit, setTimeUnit] = useState("minutes");
 
@@ -54,12 +54,15 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
     useEffect(() => {
         if (mode === 'edit' && service) {
             setDialogMode('edit');
-            setValue("id", service.id);
-            setValue("title", getTitleForServiceType(t, service.type!));
+
+            setValue("serviceLogId", service.serviceLogId);
+            setValue("vehicleLicensePlate", service.vehicleLicensePlate);
             setValue("type", service.type);
             setValue("description", service.description);
-            //setValue("durationInMinutes", service.durationInMinutes);
-            //setValue("price", service.price);
+            setValue("date", service.date);
+            setValue("expectedNextDate", service.expectedNextDate);
+            setValue("odometerReading", service.odometerReading);
+            setValue("expectedNextOdometerReading", service.expectedNextOdometerReading);
         }
         else {
             setDialogMode('create');
@@ -67,17 +70,17 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         }
     }, [service, mode, setValue]);
 
-    type ServiceProperty = 'type' | 'description';// | 'durationInMinutes' | 'price';
+    type ServiceLogProperty = 'vehicleLicensePlate' | 'type' | 'description' | 'date' | 'expectedNextDate' | 'odometerReading' | 'expectedNextOdometerReading';
 
     const handleTitleChange = (event: any) => {
-        const service = defaultAvailableServices.find(item => item.type === event.target.value) as UpdateGarageServiceCommand;
+        const service = defaultAvailableServices.find(item => item.type === event.target.value) as UpdateVehicleServiceLogAsGarageCommand;
         if (!service) return;
 
         const prevService = selectedService;
         setSelectedService(service);
 
         const item = watch();
-        const propertiesToUpdate: ServiceProperty[] = ['type', 'description'];//, 'durationInMinutes', 'price'];
+        const propertiesToUpdate: ServiceLogProperty[] = ['vehicleLicensePlate', 'type', 'description', 'date', 'expectedNextDate', 'odometerReading', 'expectedNextOdometerReading'];
         propertiesToUpdate.forEach(property => {
             if (!item[property] || (prevService && item[property] == prevService[property])) {
                 setValue(property, service[property]);

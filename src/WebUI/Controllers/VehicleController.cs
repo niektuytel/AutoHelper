@@ -3,9 +3,7 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
-using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
@@ -25,6 +23,7 @@ using WebUI.Models;
 using YamlDotNet.Core.Tokens;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using System;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -152,15 +151,4 @@ public class VehicleController : ApiControllerBase
 
         return await Mediator.Send(command, cancellationToken);
     }
-
-    [HttpDelete($"{nameof(DeleteServiceLog)}/{{serviceLogId}}")]
-    [Authorize]// TODO: (Policy="Admin") or garage owner matched with service log
-    [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogItem> DeleteServiceLog([FromRoute] Guid serviceLogId, CancellationToken cancellationToken)
-    {
-        var command = new DeleteVehicleServiceLogCommand(serviceLogId);
-        return await Mediator.Send(command, cancellationToken);
-    }
-
 }

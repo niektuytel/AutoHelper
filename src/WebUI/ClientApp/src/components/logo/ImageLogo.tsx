@@ -12,6 +12,7 @@ interface IProps {
     large?: boolean;
     very_large?: boolean;
     className?: string;
+    showStaticLogo?: boolean;
 }
 
 const StyledImg = styled("img")({
@@ -20,7 +21,7 @@ const StyledImg = styled("img")({
     }
 });
 
-export default ({ small, large, very_large, className }: IProps) => {
+export default ({ small, large, very_large, className, showStaticLogo }: IProps) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [pathHistory, setPathHistory] = useState<string[]>([]);
@@ -46,6 +47,29 @@ export default ({ small, large, very_large, className }: IProps) => {
             navigate(-1); // Regular back navigation
         }
     };
+
+    if (showStaticLogo) {
+        return <>
+            <Hidden mdUp>
+                <StyledImg
+                    src={"/images/ic_blue.svg"}
+                    height={size}
+                    className={className || ''}
+                    alt="AutoHelper.nl"
+                    onClick={() => navigate(ROUTES.SELECT_VEHICLE)}
+                />
+            </Hidden>
+            <Hidden mdDown>
+                <StyledImg
+                    src={"/images/ic_blue_autohelper.svg"}
+                    height={size}
+                    className={className || ''}
+                    alt="AutoHelper.nl"
+                    onClick={() => navigate(ROUTES.SELECT_VEHICLE)}
+                />
+            </Hidden>
+        </>;
+    }
 
     return (
         <>

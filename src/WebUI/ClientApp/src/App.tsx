@@ -22,7 +22,7 @@ import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
 import theme from './constants/theme';
 import Garage from './pages/garage/Garage';
-import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
+import GarageServiceLogs from './pages/garage-account/servicelogs/GarageServiceLogs';
 
 export default () => {
     const location = useLocation();
@@ -115,7 +115,7 @@ export default () => {
                             <Header showStaticDrawer={showStaticDrawer} />
                             <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                                 <GarageRouteContent>
-                                    <GarageServicelogs />
+                                    <GarageServiceLogs />
                                 </GarageRouteContent>
                             </AuthenticatedRoute>
                         </>

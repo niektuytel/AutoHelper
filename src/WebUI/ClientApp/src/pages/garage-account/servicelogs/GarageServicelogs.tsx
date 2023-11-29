@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next";
 //import AccessTimeIcon from '@mui/icons-material/AccessTime';
 //import EuroIcon from '@mui/icons-material/Euro';
 //import { useNavigate, useParams } from "react-router";
-import { GarageServiceDtoItem, GarageServiceType } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem } from "../../../app/web-api-client";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -57,7 +57,7 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [cartItems, setCartItems] = useState<GarageServiceDtoItem[]>([]);
+    //const [cartItems, setCartItems] = useState<GarageServiceDtoItem[]>([]);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
@@ -74,7 +74,7 @@ export default ({ }: IProps) => {
         setSelectedItem(undefined);
     };
 
-    const { loading, createService, updateService, deleteService, isError, garageServices } = useGarageServicelogs(handleFormSubmit);
+    const { loading, createServiceLog, updateServiceLog, deleteServiceLog, isError, garageServiceLogs } = useGarageServicelogs(handleFormSubmit);
 
     // Sample data
     const handleAddClick = () => {
@@ -97,14 +97,14 @@ export default ({ }: IProps) => {
         setDialogDeleteOpen(true);
     }
 
-    const tryAddCartItem = (itemToAdd: GarageServiceDtoItem) => {
-        if (cartItems.some(cartItem => cartItem.id === itemToAdd.id))
-        {
-            dispatch(showOnError(t("Cart item already exist")));
-            return;
-        } 
+    const tryAddCartItem = (itemToAdd: VehicleServiceLogAsGarageDtoItem) => {
+        //if (cartItems.some(cartItem => cartItem.id === itemToAdd.id))
+        //{
+        //    dispatch(showOnError(t("Cart item already exist")));
+        //    return;
+        //} 
 
-        setCartItems([...cartItems, itemToAdd]);
+        //setCartItems([...cartItems, itemToAdd]);
     }
 
 
@@ -113,11 +113,11 @@ export default ({ }: IProps) => {
 
             <Box pt={4}>
                 <Typography variant="h4" gutterBottom display="flex" alignItems="center">
-                    {t("Services")}
+                    {t("GarageAccount.ServiceLogs.Title")}
                     {loading ?
                         <CircularProgress size={20} style={{ marginLeft: '10px' }} />
                         :
-                        <Tooltip title={t("Services.Description")}>
+                        <Tooltip title={t("GarageAccount.ServiceLogs.Description")}>
                             <IconButton size="small">
                                 <InfoOutlinedIcon fontSize="inherit" />
                             </IconButton>
@@ -154,7 +154,7 @@ export default ({ }: IProps) => {
                 }
             </Box>
             <Divider style={{ marginBottom: "20px" }} />
-            {garageServices?.map((item) => item &&
+            {garageServiceLogs?.map((item) => item &&
                 <GarageServiceLogCard
                     key={`service-card-${item.id}`}
                     service={item}
@@ -167,7 +167,7 @@ export default ({ }: IProps) => {
                 service={selectedItem}
                 confirmDeleteOpen={dialogDeleteOpen}
                 setConfirmDeleteOpen={setDialogDeleteOpen}
-                deleteService={deleteService}
+                deleteService={deleteServiceLog}
                 loading={loading}
             />
             <GarageServiceLogDialog
@@ -175,8 +175,8 @@ export default ({ }: IProps) => {
                 service={selectedItem}
                 dialogOpen={dialogOpen}
                 setDialogOpen={setDialogOpen}
-                createService={createService}
-                updateService={updateService}
+                createService={createServiceLog}
+                updateService={updateServiceLog}
                 loading={loading}
             />
         </>

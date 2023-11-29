@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
+import { BadRequestResponse, CreateGarageServiceCommand, CreateVehicleServiceLogAsGarageCommand, GarageClient, UpdateGarageServiceCommand, UpdateVehicleServiceLogAsGarageCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -12,7 +12,7 @@ import { GetGarageAccountClient } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
-function useGarageServices(onResponse: (data: any) => void) {
+function useGarageServiceLogs(onResponse: (data: any) => void) {
     const { userRole } = useUserRole()
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
@@ -23,9 +23,9 @@ function useGarageServices(onResponse: (data: any) => void) {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const fetchGarageServicesData = async () => {
+    const fetchGarageServiceLogsData = async () => {
         try {
-            const response = await garageClient.getServices();
+            const response = await garageClient.getServiceLogs(null);
 
             return response;
         } catch (response: any) {
@@ -40,9 +40,9 @@ function useGarageServices(onResponse: (data: any) => void) {
         }
     }
 
-    const { data: garageServices, isLoading, isError } = useQuery(
-        ['garageServices'],
-        fetchGarageServicesData,
+    const { data: garageServiceLogs, isLoading, isError } = useQuery(
+        ['garageServiceLogs'],
+        fetchGarageServiceLogsData,
         {
             enabled: true,
             retry: 1,
@@ -52,14 +52,14 @@ function useGarageServices(onResponse: (data: any) => void) {
         }
     );
 
-    const createMutation = useMutation(garageClient.createService.bind(garageClient), {
+    const createMutation = useMutation(garageClient.createServiceLog.bind(garageClient), {
         onSuccess: (response) => {
             // Enable garage colleagues page
             setConfigurationIndex(3, userRole)
-            dispatch(showOnSuccess("Garage service has been created!"));
+            dispatch(showOnSuccess("Garage service log is been created!"));
 
             // Update the garageSettings in the cache after creating
-            queryClient.setQueryData(['garageServices'], [...garageServices!, response]);
+            queryClient.setQueryData(['garageServiceLogs'], [...garageServiceLogs!, response]);
             onResponse(response);
         },
         onError: (response) => {
@@ -70,10 +70,10 @@ function useGarageServices(onResponse: (data: any) => void) {
 
     const updateMutation = useMutation(garageClient.updateService.bind(garageClient), {
         onSuccess: (response) => {
-            dispatch(showOnSuccess("Garage service has been updated!"));
+            dispatch(showOnSuccess("Garage service log is been updated!"));
 
             // Update the garageSettings in the cache after updating
-            const updatedGarageServices = garageServices?.map((service) => {
+            const updatedGarageServices = garageServiceLogs?.map((service) => {
                 if (service.id === response.id) {
                     return response;
                 } else {
@@ -81,56 +81,75 @@ function useGarageServices(onResponse: (data: any) => void) {
                 }
             });
 
-            queryClient.setQueryData(['garageServices'], updatedGarageServices);
+            queryClient.setQueryData(['garageServiceLogs'], updatedGarageServices);
             onResponse(response);
         },
         onError: (response) => {
-            console.error(response)
-            //guardHttpResponse(response, setError, t, dispatch);
+            console.error('Error:', response);
+
+            // Display specific error message from server response
+            if (response instanceof BadRequestResponse && response.errors) {
+                dispatch(showOnError(Object.entries(response.errors)[0][1]));
+            }
         }
     });
 
     const deleteMutation = useMutation(garageClient.deleteService.bind(garageClient), {
         onSuccess: (response) => {
-            dispatch(showOnSuccess("Garage service has been deleted!"));
+            dispatch(showOnSuccess("Garage service log is been deleted!"));
 
             // Delete the garageSettings in the cache after updating
-            const updatedGarageServices = garageServices?.filter((service) => service.id !== response.id);
+            const updatedGarageServices = garageServiceLogs?.filter((service) => service.id !== response.id);
 
             console.log(updatedGarageServices);
-            queryClient.setQueryData(['garageServices'], updatedGarageServices);
+            queryClient.setQueryData(['garageServiceLogs'], updatedGarageServices);
             onResponse(response);
         },
         onError: (response) => {
-            console.error(response)
-            //guardHttpResponse(response, setError, t, dispatch);
+            console.error('Error:', response);
+
+            // Display specific error message from server response
+            if (response instanceof BadRequestResponse && response.errors) {
+                dispatch(showOnError(Object.entries(response.errors)[0][1]));
+            }
         }
     });
 
-    const createService = (data: any) => {
-        var command = new CreateGarageServiceCommand();
+    const createServiceLog = (data: any) => {
+        var command = new CreateVehicleServiceLogAsGarageCommand();
+        command.vehicleLicensePlate = data.vehicleLicensePlate;
         command.type = data.type;
         command.description = data.description;
-        //command.price = data.price;
-        //command.durationInMinutes = data.durationInMinutes;
+        command.date = data.date;
+        command.expectedNextDate = data.expectedNextDate;
+        command.odometerReading = data.odometerReading;
+        command.expectedNextOdometerReading = data.expectedNextOdometerReading;
+
+        // TODO: attach files
 
         console.log(command.toJSON());
         createMutation.mutate(command);
     }
 
-    const updateService = (data: any) => {
-        var command = new UpdateGarageServiceCommand();
-        command.id = data.id;
+    const updateServiceLog = (data: any) => {
+        var command = new UpdateVehicleServiceLogAsGarageCommand();
+        command.serviceLogId = data.serviceLogId;
+        command.vehicleLicensePlate = data.vehicleLicensePlate;
         command.type = data.type;
         command.description = data.description;
-        //command.price = data.price;
-        //command.durationInMinutes = data.durationInMinutes;
+        command.date = data.date;
+        command.expectedNextDate = data.expectedNextDate;
+        command.odometerReading = data.odometerReading;
+        command.expectedNextOdometerReading = data.expectedNextOdometerReading;
+
+
+        // TODO: attach files
 
         console.log(command.toJSON());
         updateMutation.mutate(command);
     }
 
-    const deleteService = (data: any) => {
+    const deleteServiceLog = (data: any) => {
         console.log(data);
         deleteMutation.mutate(data.id);
     }
@@ -138,8 +157,8 @@ function useGarageServices(onResponse: (data: any) => void) {
     // only reset the form when the data is loaded
     const loading = isLoading || createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading;
     return {
-        loading, isError, garageServices, createService, updateService, deleteService
+        loading, isError, garageServiceLogs, createServiceLog, updateServiceLog, deleteServiceLog
     }
 }
 
-export default useGarageServices;
+export default useGarageServiceLogs;

@@ -18,6 +18,11 @@ using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Domain.Entities.Garages.Unused;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
+using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -62,6 +67,16 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(new GetGarageServicesQuery(userId));
     }
 
+    [Authorize(Policy = "GarageRole")]
+    [HttpGet($"{nameof(GetServiceLogs)}")]
+    [ProducesResponseType(typeof(IEnumerable<VehicleServiceLogAsGarageDtoItem>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<VehicleServiceLogAsGarageDtoItem>> GetServiceLogs([FromQuery] string? licensePlate=null)
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(new GetVehicleServiceLogsAsGarageQuery(userId, licensePlate));
+    }
+
     [Authorize]
     [HttpPost($"{nameof(CreateGarage)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
@@ -94,6 +109,16 @@ public class GarageAccountController : ApiControllerBase
     }
 
     [Authorize(Policy = "GarageRole")]
+    [HttpPost($"{nameof(CreateServiceLog)}")]
+    [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromBody] CreateVehicleServiceLogAsGarageCommand command)
+    {
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(command);
+    }
+
+    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(UpdateSettings)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -114,6 +139,16 @@ public class GarageAccountController : ApiControllerBase
     }
 
     [Authorize(Policy = "GarageRole")]
+    [HttpPut($"{nameof(UpdateServiceLog)}")]
+    [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromBody] UpdateVehicleServiceLogAsGarageCommand command)
+    {
+        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(command);
+    }
+
+    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(DeleteService)}/{{id}}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -121,6 +156,16 @@ public class GarageAccountController : ApiControllerBase
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new DeleteGarageServiceCommand(id, userId));
+    }
+
+    [Authorize(Policy = "GarageRole")]
+    [HttpPut($"{nameof(DeleteServiceLog)}/{{id}}")]
+    [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogAsGarageDtoItem> DeleteServiceLog([FromRoute] Guid id)
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(new DeleteVehicleServiceLogAsGarageCommand(userId, id));
     }
 
 }
