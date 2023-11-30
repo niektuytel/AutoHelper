@@ -15,17 +15,17 @@ import CheckIcon from '@mui/icons-material/Check';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
 import { useDispatch } from 'react-redux';
-import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
+import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 
 interface IServiceLogFormProps {
     drawerOpen: boolean;
     toggleDrawer: (open: boolean) => void;
-    handleNewService: (newServiceLog: VehicleServiceLogDtoItem) => void;
+    handleService: (data: any, file: File | null) => void;
 }
 
 interface IServiceLogFormData {
-    garageLookup: GarageLookupSimplefiedDto;
+    licensePlate: string;
     type: string;
     description: string;
     date: Date | null;
@@ -39,7 +39,7 @@ interface IServiceLogFormData {
 
 const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title'];
 
-export default ({ drawerOpen, toggleDrawer, handleNewService }: IServiceLogFormProps) => {
+export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const dispatch = useDispatch();
     const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
@@ -64,15 +64,31 @@ export default ({ drawerOpen, toggleDrawer, handleNewService }: IServiceLogFormP
         } else if (activeStep === 1) {
 
             // Validate Dates
-            if (data.date && data.expectedNextDate && data.date < data.expectedNextDate) {
-                setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required')});
-                hasError = true;
+            if (data.date && data.expectedNextDate) {
+                const date = new Date(data.date);
+                const expectedNextDate = new Date(data.expectedNextDate);
+
+                if (isNaN(date.getTime()) || isNaN(expectedNextDate.getTime())) {
+                    // Handle invalid date format
+                    setError('expectedNextDate', { type: 'manual', message: t('Invalid date format') });
+                    hasError = true;
+                } else if (date > expectedNextDate) {
+                    setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required') });
+                    hasError = true;
+                }
             }
 
+
             // Validate Odometer Readings
-            if (data.odometerReading && data.expectedNextOdometerReading && data.odometerReading < data.expectedNextOdometerReading) {
-                setError('expectedNextOdometerReading', { type: 'manual', message: t('AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required')});
-                hasError = true;
+            if (data.odometerReading && data.expectedNextOdometerReading) {
+                const odometerReading = new Number(data.odometerReading);
+                const expectedNextOdometerReading = new Number(data.expectedNextOdometerReading);
+
+                if (odometerReading > expectedNextOdometerReading) {
+                    setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required') });
+                    setError('expectedNextOdometerReading', { type: 'manual', message: t('AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required')});
+                    hasError = true;
+                }
             }
         }
 
@@ -98,27 +114,29 @@ export default ({ drawerOpen, toggleDrawer, handleNewService }: IServiceLogFormP
         }
     };
 
+
     const onSubmit = (data: any) => {
         console.log(data);
         setIsLoading(true); // Set loading to true
 
-        const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
+        const garageAccountClient = new GarageAccountClient(process.env.PUBLIC_URL);
         const createLog = async () => {
             try {
+                // const response = await garageAccountClient.createServiceLog2(,);
                 //const response = await vehicleClient.createServiceLog(
                 //    licensePlate,
                 //    data.garageLookup.identifier,
                 //    data.type,
                 //    data.description,
-                //    data.date.toISOString(), 
-                //    data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 
+                //    data.date.toISOString(),
+                //    data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
                 //    data.odometerReading,
                 //    data.expectedNextOdometerReading,
                 //    data.createdby,
                 //    data.phonenumber,
                 //    data.emailaddress,
                 //    file?.name || '',
-                //    null, 
+                //    null,
                 //    file ? { data: file, fileName: file?.name || '' } : null
                 //);
 
@@ -127,7 +145,6 @@ export default ({ drawerOpen, toggleDrawer, handleNewService }: IServiceLogFormP
                 // Reset only specific form fields
                 setValue('type', '');
                 setValue('description', '');
-                setValue('licensePlate', '');
                 setValue('date', null);
                 setValue('expectedNextDate', null);
                 setValue('odometerReading', 0);

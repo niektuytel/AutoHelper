@@ -23,6 +23,7 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
+using System.Threading;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -112,9 +113,24 @@ public class GarageAccountController : ApiControllerBase
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromBody] CreateVehicleServiceLogAsGarageCommand command)
+    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceAsGarageLogDto commandWithAttachment, CancellationToken cancellationToken)
     {
+        var command = commandWithAttachment.ServiceLogCommand;
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+
+        // If a file is included, process it
+        if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
+        {
+            using var memoryStream = new MemoryStream();
+            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
+
+            command.Attachment = new VehicleServiceLogAttachmentDtoItem
+            {
+                FileName = commandWithAttachment.AttachmentFile.FileName,
+                FileData = memoryStream.ToArray()
+            };
+        }
+
         return await Mediator.Send(command);
     }
 
@@ -142,9 +158,24 @@ public class GarageAccountController : ApiControllerBase
     [HttpPut($"{nameof(UpdateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromBody] UpdateVehicleServiceLogAsGarageCommand command)
+    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDto commandWithAttachment, CancellationToken cancellationToken)
     {
+        var command = commandWithAttachment.ServiceLogCommand;
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+
+        // If a file is included, process it
+        if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
+        {
+            using var memoryStream = new MemoryStream();
+            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
+
+            command.Attachment = new VehicleServiceLogAttachmentDtoItem
+            {
+                FileName = commandWithAttachment.AttachmentFile.FileName,
+                FileData = memoryStream.ToArray()
+            };
+        }
+
         return await Mediator.Send(command);
     }
 

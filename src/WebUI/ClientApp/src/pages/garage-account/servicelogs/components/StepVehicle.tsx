@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form';
 import { Box, Grid, TextField } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { getFormatedLicense, getLicenseFromPath } from '../../../../app/LicensePlateUtils';
 
 
 interface IProps {
@@ -12,6 +13,13 @@ interface IProps {
 
 const VehicleStep = ({ control, isMaintenance }: IProps) => {
     const { t } = useTranslation();
+
+    const handleLicensePlateChange = (e: any): string => {
+        let license = e.target.value.toUpperCase().replace(/-/g, '');
+        license = getFormatedLicense(license);
+        return license;
+    };
+
 
     return <>
         <Box flexGrow={1} p={1}>
@@ -25,6 +33,8 @@ const VehicleStep = ({ control, isMaintenance }: IProps) => {
                         render={({ field, fieldState: { error } }) => (
                             <TextField
                                 {...field}
+                                value={field.value}
+                                onChange={(value) => field.onChange(handleLicensePlateChange(value))}
                                 label={t("AddMaintenanceLog.LicensePlate.Label")}
                                 fullWidth
                                 size='small'

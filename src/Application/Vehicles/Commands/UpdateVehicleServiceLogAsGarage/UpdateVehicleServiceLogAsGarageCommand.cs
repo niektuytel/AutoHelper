@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 
-public record CreateVehicleServiceAsGarageLogDto : IRequest<VehicleServiceLogAsGarageDtoItem>
+public record UpdateVehicleServiceAsGarageLogDto : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
     public UpdateVehicleServiceLogAsGarageCommand ServiceLogCommand { get; set; }
     public IFormFile AttachmentFile { get; set; }

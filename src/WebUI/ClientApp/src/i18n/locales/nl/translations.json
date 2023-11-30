@@ -184,6 +184,8 @@
   "AddMaintenanceLog.ServiceCreatedBy.Required": "Vul alstublieft uw naam in",
   "AddMaintenanceLog.ServicePhoneNumber.Label": "Telefoonnummer",
   "AddMaintenanceLog.ServiceEmailAddress.Label": "E-mailadres",
+  "AddMaintenanceLog.LicensePlate.Label": "Kenteken, b.v. 87-GRN-6",
+  "AddMaintenanceLog.LicensePlate.Required": "Op welk voertuig is deze onderhoud?",
 
 
 

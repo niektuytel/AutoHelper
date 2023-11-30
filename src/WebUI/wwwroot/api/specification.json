@@ -6,6 +6,301 @@
     "version": "v1"
   },
   "paths": {
+    "/api/AdminAccount/GetGarageLookupStatuses": {
+      "get": {
+        "tags": [
+          "AdminAccount"
+        ],
+        "operationId": "AdminAccount_GetGarageLookupStatuses",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageLookupsStatusDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AdminAccount/UpsertLookups": {
+      "put": {
+        "tags": [
+          "AdminAccount"
+        ],
+        "operationId": "AdminAccount_UpsertLookups",
+        "parameters": [
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "-1 is all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "-1 is all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AdminAccount/UpsertVehicleLookups": {
+      "put": {
+        "tags": [
+          "AdminAccount"
+        ],
+        "operationId": "AdminAccount_UpsertVehicleLookups",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AdminAccount/UpsertVehicleTimeline": {
+      "put": {
+        "tags": [
+          "AdminAccount"
+        ],
+        "operationId": "AdminAccount_UpsertVehicleTimeline",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AdminAccount/UpsertVehicleTimelines": {
+      "put": {
+        "tags": [
+          "AdminAccount"
+        ],
+        "operationId": "AdminAccount_UpsertVehicleTimelines",
+        "parameters": [
+          {
+            "name": "startRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
+          },
+          {
+            "name": "maxUpdateAmount",
+            "in": "query",
+            "description": "-1 means all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            },
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "x-position": 5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Conversation/StartConversations": {
       "post": {
         "tags": [
@@ -340,11 +635,11 @@
         ],
         "operationId": "GarageAccount_CreateServiceLog",
         "requestBody": {
-          "x-name": "command",
+          "x-name": "commandWithAttachment",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVehicleServiceLogAsGarageCommand"
+                "$ref": "#/components/schemas/CreateVehicleServiceAsGarageLogDto"
               }
             }
           },
@@ -358,6 +653,105 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VehicleServiceLogAsGarageDtoItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/GarageAccount/CreateServiceLog2": {
+      "post": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_CreateServiceLog2",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ServiceLogCommand.VehicleLicensePlate": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.GarageLookupIdentifier": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Type": {
+                    "$ref": "#/components/schemas/GarageServiceType"
+                  },
+                  "ServiceLogCommand.Description": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Date": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.ExpectedNextDate": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.OdometerReading": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "ServiceLogCommand.ExpectedNextOdometerReading": {
+                    "type": "integer",
+                    "format": "int32",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.ReporterName": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.ReporterPhoneNumber": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.ReporterEmailAddress": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileName": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "ServiceLogCommand.Attachment.FileData": {
+                    "type": "string",
+                    "format": "byte",
+                    "nullable": true
+                  },
+                  "AttachmentFile": {
+                    "type": "string",
+                    "format": "binary",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
                 }
               }
             }
@@ -466,11 +860,11 @@
         ],
         "operationId": "GarageAccount_UpdateServiceLog",
         "requestBody": {
-          "x-name": "command",
+          "x-name": "commandWithAttachment",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateVehicleServiceLogAsGarageCommand"
+                "$ref": "#/components/schemas/UpdateVehicleServiceAsGarageLogDto"
               }
             }
           },
@@ -483,7 +877,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleServiceLogAsGarageDtoItem"
+                  "$ref": "#/components/schemas/UpdateVehicleServiceAsGarageLogDto"
                 }
               }
             }
@@ -944,90 +1338,6 @@
         }
       }
     },
-    "/api/Garage/GetLookupsStatus": {
-      "get": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_GetLookupsStatus",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageLookupsStatusDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Garage/UpsertLookups": {
-      "put": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_UpsertLookups",
-        "parameters": [
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "description": "-1 is all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "description": "-1 is all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Vehicle/GetSpecificationsCard": {
       "get": {
         "tags": [
@@ -1231,217 +1541,6 @@
         }
       }
     },
-    "/api/Vehicle/UpsertLookups": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertLookups",
-        "parameters": [
-          {
-            "name": "startRowIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "endRowIndex",
-            "in": "query",
-            "description": "-1 means all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 2
-          },
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "description": "-1 means all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 3
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "description": "-1 means all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 4
-          },
-          {
-            "name": "batchSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10000
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertTimeline": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertTimeline",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/UpsertTimelines": {
-      "put": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_UpsertTimelines",
-        "parameters": [
-          {
-            "name": "startRowIndex",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 1
-          },
-          {
-            "name": "endRowIndex",
-            "in": "query",
-            "description": "-1 means all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 2
-          },
-          {
-            "name": "maxInsertAmount",
-            "in": "query",
-            "description": "-1 means all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": -1
-            },
-            "x-position": 3
-          },
-          {
-            "name": "maxUpdateAmount",
-            "in": "query",
-            "description": "-1 means all of them",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            },
-            "x-position": 4
-          },
-          {
-            "name": "batchSize",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 1000
-            },
-            "x-position": 5
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Vehicle/CreateServiceLog": {
       "post": {
         "tags": [
@@ -1627,6 +1726,28 @@
   },
   "components": {
     "schemas": {
+      "GarageLookupsStatusDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ableToInsert": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ableToUpdate": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "upToDate": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "BadRequestResponse": {
         "type": "object",
         "additionalProperties": false,
@@ -3420,6 +3541,19 @@
           }
         }
       },
+      "CreateVehicleServiceAsGarageLogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "serviceLogCommand": {
+            "$ref": "#/components/schemas/CreateVehicleServiceLogAsGarageCommand"
+          },
+          "attachmentFile": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      },
       "CreateVehicleServiceLogAsGarageCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -3472,6 +3606,37 @@
             "type": "string",
             "format": "byte",
             "minLength": 1
+          }
+        }
+      },
+      "VehicleServiceLogDtoItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "garageLookupName": {
+            "type": "string"
+          },
+          "garageLookupIdentifier": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "odometerReading": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "attachedFile": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -3530,6 +3695,19 @@
           },
           "description": {
             "type": "string"
+          }
+        }
+      },
+      "UpdateVehicleServiceAsGarageLogDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "serviceLogCommand": {
+            "$ref": "#/components/schemas/UpdateVehicleServiceLogAsGarageCommand"
+          },
+          "attachmentFile": {
+            "type": "string",
+            "format": "binary"
           }
         }
       },
@@ -3809,28 +3987,6 @@
           }
         }
       },
-      "GarageLookupsStatusDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "ableToInsert": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "ableToUpdate": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "upToDate": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
       "VehicleSpecificationsCardItem": {
         "type": "object",
         "additionalProperties": false,
@@ -3936,37 +4092,6 @@
                 }
               }
             }
-          }
-        }
-      },
-      "VehicleServiceLogDtoItem": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "garageLookupName": {
-            "type": "string"
-          },
-          "garageLookupIdentifier": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "odometerReading": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "attachedFile": {
-            "type": "string",
-            "nullable": true
           }
         }
       },

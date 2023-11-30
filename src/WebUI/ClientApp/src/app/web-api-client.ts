@@ -8,6 +8,325 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
+export interface IAdminAccountClient {
+
+    getGarageLookupStatuses(): Promise<GarageLookupsStatusDto>;
+
+    /**
+     * @param maxInsertAmount (optional) -1 is all of them
+     * @param maxUpdateAmount (optional) -1 is all of them
+     */
+    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string>;
+
+    /**
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
+     */
+    upsertVehicleLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
+
+    upsertVehicleTimeline(licensePlate: string | null | undefined): Promise<string>;
+
+    /**
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
+     */
+    upsertVehicleTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
+}
+
+export class AdminAccountClient implements IAdminAccountClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getGarageLookupStatuses(): Promise<GarageLookupsStatusDto> {
+        let url_ = this.baseUrl + "/api/AdminAccount/GetGarageLookupStatuses";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetGarageLookupStatuses(_response);
+        });
+    }
+
+    protected processGetGarageLookupStatuses(response: Response): Promise<GarageLookupsStatusDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GarageLookupsStatusDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageLookupsStatusDto>(null as any);
+    }
+
+    /**
+     * @param maxInsertAmount (optional) -1 is all of them
+     * @param maxUpdateAmount (optional) -1 is all of them
+     */
+    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/UpsertLookups?";
+        if (maxInsertAmount === null)
+            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
+        else if (maxInsertAmount !== undefined)
+            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertLookups(_response);
+        });
+    }
+
+    protected processUpsertLookups(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    /**
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
+     */
+    upsertVehicleLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleLookups?";
+        if (startRowIndex === null)
+            throw new Error("The parameter 'startRowIndex' cannot be null.");
+        else if (startRowIndex !== undefined)
+            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
+        if (endRowIndex === null)
+            throw new Error("The parameter 'endRowIndex' cannot be null.");
+        else if (endRowIndex !== undefined)
+            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
+        if (maxInsertAmount === null)
+            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
+        else if (maxInsertAmount !== undefined)
+            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
+        if (batchSize === null)
+            throw new Error("The parameter 'batchSize' cannot be null.");
+        else if (batchSize !== undefined)
+            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertVehicleLookups(_response);
+        });
+    }
+
+    protected processUpsertVehicleLookups(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    upsertVehicleTimeline(licensePlate: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleTimeline?";
+        if (licensePlate !== undefined && licensePlate !== null)
+            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertVehicleTimeline(_response);
+        });
+    }
+
+    protected processUpsertVehicleTimeline(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    /**
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
+     */
+    upsertVehicleTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleTimelines?";
+        if (startRowIndex === null)
+            throw new Error("The parameter 'startRowIndex' cannot be null.");
+        else if (startRowIndex !== undefined)
+            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
+        if (endRowIndex === null)
+            throw new Error("The parameter 'endRowIndex' cannot be null.");
+        else if (endRowIndex !== undefined)
+            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
+        if (maxInsertAmount === null)
+            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
+        else if (maxInsertAmount !== undefined)
+            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
+        if (maxUpdateAmount === null)
+            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
+        else if (maxUpdateAmount !== undefined)
+            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
+        if (batchSize === null)
+            throw new Error("The parameter 'batchSize' cannot be null.");
+        else if (batchSize !== undefined)
+            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "PUT",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpsertVehicleTimelines(_response);
+        });
+    }
+
+    protected processUpsertVehicleTimelines(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+}
+
 export interface IConversationClient {
 
     startConversations(selectedServices: SelectedServices): Promise<string>;
@@ -132,13 +451,15 @@ export interface IGarageAccountClient {
 
     createService(command: CreateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
-    createServiceLog(command: CreateVehicleServiceLogAsGarageCommand): Promise<VehicleServiceLogAsGarageDtoItem>;
+    createServiceLog(commandWithAttachment: CreateVehicleServiceAsGarageLogDto): Promise<VehicleServiceLogAsGarageDtoItem>;
+
+    createServiceLog2(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
 
     updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettingsDtoItem>;
 
     updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
-    updateServiceLog(command: UpdateVehicleServiceLogAsGarageCommand): Promise<VehicleServiceLogAsGarageDtoItem>;
+    updateServiceLog(commandWithAttachment: UpdateVehicleServiceAsGarageLogDto): Promise<UpdateVehicleServiceAsGarageLogDto>;
 
     deleteService(id: string): Promise<GarageServiceDtoItem>;
 
@@ -425,11 +746,11 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 
-    createServiceLog(command: CreateVehicleServiceLogAsGarageCommand): Promise<VehicleServiceLogAsGarageDtoItem> {
+    createServiceLog(commandWithAttachment: CreateVehicleServiceAsGarageLogDto): Promise<VehicleServiceLogAsGarageDtoItem> {
         let url_ = this.baseUrl + "/api/GarageAccount/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
+        const content_ = JSON.stringify(commandWithAttachment);
 
         let options_: RequestInit = {
             body: content_,
@@ -468,6 +789,82 @@ export class GarageAccountClient implements IGarageAccountClient {
             });
         }
         return Promise.resolve<VehicleServiceLogAsGarageDtoItem>(null as any);
+    }
+
+    createServiceLog2(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
+        let url_ = this.baseUrl + "/api/GarageAccount/CreateServiceLog2";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (serviceLogCommand_VehicleLicensePlate !== null && serviceLogCommand_VehicleLicensePlate !== undefined)
+            content_.append("ServiceLogCommand.VehicleLicensePlate", serviceLogCommand_VehicleLicensePlate.toString());
+        if (serviceLogCommand_GarageLookupIdentifier !== null && serviceLogCommand_GarageLookupIdentifier !== undefined)
+            content_.append("ServiceLogCommand.GarageLookupIdentifier", serviceLogCommand_GarageLookupIdentifier.toString());
+        if (serviceLogCommand_Type === null || serviceLogCommand_Type === undefined)
+            throw new Error("The parameter 'serviceLogCommand_Type' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.Type", serviceLogCommand_Type.toString());
+        if (serviceLogCommand_Description !== null && serviceLogCommand_Description !== undefined)
+            content_.append("ServiceLogCommand.Description", serviceLogCommand_Description.toString());
+        if (serviceLogCommand_Date !== null && serviceLogCommand_Date !== undefined)
+            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toString());
+        if (serviceLogCommand_ExpectedNextDate !== null && serviceLogCommand_ExpectedNextDate !== undefined)
+            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toString());
+        if (serviceLogCommand_OdometerReading === null || serviceLogCommand_OdometerReading === undefined)
+            throw new Error("The parameter 'serviceLogCommand_OdometerReading' cannot be null.");
+        else
+            content_.append("ServiceLogCommand.OdometerReading", serviceLogCommand_OdometerReading.toString());
+        if (serviceLogCommand_ExpectedNextOdometerReading !== null && serviceLogCommand_ExpectedNextOdometerReading !== undefined)
+            content_.append("ServiceLogCommand.ExpectedNextOdometerReading", serviceLogCommand_ExpectedNextOdometerReading.toString());
+        if (serviceLogCommand_ReporterName !== null && serviceLogCommand_ReporterName !== undefined)
+            content_.append("ServiceLogCommand.ReporterName", serviceLogCommand_ReporterName.toString());
+        if (serviceLogCommand_ReporterPhoneNumber !== null && serviceLogCommand_ReporterPhoneNumber !== undefined)
+            content_.append("ServiceLogCommand.ReporterPhoneNumber", serviceLogCommand_ReporterPhoneNumber.toString());
+        if (serviceLogCommand_ReporterEmailAddress !== null && serviceLogCommand_ReporterEmailAddress !== undefined)
+            content_.append("ServiceLogCommand.ReporterEmailAddress", serviceLogCommand_ReporterEmailAddress.toString());
+        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
+        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
+            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
+        if (attachmentFile !== null && attachmentFile !== undefined)
+            content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreateServiceLog2(_response);
+        });
+    }
+
+    protected processCreateServiceLog2(response: Response): Promise<VehicleServiceLogDtoItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleServiceLogDtoItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleServiceLogDtoItem>(null as any);
     }
 
     updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettingsDtoItem> {
@@ -560,11 +957,11 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 
-    updateServiceLog(command: UpdateVehicleServiceLogAsGarageCommand): Promise<VehicleServiceLogAsGarageDtoItem> {
+    updateServiceLog(commandWithAttachment: UpdateVehicleServiceAsGarageLogDto): Promise<UpdateVehicleServiceAsGarageLogDto> {
         let url_ = this.baseUrl + "/api/GarageAccount/UpdateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
+        const content_ = JSON.stringify(commandWithAttachment);
 
         let options_: RequestInit = {
             body: content_,
@@ -580,14 +977,14 @@ export class GarageAccountClient implements IGarageAccountClient {
         });
     }
 
-    protected processUpdateServiceLog(response: Response): Promise<VehicleServiceLogAsGarageDtoItem> {
+    protected processUpdateServiceLog(response: Response): Promise<UpdateVehicleServiceAsGarageLogDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = VehicleServiceLogAsGarageDtoItem.fromJS(resultData200);
+            result200 = UpdateVehicleServiceAsGarageLogDto.fromJS(resultData200);
             return result200;
             });
         } else if (status === 400) {
@@ -602,7 +999,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleServiceLogAsGarageDtoItem>(null as any);
+        return Promise.resolve<UpdateVehicleServiceAsGarageLogDto>(null as any);
     }
 
     deleteService(id: string): Promise<GarageServiceDtoItem> {
@@ -705,14 +1102,6 @@ export interface IGarageClient {
     searchLookupCardsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupSimplefiedDto[]>;
 
     getLookup(identifier: string | null, licensePlate: string | null | undefined): Promise<GarageLookupDtoItem>;
-
-    getLookupsStatus(): Promise<GarageLookupsStatusDto>;
-
-    /**
-     * @param maxInsertAmount (optional) -1 is all of them
-     * @param maxUpdateAmount (optional) -1 is all of them
-     */
-    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string>;
 }
 
 export class GarageClient implements IGarageClient {
@@ -995,101 +1384,6 @@ export class GarageClient implements IGarageClient {
         }
         return Promise.resolve<GarageLookupDtoItem>(null as any);
     }
-
-    getLookupsStatus(): Promise<GarageLookupsStatusDto> {
-        let url_ = this.baseUrl + "/api/Garage/GetLookupsStatus";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetLookupsStatus(_response);
-        });
-    }
-
-    protected processGetLookupsStatus(response: Response): Promise<GarageLookupsStatusDto> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GarageLookupsStatusDto.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<GarageLookupsStatusDto>(null as any);
-    }
-
-    /**
-     * @param maxInsertAmount (optional) -1 is all of them
-     * @param maxUpdateAmount (optional) -1 is all of them
-     */
-    upsertLookups(maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Garage/UpsertLookups?";
-        if (maxInsertAmount === null)
-            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
-        else if (maxInsertAmount !== undefined)
-            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
-        if (maxUpdateAmount === null)
-            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
-        else if (maxUpdateAmount !== undefined)
-            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertLookups(_response);
-        });
-    }
-
-    protected processUpsertLookups(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
 }
 
 export interface IVehicleClient {
@@ -1105,26 +1399,6 @@ export interface IVehicleClient {
      * @param maxAmount (optional) -1 means all of them
      */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
-
-    /**
-     * @param startRowIndex (optional) 
-     * @param endRowIndex (optional) -1 means all of them
-     * @param maxInsertAmount (optional) -1 means all of them
-     * @param maxUpdateAmount (optional) -1 means all of them
-     * @param batchSize (optional) 
-     */
-    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
-
-    upsertTimeline(licensePlate: string | null | undefined): Promise<string>;
-
-    /**
-     * @param startRowIndex (optional) 
-     * @param endRowIndex (optional) -1 means all of them
-     * @param maxInsertAmount (optional) -1 means all of them
-     * @param maxUpdateAmount (optional) -1 means all of them
-     * @param batchSize (optional) 
-     */
-    upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
     createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
 }
@@ -1333,188 +1607,6 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleTimelineDtoItem[]>(null as any);
     }
 
-    /**
-     * @param startRowIndex (optional) 
-     * @param endRowIndex (optional) -1 means all of them
-     * @param maxInsertAmount (optional) -1 means all of them
-     * @param maxUpdateAmount (optional) -1 means all of them
-     * @param batchSize (optional) 
-     */
-    upsertLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertLookups?";
-        if (startRowIndex === null)
-            throw new Error("The parameter 'startRowIndex' cannot be null.");
-        else if (startRowIndex !== undefined)
-            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
-        if (endRowIndex === null)
-            throw new Error("The parameter 'endRowIndex' cannot be null.");
-        else if (endRowIndex !== undefined)
-            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
-        if (maxInsertAmount === null)
-            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
-        else if (maxInsertAmount !== undefined)
-            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
-        if (maxUpdateAmount === null)
-            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
-        else if (maxUpdateAmount !== undefined)
-            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
-        if (batchSize === null)
-            throw new Error("The parameter 'batchSize' cannot be null.");
-        else if (batchSize !== undefined)
-            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertLookups(_response);
-        });
-    }
-
-    protected processUpsertLookups(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    upsertTimeline(licensePlate: string | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimeline?";
-        if (licensePlate !== undefined && licensePlate !== null)
-            url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertTimeline(_response);
-        });
-    }
-
-    protected processUpsertTimeline(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    /**
-     * @param startRowIndex (optional) 
-     * @param endRowIndex (optional) -1 means all of them
-     * @param maxInsertAmount (optional) -1 means all of them
-     * @param maxUpdateAmount (optional) -1 means all of them
-     * @param batchSize (optional) 
-     */
-    upsertTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Vehicle/UpsertTimelines?";
-        if (startRowIndex === null)
-            throw new Error("The parameter 'startRowIndex' cannot be null.");
-        else if (startRowIndex !== undefined)
-            url_ += "startRowIndex=" + encodeURIComponent("" + startRowIndex) + "&";
-        if (endRowIndex === null)
-            throw new Error("The parameter 'endRowIndex' cannot be null.");
-        else if (endRowIndex !== undefined)
-            url_ += "endRowIndex=" + encodeURIComponent("" + endRowIndex) + "&";
-        if (maxInsertAmount === null)
-            throw new Error("The parameter 'maxInsertAmount' cannot be null.");
-        else if (maxInsertAmount !== undefined)
-            url_ += "maxInsertAmount=" + encodeURIComponent("" + maxInsertAmount) + "&";
-        if (maxUpdateAmount === null)
-            throw new Error("The parameter 'maxUpdateAmount' cannot be null.");
-        else if (maxUpdateAmount !== undefined)
-            url_ += "maxUpdateAmount=" + encodeURIComponent("" + maxUpdateAmount) + "&";
-        if (batchSize === null)
-            throw new Error("The parameter 'batchSize' cannot be null.");
-        else if (batchSize !== undefined)
-            url_ += "batchSize=" + encodeURIComponent("" + batchSize) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "PUT",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertTimelines(_response);
-        });
-    }
-
-    protected processUpsertTimelines(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
     createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
@@ -1693,6 +1785,54 @@ export class WebhookClient implements IWebhookClient {
         }
         return Promise.resolve<FileResponse>(null as any);
     }
+}
+
+export class GarageLookupsStatusDto implements IGarageLookupsStatusDto {
+    ableToInsert?: number;
+    ableToUpdate?: number;
+    upToDate?: number;
+    total?: number;
+
+    constructor(data?: IGarageLookupsStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.ableToInsert = _data["ableToInsert"];
+            this.ableToUpdate = _data["ableToUpdate"];
+            this.upToDate = _data["upToDate"];
+            this.total = _data["total"];
+        }
+    }
+
+    static fromJS(data: any): GarageLookupsStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageLookupsStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["ableToInsert"] = this.ableToInsert;
+        data["ableToUpdate"] = this.ableToUpdate;
+        data["upToDate"] = this.upToDate;
+        data["total"] = this.total;
+        return data;
+    }
+}
+
+export interface IGarageLookupsStatusDto {
+    ableToInsert?: number;
+    ableToUpdate?: number;
+    upToDate?: number;
+    total?: number;
 }
 
 export class BadRequestResponse implements IBadRequestResponse {
@@ -3981,6 +4121,46 @@ export interface ICreateGarageServiceCommand {
     description?: string;
 }
 
+export class CreateVehicleServiceAsGarageLogDto implements ICreateVehicleServiceAsGarageLogDto {
+    serviceLogCommand?: CreateVehicleServiceLogAsGarageCommand;
+    attachmentFile?: string;
+
+    constructor(data?: ICreateVehicleServiceAsGarageLogDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.serviceLogCommand = _data["serviceLogCommand"] ? CreateVehicleServiceLogAsGarageCommand.fromJS(_data["serviceLogCommand"]) : <any>undefined;
+            this.attachmentFile = _data["attachmentFile"];
+        }
+    }
+
+    static fromJS(data: any): CreateVehicleServiceAsGarageLogDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateVehicleServiceAsGarageLogDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["serviceLogCommand"] = this.serviceLogCommand ? this.serviceLogCommand.toJSON() : <any>undefined;
+        data["attachmentFile"] = this.attachmentFile;
+        return data;
+    }
+}
+
+export interface ICreateVehicleServiceAsGarageLogDto {
+    serviceLogCommand?: CreateVehicleServiceLogAsGarageCommand;
+    attachmentFile?: string;
+}
+
 export class CreateVehicleServiceLogAsGarageCommand implements ICreateVehicleServiceLogAsGarageCommand {
     vehicleLicensePlate?: string;
     type?: GarageServiceType;
@@ -4083,6 +4263,66 @@ export class VehicleServiceLogAttachmentDtoItem implements IVehicleServiceLogAtt
 export interface IVehicleServiceLogAttachmentDtoItem {
     fileName: string;
     fileData: string;
+}
+
+export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
+    garageLookupName?: string;
+    garageLookupIdentifier?: string;
+    type?: GarageServiceType;
+    date?: Date;
+    odometerReading?: number;
+    description?: string | undefined;
+    attachedFile?: string | undefined;
+
+    constructor(data?: IVehicleServiceLogDtoItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.garageLookupName = _data["garageLookupName"];
+            this.garageLookupIdentifier = _data["garageLookupIdentifier"];
+            this.type = _data["type"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.odometerReading = _data["odometerReading"];
+            this.description = _data["description"];
+            this.attachedFile = _data["attachedFile"];
+        }
+    }
+
+    static fromJS(data: any): VehicleServiceLogDtoItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleServiceLogDtoItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["garageLookupName"] = this.garageLookupName;
+        data["garageLookupIdentifier"] = this.garageLookupIdentifier;
+        data["type"] = this.type;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["odometerReading"] = this.odometerReading;
+        data["description"] = this.description;
+        data["attachedFile"] = this.attachedFile;
+        return data;
+    }
+}
+
+export interface IVehicleServiceLogDtoItem {
+    garageLookupName?: string;
+    garageLookupIdentifier?: string;
+    type?: GarageServiceType;
+    date?: Date;
+    odometerReading?: number;
+    description?: string | undefined;
+    attachedFile?: string | undefined;
 }
 
 export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand {
@@ -4191,6 +4431,46 @@ export interface IUpdateGarageServiceCommand {
     id?: string;
     type?: GarageServiceType;
     description?: string;
+}
+
+export class UpdateVehicleServiceAsGarageLogDto implements IUpdateVehicleServiceAsGarageLogDto {
+    serviceLogCommand?: UpdateVehicleServiceLogAsGarageCommand;
+    attachmentFile?: string;
+
+    constructor(data?: IUpdateVehicleServiceAsGarageLogDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.serviceLogCommand = _data["serviceLogCommand"] ? UpdateVehicleServiceLogAsGarageCommand.fromJS(_data["serviceLogCommand"]) : <any>undefined;
+            this.attachmentFile = _data["attachmentFile"];
+        }
+    }
+
+    static fromJS(data: any): UpdateVehicleServiceAsGarageLogDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateVehicleServiceAsGarageLogDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["serviceLogCommand"] = this.serviceLogCommand ? this.serviceLogCommand.toJSON() : <any>undefined;
+        data["attachmentFile"] = this.attachmentFile;
+        return data;
+    }
+}
+
+export interface IUpdateVehicleServiceAsGarageLogDto {
+    serviceLogCommand?: UpdateVehicleServiceLogAsGarageCommand;
+    attachmentFile?: string;
 }
 
 export class UpdateVehicleServiceLogAsGarageCommand implements IUpdateVehicleServiceLogAsGarageCommand {
@@ -4597,54 +4877,6 @@ export interface IGarageLookupSimplefiedDto {
     city?: string;
 }
 
-export class GarageLookupsStatusDto implements IGarageLookupsStatusDto {
-    ableToInsert?: number;
-    ableToUpdate?: number;
-    upToDate?: number;
-    total?: number;
-
-    constructor(data?: IGarageLookupsStatusDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.ableToInsert = _data["ableToInsert"];
-            this.ableToUpdate = _data["ableToUpdate"];
-            this.upToDate = _data["upToDate"];
-            this.total = _data["total"];
-        }
-    }
-
-    static fromJS(data: any): GarageLookupsStatusDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new GarageLookupsStatusDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["ableToInsert"] = this.ableToInsert;
-        data["ableToUpdate"] = this.ableToUpdate;
-        data["upToDate"] = this.upToDate;
-        data["total"] = this.total;
-        return data;
-    }
-}
-
-export interface IGarageLookupsStatusDto {
-    ableToInsert?: number;
-    ableToUpdate?: number;
-    upToDate?: number;
-    total?: number;
-}
-
 export class VehicleSpecificationsCardItem implements IVehicleSpecificationsCardItem {
     licensePlate?: string;
     type?: VehicleLookupType;
@@ -4808,66 +5040,6 @@ export class VehicleInfoSectionItem implements IVehicleInfoSectionItem {
 export interface IVehicleInfoSectionItem {
     title?: string;
     values?: string[][];
-}
-
-export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
-    garageLookupName?: string;
-    garageLookupIdentifier?: string;
-    type?: GarageServiceType;
-    date?: Date;
-    odometerReading?: number;
-    description?: string | undefined;
-    attachedFile?: string | undefined;
-
-    constructor(data?: IVehicleServiceLogDtoItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.garageLookupName = _data["garageLookupName"];
-            this.garageLookupIdentifier = _data["garageLookupIdentifier"];
-            this.type = _data["type"];
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.odometerReading = _data["odometerReading"];
-            this.description = _data["description"];
-            this.attachedFile = _data["attachedFile"];
-        }
-    }
-
-    static fromJS(data: any): VehicleServiceLogDtoItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleServiceLogDtoItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["garageLookupName"] = this.garageLookupName;
-        data["garageLookupIdentifier"] = this.garageLookupIdentifier;
-        data["type"] = this.type;
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["odometerReading"] = this.odometerReading;
-        data["description"] = this.description;
-        data["attachedFile"] = this.attachedFile;
-        return data;
-    }
-}
-
-export interface IVehicleServiceLogDtoItem {
-    garageLookupName?: string;
-    garageLookupIdentifier?: string;
-    type?: GarageServiceType;
-    date?: Date;
-    odometerReading?: number;
-    description?: string | undefined;
-    attachedFile?: string | undefined;
 }
 
 export class VehicleTimelineDtoItem implements IVehicleTimelineDtoItem {

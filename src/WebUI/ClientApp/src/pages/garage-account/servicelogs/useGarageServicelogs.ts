@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, CreateGarageServiceCommand, CreateVehicleServiceLogAsGarageCommand, GarageClient, UpdateGarageServiceCommand, UpdateVehicleServiceLogAsGarageCommand } from "../../../app/web-api-client";
+import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand, UpdateVehicleServiceAsGarageLogDto, UpdateVehicleServiceLogAsGarageCommand, VehicleServiceLogAttachmentDtoItem } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -52,21 +52,21 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     );
 
-    const createMutation = useMutation(garageClient.createServiceLog.bind(garageClient), {
-        onSuccess: (response) => {
-            // Enable garage colleagues page
-            setConfigurationIndex(3, userRole)
-            dispatch(showOnSuccess("Garage service log is been created!"));
+    //const createMutation = useMutation(garageClient.createServiceLog.bind(garageClient), {
+    //    onSuccess: (response) => {
+    //        // Enable garage colleagues page
+    //        setConfigurationIndex(3, userRole)
+    //        dispatch(showOnSuccess("Garage service log is been created!"));
 
-            // Update the garageSettings in the cache after creating
-            queryClient.setQueryData(['garageServiceLogs'], [...garageServiceLogs!, response]);
-            onResponse(response);
-        },
-        onError: (response) => {
-            console.error(response)
-            //guardHttpResponse(response, setError, t, dispatch);
-        }
-    });
+    //        // Update the garageSettings in the cache after creating
+    //        queryClient.setQueryData(['garageServiceLogs'], [...garageServiceLogs!, response]);
+    //        onResponse(response);
+    //    },
+    //    onError: (response) => {
+    //        console.error(response)
+    //        //guardHttpResponse(response, setError, t, dispatch);
+    //    }
+    //});
 
     const updateMutation = useMutation(garageClient.updateService.bind(garageClient), {
         onSuccess: (response) => {
@@ -115,38 +115,67 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     });
 
-    const createServiceLog = (data: any) => {
-        var command = new CreateVehicleServiceLogAsGarageCommand();
-        command.vehicleLicensePlate = data.vehicleLicensePlate;
-        command.type = data.type;
-        command.description = data.description;
-        command.date = data.date;
-        command.expectedNextDate = data.expectedNextDate;
-        command.odometerReading = data.odometerReading;
-        command.expectedNextOdometerReading = data.expectedNextOdometerReading;
+    const createServiceLog = (data: any, file: any) => {
+        //var command = new CreateVehicleServiceAsGarageLogDto();
+        //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
+        //{
+        //    vehicleLicensePlate: data.licensePlate,
+        //    type: data.type,
+        //    description: data.description,
+        //    date: data.date.toISOString(),
+        //    expectedNextDate: data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
+        //    odometerReading: data.odometerReading,
+        //    expectedNextOdometerReading: data.expectedNextOdometerReading
+        //}
+        //command.attachmentFile = new VehicleServiceLogAttachmentDtoItem()
+        //{
 
-        // TODO: attach files
+        //}
 
-        console.log(command.toJSON());
-        createMutation.mutate(command);
+
+        //    file ? {
+        //    fileData: data.file,
+        //    fileName: data.file?.name || ''
+        //} : null;
+
+        //console.log(command.toJSON());
+        //createMutation.mutate(command);
     }
 
-    const updateServiceLog = (data: any) => {
-        var command = new UpdateVehicleServiceLogAsGarageCommand();
-        command.serviceLogId = data.serviceLogId;
-        command.vehicleLicensePlate = data.vehicleLicensePlate;
-        command.type = data.type;
-        command.description = data.description;
-        command.date = data.date;
-        command.expectedNextDate = data.expectedNextDate;
-        command.odometerReading = data.odometerReading;
-        command.expectedNextOdometerReading = data.expectedNextOdometerReading;
+    const updateServiceLog = (data: any, file: any) => {
+        var command = new UpdateVehicleServiceAsGarageLogDto();
+        //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
+        //{
+        //    vehicleLicensePlate = data.licensePlate;
+        //    type = data.type;
+        //    description = data.description;
+        //    date = data.date.toISOString();
+        //    expectedNextDate = data.expectedNextDate ? data.expectedNextDate.toISOString() : null;
+        //    odometerReading = data.odometerReading;
+        //    expectedNextOdometerReading = data.expectedNextOdometerReading;
+        //}
+
+        //command.attachmentFile = file ? {
+        //    fileData: data.file;
+        //    fileName: data.file?.name || '';
+        //} : null;
 
 
-        // TODO: attach files
 
-        console.log(command.toJSON());
-        updateMutation.mutate(command);
+        //        dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
+
+        //        // Reset only specific form fields
+        //        setValue('type', '');
+        //        setValue('description', '');
+        //        setValue('licensePlate', '');
+        //        setValue('date', null);
+        //        setValue('expectedNextDate', null);
+        //        setValue('odometerReading', 0);
+        //        setValue('expectedNextOdometerReading', 0);
+
+
+        //console.log(command.toJSON());
+        //updateMutation.mutate(command);
     }
 
     const deleteServiceLog = (data: any) => {
@@ -155,9 +184,9 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     }
 
     // only reset the form when the data is loaded
-    const loading = isLoading || createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading;
+    const loading = isLoading || updateMutation.isLoading || deleteMutation.isLoading;// createMutation.isLoading || 
     return {
-        loading, isError, garageServiceLogs, createServiceLog, updateServiceLog, deleteServiceLog
+        loading, isError, garageServiceLogs, updateServiceLog, deleteServiceLog
     }
 }
 

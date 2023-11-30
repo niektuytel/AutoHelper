@@ -13,7 +13,7 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class AdminAccountController: ApiControllerBase
 {
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminRole")]
     [HttpGet($"{nameof(GetGarageLookupStatuses)}")]
     [ProducesResponseType(typeof(GarageLookupsStatusDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -27,7 +27,7 @@ public class AdminAccountController: ApiControllerBase
 
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(UpsertLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -46,7 +46,7 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="endRowIndex">-1 means all of them</param>
     /// <param name="maxInsertAmount">-1 means all of them</param>
     /// <param name="maxUpdateAmount">-1 means all of them</param>
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(UpsertVehicleLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -66,7 +66,7 @@ public class AdminAccountController: ApiControllerBase
         return $"Successfully start new queue: {queue}";
     }
 
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(UpsertVehicleTimeline)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -79,7 +79,7 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="endRowIndex">-1 means all of them</param>
     /// <param name="maxInsertAmount">-1 means all of them</param>
     /// <param name="maxUpdateAmount">-1 means all of them</param>
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(UpsertVehicleTimelines)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]

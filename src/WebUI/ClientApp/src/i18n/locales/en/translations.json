@@ -185,6 +185,8 @@
   "AddMaintenanceLog.ServiceCreatedBy.Required": "Please enter your name",
   "AddMaintenanceLog.ServicePhoneNumber.Label": "Phone Number",
   "AddMaintenanceLog.ServiceEmailAddress.Label": "Email Address",
+  "AddMaintenanceLog.LicensePlate.Label": "Licence plate, e.g. 87-GRN-6",
+  "AddMaintenanceLog.LicensePlate.Required": "Required to define an vehicle",
 
 
 

@@ -42,7 +42,6 @@ import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 import useGarageServicelogs from "./useGarageServicelogs";
 import GarageServiceLogCard from "./components/GarageServiceLogCard";
 import GarageServiceLogDeleteDialog from "./components/GarageServiceLogDeleteDialog";
-import GarageServiceLogDialog from "./components/GarageServiceLogDialog";
 import ServiceLogDrawer from "./components/ServiceLogDrawer";
 
 // own imports
@@ -75,7 +74,7 @@ export default ({ }: IProps) => {
         setSelectedItem(undefined);
     };
 
-    const { loading, createServiceLog, updateServiceLog, deleteServiceLog, isError, garageServiceLogs } = useGarageServicelogs(handleFormSubmit);
+    const { loading, updateServiceLog, deleteServiceLog, isError, garageServiceLogs } = useGarageServicelogs(handleFormSubmit);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const toggleDrawer = (open: boolean) => {
@@ -86,11 +85,18 @@ export default ({ }: IProps) => {
         setDrawerOpen(true);
     };
 
-    const handleNewService = (newServiceLog: VehicleServiceLogDtoItem) => {
-        console.log("Handle new service", newServiceLog);
+    const handleService = (data: any, file: any) => {
+        console.log("Handle service", data);
 
-        createServiceLog(newServiceLog);
+        if (dialogMode == "create") {
+            //createServiceLog(data, file);
+        }
+        else if (dialogMode == "edit") {
+            updateServiceLog(data, file);
+        }
+
         setDrawerOpen(false);
+        setSelectedItem(undefined);
     };
 
     // Sample data
@@ -188,7 +194,7 @@ export default ({ }: IProps) => {
                 loading={loading}
             />
 
-            <ServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleNewService={handleNewService} />
+            <ServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleService={handleService} />
         </>
     );
     //<GarageServiceLogDialog
