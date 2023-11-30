@@ -104,32 +104,4 @@ public class GarageController : ApiControllerBase
         return await Mediator.Send(request);
     }
 
-    [Authorize]// TODO: (Policy="Admin")
-    [HttpGet($"{nameof(GetLookupsStatus)}")]
-    [ProducesResponseType(typeof(GarageLookupsStatusDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<GarageLookupsStatusDto> GetLookupsStatus(CancellationToken cancellationToken)
-    {
-        var query = new GetGarageLookupsStatusQuery();
-        var response = await Mediator.Send(query, cancellationToken);
-
-        return response;
-    }
-
-    /// <param name="maxInsertAmount">-1 is all of them</param>
-    /// <param name="maxUpdateAmount">-1 is all of them</param>
-    [Authorize]// TODO: (Policy="Admin")
-    [HttpPut($"{nameof(UpsertLookups)}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string UpsertLookups([FromQuery] int maxInsertAmount=0, [FromQuery] int maxUpdateAmount=0)
-    {
-        var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
-        var queue = nameof(UpsertGarageLookupsCommand);
-        var title = $"maxInsertAmount: {maxInsertAmount} | maxUpdateAmount: {maxUpdateAmount}";
-
-        Mediator.Enqueue(queue, title, command);
-        return $"Successfully start hangfire job: {queue}";
-    }
-
 }

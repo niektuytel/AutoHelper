@@ -73,62 +73,6 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
 
-    /// <param name="endRowIndex">-1 means all of them</param>
-    /// <param name="maxInsertAmount">-1 means all of them</param>
-    /// <param name="maxUpdateAmount">-1 means all of them</param>
-    [Authorize]// TODO: (Policy="Admin")
-    [HttpPut($"{nameof(UpsertLookups)}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string UpsertLookups(
-        [FromQuery] int startRowIndex = 0,
-        [FromQuery] int endRowIndex = -1,
-        [FromQuery] int maxInsertAmount = -1,
-        [FromQuery] int maxUpdateAmount = 0,
-        [FromQuery] int batchSize = 10000
-    )
-    {
-        var command = new UpsertVehicleLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);
-        var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
-
-        Mediator.Enqueue(queue, title, command);
-        return $"Successfully start new queue: {queue}";
-    }
-
-    [Authorize]// TODO: (Policy="Admin")
-    [HttpPut($"{nameof(UpsertTimeline)}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<string> UpsertTimeline([FromQuery] string licensePlate)
-    {
-        var command = new UpsertVehicleTimelineCommand(licensePlate);
-        return await Mediator.Send(command);
-    }
-
-    /// <param name="endRowIndex">-1 means all of them</param>
-    /// <param name="maxInsertAmount">-1 means all of them</param>
-    /// <param name="maxUpdateAmount">-1 means all of them</param>
-    [Authorize]// TODO: (Policy="Admin")
-    [HttpPut($"{nameof(UpsertTimelines)}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string UpsertTimelines(
-        [FromQuery] int startRowIndex = 0,
-        [FromQuery] int endRowIndex = -1,
-        [FromQuery] int maxInsertAmount = -1,
-        [FromQuery] int maxUpdateAmount = 0,
-        [FromQuery] int batchSize = 1000
-    )
-    {
-        var command = new UpsertVehicleTimelinesCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);
-        var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-        var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] timelines";
-
-        Mediator.Enqueue(queue, title, command);
-        return $"Successfully start queue: {queue}";
-    }
-
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
