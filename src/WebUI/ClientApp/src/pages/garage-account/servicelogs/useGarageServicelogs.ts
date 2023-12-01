@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand, UpdateVehicleServiceAsGarageLogDto, UpdateVehicleServiceLogAsGarageCommand, VehicleServiceLogAttachmentDtoItem } from "../../../app/web-api-client";
+import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -52,7 +52,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     );
 
-    //const createMutation = useMutation(garageClient.createServiceLog.bind(garageClient), {
+    //const createMutation = useMutation(garageClient.createServiceLog.bind(garageClient),, {
     //    onSuccess: (response) => {
     //        // Enable garage colleagues page
     //        setConfigurationIndex(3, userRole)
@@ -143,7 +143,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     }
 
     const updateServiceLog = (data: any, file: any) => {
-        var command = new UpdateVehicleServiceAsGarageLogDto();
+        //var command = new UpdateVehicleServiceAsGarageLogDto();
         //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
         //{
         //    vehicleLicensePlate = data.licensePlate;
@@ -184,7 +184,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     }
 
     // only reset the form when the data is loaded
-    const loading = isLoading || updateMutation.isLoading || deleteMutation.isLoading;// createMutation.isLoading || 
+    const loading = isLoading  || updateMutation.isLoading || deleteMutation.isLoading;// || createMutation.isLoading
     return {
         loading, isError, garageServiceLogs, updateServiceLog, deleteServiceLog
     }

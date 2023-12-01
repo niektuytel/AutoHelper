@@ -17,11 +17,13 @@ import StepGarage from './StepGarage';
 import { useDispatch } from 'react-redux';
 import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
+import { GetGarageAccountClient } from '../../../../app/GarageClient';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface IServiceLogFormProps {
     drawerOpen: boolean;
     toggleDrawer: (open: boolean) => void;
-    handleService: (data: any, file: File | null) => void;
+    handleService: (data: any) => void;
 }
 
 interface IServiceLogFormData {
@@ -46,6 +48,10 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const { getAccessTokenSilently } = useAuth0();
+    const accessToken = getAccessTokenSilently();
+    const garageClient = GetGarageAccountClient(accessToken);
     const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogFormData>();
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -122,25 +128,16 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
         const garageAccountClient = new GarageAccountClient(process.env.PUBLIC_URL);
         const createLog = async () => {
             try {
-                // const response = await garageAccountClient.createServiceLog2(,);
-                //const response = await vehicleClient.createServiceLog(
-                //    licensePlate,
-                //    data.garageLookup.identifier,
-                //    data.type,
-                //    data.description,
-                //    data.date.toISOString(),
-                //    data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
-                //    data.odometerReading,
-                //    data.expectedNextOdometerReading,
-                //    data.createdby,
-                //    data.phonenumber,
-                //    data.emailaddress,
-                //    file?.name || '',
-                //    null,
-                //    file ? { data: file, fileName: file?.name || '' } : null
-                //);
-
-                dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
+                const response = await garageClient.createServiceLog(
+                    data.licensePlate,
+                    data.type,
+                    data.description,
+                    data.date.toISOString(),
+                    data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
+                    data.odometerReading,
+                    data.expectedNextOdometerReading,
+                    file ? { data: file, fileName: file?.name || '' } : null
+                );
 
                 // Reset only specific form fields
                 setValue('type', '');
@@ -149,9 +146,12 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
                 setValue('expectedNextDate', null);
                 setValue('odometerReading', 0);
                 setValue('expectedNextOdometerReading', 0);
+                file && setFile(null);
 
+                // done
                 setActiveStep(0); // Reset active step to 0
-                //handleNewService(response);
+                handleService(response);
+                dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
             } catch (error) {
                 console.error('Error:', error);
 

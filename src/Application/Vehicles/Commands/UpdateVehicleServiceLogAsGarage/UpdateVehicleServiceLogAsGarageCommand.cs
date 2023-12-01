@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
@@ -27,16 +28,22 @@ public record UpdateVehicleServiceAsGarageLogDto : IRequest<VehicleServiceLogAsG
 
 public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
+    /// <summary>
+    /// internal use only, not required for client
+    /// </summary>
+    [JsonIgnore]
+    internal GarageItem Garage { get; set; } = null!;
+    
+    /// <summary>
+    /// internal use only, not required for client
+    /// </summary>
+    [JsonIgnore]
+    internal VehicleServiceLogItem ServiceLog { get; set; } = null!;
+
     [JsonIgnore]
     public string UserId { get; set; } = null!;
 
-    [JsonIgnore]
-    public GarageItem Garage { get; set; } = null!;
-
     public Guid ServiceLogId { get; set; }
-
-    [JsonIgnore]
-    public VehicleServiceLogItem ServiceLog { get; set; } = null!;
 
     public string VehicleLicensePlate { get; set; }
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;

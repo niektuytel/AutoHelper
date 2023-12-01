@@ -211,6 +211,11 @@ internal class VehicleService : IVehicleService
         return await _rdwService.GetDetectedDefectDescriptions();
     }
 
+    public async Task<VehicleBasicsDtoItem> GetBasicVehicle(string licensePlate)
+    {
+        return await _rdwService.GetBasicVehicle(licensePlate);
+    }
+
     public async Task<IEnumerable<VehicleBasicsDtoItem>> GetVehicleBasicsWithMOTRequirement(int offset, int limit)
     {
         return await _rdwService.GetVehicleBasicsWithMOTRequirement(offset, limit);

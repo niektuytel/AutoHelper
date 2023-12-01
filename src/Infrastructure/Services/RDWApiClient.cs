@@ -482,6 +482,34 @@ internal partial class RDWApiClient
     /// <summary>
     /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
     /// </summary>
+    public async Task<VehicleBasicsDtoItem> GetBasicVehicle(string licensePlate)
+    {
+        licensePlate = licensePlate.Replace("-", "").ToUpper();
+
+        // Define the categories that require MOT.
+        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
+
+        // Create a comma-separated list of selected fields.
+        string selectedFieldsQuery = selectedFields != null && selectedFields.Length > 0
+                                     ? $"$select={string.Join(",", selectedFields)}&"
+                                     : string.Empty;
+
+        // Construct the full URL with the $where and $select clauses.
+        var url = $"https://opendata.rdw.nl/resource/m9d7-ebf2.json?$where=(kenteken=%27{licensePlate}%27)&{selectedFieldsQuery}";
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        var entities = JsonConvert.DeserializeObject<IEnumerable<VehicleBasicsDtoItem>>(json) ?? new List<VehicleBasicsDtoItem>();
+        return entities.FirstOrDefault() ?? new VehicleBasicsDtoItem();
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
+    /// </summary>
     public async Task<IEnumerable<VehicleBasicsDtoItem>> GetVehicleBasicsWithMOTRequirement(int offset, int limit)
     {
         // Define the categories that require MOT.

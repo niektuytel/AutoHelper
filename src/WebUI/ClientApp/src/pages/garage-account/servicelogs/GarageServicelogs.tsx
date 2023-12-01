@@ -85,14 +85,14 @@ export default ({ }: IProps) => {
         setDrawerOpen(true);
     };
 
-    const handleService = (data: any, file: any) => {
+    const handleService = (data: any) => {
         console.log("Handle service", data);
 
         if (dialogMode == "create") {
             //createServiceLog(data, file);
         }
         else if (dialogMode == "edit") {
-            updateServiceLog(data, file);
+            //updateServiceLog(data, file);
         }
 
         setDrawerOpen(false);

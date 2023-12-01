@@ -36,12 +36,12 @@
         }
       }
     },
-    "/api/AdminAccount/UpsertLookups": {
+    "/api/AdminAccount/UpsertGarageLookups": {
       "put": {
         "tags": [
           "AdminAccount"
         ],
-        "operationId": "AdminAccount_UpsertLookups",
+        "operationId": "AdminAccount_UpsertGarageLookups",
         "parameters": [
           {
             "name": "maxInsertAmount",
@@ -64,6 +64,47 @@
               "default": 0
             },
             "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AdminAccount/UpsertVehicleLookup": {
+      "put": {
+        "tags": [
+          "AdminAccount"
+        ],
+        "operationId": "AdminAccount_UpsertVehicleLookup",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
           }
         ],
         "responses": {
@@ -635,104 +676,37 @@
         ],
         "operationId": "GarageAccount_CreateServiceLog",
         "requestBody": {
-          "x-name": "commandWithAttachment",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateVehicleServiceAsGarageLogDto"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VehicleServiceLogAsGarageDtoItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/GarageAccount/CreateServiceLog2": {
-      "post": {
-        "tags": [
-          "GarageAccount"
-        ],
-        "operationId": "GarageAccount_CreateServiceLog2",
-        "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "ServiceLogCommand.VehicleLicensePlate": {
+                  "VehicleLicensePlate": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.GarageLookupIdentifier": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.Type": {
+                  "Type": {
                     "$ref": "#/components/schemas/GarageServiceType"
                   },
-                  "ServiceLogCommand.Description": {
+                  "Description": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Date": {
+                  "Date": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.ExpectedNextDate": {
+                  "ExpectedNextDate": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.OdometerReading": {
+                  "OdometerReading": {
                     "type": "integer",
                     "format": "int32"
                   },
-                  "ServiceLogCommand.ExpectedNextOdometerReading": {
+                  "ExpectedNextOdometerReading": {
                     "type": "integer",
                     "format": "int32",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.ReporterName": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.ReporterPhoneNumber": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.ReporterEmailAddress": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.Attachment.FileName": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.Attachment.FileData": {
-                    "type": "string",
-                    "format": "byte",
                     "nullable": true
                   },
                   "AttachmentFile": {
@@ -751,7 +725,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
+                  "$ref": "#/components/schemas/VehicleServiceLogAsGarageDtoItem"
                 }
               }
             }
@@ -836,48 +810,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GarageServiceDtoItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/GarageAccount/UpdateServiceLog": {
-      "put": {
-        "tags": [
-          "GarageAccount"
-        ],
-        "operationId": "GarageAccount_UpdateServiceLog",
-        "requestBody": {
-          "x-name": "commandWithAttachment",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateVehicleServiceAsGarageLogDto"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateVehicleServiceAsGarageLogDto"
                 }
               }
             }
@@ -3541,105 +3473,6 @@
           }
         }
       },
-      "CreateVehicleServiceAsGarageLogDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "serviceLogCommand": {
-            "$ref": "#/components/schemas/CreateVehicleServiceLogAsGarageCommand"
-          },
-          "attachmentFile": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
-      "CreateVehicleServiceLogAsGarageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "vehicleLicensePlate": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "date": {
-            "type": "string"
-          },
-          "expectedNextDate": {
-            "type": "string",
-            "nullable": true
-          },
-          "odometerReading": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "expectedNextOdometerReading": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "attachment": {
-            "$ref": "#/components/schemas/VehicleServiceLogAttachmentDtoItem"
-          }
-        }
-      },
-      "VehicleServiceLogAttachmentDtoItem": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "fileName",
-          "fileData"
-        ],
-        "properties": {
-          "fileName": {
-            "type": "string",
-            "maxLength": 255,
-            "minLength": 0
-          },
-          "fileData": {
-            "type": "string",
-            "format": "byte",
-            "minLength": 1
-          }
-        }
-      },
-      "VehicleServiceLogDtoItem": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "garageLookupName": {
-            "type": "string"
-          },
-          "garageLookupIdentifier": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "date": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "odometerReading": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "attachedFile": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
       "UpdateGarageSettingsCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -3695,58 +3528,6 @@
           },
           "description": {
             "type": "string"
-          }
-        }
-      },
-      "UpdateVehicleServiceAsGarageLogDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "serviceLogCommand": {
-            "$ref": "#/components/schemas/UpdateVehicleServiceLogAsGarageCommand"
-          },
-          "attachmentFile": {
-            "type": "string",
-            "format": "binary"
-          }
-        }
-      },
-      "UpdateVehicleServiceLogAsGarageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "serviceLogId": {
-            "type": "string",
-            "format": "guid"
-          },
-          "vehicleLicensePlate": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "date": {
-            "type": "string"
-          },
-          "expectedNextDate": {
-            "type": "string",
-            "nullable": true
-          },
-          "odometerReading": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "expectedNextOdometerReading": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "attachment": {
-            "$ref": "#/components/schemas/VehicleServiceLogAttachmentDtoItem"
           }
         }
       },
@@ -4092,6 +3873,37 @@
                 }
               }
             }
+          }
+        }
+      },
+      "VehicleServiceLogDtoItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "garageLookupName": {
+            "type": "string"
+          },
+          "garageLookupIdentifier": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "odometerReading": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "attachedFile": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

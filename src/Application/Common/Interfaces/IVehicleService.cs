@@ -16,6 +16,7 @@ public interface IVehicleService
     Task<IEnumerable<VehicleDetectedDefectDescriptionDtoItem>> GetDetectedDefectDescriptionsAsync();
     Task<IEnumerable<VehicleDetectedDefectDtoItem>> GetVehicleDetectedDefects(List<string> licensePlates);
     Task<IEnumerable<VehicleInspectionNotificationDtoItem>> GetVehicleInspectionNotifications(List<string> licensePlates);
+    Task<VehicleBasicsDtoItem> GetBasicVehicle(string licensePlate);
     Task<IEnumerable<VehicleBasicsDtoItem>> GetVehicleBasicsWithMOTRequirement(int offset, int limit);
     Task<int> GetVehicleBasicsWithMOTRequirementCount();
     Task<(List<VehicleTimelineItem> itemsToInsert, List<VehicleTimelineItem> itemsToUpdate)> UpsertTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> defectsBatch, IEnumerable<VehicleInspectionNotificationDtoItem> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions);

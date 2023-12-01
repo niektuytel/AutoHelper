@@ -78,81 +78,35 @@ public class ApplicationDbContextInitialiser
 
         await _context.SaveChangesAsync();
 
-        //// Default users
-        //var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
-
-        //if (_userManager.Users.All(u => u.UserName != administrator.UserName))
-        //{
-        //    await _userManager.CreateAsync(administrator, "Administrator1!");
-        //    if (!string.IsNullOrWhiteSpace(administratorRole.Name))
-        //    {
-        //        await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
-        //    }
-        //}
-
-        //// Default data
-        //// Seed, if necessary
-        //if (!_context.TodoLists.Any())
-        //{
-        //    _context.TodoLists.Add(new TodoList
-        //    {
-        //        Title = "Todo List",
-        //        Items =
-        //        {
-        //            new TodoItem { Title = "Make a todo list 📃" },
-        //            new TodoItem { Title = "Check off the first item ✅" },
-        //            new TodoItem { Title = "Realise you've already done two things on the list! 🤯"},
-        //            new TodoItem { Title = "Reward yourself with a nice, long nap 🏆" },
-        //        }
-        //    });
-
-        //    await _context.SaveChangesAsync();
-        //}
-
-    }
-
-    private static VehicleLookupItem GetTestVehicleLookup()
-    {
-        return new VehicleLookupItem
+        // Default (development) users
+        var admin = new ApplicationUser { Id = "admin@autohelper|e13a0844", UserName = "admin@autohelper.nl", Email = "admin@autohelper.nl" };
+        if (_userManager.Users.All(u => u.UserName != admin.UserName))
         {
-            //Id = Guid.NewGuid(),
-            //VehicleType = VehicleLookupType.Car,
-            //Make = "Honda",
-            //Model = "Civic",
-            //Year = 2010,
-            //Engine = "1.8L",
-            //Transmission = "Automatic",
-            //FuelType = "Petrol",
-            //BodyType = "Sedan",
-            //DriveType = "FWD",
-            //Colour = "Black",
-            //Vin = "12345678901234567",
-            //Registration = "ABC123",
-            //RegistrationExpiry = DateTime.UtcNow.AddYears(1),
-            //Odometer = 100000,
-            //OdometerUnit = "km",
-            //ImageUrl = "https://www.honda.com.au/content/dam/honda/cars/models/civic-sedan/overview/hero/hero-civic-sedan-1.5l-vti-lx-pearl-white-pearl.jpg"
-        };
-    }
-
-    private static VehicleServiceLogItem[] GetTestVehicleServiceLogs()
-    {
-        return new[]
-        {
-            new VehicleServiceLogItem
+            var result = await _userManager.CreateAsync(admin, "Autohelper123!");
+            if (result.Succeeded && !string.IsNullOrWhiteSpace(adminRole.Name))
             {
+                await _userManager.AddToRolesAsync(admin, new[] { adminRole.Name });
             }
-        };
-    }
+        }
 
-    private static VehicleTimelineItem[] GetTestVehicleTimeline()
-    {
-        return new[]
+        var garage = new ApplicationUser { Id = "garage@autohelper|5ea3782cf852", UserName = "garage@autohelper.nl", Email = "garage@autohelper.nl" };
+        if (_userManager.Users.All(u => u.UserName != garage.UserName))
         {
-            new VehicleTimelineItem
+            var result = await _userManager.CreateAsync(garage, "Autohelper123!");
+            if (result.Succeeded && !string.IsNullOrWhiteSpace(garageRole.Name))
             {
+                await _userManager.AddToRolesAsync(garage, new[] { garageRole.Name });
             }
-        };
+        }
+
+        // Default (development) garages
+        var testGarageLookup = GetTestGarageLookup();
+        if (!_context.GarageLookups.Any())
+        {
+            _context.GarageLookups.Add(testGarageLookup);
+            await _context.SaveChangesAsync();
+        }
+
     }
 
     /// <summary>
@@ -160,12 +114,35 @@ public class ApplicationDbContextInitialiser
     /// </summary>
     private static GarageLookupItem GetTestGarageLookup()
     {
+        var random = new Random();
         return new GarageLookupItem
         {
-
+            Identifier = "Garage_" + random.Next(1000, 9999),
+            GarageId = null, // Assuming GarageId is not set initially
+            Name = "Garage " + random.Next(1, 101),
+            Address = "1234 Test Street",
+            City = "TestCity",
+            Location = null, // Assuming location is not known initially
+            Image = null,
+            ImageThumbnail = null,
+            Status = random.Next(2) == 0 ? "Open" : "Closed",
+            PhoneNumber = "555-" + random.Next(1000, 9999),
+            WhatsappNumber = "+1555" + random.Next(1000, 9999),
+            EmailAddress = $"contact@garage{random.Next(1, 101)}.com",
+            ConversationContactEmail = random.Next(2) == 0 ? $"contact@garage{random.Next(1, 101)}.com" : null,
+            ConversationContactWhatsappNumber = random.Next(2) == 0 ? "+1555" + random.Next(1000, 9999) : null,
+            KnownServicesString = string.Join(";", Enumerable.Range(1, 5).OrderBy(_ => random.Next()).Take(random.Next(1, 6))),
+            DaysOfWeekString = string.Join(",", Enumerable.Range(1, 7).OrderBy(_ => random.Next()).Take(random.Next(1, 8))),
+            Website = "www.garage" + random.Next(1, 101) + ".com",
+            Rating = (float)Math.Round(random.NextDouble() * 4 + 1, 1),
+            UserRatingsTotal = random.Next(1, 501),
+            Created = DateTime.Now,
+            CreatedBy = "System",
+            LastModified = DateTime.Now,
+            LastModifiedBy = "System",
+            LargeData = null // Assuming LargeData is not set initially
         };
     }
-
 
 
 }

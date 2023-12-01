@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net.Mail;
-using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
@@ -14,24 +14,33 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 
-public record CreateVehicleServiceAsGarageLogDto : IRequest<VehicleServiceLogAsGarageDtoItem>
-{
-    public CreateVehicleServiceLogAsGarageCommand ServiceLogCommand { get; set; }
-    public IFormFile AttachmentFile { get; set; }
-}
-
 public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
+    public CreateVehicleServiceLogAsGarageCommand(string userId, CreateVehicleServiceAsGarageLogDto data) 
+    {
+        UserId = userId;
+        VehicleLicensePlate = data.VehicleLicensePlate;
+        Type = data.Type;
+        Description = data.Description;
+        Date = data.Date;
+        ExpectedNextDate = data.ExpectedNextDate;
+        OdometerReading = data.OdometerReading;
+        ExpectedNextOdometerReading = data.ExpectedNextOdometerReading;
+    }
+
+    /// <summary>
+    /// internal use only, not required for client
+    /// </summary>
     [JsonIgnore]
-    public string UserId { get; set; } = null!;
+    internal GarageItem Garage { get; set; }
 
     [JsonIgnore]
-    public GarageItem Garage { get; set; } = null!;
+    public string UserId { get; set; } = null!;
 
     public string VehicleLicensePlate { get; set; }
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
@@ -42,7 +51,7 @@ public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     public int OdometerReading { get; set; }
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
-    public VehicleServiceLogAttachmentDtoItem Attachment { get; set; }
+    public VehicleServiceLogAttachmentDtoItem? Attachment { get; set; }
 
     [JsonIgnore]
     internal DateTime? ParsedDate { get; private set; }
@@ -75,42 +84,43 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
         // Align license plate
         request.VehicleLicensePlate = request.VehicleLicensePlate.ToUpper().Replace("-", "");
 
-        var entity = new VehicleServiceLogItem
-        {
-            GarageLookupIdentifier = request.Garage.GarageLookupIdentifier,
-            VehicleLicensePlate = request.VehicleLicensePlate,
-            Type = request.Type,
-            Description = request.Description,
+        //var entity = new VehicleServiceLogItem
+        //{
+        //    GarageLookupIdentifier = request.Garage.GarageLookupIdentifier,
+        //    VehicleLicensePlate = request.VehicleLicensePlate,
+        //    Type = request.Type,
+        //    Description = request.Description,
 
-            Date = (DateTime)request.ParsedDate!,
-            ExpectedNextDate = request.ParsedExpectedNextDate,
-            OdometerReading = request.OdometerReading,
-            ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
+        //    Date = (DateTime)request.ParsedDate!,
+        //    ExpectedNextDate = request.ParsedExpectedNextDate,
+        //    OdometerReading = request.OdometerReading,
+        //    ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
 
-            Status = VehicleServiceLogStatus.VerifiedByGarage,
-            ReporterName = request.Garage.Lookup.Name,
-            ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
-            ReporterEmailAddress = request.Garage.Lookup.EmailAddress,
-        };
+        //    Status = VehicleServiceLogStatus.VerifiedByGarage,
+        //    ReporterName = request.Garage.Lookup.Name,
+        //    ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
+        //    ReporterEmailAddress = request.Garage.Lookup.EmailAddress,
+        //};
 
-        // upload attached file
-        if (request.Attachment.FileName != null && request.Attachment.FileData != null)
-        {
-            var fileExtension = Path.GetExtension(request.Attachment.FileName);
-            var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
-                request.Attachment.FileData,
-                fileExtension,
-                cancellationToken
-            );
+        //// upload attached file
+        //if (request.Attachment.FileName != null && request.Attachment.FileData != null)
+        //{
+        //    var fileExtension = Path.GetExtension(request.Attachment.FileName);
+        //    var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
+        //        request.Attachment.FileData,
+        //        fileExtension,
+        //        cancellationToken
+        //    );
 
-            entity.AttachedFile = attachmentBlobName;
-        }
+        //    entity.AttachedFile = attachmentBlobName;
+        //}
 
-        // If you wish to use domain events, then you can add them here:
-        // entity.AddDomainEvent(new SomeDomainEvent(entity));
+        //// If you wish to use domain events, then you can add them here:
+        //// entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        _context.VehicleServiceLogs.Add(entity);
-        await _context.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
+        //_context.VehicleServiceLogs.Add(entity);
+        //await _context.SaveChangesAsync(cancellationToken);
+        //return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
+        return null;
     }
 }

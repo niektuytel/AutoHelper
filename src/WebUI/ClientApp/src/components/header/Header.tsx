@@ -63,7 +63,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                 <StyledToolbar>
                     <Grid container>
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
-                            <ImageLogo small />
+                            <ImageLogo small showStaticLogo={showStaticDrawer} />
                         </Grid>
                         { has3Sections &&
                             <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -2,6 +2,7 @@
 using AutoHelper.Application.Common.Security;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
@@ -13,7 +14,7 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class AdminAccountController: ApiControllerBase
 {
-    [Authorize(Policy = "AdminRole")]
+    [Authorize(Roles = "AdminRole")]
     [HttpGet($"{nameof(GetGarageLookupStatuses)}")]
     [ProducesResponseType(typeof(GarageLookupsStatusDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -28,10 +29,10 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize(Policy = "AdminRole")]
-    [HttpPut($"{nameof(UpsertLookups)}")]
+    [HttpPut($"{nameof(UpsertGarageLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string UpsertLookups([FromQuery] int maxInsertAmount = 0, [FromQuery] int maxUpdateAmount = 0)
+    public string UpsertGarageLookups([FromQuery] int maxInsertAmount = 0, [FromQuery] int maxUpdateAmount = 0)
     {
         var command = new UpsertGarageLookupsCommand(maxInsertAmount, maxUpdateAmount);
         var queue = nameof(UpsertGarageLookupsCommand);
@@ -41,7 +42,15 @@ public class AdminAccountController: ApiControllerBase
         return $"Successfully start hangfire job: {queue}";
     }
 
-
+    [Authorize(Policy = "AdminRole")]
+    [HttpPut($"{nameof(UpsertVehicleLookup)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<string> UpsertVehicleLookup([FromQuery] string licensePlate)
+    {
+        var command = new UpsertVehicleLookupCommand(licensePlate);
+        return await Mediator.Send(command);
+    }
 
     /// <param name="endRowIndex">-1 means all of them</param>
     /// <param name="maxInsertAmount">-1 means all of them</param>

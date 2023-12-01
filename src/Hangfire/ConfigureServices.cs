@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 
 namespace AutoHelper.Hangfire;
 

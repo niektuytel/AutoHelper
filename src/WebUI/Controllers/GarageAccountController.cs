@@ -6,17 +6,11 @@ using AutoHelper.Application.Garages.Commands.DeleteGarageService;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
-using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using AutoHelper.Domain.Entities.Garages;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Domain.Entities.Garages.Unused;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles._DTOs;
@@ -113,20 +107,22 @@ public class GarageAccountController : ApiControllerBase
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceAsGarageLogDto commandWithAttachment, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceAsGarageLogDto serviceLogDto, CancellationToken cancellationToken)
     {
-        var command = commandWithAttachment.ServiceLogCommand;
-        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+
+        // JsonIgnore does not work on the controller level, so we do the mapping
+        var command = new CreateVehicleServiceLogAsGarageCommand(userId, serviceLogDto);
 
         // If a file is included, process it
-        if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
+        if (serviceLogDto.AttachmentFile != null && serviceLogDto.AttachmentFile.Length > 0)
         {
             using var memoryStream = new MemoryStream();
-            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
+            await serviceLogDto.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
 
             command.Attachment = new VehicleServiceLogAttachmentDtoItem
             {
-                FileName = commandWithAttachment.AttachmentFile.FileName,
+                FileName = serviceLogDto.AttachmentFile.FileName,
                 FileData = memoryStream.ToArray()
             };
         }
@@ -154,30 +150,30 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
-    [HttpPut($"{nameof(UpdateServiceLog)}")]
-    [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDto commandWithAttachment, CancellationToken cancellationToken)
-    {
-        var command = commandWithAttachment.ServiceLogCommand;
-        command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+    //[Authorize(Policy = "GarageRole")]
+    //[HttpPut($"{nameof(UpdateServiceLog)}")]
+    //[ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
+    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    //public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDto commandWithAttachment, CancellationToken cancellationToken)
+    //{
+    //    var command = commandWithAttachment.ServiceLogCommand;
+    //    command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
 
-        // If a file is included, process it
-        if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
-        {
-            using var memoryStream = new MemoryStream();
-            await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
+    //    // If a file is included, process it
+    //    if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
+    //    {
+    //        using var memoryStream = new MemoryStream();
+    //        await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
 
-            command.Attachment = new VehicleServiceLogAttachmentDtoItem
-            {
-                FileName = commandWithAttachment.AttachmentFile.FileName,
-                FileData = memoryStream.ToArray()
-            };
-        }
+    //        command.Attachment = new VehicleServiceLogAttachmentDtoItem
+    //        {
+    //            FileName = commandWithAttachment.AttachmentFile.FileName,
+    //            FileData = memoryStream.ToArray()
+    //        };
+    //    }
 
-        return await Mediator.Send(command);
-    }
+    //    return await Mediator.Send(command);
+    //}
 
     [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(DeleteService)}/{{id}}")]

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
