@@ -30,7 +30,6 @@ public class GarageServiceItem : BaseEntity
     /// <summary>
     /// Like: "Change the oil in the engine", "Align the wheels", etc.
     /// </summary>
-    [Required]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
 }
