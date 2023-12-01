@@ -71,56 +71,66 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IVehicleService _vehicleService;
 
-    public CreateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper)
+    public CreateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IVehicleService vehicleService)
     {
         _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
+        _vehicleService = vehicleService;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(CreateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
-        // Align license plate
-        request.VehicleLicensePlate = request.VehicleLicensePlate.ToUpper().Replace("-", "");
+        var entity = CreateVehicleServiceLogEntity(request);
+        UploadAttachmentIfPresent(request, entity, cancellationToken);
 
-        //var entity = new VehicleServiceLogItem
-        //{
-        //    GarageLookupIdentifier = request.Garage.GarageLookupIdentifier,
-        //    VehicleLicensePlate = request.VehicleLicensePlate,
-        //    Type = request.Type,
-        //    Description = request.Description,
+        _context.VehicleServiceLogs.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+        //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        //    Date = (DateTime)request.ParsedDate!,
-        //    ExpectedNextDate = request.ParsedExpectedNextDate,
-        //    OdometerReading = request.OdometerReading,
-        //    ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
+        var item = _vehicleService.CreateServiceLogTimelineItem(request.VehicleLicensePlate, entity);
+        _context.VehicleTimelineItems.Add(item);
+        await _context.SaveChangesAsync(cancellationToken);
+        //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        //    Status = VehicleServiceLogStatus.VerifiedByGarage,
-        //    ReporterName = request.Garage.Lookup.Name,
-        //    ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
-        //    ReporterEmailAddress = request.Garage.Lookup.EmailAddress,
-        //};
+        return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
+    }
 
-        //// upload attached file
-        //if (request.Attachment.FileName != null && request.Attachment.FileData != null)
-        //{
-        //    var fileExtension = Path.GetExtension(request.Attachment.FileName);
-        //    var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
-        //        request.Attachment.FileData,
-        //        fileExtension,
-        //        cancellationToken
-        //    );
+    private VehicleServiceLogItem CreateVehicleServiceLogEntity(CreateVehicleServiceLogAsGarageCommand request)
+    {
+        return new VehicleServiceLogItem
+        {
+            VehicleLicensePlate = request.VehicleLicensePlate,
+            GarageLookupIdentifier = request.Garage.GarageLookupIdentifier,
+            Type = request.Type,
+            Description = request.Description,
 
-        //    entity.AttachedFile = attachmentBlobName;
-        //}
+            Date = (DateTime)request.ParsedDate!,
+            ExpectedNextDate = request.ParsedExpectedNextDate,
+            OdometerReading = request.OdometerReading,
+            ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
+            
+            Status = VehicleServiceLogStatus.VerifiedByGarage,
+            ReporterName = request.Garage.Lookup.Name,
+            ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
+            ReporterEmailAddress = request.Garage.Lookup.EmailAddress,
+        };
+    }
 
-        //// If you wish to use domain events, then you can add them here:
-        //// entity.AddDomainEvent(new SomeDomainEvent(entity));
+    private async void UploadAttachmentIfPresent(CreateVehicleServiceLogAsGarageCommand request, VehicleServiceLogItem entity, CancellationToken cancellationToken)
+    {
+        if (request.Attachment?.FileName != null && request.Attachment?.FileData != null)
+        {
+            var fileExtension = Path.GetExtension(request.Attachment.FileName);
+            var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
+                request.Attachment.FileData,
+                fileExtension,
+                cancellationToken
+            );
 
-        //_context.VehicleServiceLogs.Add(entity);
-        //await _context.SaveChangesAsync(cancellationToken);
-        //return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
-        return null;
+            entity.AttachedFile = attachmentBlobName;
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoHelper.Domain.Entities.Garages;
 using Microsoft.AspNetCore.Http;
 
-namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
+namespace AutoHelper.Application.Vehicles._DTOs;
 
 public record CreateVehicleServiceAsGarageLogDto
 {

@@ -21,4 +21,5 @@ public interface IVehicleService
     Task<int> GetVehicleBasicsWithMOTRequirementCount();
     Task<(List<VehicleTimelineItem> itemsToInsert, List<VehicleTimelineItem> itemsToUpdate)> UpsertTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> defectsBatch, IEnumerable<VehicleInspectionNotificationDtoItem> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions);
     Task<VehicleLookupType> GetVehicleType(string licensePlate);
+    VehicleTimelineItem CreateServiceLogTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog);
 }

@@ -59,8 +59,6 @@ function useVehicleServiceLogs(license_plate: string) {
         queryClient.setQueryData<VehicleServiceLogDtoItem[]>([`vehicleServiceLogs-${license_plate}`], (oldLogs) => [newServiceLog, ...(oldLogs ?? [])]);
     };
 
-
-
     // only reset the form when the data is loaded
     const loading = isLoading;
     return {

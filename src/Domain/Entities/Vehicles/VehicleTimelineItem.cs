@@ -16,6 +16,12 @@ public class VehicleTimelineItem: BaseEntity
     [ForeignKey(nameof(VehicleLicensePlate))]
     public VehicleLookupItem VehicleLookup { get; set; }
 
+    /// <summary>
+    /// Only defined if the timeline item is related to a service log item
+    /// </summary>
+    [Required]
+    public Guid? VehicleServiceLogId { get; set; }
+
     [Required]
     public string Title { get; set; } = null!;
 

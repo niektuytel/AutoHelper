@@ -399,7 +399,7 @@ internal class VehicleService : IVehicleService
         return timelineItem;
     }
 
-    private static VehicleTimelineItem CreateServiceLogTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog)
+    public VehicleTimelineItem CreateServiceLogTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog)
     {
         var type = VehicleTimelineType.Service;
         var title = "Onderhoud";
@@ -427,6 +427,7 @@ internal class VehicleService : IVehicleService
         {
             Id = Guid.NewGuid(),
             VehicleLicensePlate = licensePlate,
+            VehicleServiceLogId = serviceLog.Id,
             Date = serviceLog.Date.Date,
             Title = title,
             Description = serviceLog.Description ?? "",

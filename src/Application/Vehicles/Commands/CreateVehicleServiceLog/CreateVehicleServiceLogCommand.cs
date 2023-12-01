@@ -9,22 +9,16 @@ using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Domain;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
-
-public record CreateVehicleServiceLogDto : IRequest<VehicleServiceLogDtoItem>
-{
-    public CreateVehicleServiceLogCommand ServiceLogCommand { get; set; }
-    public IFormFile AttachmentFile { get; set; }
-}
 
 public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem>
 {
@@ -33,12 +27,10 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
     public string? Description { get; set; }
 
-
     public string Date { get; set; }
     public string? ExpectedNextDate { get; set; } = null!;
     public int OdometerReading { get; set; }
     public int? ExpectedNextOdometerReading { get; set; } = null!;
-
 
     public string ReporterName { get; set; } = null!;
     public string? ReporterPhoneNumber { get; set; } = null!;
@@ -74,16 +66,25 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
 
     public async Task<VehicleServiceLogDtoItem> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
     {
-        // Align license plate
-        request.VehicleLicensePlate = request.VehicleLicensePlate.ToUpper().Replace("-", "");
+        var entity = CreateVehicleServiceLogEntity(request);
+        UploadAttachmentIfPresent(request, entity, cancellationToken);
 
-        var entity = new VehicleServiceLogItem
+        _context.VehicleServiceLogs.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+        //entity.AddDomainEvent(new SomeDomainEvent(entity));
+
+        return _mapper.Map<VehicleServiceLogDtoItem>(entity);
+    }
+
+    private VehicleServiceLogItem CreateVehicleServiceLogEntity(CreateVehicleServiceLogCommand request)
+    {
+        return new VehicleServiceLogItem
         {
             VehicleLicensePlate = request.VehicleLicensePlate,
             GarageLookupIdentifier = request.GarageLookupIdentifier,
             Type = request.Type,
             Description = request.Description,
-            
+
             Date = (DateTime)request.ParsedDate!,
             ExpectedNextDate = request.ParsedExpectedNextDate,
             OdometerReading = request.OdometerReading,
@@ -94,9 +95,11 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
             ReporterPhoneNumber = request.ReporterPhoneNumber,
             ReporterEmailAddress = request.ReporterEmailAddress
         };
+    }
 
-        // upload attached file
-        if(request.Attachment.FileName != null && request.Attachment.FileData != null)
+    private async void UploadAttachmentIfPresent(CreateVehicleServiceLogCommand request, VehicleServiceLogItem entity, CancellationToken cancellationToken)
+    {
+        if (request.Attachment?.FileName != null && request.Attachment?.FileData != null)
         {
             var fileExtension = Path.GetExtension(request.Attachment.FileName);
             var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
@@ -107,12 +110,5 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
 
             entity.AttachedFile = attachmentBlobName;
         }
-
-        // If you wish to use domain events, then you can add them here:
-        // entity.AddDomainEvent(new SomeDomainEvent(entity));
-
-        _context.VehicleServiceLogs.Add(entity);
-        await _context.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }
 }

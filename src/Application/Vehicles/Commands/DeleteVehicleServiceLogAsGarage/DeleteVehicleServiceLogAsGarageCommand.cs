@@ -32,19 +32,30 @@ public class DeleteVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLog
 
 public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<DeleteVehicleServiceLogAsGarageCommand, VehicleServiceLogAsGarageDtoItem>
 {
+    private readonly IVehicleService _vehicleService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public DeleteVehicleServiceLogAsGarageCommandHandler(IApplicationDbContext context, IMapper mapper)
+    public DeleteVehicleServiceLogAsGarageCommandHandler(IVehicleService vehicleService, IApplicationDbContext context, IMapper mapper)
     {
+        _vehicleService = vehicleService;
         _context = context;
         _mapper = mapper;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(DeleteVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
+        var timelineEntity = _context.VehicleTimelineItems.FirstOrDefault(x => x.VehicleServiceLogId == request.ServiceLogId);
+        if (timelineEntity != null)
+        {
+            _context.VehicleTimelineItems.Remove(timelineEntity);
+            await _context.SaveChangesAsync(cancellationToken);
+            //entity.AddDomainEvent(new SomeDomainEvent(entity));
+        }
+
         _context.VehicleServiceLogs.Remove(request.ServiceLog);
         await _context.SaveChangesAsync(cancellationToken);
+        //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(request.ServiceLog);
     }

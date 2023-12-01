@@ -19,6 +19,7 @@ import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, Veh
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { GetGarageAccountClient } from '../../../../app/GarageClient';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useDrawer } from '../../../select-vehicle/ServiceLogDrawerProvider';
 
 interface IServiceLogFormProps {
     drawerOpen: boolean;

@@ -197,13 +197,4 @@ export default ({ }: IProps) => {
             <ServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleService={handleService} />
         </>
     );
-    //<GarageServiceLogDialog
-    //    mode={dialogMode}
-    //    service={selectedItem}
-    //    dialogOpen={dialogOpen}
-    //    setDrawerOpen={setDrawerOpen}
-    //    createService={createServiceLog}
-    //    updateService={updateServiceLog}
-    //    loading={loading}
-    ///>
 }

@@ -2862,6 +2862,7 @@
             "additionalProperties": false,
             "required": [
               "vehicleLicensePlate",
+              "vehicleServiceLogId",
               "title",
               "description",
               "date",
@@ -2875,6 +2876,11 @@
               },
               "vehicleLookup": {
                 "$ref": "#/components/schemas/VehicleLookupItem"
+              },
+              "vehicleServiceLogId": {
+                "type": "string",
+                "format": "guid",
+                "minLength": 1
               },
               "title": {
                 "type": "string",

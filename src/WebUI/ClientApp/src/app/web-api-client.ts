@@ -3203,6 +3203,7 @@ export interface IVehicleLookupItem {
 export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineItem {
     vehicleLicensePlate!: string;
     vehicleLookup?: VehicleLookupItem;
+    vehicleServiceLogId!: string;
     title!: string;
     description!: string;
     date!: Date;
@@ -3220,6 +3221,7 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
         if (_data) {
             this.vehicleLicensePlate = _data["vehicleLicensePlate"];
             this.vehicleLookup = _data["vehicleLookup"] ? VehicleLookupItem.fromJS(_data["vehicleLookup"]) : <any>undefined;
+            this.vehicleServiceLogId = _data["vehicleServiceLogId"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
@@ -3245,6 +3247,7 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
         data = typeof data === 'object' ? data : {};
         data["vehicleLicensePlate"] = this.vehicleLicensePlate;
         data["vehicleLookup"] = this.vehicleLookup ? this.vehicleLookup.toJSON() : <any>undefined;
+        data["vehicleServiceLogId"] = this.vehicleServiceLogId;
         data["title"] = this.title;
         data["description"] = this.description;
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
@@ -3264,6 +3267,7 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
 export interface IVehicleTimelineItem extends IBaseEntity {
     vehicleLicensePlate: string;
     vehicleLookup?: VehicleLookupItem;
+    vehicleServiceLogId: string;
     title: string;
     description: string;
     date: Date;

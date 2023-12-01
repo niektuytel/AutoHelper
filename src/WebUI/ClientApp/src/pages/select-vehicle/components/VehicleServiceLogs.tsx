@@ -11,15 +11,13 @@ import {
 import GarageIcon from '@mui/icons-material/CarRepair';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
 // own imports
 import useVehicleServiceLogs from "../useVehicleServiceLogs";
-import { GarageServiceType, VehicleServiceLogDtoItem } from "../../../app/web-api-client";
+import { GarageServiceType } from "../../../app/web-api-client";
 import { ROUTES } from "../../../constants/routes";
-import ServiceLogForm from '../components/ServiceLogForm';
 
 const textStyles = {
     root: {
@@ -34,41 +32,15 @@ interface IProps {
 }
 
 export default ({ isMobile, license_plate }: IProps) => {
-    const { loading, vehicleServiceLogs, isError, addServiceLog } = useVehicleServiceLogs(license_plate);
+    const { loading, vehicleServiceLogs, isError } = useVehicleServiceLogs(license_plate);
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const navigate = useNavigate();
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const toggleDrawer = (open: boolean) => {
-        setDrawerOpen(open);
-    };
-
-    const handleAddService = () => {
-        setDrawerOpen(true);
-    };
-
-    const handleNewService = (newServiceLog: VehicleServiceLogDtoItem) => {
-        console.log("Handle new service", newServiceLog);
-
-        addServiceLog(newServiceLog);
-        setDrawerOpen(false);
-    };
 
     const getServiceTypeLabel = (type: GarageServiceType): string => {
         return t(`serviceTypes:${GarageServiceType[type]}.Title`);
     };
 
     return <>
-        <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-            <Button
-                variant="outlined"
-                onClick={handleAddService}
-                startIcon={<AddCircleOutlineIcon />}
-                fullWidth
-            >
-                {t("AddMaintenanceLog.Title")}
-            </Button>
-        </Box>
         <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden" }}>
             {loading ?
                 Array.from({ length: 10 }).map((_, index) =>
@@ -149,6 +121,5 @@ export default ({ isMobile, license_plate }: IProps) => {
                 ))
             }
         </Paper>
-        <ServiceLogForm licensePlate={license_plate} drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleNewService={handleNewService} />
     </>
 }

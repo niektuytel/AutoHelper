@@ -18,12 +18,10 @@ import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
 import { showOnError, showOnSuccess } from '../../../redux/slices/statusSnackbarSlice';
 import { useDispatch } from 'react-redux';
+import { useDrawer } from '../ServiceLogDrawerProvider';
 
 interface IServiceLogFormProps {
     licensePlate: string;
-    drawerOpen: boolean;
-    toggleDrawer: (open: boolean) => void;
-    handleNewService: (newServiceLog: VehicleServiceLogDtoItem) => void;
 }
 
 interface IServiceLogFormData {
@@ -41,8 +39,9 @@ interface IServiceLogFormData {
 
 const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
 
-export default ({ licensePlate, drawerOpen, toggleDrawer, handleNewService }: IServiceLogFormProps) => {
+export default ({ licensePlate }: IServiceLogFormProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
+    const { drawerOpen, toggleDrawer, addServiceLog } = useDrawer();
     const dispatch = useDispatch();
     const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
@@ -142,7 +141,7 @@ export default ({ licensePlate, drawerOpen, toggleDrawer, handleNewService }: IS
                 setValue('expectedNextOdometerReading', 0);
 
                 setActiveStep(0); // Reset active step to 0
-                handleNewService(response);
+                addServiceLog(response);
             } catch (error) {
                 console.error('Error:', error);
 
