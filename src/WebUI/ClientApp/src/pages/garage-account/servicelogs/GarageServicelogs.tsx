@@ -16,6 +16,7 @@ import {
     useMediaQuery,
     Drawer,
     ButtonGroup,
+    TableCell,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 //import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -30,6 +31,8 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Table, TableBody, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+
 //import GarageServiceDialog from "./components/GarageServiceDialog";
 //import { getTitleForServiceType } from "../defaultGarageService";
 //import { COLORS } from "../../../constants/colors";
@@ -43,6 +46,7 @@ import useGarageServicelogs from "./useGarageServicelogs";
 import GarageServiceLogCard from "./components/GarageServiceLogCard";
 import GarageServiceLogDeleteDialog from "./components/GarageServiceLogDeleteDialog";
 import ServiceLogDrawer from "./components/ServiceLogDrawer";
+import ServiceLogTableRow from "./components/ServiceLogTableRow";
 
 // own imports
 
@@ -106,18 +110,25 @@ export default ({ }: IProps) => {
         setDrawerOpen(true);
     }
 
-    const handleEditClick = () => {
-        if (!selectedItem) return;
+    const handleEditClick = (item: VehicleServiceLogAsGarageDtoItem) => {
+        setSelectedItem(item);
+        //if (!selectedItem) return;
 
-        setSelectedItem(selectedItem);
-        setDialogMode("edit");
-        setDrawerOpen(true);
+        //updateServiceLog(item);
+        //setDialogMode("edit");
+        //setDrawerOpen(true);
     }
 
-    const handleDeleteClick = () => {
-        if (!selectedItem) return;
+    const handleDeleteClick = (item: VehicleServiceLogAsGarageDtoItem) => {
+        setSelectedItem(item);
+        //if (!selectedItem) return;
 
-        setDialogDeleteOpen(true);
+        deleteServiceLog(item);
+        //setDialogDeleteOpen(true);
+    }
+
+    const handleApprove = (item: VehicleServiceLogAsGarageDtoItem) => {
+
     }
 
     const tryAddCartItem = (itemToAdd: VehicleServiceLogAsGarageDtoItem) => {
@@ -148,44 +159,52 @@ export default ({ }: IProps) => {
                     }
                 </Typography>
             </Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ marginBottom: 2 }} >
                 {isMobile ?
                     <div>
                         <IconButton onClick={() => handleAddClick()}>
                             <AddIcon />
                         </IconButton>
-                        <IconButton disabled={!selectedItem} onClick={() => handleEditClick()}>
-                            <EditIcon />
-                        </IconButton>
-                        <IconButton disabled={!selectedItem} onClick={() => handleDeleteClick()}>
-                            <DeleteIcon />
-                        </IconButton>
+                        {/*<IconButton disabled={!selectedItem} onClick={() => handleEditClick()}>*/}
+                        {/*    <EditIcon />*/}
+                        {/*</IconButton>*/}
+                        {/*<IconButton disabled={!selectedItem} onClick={() => handleDeleteClick()}>*/}
+                        {/*    <DeleteIcon />*/}
+                        {/*</IconButton>*/}
                     </div>
                     :
                     <ButtonGroup aria-label="Buttons used for create, edit and delete">
                         <Button onClick={() => handleAddClick()}>
                             <AddIcon />{t("add")}
                         </Button>
-                        <Button onClick={() => handleEditClick()} disabled={!selectedItem}>
-                            <EditIcon />{t("edit")}
-                        </Button>
-                        <Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>
-                            <DeleteIcon />{t("delete")}
-                        </Button>
+                        {/*<Button onClick={() => handleEditClick()} disabled={!selectedItem}>*/}
+                        {/*    <EditIcon />{t("edit")}*/}
+                        {/*</Button>*/}
+                        {/*<Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>*/}
+                        {/*    <DeleteIcon />{t("delete")}*/}
+                        {/*</Button>*/}
                     </ButtonGroup>
 
                 }
             </Box>
-            <Divider style={{ marginBottom: "20px" }} />
-            {garageServiceLogs?.map((item) => item &&
-                <GarageServiceLogCard
-                    key={`service-card-${item.id}`}
-                    service={item}
-                    selectedItem={selectedItem}
-                    setSelectedItem={setSelectedItem}
-                    addCartItem={tryAddCartItem}
-                />
-            )}
+            <TableContainer component={Paper}>
+                <Table aria-label="garage service logs table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Date</TableCell>
+                            <TableCell>License Plate</TableCell>
+                            <TableCell>Type</TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {garageServiceLogs?.map((item) => (
+                            <ServiceLogTableRow key={`service-log-row-${item.id}`} item={item} handleEdit={handleEditClick} handleDelete={handleDeleteClick} />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
             <GarageServiceLogDeleteDialog
                 service={selectedItem}
                 confirmDeleteOpen={dialogDeleteOpen}

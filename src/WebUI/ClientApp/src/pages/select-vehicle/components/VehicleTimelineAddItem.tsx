@@ -29,10 +29,6 @@ interface IProps {
 export default ({ textColor = "white" }: IProps) => {
     const { toggleDrawer } = useDrawer();
 
-    const openServiceLogDrawer = () => {
-        toggleDrawer(true);
-    };
-
     return (
         <TimelineItem sx={{ width: "min-content" }}>
             <TimelineOppositeContent
@@ -46,7 +42,7 @@ export default ({ textColor = "white" }: IProps) => {
             <TimelineSeparator>
                 <TimelineConnector />
                     <TimelineDot color="success" variant="outlined" sx={{ bgcolor: 'white' }} >
-                        <AddRoundedIcon sx={{ color: "#2E7D32" }} />
+                    <AddRoundedIcon sx={{ color: "#2E7D32" }} onClick={() => toggleDrawer(true)} />
                     </TimelineDot>
                 <TimelineConnector />
             </TimelineSeparator>

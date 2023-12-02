@@ -94,7 +94,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     });
 
-    const deleteMutation = useMutation(garageClient.deleteService.bind(garageClient), {
+    const deleteMutation = useMutation(garageClient.deleteServiceLog.bind(garageClient), {
         onSuccess: (response) => {
             dispatch(showOnSuccess("Garage service log is been deleted!"));
 
