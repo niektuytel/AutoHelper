@@ -78,25 +78,21 @@ export default ({ }: IProps) => {
         setSelectedItem(undefined);
     };
 
-    const { loading, updateServiceLog, deleteServiceLog, isError, garageServiceLogs } = useGarageServicelogs(handleFormSubmit);
+    const { loading, createServiceLog, updateServiceLog, deleteServiceLog, isError, garageServiceLogs } = useGarageServicelogs(handleFormSubmit);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const toggleDrawer = (open: boolean) => {
         setDrawerOpen(open);
     };
 
-    const handleAddService = () => {
-        setDrawerOpen(true);
-    };
-
-    const handleService = (data: any) => {
+    const handleService = (data: any, file: File | null) => {
         console.log("Handle service", data);
 
         if (dialogMode == "create") {
-            //createServiceLog(data, file);
+            createServiceLog(data, file);
         }
         else if (dialogMode == "edit") {
-            //updateServiceLog(data, file);
+            updateServiceLog(data, file);
         }
 
         setDrawerOpen(false);
@@ -110,41 +106,8 @@ export default ({ }: IProps) => {
         setDrawerOpen(true);
     }
 
-    const handleEditClick = (item: VehicleServiceLogAsGarageDtoItem) => {
-        setSelectedItem(item);
-        //if (!selectedItem) return;
-
-        //updateServiceLog(item);
-        //setDialogMode("edit");
-        //setDrawerOpen(true);
-    }
-
-    const handleDeleteClick = (item: VehicleServiceLogAsGarageDtoItem) => {
-        setSelectedItem(item);
-        //if (!selectedItem) return;
-
-        deleteServiceLog(item);
-        //setDialogDeleteOpen(true);
-    }
-
-    const handleApprove = (item: VehicleServiceLogAsGarageDtoItem) => {
-
-    }
-
-    const tryAddCartItem = (itemToAdd: VehicleServiceLogAsGarageDtoItem) => {
-        //if (cartItems.some(cartItem => cartItem.id === itemToAdd.id))
-        //{
-        //    dispatch(showOnError(t("Cart item already exist")));
-        //    return;
-        //} 
-
-        //setCartItems([...cartItems, itemToAdd]);
-    }
-
-
     return (
         <>
-
             <Box pt={4}>
                 <Typography variant="h4" gutterBottom display="flex" alignItems="center">
                     {t("GarageAccount.ServiceLogs.Title")}
@@ -165,24 +128,12 @@ export default ({ }: IProps) => {
                         <IconButton onClick={() => handleAddClick()}>
                             <AddIcon />
                         </IconButton>
-                        {/*<IconButton disabled={!selectedItem} onClick={() => handleEditClick()}>*/}
-                        {/*    <EditIcon />*/}
-                        {/*</IconButton>*/}
-                        {/*<IconButton disabled={!selectedItem} onClick={() => handleDeleteClick()}>*/}
-                        {/*    <DeleteIcon />*/}
-                        {/*</IconButton>*/}
                     </div>
                     :
                     <ButtonGroup aria-label="Buttons used for create, edit and delete">
                         <Button onClick={() => handleAddClick()}>
                             <AddIcon />{t("add")}
                         </Button>
-                        {/*<Button onClick={() => handleEditClick()} disabled={!selectedItem}>*/}
-                        {/*    <EditIcon />{t("edit")}*/}
-                        {/*</Button>*/}
-                        {/*<Button onClick={() => handleDeleteClick()} disabled={!selectedItem}>*/}
-                        {/*    <DeleteIcon />{t("delete")}*/}
-                        {/*</Button>*/}
                     </ButtonGroup>
 
                 }
@@ -200,7 +151,7 @@ export default ({ }: IProps) => {
                     </TableHead>
                     <TableBody>
                         {garageServiceLogs?.map((item) => (
-                            <ServiceLogTableRow key={`service-log-row-${item.id}`} item={item} handleEdit={handleEditClick} handleDelete={handleDeleteClick} />
+                            <ServiceLogTableRow key={`service-log-row-${item.id}`} item={item} handleEdit={updateServiceLog} handleDelete={deleteServiceLog} />
                         ))}
                     </TableBody>
                 </Table>
@@ -212,8 +163,11 @@ export default ({ }: IProps) => {
                 deleteService={deleteServiceLog}
                 loading={loading}
             />
-
-            <ServiceLogDrawer drawerOpen={drawerOpen} toggleDrawer={toggleDrawer} handleService={handleService} />
+            <ServiceLogDrawer
+                drawerOpen={drawerOpen}
+                toggleDrawer={toggleDrawer}
+                handleService={handleService}
+            />
         </>
     );
 }

@@ -126,7 +126,7 @@ export default ({ licensePlate }: IServiceLogFormProps) => {
                     data.phonenumber,
                     data.emailaddress,
                     file?.name || '',
-                    null, 
+                    null,
                     file ? { data: file, fileName: file?.name || '' } : null
                 );
 

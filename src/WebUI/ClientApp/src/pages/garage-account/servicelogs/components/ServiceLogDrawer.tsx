@@ -15,7 +15,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
 import { useDispatch } from 'react-redux';
-import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
+import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { GetGarageAccountClient } from '../../../../app/GarageClient';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -24,7 +24,7 @@ import { useDrawer } from '../../../select-vehicle/ServiceLogDrawerProvider';
 interface IServiceLogFormProps {
     drawerOpen: boolean;
     toggleDrawer: (open: boolean) => void;
-    handleService: (data: any) => void;
+    handleService: (data: any, file: File | null) => void;
 }
 
 interface IServiceLogFormData {
@@ -58,7 +58,6 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
     const [isLoading, setIsLoading] = useState(false);
 
     const handleNext = (data: IServiceLogFormData) => {
-
         let hasError = false;
 
         if (activeStep === 0) {
@@ -104,7 +103,7 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
         }
 
         if (activeStep === steps.length - 1) {
-            onSubmit(data);
+            handleService(data, file);
         } else {
             setActiveStep(activeStep+1);
         }
@@ -122,51 +121,53 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
     };
 
 
-    const onSubmit = (data: any) => {
-        console.log(data);
-        setIsLoading(true); // Set loading to true
+    //const onSubmit = (data: any) => {
+    //    handleService(data, file);
 
-        const garageAccountClient = new GarageAccountClient(process.env.PUBLIC_URL);
-        const createLog = async () => {
-            try {
-                const response = await garageClient.createServiceLog(
-                    data.licensePlate,
-                    data.type,
-                    data.description,
-                    data.date.toISOString(),
-                    data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
-                    data.odometerReading,
-                    data.expectedNextOdometerReading,
-                    file ? { data: file, fileName: file?.name || '' } : null
-                );
+    //    //console.log(data);
+    //    //setIsLoading(true); // Set loading to true
 
-                // Reset only specific form fields
-                setValue('type', '');
-                setValue('description', '');
-                setValue('date', null);
-                setValue('expectedNextDate', null);
-                setValue('odometerReading', 0);
-                setValue('expectedNextOdometerReading', 0);
-                file && setFile(null);
+    //    //const garageAccountClient = new GarageAccountClient(process.env.PUBLIC_URL);
+    //    //const createLog = async () => {
+    //    //    try {
+    //    //        const response = await garageClient.createServiceLog(
+    //    //            data.licensePlate,
+    //    //            data.type,
+    //    //            data.description,
+    //    //            data.date.toISOString(),
+    //    //            data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
+    //    //            data.odometerReading,
+    //    //            data.expectedNextOdometerReading,
+    //    //            file ? { data: file, fileName: file?.name || '' } : null
+    //    //        );
 
-                // done
-                setActiveStep(0); // Reset active step to 0
-                handleService(response);
-                dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
-            } catch (error) {
-                console.error('Error:', error);
+    //    //        // Reset only specific form fields
+    //    //        setValue('type', '');
+    //    //        setValue('description', '');
+    //    //        setValue('date', null);
+    //    //        setValue('expectedNextDate', null);
+    //    //        setValue('odometerReading', 0);
+    //    //        setValue('expectedNextOdometerReading', 0);
+    //    //        file && setFile(null);
 
-                // Display specific error message from server response
-                if (error instanceof BadRequestResponse && error.errors) {
-                    dispatch(showOnError(Object.entries(error.errors)[0][1]));
-                }
-            } finally {
-                setIsLoading(false); // Reset loading to false regardless of request outcome
-            }
-        };
+    //    //        // done
+    //    //        setActiveStep(0); // Reset active step to 0
+    //    //        handleService(response, file);
+    //    //        dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
+    //    //    } catch (error) {
+    //    //        console.error('Error:', error);
 
-        createLog();
-    };
+    //    //        // Display specific error message from server response
+    //    //        if (error instanceof BadRequestResponse && error.errors) {
+    //    //            dispatch(showOnError(Object.entries(error.errors)[0][1]));
+    //    //        }
+    //    //    } finally {
+    //    //        setIsLoading(false); // Reset loading to false regardless of request outcome
+    //    //    }
+    //    //};
+
+    //    //createLog();
+    //};
 
     const drawerWidth = isMobile ? '100%' : '600px';
     return <Drawer

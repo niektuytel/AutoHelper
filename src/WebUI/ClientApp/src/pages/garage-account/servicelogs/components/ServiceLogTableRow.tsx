@@ -10,18 +10,19 @@ import { VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from '../..
 
 interface IProps {
     item: VehicleServiceLogAsGarageDtoItem
-    handleEdit: (item: VehicleServiceLogAsGarageDtoItem) => void;
+    handleEdit: (item: VehicleServiceLogAsGarageDtoItem, file: File|null) => void;
     handleDelete: (item: VehicleServiceLogAsGarageDtoItem) => void;
 }
 
 export default ({ item, handleEdit, handleDelete }: IProps) => {
     const [open, setOpen] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
 
     const handleAccept = (e: any, item: VehicleServiceLogAsGarageDtoItem) => {
         e.stopPropagation();
 
         item.status = VehicleServiceLogStatus.VerifiedByGarage;
-        handleEdit(item);
+        handleEdit(item, file);
     };
 
     const handleDecline = (e: any, item: VehicleServiceLogAsGarageDtoItem) => {

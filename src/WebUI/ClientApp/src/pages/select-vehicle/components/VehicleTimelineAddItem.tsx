@@ -53,6 +53,9 @@ export default ({ textColor = "white" }: IProps) => {
                 flexDirection: 'column',
                 justifyContent: 'center'
             }}>
+                {/*<Typography variant="h6" component="span" color={textColor} sx={{ width: "max-content" }}>*/}
+                {/*    {timelineItem.title}*/}
+                {/*</Typography>*/}
             </TimelineContent>
         </TimelineItem>
     );

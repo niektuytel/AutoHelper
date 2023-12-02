@@ -1,20 +1,20 @@
-﻿import { useQuery, useMutation, useQueryClient } from "react-query";
-import { useTranslation } from "react-i18next";
+﻿import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useTranslation } from "react-i18next";
+import { useAuth0 } from "@auth0/auth0-react";
 
 //own imports
-import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
+import { BadRequestResponse, FileParameter, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
-import { useAuth0 } from "@auth0/auth0-react";
 import { GetGarageAccountClient } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 function useGarageServiceLogs(onResponse: (data: any) => void) {
     const { userRole } = useUserRole()
-    const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
+    const { setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageAccountClient(accessToken);
@@ -31,7 +31,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         } catch (response: any) {
             // redirect + enable garage register page
             if (response.status === 404) {
-                setConfigurationIndex(1, userRole);
+                setConfigurationIndex(0, userRole);
                 navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
                 return;
             }
@@ -52,23 +52,110 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     );
 
-    //const createMutation = useMutation(garageClient.createServiceLog.bind(garageClient),, {
-    //    onSuccess: (response) => {
-    //        // Enable garage colleagues page
-    //        setConfigurationIndex(3, userRole)
-    //        dispatch(showOnSuccess("Garage service log is been created!"));
+    type CreateServiceLogParams = {
+        vehicleLicensePlate: string | undefined;
+        type: GarageServiceType | undefined;
+        description: string | undefined;
+        date: string | undefined;
+        expectedNextDate: string | undefined;
+        odometerReading: number | undefined;
+        expectedNextOdometerReading: number | undefined;
+        attachmentFile: FileParameter | null;
+    };
 
-    //        // Update the garageSettings in the cache after creating
-    //        queryClient.setQueryData(['garageServiceLogs'], [...garageServiceLogs!, response]);
-    //        onResponse(response);
-    //    },
-    //    onError: (response) => {
-    //        console.error(response)
-    //        //guardHttpResponse(response, setError, t, dispatch);
-    //    }
-    //});
+    const createMutationFunction = async ({
+        vehicleLicensePlate,
+        type,
+        description,
+        date,
+        expectedNextDate,
+        odometerReading,
+        expectedNextOdometerReading,
+        attachmentFile
+    }: CreateServiceLogParams) => {
+        return await garageClient.createServiceLog(
+            vehicleLicensePlate,
+            type,
+            description,
+            date,
+            expectedNextDate,
+            odometerReading,
+            expectedNextOdometerReading,
+            attachmentFile
+        );
+    };
 
-    const updateMutation = useMutation(garageClient.updateService.bind(garageClient), {
+    const createMutation = useMutation(createMutationFunction, {
+        onSuccess: (response) => {
+            dispatch(showOnSuccess("Garage service log is been updated!"));
+
+            // Update the garageSettings in the cache after creating
+            queryClient.setQueryData(['garageServiceLogs'], [...garageServiceLogs!, response]);
+            onResponse(response);
+        },
+        onError: (response) => {
+            console.error('Error:', response);
+
+            // Display specific error message from server response
+            if (response instanceof BadRequestResponse && response.errors) {
+                dispatch(showOnError(Object.entries(response.errors)[0][1]));
+            }
+        }
+    });
+
+    const createServiceLog = (data: any, file: File | null) => {
+        createMutation.mutate({
+            vehicleLicensePlate: data.licensePlate,
+            type: data.type,
+            description: data.description,
+            date: data.date?.toISOString(),
+            expectedNextDate: data.expectedNextDate?.toISOString(),
+            odometerReading: data.odometerReading,
+            expectedNextOdometerReading: data.expectedNextOdometerReading,
+            attachmentFile: file ? { data: file, fileName: file?.name || '' } : null
+        });
+    }
+
+    type UpdateServiceLogParams = {
+        serviceLogId: string;
+        vehicleLicensePlate: string | undefined;
+        type: GarageServiceType | undefined;
+        description: string | undefined;
+        date: string | undefined;
+        expectedNextDate: string | undefined;
+        odometerReading: number | undefined;
+        expectedNextOdometerReading: number | undefined;
+        status: VehicleServiceLogStatus | undefined;
+        attachmentFile: FileParameter | null;
+    };
+
+    const updateMutationFunction = async ({
+        serviceLogId,
+        vehicleLicensePlate,
+        type,
+        description,
+        date,
+        expectedNextDate,
+        odometerReading,
+        expectedNextOdometerReading,
+        status,
+        attachmentFile
+    }: UpdateServiceLogParams) => {
+        return await garageClient.updateServiceLog(
+            serviceLogId,
+            vehicleLicensePlate,
+            type,
+            description,
+            date,
+            expectedNextDate,
+            odometerReading,
+            expectedNextOdometerReading,
+            status,
+            attachmentFile
+        );
+    };
+
+    const updateMutation = useMutation(updateMutationFunction, {
         onSuccess: (response) => {
             dispatch(showOnSuccess("Garage service log is been updated!"));
 
@@ -94,15 +181,30 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     });
 
+    const updateServiceLog = (data: any, file: File | null) => {
+        updateMutation.mutate({
+            serviceLogId: data.id!,
+            vehicleLicensePlate: data.vehicleLicensePlate,
+            type: data.type,
+            description: data.description,
+            date: data.date?.toISOString(),
+            expectedNextDate: data.expectedNextDate?.toISOString(),
+            odometerReading: data.odometerReading,
+            expectedNextOdometerReading: data.expectedNextOdometerReading,
+            status: data.status,
+            attachmentFile: file ? { data: file, fileName: file?.name || '' } : null
+        });
+    }
+
     const deleteMutation = useMutation(garageClient.deleteServiceLog.bind(garageClient), {
         onSuccess: (response) => {
             dispatch(showOnSuccess("Garage service log is been deleted!"));
 
             // Delete the garageSettings in the cache after updating
             const updatedGarageServices = garageServiceLogs?.filter((service) => service.id !== response.id);
-
-            console.log(updatedGarageServices);
             queryClient.setQueryData(['garageServiceLogs'], updatedGarageServices);
+            console.log(updatedGarageServices);
+
             onResponse(response);
         },
         onError: (response) => {
@@ -115,97 +217,14 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         }
     });
 
-    const createServiceLog = (data: any, file: any) => {
-        
-
-        //var command = new CreateVehicleServiceAsGarageLogDto();
-        //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
-        //{
-        //    vehicleLicensePlate: data.licensePlate,
-        //    type: data.type,
-        //    description: data.description,
-        //    date: data.date.toISOString(),
-        //    expectedNextDate: data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
-        //    odometerReading: data.odometerReading,
-        //    expectedNextOdometerReading: data.expectedNextOdometerReading
-        //}
-        //command.attachmentFile = new VehicleServiceLogAttachmentDtoItem()
-        //{
-
-        //}
-
-
-        //    file ? {
-        //    fileData: data.file,
-        //    fileName: data.file?.name || ''
-        //} : null;
-
-        //console.log(command.toJSON());
-        //createMutation.mutate(command);
-    }
-
-    const updateServiceLog = (data: any, file: any) => {
-
-        //public Guid ServiceLogId { get; set; }
-        //public string VehicleLicensePlate { get; set; }
-        //public GarageServiceType Type { get; set; } = GarageServiceType.Other;
-        //public string ? Description { get; set; }
-
-        //public string Date { get; set; }
-        //public string ? ExpectedNextDate { get; set; } = null!;
-        //public int OdometerReading { get; set; }
-        //public int ? ExpectedNextOdometerReading { get; set; } = null!;
-
-        //public VehicleServiceLogStatus Status { get; set; }
-
-        //public IFormFile AttachmentFile { get; set; }
-
-
-
-        //var command = new UpdateVehicleServiceAsGarageLogDto();
-        //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
-        //{
-        //    vehicleLicensePlate = data.licensePlate;
-        //    type = data.type;
-        //    description = data.description;
-        //    date = data.date.toISOString();
-        //    expectedNextDate = data.expectedNextDate ? data.expectedNextDate.toISOString() : null;
-        //    odometerReading = data.odometerReading;
-        //    expectedNextOdometerReading = data.expectedNextOdometerReading;
-        //}
-
-        //command.attachmentFile = file ? {
-        //    fileData: data.file;
-        //    fileName: data.file?.name || '';
-        //} : null;
-
-
-
-        //        dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
-
-        //        // Reset only specific form fields
-        //        setValue('type', '');
-        //        setValue('description', '');
-        //        setValue('licensePlate', '');
-        //        setValue('date', null);
-        //        setValue('expectedNextDate', null);
-        //        setValue('odometerReading', 0);
-        //        setValue('expectedNextOdometerReading', 0);
-
-
-        //console.log(command.toJSON());
-        //updateMutation.mutate(command);
-    }
-
     const deleteServiceLog = (data: any) => {
-        console.log(data);
         deleteMutation.mutate(data.id);
     }
 
     // only reset the form when the data is loaded
-    const loading = isLoading  || updateMutation.isLoading || deleteMutation.isLoading;// || createMutation.isLoading
+    const loading = isLoading || createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading;
     return {
-        loading, isError, garageServiceLogs, updateServiceLog, deleteServiceLog
+        loading, isError, garageServiceLogs, createServiceLog, updateServiceLog, deleteServiceLog
     }
 }
 

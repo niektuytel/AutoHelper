@@ -497,13 +497,13 @@ export interface IGarageAccountClient {
 
     createService(command: CreateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
-    createServiceLog(vehicleLicensePlate: string | null | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem>;
+    createServiceLog(vehicleLicensePlate: string | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem>;
 
     updateSettings(command: UpdateGarageSettingsCommand): Promise<GarageSettingsDtoItem>;
 
     updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
-    updateServiceLog(serviceLogId: string | undefined, vehicleLicensePlate: string | null | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, status: VehicleServiceLogStatus | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem>;
+    updateServiceLog(serviceLogId: string | undefined, vehicleLicensePlate: string | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, status: VehicleServiceLogStatus | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem>;
 
     deleteService(id: string): Promise<GarageServiceDtoItem>;
 
@@ -790,12 +790,14 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 
-    createServiceLog(vehicleLicensePlate: string | null | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem> {
+    createServiceLog(vehicleLicensePlate: string | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem> {
         let url_ = this.baseUrl + "/api/GarageAccount/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (vehicleLicensePlate !== null && vehicleLicensePlate !== undefined)
+        if (vehicleLicensePlate === null || vehicleLicensePlate === undefined)
+            throw new Error("The parameter 'vehicleLicensePlate' cannot be null.");
+        else
             content_.append("VehicleLicensePlate", vehicleLicensePlate.toString());
         if (type === null || type === undefined)
             throw new Error("The parameter 'type' cannot be null.");
@@ -803,7 +805,9 @@ export class GarageAccountClient implements IGarageAccountClient {
             content_.append("Type", type.toString());
         if (description !== null && description !== undefined)
             content_.append("Description", description.toString());
-        if (date !== null && date !== undefined)
+        if (date === null || date === undefined)
+            throw new Error("The parameter 'date' cannot be null.");
+        else
             content_.append("Date", date.toString());
         if (expectedNextDate !== null && expectedNextDate !== undefined)
             content_.append("ExpectedNextDate", expectedNextDate.toString());
@@ -944,7 +948,7 @@ export class GarageAccountClient implements IGarageAccountClient {
         return Promise.resolve<GarageServiceDtoItem>(null as any);
     }
 
-    updateServiceLog(serviceLogId: string | undefined, vehicleLicensePlate: string | null | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, status: VehicleServiceLogStatus | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem> {
+    updateServiceLog(serviceLogId: string | undefined, vehicleLicensePlate: string | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, status: VehicleServiceLogStatus | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem> {
         let url_ = this.baseUrl + "/api/GarageAccount/UpdateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -953,7 +957,9 @@ export class GarageAccountClient implements IGarageAccountClient {
             throw new Error("The parameter 'serviceLogId' cannot be null.");
         else
             content_.append("ServiceLogId", serviceLogId.toString());
-        if (vehicleLicensePlate !== null && vehicleLicensePlate !== undefined)
+        if (vehicleLicensePlate === null || vehicleLicensePlate === undefined)
+            throw new Error("The parameter 'vehicleLicensePlate' cannot be null.");
+        else
             content_.append("VehicleLicensePlate", vehicleLicensePlate.toString());
         if (type === null || type === undefined)
             throw new Error("The parameter 'type' cannot be null.");
@@ -961,7 +967,9 @@ export class GarageAccountClient implements IGarageAccountClient {
             content_.append("Type", type.toString());
         if (description !== null && description !== undefined)
             content_.append("Description", description.toString());
-        if (date !== null && date !== undefined)
+        if (date === null || date === undefined)
+            throw new Error("The parameter 'date' cannot be null.");
+        else
             content_.append("Date", date.toString());
         if (expectedNextDate !== null && expectedNextDate !== undefined)
             content_.append("ExpectedNextDate", expectedNextDate.toString());
@@ -3615,6 +3623,7 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
     garageLookupIdentifier!: string;
     garageLookup?: GarageLookupItem | undefined;
     type!: GarageServiceType;
+    title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
     notes?: string;
@@ -3640,6 +3649,7 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
             this.garageLookupIdentifier = _data["garageLookupIdentifier"];
             this.garageLookup = _data["garageLookup"] ? GarageLookupItem.fromJS(_data["garageLookup"]) : <any>undefined;
             this.type = _data["type"];
+            this.title = _data["title"];
             this.description = _data["description"];
             this.attachedFile = _data["attachedFile"];
             this.notes = _data["notes"];
@@ -3669,6 +3679,7 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
         data["garageLookupIdentifier"] = this.garageLookupIdentifier;
         data["garageLookup"] = this.garageLookup ? this.garageLookup.toJSON() : <any>undefined;
         data["type"] = this.type;
+        data["title"] = this.title;
         data["description"] = this.description;
         data["attachedFile"] = this.attachedFile;
         data["notes"] = this.notes;
@@ -3692,6 +3703,7 @@ export interface IVehicleServiceLogItem extends IBaseAuditableEntity {
     garageLookupIdentifier: string;
     garageLookup?: GarageLookupItem | undefined;
     type: GarageServiceType;
+    title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
     notes?: string;

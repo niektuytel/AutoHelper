@@ -23,6 +23,7 @@ export default ({ license_plate }:IProps) => {
                     minWidth: "110px"
                 },
             }}>
+                <VehicleTimelineAddItem/>
                 {loading ?
                     Array.from({ length: 4 }).map((_, index) => (
                         <VehicleTimelineItemSkeleton key={`VehicleTimelineItemSkeleton-${index}`} usedIndex={index} />
@@ -32,7 +33,6 @@ export default ({ license_plate }:IProps) => {
                         <VehicleTimelineItem key={`VehicleTimelineItem-${index}`} timelineItem={timelineItem} />
                     ))
                 }
-                <VehicleTimelineAddItem/>
             </Timeline>
         </>
     );

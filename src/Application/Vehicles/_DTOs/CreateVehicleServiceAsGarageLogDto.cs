@@ -14,5 +14,5 @@ public record CreateVehicleServiceAsGarageLogDto
     public int OdometerReading { get; set; }
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
-    public IFormFile AttachmentFile { get; set; }
+    public IFormFile? AttachmentFile { get; set; }
 }

@@ -682,8 +682,7 @@
                 "type": "object",
                 "properties": {
                   "VehicleLicensePlate": {
-                    "type": "string",
-                    "nullable": true
+                    "type": "string"
                   },
                   "Type": {
                     "$ref": "#/components/schemas/GarageServiceType"
@@ -693,8 +692,7 @@
                     "nullable": true
                   },
                   "Date": {
-                    "type": "string",
-                    "nullable": true
+                    "type": "string"
                   },
                   "ExpectedNextDate": {
                     "type": "string",
@@ -844,8 +842,7 @@
                     "format": "guid"
                   },
                   "VehicleLicensePlate": {
-                    "type": "string",
-                    "nullable": true
+                    "type": "string"
                   },
                   "Type": {
                     "$ref": "#/components/schemas/GarageServiceType"
@@ -855,8 +852,7 @@
                     "nullable": true
                   },
                   "Date": {
-                    "type": "string",
-                    "nullable": true
+                    "type": "string"
                   },
                   "ExpectedNextDate": {
                     "type": "string",
@@ -3283,6 +3279,10 @@
               },
               "type": {
                 "$ref": "#/components/schemas/GarageServiceType"
+              },
+              "title": {
+                "type": "string",
+                "nullable": true
               },
               "description": {
                 "type": "string",

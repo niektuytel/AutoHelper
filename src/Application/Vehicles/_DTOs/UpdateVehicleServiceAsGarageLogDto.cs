@@ -17,6 +17,5 @@ public record UpdateVehicleServiceAsGarageLogDto
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
     public VehicleServiceLogStatus Status { get; set; }
-
-    public IFormFile AttachmentFile { get; set; }
+    public IFormFile? AttachmentFile { get; set; }
 }
