@@ -12,13 +12,13 @@ import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 
 // own imports
-import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../app/web-api-client';
+import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import StepConfirmation from './StepConfirmation';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
-import { showOnError, showOnSuccess } from '../../../redux/slices/statusSnackbarSlice';
+import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { useDispatch } from 'react-redux';
-import { useDrawer } from '../ServiceLogDrawerProvider';
+import useVehicleServiceLogs from '../../useVehicleServiceLogs';
 
 interface IServiceLogDrawerProps {
     licensePlate: string;
@@ -41,7 +41,8 @@ const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Ve
 
 export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
-    const { drawerOpen, toggleDrawer, addServiceLog } = useDrawer();
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const { addServiceLog } = useVehicleServiceLogs(licensePlate);
     const dispatch = useDispatch();
     const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
     const [file, setFile] = useState<File | null>(null);
@@ -98,7 +99,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const handleBack = () => {
         if (activeStep === 0)
         {
-            toggleDrawer(false);
+            setDrawerOpen(false);
         }
         else
         {
@@ -162,7 +163,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         <Drawer
             anchor="right"
             open={drawerOpen}
-            onClose={() => toggleDrawer(false)}
+            onClose={() => setDrawerOpen(false)}
             sx={{
                 '& .MuiDrawer-paper': {
                     width: isMobile ? '100%' : '600px',
@@ -174,7 +175,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                     <Typography variant="h6" component="div">
                         {t("AddMaintenanceLog.Title")}
                     </Typography>
-                    <IconButton onClick={() => toggleDrawer(false)}>
+                    <IconButton onClick={() => setDrawerOpen(false)}>
                         <CloseIcon />
                     </IconButton>
                 </Box>
@@ -192,7 +193,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                     {activeStep === 0 && <StepGarage control={control} setIsMaintenance={setIsMaintenance} file={file} setFile={setFile} />}
                     {activeStep === 1 && <StepVehicle control={control} isMaintenance={isMaintenance} />}
                     {activeStep === 2 && <StepConfirmation control={control} />}
-                    <Box component="footer" sx={{ ml:2, mb: 2 }}>
+                    <Box component="footer" sx={{ ml: 1, mb: 1 }}>
                         <Button onClick={handleBack}>{(activeStep === 0) ? t("Cancel") : t("Back")}</Button>
                         <Button
                             variant="contained"
@@ -214,7 +215,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
             variant="contained"
             color="primary"
             sx={{ position: 'fixed', p: 2, bottom: 16, right: 16, borderRadius: 10 }}
-            onClick={() => toggleDrawer(true)}
+            onClick={() => setDrawerOpen(true)}
             endIcon={<AddIcon />}
         >
             {t("Maintenance")}

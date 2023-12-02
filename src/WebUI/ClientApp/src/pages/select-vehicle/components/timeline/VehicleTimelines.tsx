@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState } from "react";
 
 // custom imports
-import useVehicleTimeline from "../useVehicleTimeline";
+import useVehicleTimeline from "../../useVehicleTimeline";
 import VehicleTimelineItemSkeleton from "./VehicleTimelineItemSkeleton";
 import VehicleTimelineItem from "./VehicleTimelineItem";
 

@@ -10,7 +10,7 @@ import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import PriorityHighRoundedIcon from '@mui/icons-material/PriorityHighRounded';
 import DoneOutlineRoundedIcon from '@mui/icons-material/DoneOutlineRounded';
 import { Paper, Skeleton } from '@mui/material';
-import { VehicleTimelineType } from '../../../app/web-api-client';
+import { VehicleTimelineType } from '../../../../app/web-api-client';
 
 interface IProps {
     usedIndex: number

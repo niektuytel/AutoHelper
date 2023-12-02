@@ -8,7 +8,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Header from './components/header/Header';
 import StatusSnackbar from './components/snackbar/StatusSnackbar';
 import Footer from './components/footer/DefaultFooter';
-import SelectVehicle from './pages/select-vehicle/SelectVehicle';
+import SelectVehiclePage from './pages/select-vehicle/SelectVehiclePage';
 import SelectGarage from './pages/select-garage/SelectGarage';
 import AuthCallback from './pages/AuthCallbackPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -23,6 +23,7 @@ import { COLORS } from './constants/colors';
 import theme from './constants/theme';
 import Garage from './pages/garage/Garage';
 import GarageServiceLogs from './pages/garage-account/servicelogs/GarageServiceLogs';
+import HomePage from './pages/home/HomePage';
 
 export default () => {
     const location = useLocation();
@@ -80,13 +81,13 @@ export default () => {
                     <Route path={`${ROUTES.SELECT_VEHICLE}`} element={
                         <>
                             <Header showStaticDrawer={showStaticDrawer} />
-                            <SelectVehicle />
+                            <HomePage />
                         </>
                     } />
                     <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate`} element={
                         <>
                             <Header showStaticDrawer={showStaticDrawer} />
-                            <SelectVehicle />
+                            <SelectVehiclePage />
                         </>
                     } />
                     <Route path={`${ROUTES.SELECT_GARAGE}/:license_plate/:lat/:lng`} element={

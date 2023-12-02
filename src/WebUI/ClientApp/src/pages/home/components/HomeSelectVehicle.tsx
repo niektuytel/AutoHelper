@@ -3,7 +3,7 @@ import { Box, Grid, Hidden, Typography } from "@mui/material";
 import { useTranslation } from 'react-i18next';
 
 // custom imports
-import SearchLicensePlate from '../components/SearchLicensePlate';
+import SearchLicensePlate from './SearchLicensePlate';
 
 export default () => {
     const { t } = useTranslation();

@@ -7,7 +7,7 @@ import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/Accord
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
 
 // custom imports
-import useVehicleInformation from "../useVehicleSpecifications";
+import useVehicleInformation from "../../useVehicleSpecifications";
 
 interface IProps {
     isMobile: boolean;

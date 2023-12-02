@@ -4,7 +4,7 @@ import { Box, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typo
 
 // own imports
 import LicensePlateTextField from "./EditableLicensePlate";
-import useSearchVehicle from "../useSearchVehicle";
+import useSearchVehicle from "../../../useSearchVehicle";
 import { useTranslation } from "react-i18next";
 
 interface IProps {

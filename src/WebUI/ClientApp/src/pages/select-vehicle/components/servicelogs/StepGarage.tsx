@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 import SearchGarage from './SearchGarage';
-import { GarageServiceType } from '../../../app/web-api-client';
-import { enumToKeyValueArray } from '../../../app/utils';
+import { GarageServiceType } from '../../../../app/web-api-client';
+import { enumToKeyValueArray } from '../../../../app/utils';
 
 function getVehicleServicesTypes() {
     const items = [

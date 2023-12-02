@@ -19,7 +19,7 @@ import { useDispatch } from "react-redux";
 
 // own imports
 import { getFormatedLicense } from "../../../app/LicensePlateUtils";
-import useSearchVehicle from "../useSearchVehicle";
+import useSearchVehicle from "../../useSearchVehicle";
 import { ROUTES } from "../../../constants/routes";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 

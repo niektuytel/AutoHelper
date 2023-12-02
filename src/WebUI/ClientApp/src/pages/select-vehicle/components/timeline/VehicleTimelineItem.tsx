@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import { Tooltip } from '@mui/material';
 
 // custom imports
-import { VehicleTimelineDtoItem, VehicleTimelineType } from '../../../app/web-api-client';
+import { VehicleTimelineDtoItem, VehicleTimelineType } from '../../../../app/web-api-client';
 
 // CSS for the ellipsis
 const ellipsisStyle:any = {

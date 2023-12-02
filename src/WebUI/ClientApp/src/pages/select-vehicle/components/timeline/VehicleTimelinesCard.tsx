@@ -3,7 +3,7 @@ import Timeline from '@mui/lab/Timeline';
 import { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent';
 
 // custom imports
-import useVehicleTimelineCard from '../useVehicleTimelineCard';
+import useVehicleTimelineCard from '../../useVehicleTimelineCard';
 import VehicleTimelineItemSkeleton from './VehicleTimelineItemSkeleton';
 import VehicleTimelineItem from './VehicleTimelineItem';
 
