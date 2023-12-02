@@ -150,30 +150,32 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    //[Authorize(Policy = "GarageRole")]
-    //[HttpPut($"{nameof(UpdateServiceLog)}")]
-    //[ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
-    //[ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    //public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDto commandWithAttachment, CancellationToken cancellationToken)
-    //{
-    //    var command = commandWithAttachment.ServiceLogCommand;
-    //    command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+    [Authorize(Policy = "GarageRole")]
+    [HttpPost($"{nameof(UpdateServiceLog)}")]
+    [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDto serviceLogDto, CancellationToken cancellationToken)
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
 
-    //    // If a file is included, process it
-    //    if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)
-    //    {
-    //        using var memoryStream = new MemoryStream();
-    //        await commandWithAttachment.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
+        // JsonIgnore does not work on the controller level, so we do the mapping
+        var command = new UpdateVehicleServiceLogAsGarageCommand(userId, serviceLogDto);
 
-    //        command.Attachment = new VehicleServiceLogAttachmentDtoItem
-    //        {
-    //            FileName = commandWithAttachment.AttachmentFile.FileName,
-    //            FileData = memoryStream.ToArray()
-    //        };
-    //    }
+        // If a file is included, process it
+        if (serviceLogDto.AttachmentFile != null && serviceLogDto.AttachmentFile.Length > 0)
+        {
+            using var memoryStream = new MemoryStream();
+            await serviceLogDto.AttachmentFile.CopyToAsync(memoryStream, cancellationToken);
 
-    //    return await Mediator.Send(command);
-    //}
+            command.Attachment = new VehicleServiceLogAttachmentDtoItem
+            {
+                FileName = serviceLogDto.AttachmentFile.FileName,
+                FileData = memoryStream.ToArray()
+            };
+        }
+
+        return await Mediator.Send(command);
+    }
 
     [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(DeleteService)}/{{id}}")]

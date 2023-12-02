@@ -45,7 +45,7 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
             throw new NotFoundException(nameof(GarageServiceItem), request.Id);
         }
 
-        entity.Type = request.Type;
+        entity.GeneralType = request.Type;
         entity.Description = request.Description;
 
         // If you wish to use domain events, then you can add them here:

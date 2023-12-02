@@ -9,42 +9,35 @@ using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Domain;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 
-public record UpdateVehicleServiceAsGarageLogDto : IRequest<VehicleServiceLogAsGarageDtoItem>
-{
-    public UpdateVehicleServiceLogAsGarageCommand ServiceLogCommand { get; set; }
-    public IFormFile AttachmentFile { get; set; }
-}
-
 public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
-    /// <summary>
-    /// internal use only, not required for client
-    /// </summary>
-    [JsonIgnore]
-    internal GarageItem Garage { get; set; } = null!;
-    
-    /// <summary>
-    /// internal use only, not required for client
-    /// </summary>
-    [JsonIgnore]
-    internal VehicleServiceLogItem ServiceLog { get; set; } = null!;
+    public UpdateVehicleServiceLogAsGarageCommand(string userId, UpdateVehicleServiceAsGarageLogDto data)
+    {
+        UserId = userId;
+        ServiceLogId = data.ServiceLogId;
+        VehicleLicensePlate = data.VehicleLicensePlate;
+        Type = data.Type;
+        Description = data.Description;
+        Date = data.Date;
+        ExpectedNextDate = data.ExpectedNextDate;
+        OdometerReading = data.OdometerReading;
+        ExpectedNextOdometerReading = data.ExpectedNextOdometerReading;
+        Status = data.Status;
+    }
 
-    [JsonIgnore]
-    public string UserId { get; set; } = null!;
-
-    public Guid ServiceLogId { get; set; }
-
+    internal string UserId { get; private set; }
+    public Guid ServiceLogId { get; private set; }
     public string VehicleLicensePlate { get; set; }
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
     public string? Description { get; set; }
@@ -54,12 +47,16 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     public int OdometerReading { get; set; }
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
-    public VehicleServiceLogAttachmentDtoItem Attachment { get; set; }
+    public VehicleServiceLogStatus Status { get; set; }
 
-    [JsonIgnore]
+    public VehicleServiceLogAttachmentDtoItem? Attachment { get; set; }
+
+    internal GarageItem Garage { get; set; }
+
+    internal VehicleServiceLogItem ServiceLog { get; set; } = null!;
+
     internal DateTime? ParsedDate { get; private set; }
 
-    [JsonIgnore]
     internal DateTime? ParsedExpectedNextDate { get; private set; }
 
     public void SetParsedDates(DateTime? date, DateTime? expectedNextDate)
@@ -84,29 +81,35 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(UpdateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
-        // Align license plate
-        request.VehicleLicensePlate = request.VehicleLicensePlate.ToUpper().Replace("-", "");
+        var entity = UpdateVehicleServiceLogEntity(request);
+        UploadAttachmentIfPresent(request, entity, cancellationToken);
 
-        var entity = new VehicleServiceLogItem
-        {
-            GarageLookupIdentifier = request.Garage.GarageLookupIdentifier,
-            VehicleLicensePlate = request.VehicleLicensePlate,
-            Type = request.Type,
-            Description = request.Description,
+        // update entity
+        await _context.SaveChangesAsync(cancellationToken);
+        // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-            Date = (DateTime)request.ParsedDate!,
-            ExpectedNextDate = request.ParsedExpectedNextDate,
-            OdometerReading = request.OdometerReading,
-            ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
+        return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
+    }
 
-            Status = VehicleServiceLogStatus.VerifiedByGarage,
-            ReporterName = request.Garage.Lookup.Name,
-            ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
-            ReporterEmailAddress = request.Garage.Lookup.EmailAddress,
-        };
+    private VehicleServiceLogItem UpdateVehicleServiceLogEntity(UpdateVehicleServiceLogAsGarageCommand request)
+    {
+        var serviceLog = request.ServiceLog; 
+        serviceLog.VehicleLicensePlate = request.VehicleLicensePlate;
+        serviceLog.Type = request.Type;
+        serviceLog.Description = request.Description;
+        serviceLog.Status = request.Status;
 
-        // upload attached file
-        if (request.Attachment.FileName != null && request.Attachment.FileData != null)
+        serviceLog.Date = (DateTime)request.ParsedDate!;
+        serviceLog.ExpectedNextDate = request.ParsedExpectedNextDate;
+        serviceLog.OdometerReading = request.OdometerReading;
+        serviceLog.ExpectedNextOdometerReading = request.ExpectedNextOdometerReading;
+
+        return serviceLog;
+    }
+
+    private async void UploadAttachmentIfPresent(UpdateVehicleServiceLogAsGarageCommand request, VehicleServiceLogItem entity, CancellationToken cancellationToken)
+    {
+        if (request.Attachment?.FileName != null && request.Attachment?.FileData != null)
         {
             var fileExtension = Path.GetExtension(request.Attachment.FileName);
             var attachmentBlobName = await _blobStorageService.UploadVehicleAttachmentAsync(
@@ -117,12 +120,6 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
             entity.AttachedFile = attachmentBlobName;
         }
-
-        // If you wish to use domain events, then you can add them here:
-        // entity.AddDomainEvent(new SomeDomainEvent(entity));
-
-        _context.VehicleServiceLogs.Add(entity);
-        await _context.SaveChangesAsync(cancellationToken);
-        return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
     }
+
 }

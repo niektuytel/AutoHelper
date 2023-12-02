@@ -1,5 +1,12 @@
 ﻿namespace AutoHelper.Domain.Entities.Garages;
 
+// TODO: HOw we make this organized?
+// Answer: We can use partial classes to organize this file
+// Answer: We can use regions to organize this file
+// Answer: We can use partial classes and regions to organize this file
+// How we use this in the frontend?
+// Answer: We can use enums in the frontend
+// Answer: We can use enums in the frontend and use the enum value as a key to translate the enum value
 public enum GarageServiceType
 {
     /// <summary>

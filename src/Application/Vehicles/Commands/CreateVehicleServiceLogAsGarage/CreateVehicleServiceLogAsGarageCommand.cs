@@ -133,4 +133,5 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
             entity.AttachedFile = attachmentBlobName;
         }
     }
+
 }

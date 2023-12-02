@@ -116,6 +116,8 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     });
 
     const createServiceLog = (data: any, file: any) => {
+        
+
         //var command = new CreateVehicleServiceAsGarageLogDto();
         //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
         //{
@@ -143,6 +145,23 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     }
 
     const updateServiceLog = (data: any, file: any) => {
+
+        //public Guid ServiceLogId { get; set; }
+        //public string VehicleLicensePlate { get; set; }
+        //public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+        //public string ? Description { get; set; }
+
+        //public string Date { get; set; }
+        //public string ? ExpectedNextDate { get; set; } = null!;
+        //public int OdometerReading { get; set; }
+        //public int ? ExpectedNextOdometerReading { get; set; } = null!;
+
+        //public VehicleServiceLogStatus Status { get; set; }
+
+        //public IFormFile AttachmentFile { get; set; }
+
+
+
         //var command = new UpdateVehicleServiceAsGarageLogDto();
         //command.serviceLogCommand = new CreateVehicleServiceLogAsGarageCommand()
         //{

@@ -19,7 +19,7 @@ public class GarageServiceDtoItem : IMapFrom<GarageServiceItem>
     {
         profile.CreateMap<GarageServiceItem, GarageServiceDtoItem>()
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
-            .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
+            .ForMember(d => d.Type, opt => opt.MapFrom(s => s.GeneralType))
             .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Description));
     }
 }

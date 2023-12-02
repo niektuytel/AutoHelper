@@ -42,7 +42,7 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
         {
             UserId = request.UserId,
             GarageId = request.Garage!.Id,
-            Type = request.Type,
+            GeneralType = request.Type,
             Description = request.Description
         };
 

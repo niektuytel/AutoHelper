@@ -26,6 +26,8 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     [Required]
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
 
+    public string? Title { get; set; }
+
     public string? Description { get; set; }
 
     public string? AttachedFile { get; set; }

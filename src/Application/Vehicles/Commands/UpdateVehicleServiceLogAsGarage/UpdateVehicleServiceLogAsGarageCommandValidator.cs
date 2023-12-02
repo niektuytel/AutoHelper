@@ -7,6 +7,7 @@ using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 
@@ -89,9 +90,11 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
     }
 
 
-    private async Task<bool> BeValidAndExistingVehicle(string licensePlate, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingVehicle(UpdateVehicleServiceLogAsGarageCommand command, string licensePlate, CancellationToken cancellationToken)
     {
         licensePlate = licensePlate.ToUpper().Replace("-", "");
+        command.VehicleLicensePlate = licensePlate;
+
         var vehicle = await _context.VehicleLookups.FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
         return vehicle != null;
     }

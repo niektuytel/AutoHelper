@@ -503,6 +503,8 @@ export interface IGarageAccountClient {
 
     updateService(command: UpdateGarageServiceCommand): Promise<GarageServiceDtoItem>;
 
+    updateServiceLog(serviceLogId: string | undefined, vehicleLicensePlate: string | null | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, status: VehicleServiceLogStatus | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem>;
+
     deleteService(id: string): Promise<GarageServiceDtoItem>;
 
     deleteServiceLog(id: string): Promise<VehicleServiceLogAsGarageDtoItem>;
@@ -940,6 +942,78 @@ export class GarageAccountClient implements IGarageAccountClient {
             });
         }
         return Promise.resolve<GarageServiceDtoItem>(null as any);
+    }
+
+    updateServiceLog(serviceLogId: string | undefined, vehicleLicensePlate: string | null | undefined, type: GarageServiceType | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, status: VehicleServiceLogStatus | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem> {
+        let url_ = this.baseUrl + "/api/GarageAccount/UpdateServiceLog";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (serviceLogId === null || serviceLogId === undefined)
+            throw new Error("The parameter 'serviceLogId' cannot be null.");
+        else
+            content_.append("ServiceLogId", serviceLogId.toString());
+        if (vehicleLicensePlate !== null && vehicleLicensePlate !== undefined)
+            content_.append("VehicleLicensePlate", vehicleLicensePlate.toString());
+        if (type === null || type === undefined)
+            throw new Error("The parameter 'type' cannot be null.");
+        else
+            content_.append("Type", type.toString());
+        if (description !== null && description !== undefined)
+            content_.append("Description", description.toString());
+        if (date !== null && date !== undefined)
+            content_.append("Date", date.toString());
+        if (expectedNextDate !== null && expectedNextDate !== undefined)
+            content_.append("ExpectedNextDate", expectedNextDate.toString());
+        if (odometerReading === null || odometerReading === undefined)
+            throw new Error("The parameter 'odometerReading' cannot be null.");
+        else
+            content_.append("OdometerReading", odometerReading.toString());
+        if (expectedNextOdometerReading !== null && expectedNextOdometerReading !== undefined)
+            content_.append("ExpectedNextOdometerReading", expectedNextOdometerReading.toString());
+        if (status === null || status === undefined)
+            throw new Error("The parameter 'status' cannot be null.");
+        else
+            content_.append("Status", status.toString());
+        if (attachmentFile !== null && attachmentFile !== undefined)
+            content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateServiceLog(_response);
+        });
+    }
+
+    protected processUpdateServiceLog(response: Response): Promise<VehicleServiceLogAsGarageDtoItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = VehicleServiceLogAsGarageDtoItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<VehicleServiceLogAsGarageDtoItem>(null as any);
     }
 
     deleteService(id: string): Promise<GarageServiceDtoItem> {
