@@ -21,13 +21,13 @@ import { GetGarageAccountClient } from '../../../../app/GarageClient';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useDrawer } from '../../../select-vehicle/ServiceLogDrawerProvider';
 
-interface IServiceLogFormProps {
+interface IServiceLogDrawerProps {
     drawerOpen: boolean;
     toggleDrawer: (open: boolean) => void;
     handleService: (data: any, file: File | null) => void;
 }
 
-interface IServiceLogFormData {
+interface IServiceLogDrawerData {
     licensePlate: string;
     type: string;
     description: string;
@@ -42,7 +42,7 @@ interface IServiceLogFormData {
 
 const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title'];
 
-export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProps) => {
+export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const dispatch = useDispatch();
     const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
@@ -53,11 +53,11 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogFormProp
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageAccountClient(accessToken);
-    const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogFormData>();
+    const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogDrawerData>();
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleNext = (data: IServiceLogFormData) => {
+    const handleNext = (data: IServiceLogDrawerData) => {
         let hasError = false;
 
         if (activeStep === 0) {

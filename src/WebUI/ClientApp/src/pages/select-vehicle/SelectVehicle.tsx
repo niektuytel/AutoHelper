@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { Container, useTheme, useMediaQuery} from "@mui/material";
+import { Container, useTheme, useMediaQuery, Fab} from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useParams } from "react-router-dom";
@@ -11,8 +11,9 @@ import HomeBodyView from "./views/HomeBodyView";
 import VehicleHeaderView from "./views/VehicleHeaderView";
 import VehicleBodyView from "./views/VehicleBodyView";
 import { ROUTES } from "../../constants/routes";
-import ServiceLogDrawerProvider from "./ServiceLogDrawerProvider";
-import ServiceLogForm from "./components/ServiceLogForm";
+import ServiceLogDrawerProvider, { useDrawer } from "./ServiceLogDrawerProvider";
+import ServiceLogDrawer from "./components/ServiceLogDrawer";
+import { useTranslation } from "react-i18next";
 
 interface IProps {}
 
@@ -20,27 +21,33 @@ export default ({ }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { license_plate } = useParams();
+    const { t } = useTranslation();
+
+    if (window.location.pathname === ROUTES.SELECT_VEHICLE) {
+        return <>
+            <GradientBox>
+                <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center", minHeight: "400px" }}>
+                    <HomeHeaderView />
+                </Container>
+            </GradientBox>
+            <Container maxWidth="lg" sx={{ padding: "0" }}>
+                <HomeBodyView />
+            </Container>
+        </>
+    }
 
     return (
         <>
             <ServiceLogDrawerProvider license_plate={license_plate || ""}>
                 <GradientBox>
                     <Container maxWidth="lg" sx={{ padding: "0", textAlign: "center", minHeight:"400px" }}>
-                        { window.location.pathname === ROUTES.SELECT_VEHICLE ?
-                            <HomeHeaderView/>
-                            :
-                            <VehicleHeaderView isMobile={isMobile} license_plate={license_plate || ""}/>
-                        }
+                        <VehicleHeaderView isMobile={isMobile} license_plate={license_plate || ""}/>
                     </Container>
                 </GradientBox>
                 <Container maxWidth="lg" sx={{ padding: "0" }}>
-                    { window.location.pathname === ROUTES.SELECT_VEHICLE ? 
-                        <HomeBodyView/>
-                        :
-                        <VehicleBodyView isMobile={isMobile} license_plate={license_plate || ""}/>
-                    }
+                    <VehicleBodyView isMobile={isMobile} license_plate={license_plate || ""}/>
                 </Container>
-                <ServiceLogForm licensePlate={license_plate || ""}/>
+                <ServiceLogDrawer licensePlate={license_plate || ""}/>
             </ServiceLogDrawerProvider>
         </>
     );

@@ -38,7 +38,8 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
     {
         var entities = _context.VehicleServiceLogs
             .AsNoTracking()
-            .Where(v => v.VehicleLicensePlate == request.LicensePlate);
+            .Where(v => v.VehicleLicensePlate == request.LicensePlate)
+            .OrderByDescending(v => v.Date);
 
         var result = await _mapper
             .ProjectTo<VehicleServiceLogDtoItem>(entities)

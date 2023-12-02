@@ -10,6 +10,8 @@ import {
 } from '@mui/material';
 import GarageIcon from '@mui/icons-material/CarRepair';
 import SpeedIcon from '@mui/icons-material/Speed';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -39,6 +41,9 @@ export default ({ isMobile, license_plate }: IProps) => {
     const getServiceTypeLabel = (type: GarageServiceType): string => {
         return t(`serviceTypes:${GarageServiceType[type]}.Title`);
     };
+
+    // TODO: open will collabse more service log information
+    const open = false;
 
     return <>
         <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden" }}>
@@ -79,6 +84,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 <Typography variant="h6" sx={textStyles.root}>
                                     <b>{getServiceTypeLabel(logItem.type!)}</b>
                                 </Typography>
+                                {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                             </Box>
                             <Chip
                                 label="Unverified"
@@ -87,11 +93,11 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 sx={{ ml: 'auto' }}
                             />
                         </Box>
-                        {logItem.description && (
+                        {open && <>
                             <Typography variant="body2" sx={{ mx: 1 }}>
                                 {logItem.description}
                             </Typography>
-                        )}
+                        </>}
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', m: 1 }}>
                             <Chip
                                 icon={<SpeedIcon />}

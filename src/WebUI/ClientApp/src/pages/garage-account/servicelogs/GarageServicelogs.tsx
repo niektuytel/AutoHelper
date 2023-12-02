@@ -33,18 +33,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Table, TableBody, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
-//import GarageServiceDialog from "./components/GarageServiceDialog";
-//import { getTitleForServiceType } from "../defaultGarageService";
-//import { COLORS } from "../../../constants/colors";
-//import GarageServiceCardOther from "./components/GarageServiceCardOther";
-//import GarageServiceCard from "./components/GarageServiceCard";
-//import GarageServiceDeleteDialog from "./components/GarageServiceDeleteDialog";
-//import GarageServicesCollectionCard from "./components/GarageServicesCollectionCard";
 import { useDispatch } from "react-redux";
-import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
 import useGarageServicelogs from "./useGarageServicelogs";
-import GarageServiceLogCard from "./components/GarageServiceLogCard";
-import GarageServiceLogDeleteDialog from "./components/GarageServiceLogDeleteDialog";
 import ServiceLogDrawer from "./components/ServiceLogDrawer";
 import ServiceLogTableRow from "./components/ServiceLogTableRow";
 
@@ -142,11 +132,11 @@ export default ({ }: IProps) => {
                 <Table aria-label="garage service logs table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Date</TableCell>
-                            <TableCell>License Plate</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell></TableCell>
-                            <TableCell></TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}>Date</TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}>License Plate</TableCell>
+                            <TableCell sx={{ flexGrow: 1, minWidth: 0 }}>Type</TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}></TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -156,13 +146,6 @@ export default ({ }: IProps) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <GarageServiceLogDeleteDialog
-                service={selectedItem}
-                confirmDeleteOpen={dialogDeleteOpen}
-                setConfirmDeleteOpen={setDialogDeleteOpen}
-                deleteService={deleteServiceLog}
-                loading={loading}
-            />
             <ServiceLogDrawer
                 drawerOpen={drawerOpen}
                 toggleDrawer={toggleDrawer}

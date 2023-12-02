@@ -11,7 +11,7 @@
   "overview_camelcase": "Overzicht",
   "planning_camelcase": "Planning",
   "services_camelcase": "Diensten",
-  "servicelogs_camelcase": "Onderhoudslogboek",
+  "servicelogs_camelcase": "Onderhouds logboek",
   "colleagues_camelcase": "Werknemers",
   "settings_camelcase": "Instellingen",
   "account_camelcase": "Account",
@@ -134,6 +134,8 @@
   "GarageAccount.GarageLookup.Requried": "Selecteer u garage",
   "GarageAccount.Conversation.Title": "Direct Klantencontact",
   "GarageAccount.Conversation.Description": " Eenvoudig contact met klanten via e-mail of WhatsApp. Communicatie loopt via ons, zodat wij meer informatie kunnen geven over de auto.",
+  "GarageAccount.ServiceLogs.Title": "Onderhouds logboek",
+  "GarageAccount.ServiceLogs.Description": "Alle onderhoud gerelateerd aan u garage.",
 
   "Search.LicensePlate.NotFound": "Opgegeven kentekenplaat niet gevonden",
   "Request a quote": "Offerte aanvragen",

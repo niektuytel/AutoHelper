@@ -1,12 +1,15 @@
 ﻿import { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Collapse, Box, Typography, IconButton } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Collapse, Box, Typography, IconButton, Chip } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AcceptIcon from '@mui/icons-material/CheckCircleOutline'; // You can change this to the appropriate Accept icon
 import DeclineIcon from '@mui/icons-material/Cancel'; // You can change this to the appropriate Decline icon
-import { VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from '../../../../app/web-api-client';
+import { GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from '../../../../app/web-api-client';
+import { useTranslation } from 'react-i18next';
+import { getFormatedLicense } from '../../../../app/LicensePlateUtils';
+import { ROUTES } from '../../../../constants/routes';
 
 interface IProps {
     item: VehicleServiceLogAsGarageDtoItem
@@ -15,6 +18,7 @@ interface IProps {
 }
 
 export default ({ item, handleEdit, handleDelete }: IProps) => {
+    const {t} = useTranslation(["serviceTypes"]);
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState<File | null>(null);
 
@@ -31,6 +35,13 @@ export default ({ item, handleEdit, handleDelete }: IProps) => {
         handleDelete(item);
     };
 
+    const gotoVehiclePage = (e: any) => {
+        e.stopPropagation();
+
+        // Then the page has an fresh cache, that the services are up to date
+        window.location.href = `${ROUTES.SELECT_VEHICLE}/${item.vehicleLicensePlate}`;
+    }
+
     const isNotVerified = item.status === VehicleServiceLogStatus.NotVerified;
     const isVerified = item.status === VehicleServiceLogStatus.VerifiedByGarage;
     const backgroundColor = isVerified ? '#e8ffe8' : '#ffeade';
@@ -41,8 +52,14 @@ export default ({ item, handleEdit, handleDelete }: IProps) => {
                 <TableCell component="th" scope="row">
                     {item.date!.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 </TableCell>
-                <TableCell>{item.vehicleLicensePlate}</TableCell>
-                <TableCell>{item.type}</TableCell>
+                <TableCell>
+                    <Chip
+                        label={getFormatedLicense(item.vehicleLicensePlate!)}
+                        variant="outlined"
+                        onClick={gotoVehiclePage}
+                    />
+                </TableCell>
+                <TableCell>{t(`serviceTypes:${GarageServiceType[item.type!]}.Title`)}</TableCell>
                 <TableCell>
                     {isNotVerified && (
                         <>

@@ -6,7 +6,6 @@ import { timelineOppositeContentClasses } from '@mui/lab/TimelineOppositeContent
 import useVehicleTimelineCard from '../useVehicleTimelineCard';
 import VehicleTimelineItemSkeleton from './VehicleTimelineItemSkeleton';
 import VehicleTimelineItem from './VehicleTimelineItem';
-import VehicleTimelineAddItem from './VehicleTimelineAddItem';
 
 interface IProps {
     license_plate: string
@@ -23,7 +22,6 @@ export default ({ license_plate }:IProps) => {
                     minWidth: "110px"
                 },
             }}>
-                <VehicleTimelineAddItem/>
                 {loading ?
                     Array.from({ length: 4 }).map((_, index) => (
                         <VehicleTimelineItemSkeleton key={`VehicleTimelineItemSkeleton-${index}`} usedIndex={index} />

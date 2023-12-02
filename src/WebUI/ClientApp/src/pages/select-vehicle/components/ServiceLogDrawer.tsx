@@ -9,7 +9,7 @@ import GarageIcon from '@mui/icons-material/CarRepair';
 import CarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
 import CheckIcon from '@mui/icons-material/Check';
-
+import AddIcon from '@mui/icons-material/Add';
 
 // own imports
 import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../app/web-api-client';
@@ -20,11 +20,11 @@ import { showOnError, showOnSuccess } from '../../../redux/slices/statusSnackbar
 import { useDispatch } from 'react-redux';
 import { useDrawer } from '../ServiceLogDrawerProvider';
 
-interface IServiceLogFormProps {
+interface IServiceLogDrawerProps {
     licensePlate: string;
 }
 
-interface IServiceLogFormData {
+interface IServiceLogDrawerData {
     garageLookup: GarageLookupSimplefiedDto;
     type: string;
     description: string;
@@ -39,7 +39,7 @@ interface IServiceLogFormData {
 
 const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
 
-export default ({ licensePlate }: IServiceLogFormProps) => {
+export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const { drawerOpen, toggleDrawer, addServiceLog } = useDrawer();
     const dispatch = useDispatch();
@@ -47,11 +47,11 @@ export default ({ licensePlate }: IServiceLogFormProps) => {
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogFormData>();
+    const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogDrawerData>();
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleNext = (data: IServiceLogFormData) => {
+    const handleNext = (data: IServiceLogDrawerData) => {
 
         let hasError = false;
 
@@ -158,57 +158,68 @@ export default ({ licensePlate }: IServiceLogFormProps) => {
     };
 
     const drawerWidth = isMobile ? '100%' : '600px';
-    return <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={() => toggleDrawer(false)}
-        sx={{
-            '& .MuiDrawer-paper': {
-                width: isMobile ? '100%' : '600px',
-            },
-        }}
-    >
-        <Box sx={{ width: drawerWidth, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
-            <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
-                <Typography variant="h6" component="div">
-                    {t("AddMaintenanceLog.Title")}
-                </Typography>
-                <IconButton onClick={() => toggleDrawer(false)}>
-                    <CloseIcon />
-                </IconButton>
-            </Box>
-            <Divider />
-            <Stepper activeStep={activeStep} alternativeLabel sx={{ padding: theme.spacing(3) }}>
-                {steps.map((label, index) => (
-                    <Step key={label} completed={activeStep > index}>
-                        <StepLabel StepIconComponent={(props) => <CustomStepIcon {...props} />}>
-                            {t(label)}
-                        </StepLabel>
-                    </Step>
-                ))}
-            </Stepper>
-            <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
-                {activeStep === 0 && <StepGarage control={control} setIsMaintenance={setIsMaintenance} file={file} setFile={setFile} />}
-                {activeStep === 1 && <StepVehicle control={control} isMaintenance={isMaintenance} />}
-                {activeStep === 2 && <StepConfirmation control={control} />}
-                <Box component="footer" sx={{ ml:1, mb: 2 }}>
-                    <Button onClick={handleBack}>{(activeStep === 0) ? t("Cancel") : t("Back")}</Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        disabled={isLoading}
-                    >
-                        {isLoading ?
-                            <CircularProgress size={24} />
-                            :
-                            (activeStep === steps.length - 1) ? t("Confirm") : t("Next")
-                        }
-                    </Button>
+    return <>
+        <Drawer
+            anchor="right"
+            open={drawerOpen}
+            onClose={() => toggleDrawer(false)}
+            sx={{
+                '& .MuiDrawer-paper': {
+                    width: isMobile ? '100%' : '600px',
+                },
+            }}
+        >
+            <Box sx={{ width: drawerWidth, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
+                <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
+                    <Typography variant="h6" component="div">
+                        {t("AddMaintenanceLog.Title")}
+                    </Typography>
+                    <IconButton onClick={() => toggleDrawer(false)}>
+                        <CloseIcon />
+                    </IconButton>
                 </Box>
-            </form>
-        </Box>
-    </Drawer>
+                <Divider />
+                <Stepper activeStep={activeStep} alternativeLabel sx={{ padding: theme.spacing(3) }}>
+                    {steps.map((label, index) => (
+                        <Step key={label} completed={activeStep > index}>
+                            <StepLabel StepIconComponent={(props) => <CustomStepIcon {...props} />}>
+                                {t(label)}
+                            </StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+                <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
+                    {activeStep === 0 && <StepGarage control={control} setIsMaintenance={setIsMaintenance} file={file} setFile={setFile} />}
+                    {activeStep === 1 && <StepVehicle control={control} isMaintenance={isMaintenance} />}
+                    {activeStep === 2 && <StepConfirmation control={control} />}
+                    <Box component="footer" sx={{ ml:2, mb: 2 }}>
+                        <Button onClick={handleBack}>{(activeStep === 0) ? t("Cancel") : t("Back")}</Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            disabled={isLoading}
+                        >
+                            {isLoading ?
+                                <CircularProgress size={24} />
+                                :
+                                (activeStep === steps.length - 1) ? t("Confirm") : t("Next")
+                            }
+                        </Button>
+                    </Box>
+                </form>
+            </Box>
+        </Drawer>
+        <Button
+            variant="contained"
+            color="primary"
+            sx={{ position: 'fixed', p: 2, bottom: 16, right: 16, borderRadius: 10 }}
+            onClick={() => toggleDrawer(true)}
+            endIcon={<AddIcon />}
+        >
+            {t("Maintenance")}
+        </Button>
+    </>
     ;
 };
 
