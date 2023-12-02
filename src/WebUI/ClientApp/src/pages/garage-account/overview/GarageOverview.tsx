@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
 import { GarageClient, GarageOverview } from "../../../app/web-api-client";
 import { ROLES } from "../../../constants/roles";
+import SimpleLineChart from "./components/ChartsLineBoard";
 
 // own imports
 
@@ -36,7 +37,7 @@ export default ({ }: IProps) => {
                 {isLoading ?
                     <Typography>Loading...</Typography>
                     :
-                    <div>TODO: Garage overview</div>
+                    <div><SimpleLineChart/></div>
                 }
             </Container>
         </Box>
