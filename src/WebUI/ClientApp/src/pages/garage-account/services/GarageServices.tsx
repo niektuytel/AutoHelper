@@ -28,7 +28,6 @@ import useGarageServices from "./useGarageServices";
 import { useNavigate, useParams } from "react-router";
 import { GarageServiceDtoItem , GarageServiceType } from "../../../app/web-api-client";
 import GarageServiceDialog from "./components/GarageServiceDialog";
-import { getTitleForServiceType } from "../defaultGarageService";
 import { COLORS } from "../../../constants/colors";
 import GarageServiceCard from "./components/GarageServiceCard";
 import GarageServiceDeleteDialog from "./components/GarageServiceDeleteDialog";

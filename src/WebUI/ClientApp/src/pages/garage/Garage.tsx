@@ -15,6 +15,7 @@ import GarageDailySchedule from "./components/GarageDailySchedule";
 import GarageContactSection from "./components/GarageContactSection";
 import GarageContactDialog from "../../components/GarageContactDialog";
 import { addService } from "../../redux/slices/storedServicesSlice";
+import { ROUTES } from "../../constants/routes";
 
 interface IProps {
 }
@@ -22,6 +23,7 @@ interface IProps {
 export default ({ }: IProps) => {
     const { t } = useTranslation();
     const location = useLocation();
+    const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const dispatch = useDispatch();
@@ -71,7 +73,7 @@ export default ({ }: IProps) => {
     const imageUrl = `http://127.0.0.1:10000/devstoreaccount1/garage-images/${garageLookup?.image}`;
     const showConversation = garageLookup?.conversationContactIdentifier !== undefined && garageLookup?.conversationContactIdentifier !== null;
     return <>
-        <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} />
+        <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(location.state?.from?.pathname)} />
         <Container sx={{ mb: 5 }}>
             <Box pt={1} pb={2}>
                 <Paper

@@ -10,11 +10,16 @@
 
     <ItemGroup>
       <Compile Remove="Entities\Deprecated\**" />
+      <Compile Remove="Entities\Garages\_Unused\**" />
       <EmbeddedResource Remove="Entities\Deprecated\**" />
+      <EmbeddedResource Remove="Entities\Garages\_Unused\**" />
+      <EntityDeploy Remove="Entities\Garages\_Unused\**" />
       <None Remove="Entities\Deprecated\**" />
+      <None Remove="Entities\Garages\_Unused\**" />
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Entities\Garages\GarageBankingDetailsItem.cs" />
       <Compile Remove="Events\TodoItemCompletedEvent.cs" />
       <Compile Remove="Events\TodoItemCreatedEvent.cs" />
       <Compile Remove="Events\TodoItemDeletedEvent.cs" />
@@ -29,6 +34,7 @@
 
     <ItemGroup>
       <Folder Include="Events\" />
+      <Folder Include="Exceptions\" />
     </ItemGroup>
 
 </Project>

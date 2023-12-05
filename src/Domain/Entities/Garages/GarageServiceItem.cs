@@ -25,10 +25,15 @@ public class GarageServiceItem : BaseEntity
     /// Like: Inspection, Repair, Maintenance, etc.
     /// </summary>
     [Required]
-    public GarageServiceType GeneralType { get; set; } = GarageServiceType.Other;
-
-    // TODO: Want an specific service enum. Like: "MOT", "Oil Change", "Wheel Alignment", etc.
+    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
     
+    /// <summary>
+    /// Like: Light Vehicle, Heavy vehicle, etc.
+    /// Needed for filtering and made able to make more specific services for each vehicle type
+    /// </summary>
+    [Required]
+    public VehicleType VehicleType { get; set; } = VehicleType.Other;
+
     /// <summary>
     /// Like: "MOT Service", "Oil Change", "Wheel Alignment", etc.
     /// </summary>

@@ -12,7 +12,7 @@ public class VehicleSpecificationsCardItem
 {
     public string LicensePlate { get; set; }
 
-    public VehicleLookupType Type { get; set; }
+    public VehicleType Type { get; set; }
 
     public string Brand { get; set; }
 

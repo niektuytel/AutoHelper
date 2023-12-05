@@ -1,7 +1,7 @@
 import React, { useState, MouseEvent, useEffect, useRef, RefObject } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
@@ -29,9 +29,10 @@ interface IProps {
     showStaticDrawer: boolean;
     garageLookupIsLoading?: boolean | undefined;
     garageLookup?: GarageLookupDtoItem | undefined;
+    navigateGoto?: () => void | undefined;
 }
 
-const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProps) => {
+const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigateGoto }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [onMenu, setOnMenu] = useState(false);
@@ -63,7 +64,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                 <StyledToolbar>
                     <Grid container>
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
-                            <ImageLogo small showStaticLogo={showStaticDrawer} />
+                            <ImageLogo small navigateGoto={navigateGoto} />
                         </Grid>
                         { has3Sections &&
                             <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -95,9 +96,15 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer }: IProp
                                     </StyledBadge>
                                 </StyledIconButton>
                             }
-                            <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
-                                <MenuIcon />
-                            </StyledIconButton>
+                            {showStaticDrawer ?
+                                <Box sx={{ maxWidth: "100px", float:"right" }}>
+                                    <LoginButton />
+                                </Box>
+                                :
+                                <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
+                                    <MenuIcon />
+                                </StyledIconButton>
+                            }
                             <SelectedServicesCard isCardVisible={isCardVisible} services={services} onClose={() => setIsCardVisible(false)} />
                         </Grid>
                     </Grid>

@@ -92,7 +92,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
             {
                 UserId = request.UserId!,
                 GarageId = entity.Id,
-                GeneralType = serviceType
+                Type = serviceType
             };
 
             _context.GarageServices.Add(service);

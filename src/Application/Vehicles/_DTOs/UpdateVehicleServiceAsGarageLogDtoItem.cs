@@ -1,12 +1,16 @@
-﻿using AutoHelper.Domain.Entities.Garages;
+﻿using AutoHelper.Domain;
+using AutoHelper.Domain.Entities.Garages;
 using Microsoft.AspNetCore.Http;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 
-public record CreateVehicleServiceAsGarageLogDto
+public record UpdateVehicleServiceAsGarageLogDtoItem
 {
     public string VehicleLicensePlate { get; set; }
+
+    public Guid ServiceLogId { get; set; }
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+    public string? title { get; set; }
     public string? Description { get; set; }
 
     public string Date { get; set; }
@@ -14,5 +18,6 @@ public record CreateVehicleServiceAsGarageLogDto
     public int OdometerReading { get; set; }
     public int? ExpectedNextOdometerReading { get; set; } = null!;
 
+    public VehicleServiceLogStatus Status { get; set; }
     public IFormFile? AttachmentFile { get; set; }
 }

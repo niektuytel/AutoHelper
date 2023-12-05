@@ -26,7 +26,6 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
 import { GarageServiceType, GarageServiceDtoItem } from "../../../../app/web-api-client";
 import { COLORS } from "../../../../constants/colors";
-import { getTitleForServiceType } from "../../defaultGarageService";
 
 // own imports
 
@@ -42,29 +41,11 @@ interface IProps {
 }
 
 export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['serviceTypes']);
     const theme = useTheme();
 
-    const title = getTitleForServiceType(
-        t,
-        service.type ? service.type : GarageServiceType.Other,
-        service.description
-    );
+            //{/*title={service.description}*/}
 
-    // TODO: This is an feature that is not yet implemented
-    // To make it possible to use service to create an order.
-    // Then on the confirm button they can send an tikkie
-    // action={
-    //
-    //    <IconButton
-    //        onClick={(e) => {
-    //            e.stopPropagation();
-    //            addCartItem(service);
-    //        }}
-    //    >
-    //        <AddIcon />
-    //    </IconButton>
-    // }
     return (
         <Card
             style={{
@@ -73,17 +54,16 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
                 cursor: "pointer",
                 border: selectedItem === service ? `1px solid black` : `1px solid ${COLORS.BORDER_GRAY}`
             }}
-            title={service.description}
             onClick={() => setSelectedItem(service)}
         >
             <CardHeader
-                title={title}
+                title={service.title ? service.title : t(`serviceTypes:${GarageServiceType[service.type!]}.Title`)}
                 titleTypographyProps={{ variant: "body1" }}
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
             <CardContent style={{ paddingTop: "4px", paddingBottom: "4px", paddingLeft: "4px" }}>
                 <Box display="flex" alignItems="center">
-                    {service.description}
+                    {service.description ? service.description : t(`serviceTypes:${GarageServiceType[service.type!]}.Description`)}
                 </Box>
             </CardContent>
 

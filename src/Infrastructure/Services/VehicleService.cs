@@ -113,7 +113,7 @@ internal class VehicleService : IVehicleService
         return response;
     }
 
-    public async Task<VehicleLookupType> GetVehicleType(string licensePlate)
+    public async Task<VehicleType> GetVehicleType(string licensePlate)
     {
         var data = await _rdwService.GetVehicle(licensePlate);
         if (data?.HasValues != true)
@@ -126,7 +126,7 @@ internal class VehicleService : IVehicleService
 
     // TODO: Need better investigation
     // can add more cases based on other vehicle kinds present in the RDW data.
-    private static VehicleLookupType GetVehicleType(JToken data)
+    private static VehicleType GetVehicleType(JToken data)
     {
         // Check "voertuigsoort" field for various types
         var vehicleKind = data?["voertuigsoort"]?.ToString();
@@ -134,19 +134,19 @@ internal class VehicleService : IVehicleService
         // Check weight for HeavyCar
         if (int.TryParse(data?["technische_max_massa_voertuig"]?.ToString(), out int weight) && weight > 3500)
         {
-            return VehicleLookupType.HeavyCar;
+            return VehicleType.HeavyCar;
         }
 
         switch (vehicleKind)
         {
             case "Personenauto":
-                return VehicleLookupType.LightCar;
+                return VehicleType.LightCar;
             case "Driewielig motorrijtuig":
-                return VehicleLookupType.Motorcycle;
+                return VehicleType.Motorcycle;
             case "Land- of bosbouwtrekker":
-                return VehicleLookupType.Tractor;
+                return VehicleType.Tractor;
             case "Land- of bosb aanhw of getr uitr stuk":
-                return VehicleLookupType.Tractor;
+                return VehicleType.Tractor;
 
             default:
                 break;
@@ -155,12 +155,12 @@ internal class VehicleService : IVehicleService
         // Check Taxi
         if (data?["taxi_indicator"]?.ToString() == "Ja")
         {
-            return VehicleLookupType.Taxi;
+            return VehicleType.Taxi;
         }
 
 
         // If no matches, return Other
-        return VehicleLookupType.Other;
+        return VehicleType.Other;
     }
 
     public async Task<VehicleTechnicalDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate)

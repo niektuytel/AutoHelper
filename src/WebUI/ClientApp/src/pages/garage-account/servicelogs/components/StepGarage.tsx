@@ -6,25 +6,6 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { GarageServiceType } from '../../../../app/web-api-client';
 import { enumToKeyValueArray } from '../../../../app/utils';
 
-
-function getVehicleServicesTypes() {
-    const items = [
-        GarageServiceType.Other,
-        GarageServiceType.Inspection,
-        GarageServiceType.SmallMaintenance,
-        GarageServiceType.GreatMaintenance,
-        GarageServiceType.AirConditioningMaintenance,
-        GarageServiceType.SeasonalTireChange
-    ];
-
-    return enumToKeyValueArray(GarageServiceType)
-        .filter(({ key, value }) => items.includes(key))
-        .map(({ key, value }) => ({
-            key: key,
-            value: value,
-        }));
-}
-
 interface IProps {
     control: any;
     setIsMaintenance: (isMaintenance: boolean) => void;
@@ -56,26 +37,28 @@ const GarageStep = ({ control, setIsMaintenance, file, setFile }: IProps) => {
                         <InputLabel id="service-type-label">
                             {t("AddMaintenanceLog.ServiceType.Label")}
                         </InputLabel>
-                        <Select
-                            {...field}
-                            labelId="service-type-label"
-                            label={t("AddMaintenanceLog.ServiceType.Label")}
-                            onChange={(e) => {
-                                field.onChange(e);
-                                //setSelectedType(e.target.value);
-                                setIsMaintenance(
-                                    e.target.value === GarageServiceType[GarageServiceType.Inspection] ||
-                                    e.target.value === GarageServiceType[GarageServiceType.SmallMaintenance] ||
-                                    e.target.value === GarageServiceType[GarageServiceType.GreatMaintenance]
-                                )
-                            }}
-                        >
-                            {getVehicleServicesTypes().map(({ key, value }) => (
-                                <MenuItem key={key} value={value}>
-                                    {t(`serviceTypes:${value}.Title`)}
-                                </MenuItem>
-                            ))}
-                        </Select>
+
+                        {/*TODO: get services from this own garage*/}
+                        {/*<Select*/}
+                        {/*    {...field}*/}
+                        {/*    labelId="service-type-label"*/}
+                        {/*    label={t("AddMaintenanceLog.ServiceType.Label")}*/}
+                        {/*    onChange={(e) => {*/}
+                        {/*        field.onChange(e);*/}
+                        {/*        //setSelectedType(e.target.value);*/}
+                        {/*        setIsMaintenance(*/}
+                        {/*            e.target.value === GarageServiceType[GarageServiceType.Inspection] ||*/}
+                        {/*            e.target.value === GarageServiceType[GarageServiceType.SmallMaintenance] ||*/}
+                        {/*            e.target.value === GarageServiceType[GarageServiceType.GreatMaintenance]*/}
+                        {/*        )*/}
+                        {/*    }}*/}
+                        {/*>*/}
+                        {/*    {getVehicleServicesTypes().map(({ key, value }) => (*/}
+                        {/*        <MenuItem key={key} value={value}>*/}
+                        {/*            {t(`serviceTypes:${value}.Title`)}*/}
+                        {/*        </MenuItem>*/}
+                        {/*    ))}*/}
+                        {/*</Select>*/}
                     </FormControl>
                 )}
             />

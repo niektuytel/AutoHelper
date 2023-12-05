@@ -12,11 +12,11 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
+namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 
-public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
+public record GetGarageServicesAsVehicleQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
-    public GetGarageServicesQuery(string userId)
+    public GetGarageServicesAsVehicleQuery(string userId)
     {
         UserId = userId;
     }
@@ -29,7 +29,7 @@ public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem
 
 }
 
-public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQuery, IEnumerable<GarageServiceDtoItem>>
+public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAsVehicleQuery, IEnumerable<GarageServiceDtoItem>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -40,7 +40,7 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesAsVehicleQuery request, CancellationToken cancellationToken)
     {
         var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
         if (entity == null)

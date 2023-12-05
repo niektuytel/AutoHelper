@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AutoHelper.Domain.Entities.Vehicles;
 
 
-public enum VehicleLookupType
+public enum VehicleType
 {
     Other = 0,
     LightCar = 1,

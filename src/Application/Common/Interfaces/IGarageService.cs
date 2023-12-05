@@ -10,7 +10,6 @@ namespace AutoHelper.Application.Common.Interfaces;
 public interface IGarageService
 {
     Task<GarageLookupItem[]> GetBriefGarageLookups();
-    IEnumerable<GarageServiceType> GetRelatedServiceTypes(VehicleLookupType vehicleType);
     Task<GarageLookupItem> SetConversationSettings(string garageIdentifier, string contactIdentifier, ContactType contactType, GarageServiceType[] services, CancellationToken cancellationToken);
     Task<GarageLookupItem> UpdateByLocation(GarageLookupItem item);
 }

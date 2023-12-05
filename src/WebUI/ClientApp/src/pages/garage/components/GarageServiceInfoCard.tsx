@@ -30,7 +30,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
 import { GarageServiceDtoItem, GarageServiceType, SelectedService } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
-import { getDefaultCreateGarageServices, getDefaultGarageServicesInfo, getTitleForServiceType } from "../../garage-account/defaultGarageService";
+import { getDefaultGarageServicesInfo } from "../../garage-account/defaultGarageService";
 
 // own imports
 

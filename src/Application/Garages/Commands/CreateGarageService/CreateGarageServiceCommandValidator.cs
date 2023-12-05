@@ -25,6 +25,9 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             .MustAsync(TitleNotAlreadyExist)
             .WithMessage(c => $"A service with title {c.Type} already exists for this garage.");
 
+        RuleFor(v => v.Title)
+            .NotEmpty().WithMessage("Title is required.");
+
         RuleFor(v => v.Description)
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(800).WithMessage("Description must not exceed 800 characters.");
@@ -33,7 +36,7 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
 
     private async Task<bool> TitleNotAlreadyExist(CreateGarageServiceCommand request, GarageServiceType type, CancellationToken cancellationToken)
     {
-        var foundSome = await _context.GarageServices.AnyAsync(x => x.UserId == request.UserId && x.GeneralType == type, cancellationToken);
+        var foundSome = await _context.GarageServices.AnyAsync(x => x.UserId == request.UserId && x.Type == type, cancellationToken);
         return foundSome == false;
     }
 

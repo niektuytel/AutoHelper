@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Common.Models;
-using AutoHelper.Application.Garages.Queries.GetGarageServiceTypesByLicensePlate;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
 using AutoHelper.Hangfire.MediatR;
@@ -28,15 +27,6 @@ public class GarageController : ApiControllerBase
     {
         _currentUser = currentUser;
         _identityService = identityService;
-    }
-
-    [HttpGet($"{nameof(GetServiceTypes)}/{{licensePlate}}")]
-    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetServiceTypes([FromRoute] string licensePlate)
-    {
-        var query = new GetGarageServiceTypesByLicensePlateQuery(licensePlate);
-        return await Mediator.Send(query);
     }
 
     [HttpGet($"{nameof(SearchLookups)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]

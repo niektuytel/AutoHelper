@@ -23,6 +23,7 @@ using YamlDotNet.Core.Tokens;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using System;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -75,7 +76,7 @@ public class VehicleController : ApiControllerBase
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceLogDto commandWithAttachment, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceLogDtoItem commandWithAttachment, CancellationToken cancellationToken)
     {
         var command = commandWithAttachment.ServiceLogCommand;
 
@@ -94,4 +95,15 @@ public class VehicleController : ApiControllerBase
 
         return await Mediator.Send(command, cancellationToken);
     }
+
+
+    [HttpGet($"{nameof(GetRelatedServices)}/{{licensePlate}}")]
+    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<GarageServiceType>> GetRelatedServices([FromRoute] string licensePlate)
+    {
+        var query = new GetVehicleRelatedServicesQuery(licensePlate);
+        return await Mediator.Send(query);
+    }
+
 }

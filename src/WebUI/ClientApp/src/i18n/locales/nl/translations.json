@@ -115,10 +115,16 @@
   "Ask question": "Vraag stellen",
   "Request quote": "Offerte aanvragen",
   "by": "aan",
+  "Back": "Vorige",
   "Next": "Volgende",
 
 
 
+
+  "ServiceLog.Verified.Title": "Garage heeft onderhoud bevestigt",
+  "ServiceLog.Verified.Label": "Gecheckt",
+  "ServiceLog.UnVerified.Title": "Garage kan het bevestigen via zijn account",
+  "ServiceLog.UnVerified.Label": "Ongeverifieerd",
 
   "VehiclePage.Title": "Zoek Garage",
   "VehiclePage.SubTitle": "voor onderhoud",

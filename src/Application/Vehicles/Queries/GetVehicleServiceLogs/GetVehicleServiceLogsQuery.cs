@@ -7,12 +7,16 @@ using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 
+/// <summary>
+/// Only returns service and repair logs
+/// </summary>
 public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogDtoItem[]>
 {
     public GetVehicleServiceLogsQuery(string licensePlate)
@@ -38,7 +42,12 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
     {
         var entities = _context.VehicleServiceLogs
             .AsNoTracking()
-            .Where(v => v.VehicleLicensePlate == request.LicensePlate)
+            .Where(v => 
+                v.VehicleLicensePlate == request.LicensePlate && (
+                    v.Type == GarageServiceType.Service ||
+                    v.Type == GarageServiceType.Repair
+                )
+            )
             .OrderByDescending(v => v.Date);
 
         var result = await _mapper

@@ -27,11 +27,11 @@ import HomePage from './pages/home/HomePage';
 
 export default () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const matches = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'));
     const showStaticDrawer = matches && location.pathname.startsWith('/garage');
 
     const GarageRouteContent = ({ children }: { children: React.ReactNode }) => {
-        const navigate = useNavigate();
         const userRole = localStorage.getItem('userRole');
         const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
 
@@ -80,19 +80,19 @@ export default () => {
                     <Route path='/' element={<Navigate to="/select-vehicle" />} />
                     <Route path={`${ROUTES.SELECT_VEHICLE}`} element={
                         <>
-                            <Header showStaticDrawer={showStaticDrawer} />
+                            <Header showStaticDrawer={false} />
                             <HomePage />
                         </>
                     } />
                     <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate`} element={
                         <>
-                            <Header showStaticDrawer={showStaticDrawer} />
+                            <Header showStaticDrawer={false} navigateGoto={() => navigate("..", { relative: "path" })} />
                             <SelectVehiclePage />
                         </>
                     } />
                     <Route path={`${ROUTES.SELECT_GARAGE}/:license_plate/:lat/:lng`} element={
                         <>
-                            <Header showStaticDrawer={showStaticDrawer} />
+                            <Header showStaticDrawer={false} navigateGoto={() => navigate(location.state?.from?.pathname ?? ROUTES.SELECT_VEHICLE)} />
                             <SelectGarage />
                         </>
                     } />

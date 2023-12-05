@@ -1,85 +1,24 @@
 ﻿namespace AutoHelper.Domain.Entities.Garages;
 
-// TODO: HOw we make this organized?
-// Answer: We can use partial classes to organize this file
-// Answer: We can use regions to organize this file
-// Answer: We can use partial classes and regions to organize this file
-// How we use this in the frontend?
-// Answer: We can use enums in the frontend
-// Answer: We can use enums in the frontend and use the enum value as a key to translate the enum value
 public enum GarageServiceType
 {
     /// <summary>
     /// Some other service type
     /// </summary>
     Other = 0,
-                                       
+              
     /// <summary>
-    /// RDW RELATED, Bedrijfsvoorraad: De voorraad van voertuigen die een dealer of garage op voorraad heeft, klaar voor verkoop of lease.
+    /// Maintenance, onderhoud used for example for oil change
     /// </summary>
-    CompanyStockService = 30,
-
-    /// <summary>
-    /// RDW RELATED, Tenaamstellen: Het officieel registreren van een voertuig op naam van een persoon of bedrijf.
-    /// </summary>
-    RegistrationService = 40,
+    Service = 10,
 
     /// <summary>
-    /// RDW RELATED, Versnelde inschrijving: Een snellere procedure voor het registreren of inschrijven van een voertuig in het kentekenregister.
+    /// Repair, reparatie used for example for replacing a broken part
     /// </summary>
-    AcceleratedRegistrationService = 50,
+    Repair = 20,
 
     /// <summary>
-    /// RDW RELATED, APK Licht voertuig: Periodieke keuring voor lichte voertuigen om de veiligheid en emissies te controleren.
+    /// Inspection, inspectie used for example for a problem inspection or a APK inspection
     /// </summary>
-    MOTServiceLightVehicle = 60,
-
-    /// <summary>
-    /// RDW RELATED, APK Zwaar voertuig: Periodieke keuring voor zware voertuigen, vergelijkbaar met de APK voor lichte voertuigen, maar met specifieke criteria voor zware voertuigen.
-    /// </summary>
-    MOTServiceHeavyVehicle = 61,
-
-    /// <summary>
-    /// RDW RELATED, APK-Landbouw: Periodieke keuring voor landbouwvoertuigen, als deze in de toekomst onder de APK-plicht vallen.
-    /// </summary>
-    MOTServiceAgriculture = 62,
-
-    /// <summary>
-    /// RDW RELATED, Controleapparaten: Dit kan verwijzen naar het controleren of installeren van tachografen of andere apparatuur die de activiteit van het voertuig registreert.
-    /// </summary>
-    ControlDeviceService = 70,
-
-    /// <summary>
-    /// RDW RELATED, Gasinstallaties: Installatie, onderhoud of inspectie van LPG- of CNG-installaties in voertuigen.
-    /// </summary>
-    GasInstallationService = 80,
-
-    /// <summary>
-    /// RDW RELATED, Ombouwmelding Snorfiets: Wijzigingen aan een snorfiets melden, bijvoorbeeld als deze is omgebouwd tot een bromfiets of andersom.
-    /// </summary>
-    MopedConversionService = 90,
-
-    /// <summary>
-    /// RDW RELATED, Demontage: Dit kan het demonteren van voertuigen zijn voor onderdelen of reparatie.
-    /// </summary>
-    DismantlingService = 100,
-
-    /// <summary>
-    /// RDW RELATED, Boordcomputertaxi: Installatie, onderhoud of inspectie van boordcomputers voor taxi's.
-    /// </summary>
-    TaxiComputerService = 110,
-
-    /// <summary>
-    /// RDW RELATED, Kentekenplaatfabrikant: Terwijl sommige garages kentekenplaten kunnen maken, is dit voornamelijk een taak voor gespecialiseerde bedrijven.
-    /// </summary>
-    LicensePlateManufactureService = 120,
-
-    Service = 129,                          // Onderhoud
-    Repair = 130,                           // Reperatie
-    Inspection = 131,                       // Probleem inspectie
-    SmallMaintenance = 132,                 // Kleine beurt
-    GreatMaintenance = 133,                 // Grote beurt
-    AirConditioningMaintenance = 134,       // Airco onderhoud
-    SeasonalTireChange = 135,               // Seizoens bandenwissel
-
+    Inspection = 30,
 }

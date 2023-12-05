@@ -22,7 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
 import { UpdateGarageServiceCommand, GarageServiceType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServices";
-import { getAllGarageServiceTypes, getTitleForServiceType } from "../../defaultGarageService";
+import { getAllGarageServiceTypes } from "../../defaultGarageService";
 
 // own imports
 
@@ -55,7 +55,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         if (mode === 'edit' && service) {
             setDialogMode('edit');
             setValue("id", service.id);
-            setValue("title", getTitleForServiceType(t, service.type!));
+            setValue("title", service.title ? service.title : t(`serviceTypes:${GarageServiceType[service.type!]}.Title`));
             setValue("type", service.type);
             setValue("description", service.description);
         }

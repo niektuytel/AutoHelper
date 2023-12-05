@@ -2,7 +2,7 @@
 import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-    Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress
+    Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress, Toolbar
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import GarageIcon from '@mui/icons-material/CarRepair';
@@ -179,16 +179,24 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
             },
         }}
     >
+        <Toolbar
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: "space-between",
+                width: "100%",
+                padding: "12px!important",
+            }}
+        >
+            <Typography variant="h6" component="div">
+                {t("AddMaintenanceLog.Title")}
+            </Typography>
+            <IconButton onClick={() => toggleDrawer(false)}>
+                <CloseIcon />
+            </IconButton>
+        </Toolbar>
+        <Divider />
         <Box sx={{ width: drawerWidth, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
-            <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
-                <Typography variant="h6" component="div">
-                    {t("AddMaintenanceLog.Title")}
-                </Typography>
-                <IconButton onClick={() => toggleDrawer(false)}>
-                    <CloseIcon />
-                </IconButton>
-            </Box>
-            <Divider />
             <Stepper activeStep={activeStep} alternativeLabel sx={{ padding: theme.spacing(3) }}>
                 {steps.map((label, index) => (
                     <Step key={label} completed={activeStep > index}>

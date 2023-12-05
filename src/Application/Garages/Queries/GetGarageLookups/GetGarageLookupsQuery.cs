@@ -80,7 +80,6 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
             );
 
         queryable = WhenHasRelatedGarageName(queryable, request.AutoCompleteOnGarageName);
-        queryable = await WhenHasSelectedFilters(queryable, request.LicensePlate, request.Filters);
 
         // (filter + order by) distance
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -119,50 +118,5 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
 
         return queryable;
     }
-    private async Task<IQueryable<GarageLookupItem>> WhenHasSelectedFilters(IQueryable<GarageLookupItem> queryable, string? licensePlate, string[]? filters)
-    {
-        bool filtersFromLicensePlate = false;
-
-        // set vehicle related filters if not set by user.
-        if (filters?.Any() != true && !string.IsNullOrEmpty(licensePlate))
-        {
-            var type = await _vehicleService.GetVehicleType(licensePlate);
-            filters = _garageInfoService.GetRelatedServiceTypes(type).Select(x => ((int)x).ToString()).ToArray();
-            filtersFromLicensePlate = true;
-        }
-
-        // Remove any null values from the filters array
-        filters = filters?.Where(f => f != null).ToArray();
-
-        if (filters?.Any() != true)
-        {
-            return queryable;
-        }
-
-        if (filtersFromLicensePlate)
-        {
-            var predicate = PredicateBuilder.New<GarageLookupItem>(false);
-
-            foreach (var filter in filters)
-            {
-                string currentFilter = filter; // To capture the current filter in closure
-                predicate = predicate.Or(x => x.KnownServicesString.Contains(currentFilter));
-            }
-
-            queryable = queryable.AsExpandable().Where(predicate);
-
-        }
-        else
-        {
-            // All filters should match for the item to be included
-            foreach (var filter in filters)
-            {
-                queryable = queryable.Where(x => x.KnownServicesString.Contains(filter));
-            }
-        }
-
-        return queryable;
-    }
-
 
 }

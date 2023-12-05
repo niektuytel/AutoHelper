@@ -21,7 +21,7 @@ namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGara
 
 public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
-    public CreateVehicleServiceLogAsGarageCommand(string userId, CreateVehicleServiceAsGarageLogDto data) 
+    public CreateVehicleServiceLogAsGarageCommand(string userId, CreateVehicleServiceAsGarageLogDtoItem data) 
     {
         UserId = userId;
         VehicleLicensePlate = data.VehicleLicensePlate;

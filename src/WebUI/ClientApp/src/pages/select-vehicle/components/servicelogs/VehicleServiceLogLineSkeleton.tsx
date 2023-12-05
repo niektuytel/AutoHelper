@@ -14,12 +14,6 @@ export default ({ keyIndex }: IProps) => {
                         <Skeleton sx={{ width: "100px" }} />
                     </Typography>
                 </Box>
-                <Chip
-                    label="Unverified"
-                    color="warning"
-                    variant="outlined"
-                    sx={{ ml: 'auto' }}
-                />
             </Box>
             <Typography variant="body2" sx={{ mx: 1 }}>
                 <Skeleton sx={{ width: "100%" }} />

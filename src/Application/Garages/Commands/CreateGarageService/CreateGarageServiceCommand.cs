@@ -22,7 +22,9 @@ public record CreateGarageServiceCommand : IRequest<GarageServiceDtoItem>
 
     public GarageServiceType Type { get; set; }
 
-    public string Description { get; set; }
+    public string Title { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
 
 }
 
@@ -42,7 +44,8 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
         {
             UserId = request.UserId,
             GarageId = request.Garage!.Id,
-            GeneralType = request.Type,
+            Type = request.Type,
+            Title = request.Title,
             Description = request.Description
         };
 

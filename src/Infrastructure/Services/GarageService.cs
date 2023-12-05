@@ -141,7 +141,7 @@ internal class GarageService : IGarageService
         }
 
         var details = JsonSerializer.Deserialize<GoogleApiDetailPlaceItem>(placeDetailsJson)!;
-        item.LargeData = new GarageLookupLargeItem()
+        item.LargeData = new GarageLookupDataItem()
         {
             Id = item.LargeData == null ? Guid.NewGuid() : item.LargeData.Id,
             GoogleApiDetailsJson = placeDetailsJson
@@ -252,22 +252,4 @@ internal class GarageService : IGarageService
         return memoryStream.ToArray();
     }
 
-    // TODO: Need better investigation
-    public IEnumerable<GarageServiceType> GetRelatedServiceTypes(VehicleLookupType vehicleType)
-    {
-        return vehicleType switch
-        {
-            VehicleLookupType.LightCar => new List<GarageServiceType>()
-            {
-                GarageServiceType.MOTServiceLightVehicle,
-                GarageServiceType.SmallMaintenance,
-                GarageServiceType.GreatMaintenance,
-                GarageServiceType.SeasonalTireChange,
-                GarageServiceType.AirConditioningMaintenance,
-                GarageServiceType.Inspection,
-                GarageServiceType.AcceleratedRegistrationService
-            },
-            _ => new List<GarageServiceType>(),
-        };
-    }
 }

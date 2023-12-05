@@ -9,13 +9,15 @@ import { GarageServiceType } from '../../../../app/web-api-client';
 import { enumToKeyValueArray } from '../../../../app/utils';
 
 function getVehicleServicesTypes() {
+    // TODO: get services from this own garage
+
     const items = [
         GarageServiceType.Other,
         GarageServiceType.Inspection,
-        GarageServiceType.SmallMaintenance,
-        GarageServiceType.GreatMaintenance,
-        GarageServiceType.AirConditioningMaintenance,
-        GarageServiceType.SeasonalTireChange
+        //GarageServiceType.SmallMaintenance,
+        //GarageServiceType.GreatMaintenance,
+        //GarageServiceType.AirConditioningMaintenance,
+        //GarageServiceType.SeasonalTireChange
     ];
 
     return enumToKeyValueArray(GarageServiceType)
@@ -75,12 +77,7 @@ const GarageStep = ({ control, setIsMaintenance, file, setFile }: IProps) => {
                             label={t("AddMaintenanceLog.ServiceType.Label")}
                             onChange={(e) => {
                                 field.onChange(e);
-                                //setSelectedType(e.target.value);
-                                setIsMaintenance(
-                                    e.target.value === GarageServiceType[GarageServiceType.Inspection] ||
-                                    e.target.value === GarageServiceType[GarageServiceType.SmallMaintenance] ||
-                                    e.target.value === GarageServiceType[GarageServiceType.GreatMaintenance]
-                                )
+                                setIsMaintenance(e.target.value === GarageServiceType[GarageServiceType.Service])
                             }}
                         >
                             {getVehicleServicesTypes().map(({ key, value }) => (

@@ -32,6 +32,7 @@
       <Compile Remove="Common\Models\LookupDto.cs" />
       <Compile Remove="Garages\Queries\GetGarageLookupCards\GarageEmployeeItemSearchDto.cs" />
       <Compile Remove="Vehicles\Queries\GetVehicleServiceLogs\VehicleGarageServiceDtoItem.cs" />
+      <Compile Remove="Vehicles\_DTOs\VehicleDtoItem.cs" />
     </ItemGroup>
 
     <ItemGroup>

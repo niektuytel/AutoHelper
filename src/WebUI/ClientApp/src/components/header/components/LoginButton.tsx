@@ -56,7 +56,11 @@ const LoginMenu = ({ onLogin }: { onLogin: (role: string) => void }) => {
     );
 };
 
-const LoginButton: React.FC<IProps> = ({ asIcon }) => {
+interface IProps {
+    asIcon?: boolean;
+}
+
+export default ({ asIcon }:IProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const location = useLocation();
@@ -127,5 +131,3 @@ const LoginButton: React.FC<IProps> = ({ asIcon }) => {
         );
     }
 };
-
-export default LoginButton;

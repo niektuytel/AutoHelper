@@ -107,7 +107,7 @@ public class GarageAccountController : ApiControllerBase
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceAsGarageLogDto serviceLogDto, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceAsGarageLogDtoItem serviceLogDto, CancellationToken cancellationToken)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
 
@@ -154,7 +154,7 @@ public class GarageAccountController : ApiControllerBase
     [HttpPost($"{nameof(UpdateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDto serviceLogDto, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDtoItem serviceLogDto, CancellationToken cancellationToken)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
 

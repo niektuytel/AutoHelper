@@ -1115,8 +1115,6 @@ export class GarageAccountClient implements IGarageAccountClient {
 
 export interface IGarageClient {
 
-    getServiceTypes(licensePlate: string | null): Promise<GarageServiceType[]>;
-
     searchLookups(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto>;
 
     searchLookupsByName(name: string | null | undefined, maxSize: number | undefined): Promise<GarageLookupDtoItem[]>;
@@ -1134,57 +1132,6 @@ export class GarageClient implements IGarageClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         this.http = http ? http : window as any;
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    getServiceTypes(licensePlate: string | null): Promise<GarageServiceType[]> {
-        let url_ = this.baseUrl + "/api/Garage/GetServiceTypes/{licensePlate}";
-        if (licensePlate === undefined || licensePlate === null)
-            throw new Error("The parameter 'licensePlate' must be defined.");
-        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetServiceTypes(_response);
-        });
-    }
-
-    protected processGetServiceTypes(response: Response): Promise<GarageServiceType[]> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(item);
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<GarageServiceType[]>(null as any);
     }
 
     searchLookups(licensePlate: string | null, latitude: number, longitude: number, inMetersRange: number | undefined, pageNumber: number | undefined, pageSize: number | undefined, autoCompleteOnGarageName: string | null | undefined, filters: string[] | null | undefined): Promise<PaginatedListOfGarageLookupBriefDto> {
@@ -1423,6 +1370,8 @@ export interface IVehicleClient {
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
 
     createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
+
+    getRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1703,6 +1652,57 @@ export class VehicleClient implements IVehicleClient {
             });
         }
         return Promise.resolve<VehicleServiceLogDtoItem>(null as any);
+    }
+
+    getRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]> {
+        let url_ = this.baseUrl + "/api/Vehicle/GetRelatedServices/{licensePlate}";
+        if (licensePlate === undefined || licensePlate === null)
+            throw new Error("The parameter 'licensePlate' must be defined.");
+        url_ = url_.replace("{licensePlate}", encodeURIComponent("" + licensePlate));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRelatedServices(_response);
+        });
+    }
+
+    protected processGetRelatedServices(response: Response): Promise<GarageServiceType[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageServiceType[]>(null as any);
     }
 }
 
@@ -2059,25 +2059,9 @@ export interface ISelectedService {
 
 export enum GarageServiceType {
     Other = 0,
-    CompanyStockService = 30,
-    RegistrationService = 40,
-    AcceleratedRegistrationService = 50,
-    MOTServiceLightVehicle = 60,
-    MOTServiceHeavyVehicle = 61,
-    MOTServiceAgriculture = 62,
-    ControlDeviceService = 70,
-    GasInstallationService = 80,
-    MopedConversionService = 90,
-    DismantlingService = 100,
-    TaxiComputerService = 110,
-    LicensePlateManufactureService = 120,
-    Service = 129,
-    Repair = 130,
-    Inspection = 131,
-    SmallMaintenance = 132,
-    GreatMaintenance = 133,
-    AirConditioningMaintenance = 134,
-    SeasonalTireChange = 135,
+    Service = 10,
+    Repair = 20,
+    Inspection = 30,
 }
 
 export enum ContactType {
@@ -3878,6 +3862,7 @@ export interface IGarageOverview {
 export class GarageServiceDtoItem implements IGarageServiceDtoItem {
     id?: string;
     type?: GarageServiceType;
+    title?: string;
     description?: string;
 
     constructor(data?: IGarageServiceDtoItem) {
@@ -3893,6 +3878,7 @@ export class GarageServiceDtoItem implements IGarageServiceDtoItem {
         if (_data) {
             this.id = _data["id"];
             this.type = _data["type"];
+            this.title = _data["title"];
             this.description = _data["description"];
         }
     }
@@ -3908,6 +3894,7 @@ export class GarageServiceDtoItem implements IGarageServiceDtoItem {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["type"] = this.type;
+        data["title"] = this.title;
         data["description"] = this.description;
         return data;
     }
@@ -3916,6 +3903,7 @@ export class GarageServiceDtoItem implements IGarageServiceDtoItem {
 export interface IGarageServiceDtoItem {
     id?: string;
     type?: GarageServiceType;
+    title?: string;
     description?: string;
 }
 
@@ -4113,6 +4101,7 @@ export interface IGarageLocationDtoItem {
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     type?: GarageServiceType;
+    title?: string;
     description?: string;
 
     constructor(data?: ICreateGarageServiceCommand) {
@@ -4127,6 +4116,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     init(_data?: any) {
         if (_data) {
             this.type = _data["type"];
+            this.title = _data["title"];
             this.description = _data["description"];
         }
     }
@@ -4141,6 +4131,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["type"] = this.type;
+        data["title"] = this.title;
         data["description"] = this.description;
         return data;
     }
@@ -4148,6 +4139,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 
 export interface ICreateGarageServiceCommand {
     type?: GarageServiceType;
+    title?: string;
     description?: string;
 }
 
@@ -4218,6 +4210,7 @@ export interface IUpdateGarageSettingsCommand {
 export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     id?: string;
     type?: GarageServiceType;
+    title?: string;
     description?: string;
 
     constructor(data?: IUpdateGarageServiceCommand) {
@@ -4233,6 +4226,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
         if (_data) {
             this.id = _data["id"];
             this.type = _data["type"];
+            this.title = _data["title"];
             this.description = _data["description"];
         }
     }
@@ -4248,6 +4242,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["type"] = this.type;
+        data["title"] = this.title;
         data["description"] = this.description;
         return data;
     }
@@ -4256,6 +4251,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
 export interface IUpdateGarageServiceCommand {
     id?: string;
     type?: GarageServiceType;
+    title?: string;
     description?: string;
 }
 
@@ -4764,10 +4760,19 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
     garageLookupName?: string;
     garageLookupIdentifier?: string;
     type?: GarageServiceType;
-    date?: Date;
-    odometerReading?: number;
+    title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
+    notes?: string;
+    date?: Date;
+    expectedNextDate?: Date | undefined;
+    odometerReading?: number;
+    expectedNextOdometerReading?: number | undefined;
+    status?: VehicleServiceLogStatus;
+    reporterName?: string;
+    reporterPhoneNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
+    metaData?: string;
 
     constructor(data?: IVehicleServiceLogDtoItem) {
         if (data) {
@@ -4783,10 +4788,19 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
             this.garageLookupName = _data["garageLookupName"];
             this.garageLookupIdentifier = _data["garageLookupIdentifier"];
             this.type = _data["type"];
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.odometerReading = _data["odometerReading"];
+            this.title = _data["title"];
             this.description = _data["description"];
             this.attachedFile = _data["attachedFile"];
+            this.notes = _data["notes"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.expectedNextDate = _data["expectedNextDate"] ? new Date(_data["expectedNextDate"].toString()) : <any>undefined;
+            this.odometerReading = _data["odometerReading"];
+            this.expectedNextOdometerReading = _data["expectedNextOdometerReading"];
+            this.status = _data["status"];
+            this.reporterName = _data["reporterName"];
+            this.reporterPhoneNumber = _data["reporterPhoneNumber"];
+            this.reporterEmailAddress = _data["reporterEmailAddress"];
+            this.metaData = _data["metaData"];
         }
     }
 
@@ -4802,10 +4816,19 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
         data["garageLookupName"] = this.garageLookupName;
         data["garageLookupIdentifier"] = this.garageLookupIdentifier;
         data["type"] = this.type;
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["odometerReading"] = this.odometerReading;
+        data["title"] = this.title;
         data["description"] = this.description;
         data["attachedFile"] = this.attachedFile;
+        data["notes"] = this.notes;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["expectedNextDate"] = this.expectedNextDate ? this.expectedNextDate.toISOString() : <any>undefined;
+        data["odometerReading"] = this.odometerReading;
+        data["expectedNextOdometerReading"] = this.expectedNextOdometerReading;
+        data["status"] = this.status;
+        data["reporterName"] = this.reporterName;
+        data["reporterPhoneNumber"] = this.reporterPhoneNumber;
+        data["reporterEmailAddress"] = this.reporterEmailAddress;
+        data["metaData"] = this.metaData;
         return data;
     }
 }
@@ -4814,10 +4837,19 @@ export interface IVehicleServiceLogDtoItem {
     garageLookupName?: string;
     garageLookupIdentifier?: string;
     type?: GarageServiceType;
-    date?: Date;
-    odometerReading?: number;
+    title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
+    notes?: string;
+    date?: Date;
+    expectedNextDate?: Date | undefined;
+    odometerReading?: number;
+    expectedNextOdometerReading?: number | undefined;
+    status?: VehicleServiceLogStatus;
+    reporterName?: string;
+    reporterPhoneNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
+    metaData?: string;
 }
 
 export class VehicleTimelineDtoItem implements IVehicleTimelineDtoItem {

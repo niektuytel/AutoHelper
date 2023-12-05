@@ -2,7 +2,7 @@
 import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-    Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress
+    Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress, Toolbar
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import GarageIcon from '@mui/icons-material/CarRepair';
@@ -64,17 +64,31 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 hasError = true;
             }
         } else if (activeStep === 1) {
-
             // Validate Dates
-            if (data.date && data.expectedNextDate && data.date < data.expectedNextDate) {
-                setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required')});
-                hasError = true;
+            if (data.date && data.expectedNextDate) {
+                const date = new Date(data.date);
+                const expectedNextDate = new Date(data.expectedNextDate);
+
+                if (isNaN(date.getTime()) || isNaN(expectedNextDate.getTime())) {
+                    // Handle invalid date format
+                    setError('expectedNextDate', { type: 'manual', message: t('Invalid date format') });
+                    hasError = true;
+                } else if (date > expectedNextDate) {
+                    setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required') });
+                    hasError = true;
+                }
             }
 
             // Validate Odometer Readings
-            if (data.odometerReading && data.expectedNextOdometerReading && data.odometerReading < data.expectedNextOdometerReading) {
-                setError('expectedNextOdometerReading', { type: 'manual', message: t('AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required')});
-                hasError = true;
+            if (data.odometerReading && data.expectedNextOdometerReading) {
+                const odometerReading = new Number(data.odometerReading);
+                const expectedNextOdometerReading = new Number(data.expectedNextOdometerReading);
+
+                if (odometerReading > expectedNextOdometerReading) {
+                    setError('expectedNextDate', { type: 'manual', message: t('AddMaintenanceLog.NextDateGTDate.Required') });
+                    setError('expectedNextOdometerReading', { type: 'manual', message: t('AddMaintenanceLog.NextOdometerReadingGTOdometerReading.Required') });
+                    hasError = true;
+                }
             }
         } else if (activeStep === 2) {
 
@@ -141,8 +155,9 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 setValue('odometerReading', 0);
                 setValue('expectedNextOdometerReading', 0);
 
-                setActiveStep(0); // Reset active step to 0
                 addServiceLog(response);
+                setDrawerOpen(false);
+                setActiveStep(0);
             } catch (error) {
                 console.error('Error:', error);
 
@@ -170,16 +185,24 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 },
             }}
         >
+            <Toolbar
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: "space-between",
+                    width: "100%",
+                    padding: "12px!important",
+                }}
+            >
+                <Typography variant="h6" component="div">
+                    {t("AddMaintenanceLog.Title")}
+                </Typography>
+                <IconButton onClick={() => setDrawerOpen(false)}>
+                    <CloseIcon />
+                </IconButton>
+            </Toolbar>
+            <Divider />
             <Box sx={{ width: drawerWidth, display: 'flex', flexDirection: 'column', height: '100%' }} role="presentation">
-                <Box display="flex" justifyContent="space-between" alignItems="center" p={1}>
-                    <Typography variant="h6" component="div">
-                        {t("AddMaintenanceLog.Title")}
-                    </Typography>
-                    <IconButton onClick={() => setDrawerOpen(false)}>
-                        <CloseIcon />
-                    </IconButton>
-                </Box>
-                <Divider />
                 <Stepper activeStep={activeStep} alternativeLabel sx={{ padding: theme.spacing(3) }}>
                     {steps.map((label, index) => (
                         <Step key={label} completed={activeStep > index}>

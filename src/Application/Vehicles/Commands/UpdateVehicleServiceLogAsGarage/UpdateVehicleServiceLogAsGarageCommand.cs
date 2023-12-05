@@ -22,7 +22,7 @@ namespace AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGara
 
 public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
-    public UpdateVehicleServiceLogAsGarageCommand(string userId, UpdateVehicleServiceAsGarageLogDto data)
+    public UpdateVehicleServiceLogAsGarageCommand(string userId, UpdateVehicleServiceAsGarageLogDtoItem data)
     {
         UserId = userId;
         ServiceLogId = data.ServiceLogId;

@@ -115,6 +115,4 @@ public class GarageLookupItem
 
     public string? LastModifiedBy { get; set; }
 
-    public GarageLookupLargeItem? LargeData { get; set; } = null;
-
 }

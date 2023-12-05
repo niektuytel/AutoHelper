@@ -115,10 +115,15 @@
   "Ask question": "Ask question",
   "Request quote": "Request quote",
   "by": "by",
+  "Back": "Vorige",
   "Next": "Next",
 
 
 
+  "ServiceLog.Verified.Title": "Garage did verify the service",
+  "ServiceLog.Verified.Label": "Verfified",
+  "ServiceLog.UnVerified.Title": "Garage has to approve this on his account",
+  "ServiceLog.UnVerified.Label": "UnVerified",
 
   "VehiclePage.Title": "Search Garage",
   "VehiclePage.SubTitle": "for services",

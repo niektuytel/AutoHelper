@@ -442,21 +442,29 @@ internal partial class RDWApiClient
     {
         return rdwErkenning switch
         {
-            "Bedrijfsvoorraad" => GarageServiceType.CompanyStockService,
-            "Tenaamstellen" => GarageServiceType.RegistrationService,
-            "Versnelde inschrijving" => GarageServiceType.AcceleratedRegistrationService,
-            "APK Lichte voertuigen" => GarageServiceType.MOTServiceLightVehicle,
-            "APK Zware voertuigen" => GarageServiceType.MOTServiceHeavyVehicle,
-            "APK-Landbouw" => GarageServiceType.MOTServiceAgriculture,
-            "Controleapparaten" => GarageServiceType.ControlDeviceService,
-            "Gasinstallaties" => GarageServiceType.GasInstallationService,
-            "Ombouwmelding Snorfiets" => GarageServiceType.MopedConversionService,
-            "Demontage" => GarageServiceType.DismantlingService,
-            "Boordcomputertaxi" => GarageServiceType.TaxiComputerService,
-            "Kentekenplaatfabrikant" => GarageServiceType.LicensePlateManufactureService,
+            // Assuming these are maintenance-related
+            "Bedrijfsvoorraad" => GarageServiceType.Service,
+            "Tenaamstellen" => GarageServiceType.Service,
+
+            // Assuming these are repair-related
+            "Versnelde inschrijving" => GarageServiceType.Repair,
+            "Ombouwmelding Snorfiets" => GarageServiceType.Repair,
+
+            // Assuming these are inspection-related
+            "APK Lichte voertuigen" => GarageServiceType.Inspection,
+            "APK Zware voertuigen" => GarageServiceType.Inspection,
+            "APK-Landbouw" => GarageServiceType.Inspection,
+            "Controleapparaten" => GarageServiceType.Inspection,
+            "Gasinstallaties" => GarageServiceType.Inspection,
+            "Demontage" => GarageServiceType.Inspection,
+            "Boordcomputertaxi" => GarageServiceType.Inspection,
+            "Kentekenplaatfabrikant" => GarageServiceType.Inspection,
+
+            // Everything else
             _ => GarageServiceType.Other,
         };
     }
+
 
     /// <summary>
     /// https://opendata.rdw.nl/resource/hx2c-gt7k.json

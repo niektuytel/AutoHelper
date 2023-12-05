@@ -1,6 +1,6 @@
 import { Divider, Drawer, Toolbar } from "@mui/material";
 
-// custom imports 
+// Custom imports 
 import LoginButton from './LoginButton';
 import RoleBasedList from './RoleBasedList';
 
@@ -12,7 +12,8 @@ interface IProps {
 export default ({ onMenu, setOnMenu }: IProps) => {
     return (
         <Drawer
-            open={onMenu} 
+            anchor="right"
+            open={onMenu}
             onClose={() => setOnMenu(!onMenu)}>
             <Toolbar
                 sx={{
@@ -20,14 +21,13 @@ export default ({ onMenu, setOnMenu }: IProps) => {
                     alignItems: 'center',
                     justifyContent: 'flex-end',
                     width: "100%",
-                    padding: "12px!important",  // Add padding around the toolbar
+                    padding: "12px!important",
                 }}
             >
-                <LoginButton/>
+                <LoginButton />
             </Toolbar>
             <Divider />
             <RoleBasedList setOnMenu={setOnMenu} />
         </Drawer>
     );
 }
-

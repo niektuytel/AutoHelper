@@ -988,62 +988,6 @@
         }
       }
     },
-    "/api/Garage/GetServiceTypes/{licensePlate}": {
-      "get": {
-        "tags": [
-          "Garage"
-        ],
-        "operationId": "Garage_GetServiceTypes",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "xml": {
-                    "name": "ArrayOfGarageServiceType",
-                    "wrapped": true
-                  },
-                  "items": {
-                    "xml": {
-                      "name": "GarageServiceType"
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/GarageServiceType"
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Garage/SearchLookups/{licensePlate}/{latitude}/{longitude}": {
       "get": {
         "tags": [
@@ -1649,6 +1593,62 @@
         }
       }
     },
+    "/api/Vehicle/GetRelatedServices/{licensePlate}": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_GetRelatedServices",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageServiceType",
+                    "wrapped": true
+                  },
+                  "items": {
+                    "xml": {
+                      "name": "GarageServiceType"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageServiceType"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Webhook/ConfigureWhatsAppMessageWebhook": {
       "post": {
         "tags": [
@@ -1881,47 +1881,15 @@
         "description": "",
         "x-enumNames": [
           "Other",
-          "CompanyStockService",
-          "RegistrationService",
-          "AcceleratedRegistrationService",
-          "MOTServiceLightVehicle",
-          "MOTServiceHeavyVehicle",
-          "MOTServiceAgriculture",
-          "ControlDeviceService",
-          "GasInstallationService",
-          "MopedConversionService",
-          "DismantlingService",
-          "TaxiComputerService",
-          "LicensePlateManufactureService",
           "Service",
           "Repair",
-          "Inspection",
-          "SmallMaintenance",
-          "GreatMaintenance",
-          "AirConditioningMaintenance",
-          "SeasonalTireChange"
+          "Inspection"
         ],
         "enum": [
           0,
-          30,
-          40,
-          50,
-          60,
-          61,
-          62,
-          70,
-          80,
-          90,
-          100,
-          110,
-          120,
-          129,
-          130,
-          131,
-          132,
-          133,
-          134,
-          135
+          10,
+          20,
+          30
         ]
       },
       "ContactType": {
@@ -3436,6 +3404,9 @@
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
+          "title": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           }
@@ -3555,6 +3526,9 @@
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
+          "title": {
+            "type": "string"
+          },
           "description": {
             "type": "string"
           }
@@ -3612,6 +3586,9 @@
           },
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "title": {
+            "type": "string"
           },
           "description": {
             "type": "string"
@@ -3976,13 +3953,9 @@
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
-          "date": {
+          "title": {
             "type": "string",
-            "format": "date-time"
-          },
-          "odometerReading": {
-            "type": "integer",
-            "format": "int32"
+            "nullable": true
           },
           "description": {
             "type": "string",
@@ -3991,6 +3964,44 @@
           "attachedFile": {
             "type": "string",
             "nullable": true
+          },
+          "notes": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expectedNextDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "odometerReading": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expectedNextOdometerReading": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/VehicleServiceLogStatus"
+          },
+          "reporterName": {
+            "type": "string"
+          },
+          "reporterPhoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "reporterEmailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaData": {
+            "type": "string"
           }
         }
       },

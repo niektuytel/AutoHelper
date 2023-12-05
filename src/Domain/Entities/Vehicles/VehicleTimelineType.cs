@@ -3,9 +3,12 @@
 public enum VehicleTimelineType
 {
     Unknown = 0,
-    SucceededMOT = 1,
-    FailedMOT = 2,
-    Service = 3,
-    Repair = 4,
-    OwnerChange = 5
+    Service = 1,
+    Repair = 2,
+    Inspection = 3,
+
+    // From RDW
+    SucceededMOT = 400,
+    FailedMOT = 401,
+    OwnerChange = 402
 }
