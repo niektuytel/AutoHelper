@@ -44,4 +44,13 @@ public class GarageServiceItem : BaseEntity
     /// </summary>
     public string? Description { get; set; }
 
+    /// <summary>
+    /// Expected next date of the service
+    /// </summary>
+    public bool ExpectedNextDateIsRequired { get; set; } = false;
+
+    /// <summary>
+    /// Expected next odometer readings of the service
+    /// </summary>
+    public bool ExpectedNextOdometerReadingIsRequired { get; set; } = false;
 }
