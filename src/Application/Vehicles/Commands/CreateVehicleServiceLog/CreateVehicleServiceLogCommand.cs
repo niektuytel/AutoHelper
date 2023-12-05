@@ -24,7 +24,10 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem
 {
     public string VehicleLicensePlate { get; set; }
     public string GarageLookupIdentifier { get; set; }
+
+    public Guid? GarageServiceId { get; set; } = null!;
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+    public string? Title { get; set; }
     public string? Description { get; set; }
 
     public string Date { get; set; }

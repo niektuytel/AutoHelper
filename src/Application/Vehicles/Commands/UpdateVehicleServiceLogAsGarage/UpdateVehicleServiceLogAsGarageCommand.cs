@@ -39,7 +39,10 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     internal string UserId { get; private set; }
     public Guid ServiceLogId { get; private set; }
     public string VehicleLicensePlate { get; set; }
+
+    public Guid? GarageServiceId { get; set; } = null!;
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
+    public string? Title { get; set; }
     public string? Description { get; set; }
 
     public string Date { get; set; }

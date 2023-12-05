@@ -29,6 +29,9 @@ public class CreateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
             .MustAsync(BeValidAndExistingVehicle)
             .WithMessage("Invalid or non-existent vehicle.");
 
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Title is required.");
+
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required.")
             .When(x => x.Type == GarageServiceType.Other);
