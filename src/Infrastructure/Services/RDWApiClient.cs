@@ -474,7 +474,7 @@ internal partial class RDWApiClient
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Motorcycle,
                     Title = "APK keuring",
-                    Description = "2Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
                 });
