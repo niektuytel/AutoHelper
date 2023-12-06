@@ -13,9 +13,6 @@ public interface IGarageService
     Task<IEnumerable<RDWCompany>> GetRDWCompanies(int offset, int limit);
     Task<int> GetRDWCompaniesCount();
     Task<IEnumerable<RDWCompanyService>> GetRDWServices();
-    Task<GarageLookupItem> CreateLookup(RDWCompany company);
-    Task<bool> NeedToUpdate(RDWCompany company, GarageLookupItem garage);
-    Task<GarageLookupItem> UpdateLookup(RDWCompany company, GarageLookupItem garage);
-    Task<(List<GarageLookupServiceItem> itemsToInsert, List<GarageLookupServiceItem> itemsToUpdate, List<GarageLookupServiceItem> itemsToRemove)> UpsertLookupServices(IEnumerable<GarageLookupServiceItem> garageServices, IEnumerable<GarageLookupServiceItem> rdwServices, string garageIdentifier);
-
+    Task<(GarageLookupItem? itemToInsert, GarageLookupItem? itemToUpdate)> UpsertLookup(GarageLookupItem? garage, RDWCompany company);
+    Task<(List<GarageLookupServiceItem> itemsToInsert,List<GarageLookupServiceItem> itemsToRemove)> UpsertLookupServices(IEnumerable<GarageLookupServiceItem>? garageServices, IEnumerable<GarageLookupServiceItem> rdwServices, string garageIdentifier);
 }

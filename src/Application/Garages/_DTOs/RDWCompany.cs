@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Application.Garages._DTOs;
 
@@ -33,4 +35,39 @@ public class RDWCompany
 
     [JsonProperty("api_bedrijf_erkenningen")]
     public string ApiBedrijfErkenningen { get; set; }
+
+    public string GetFormattedAddress()
+    {
+        var street = Straat;
+        var houseNumber = Huisnummer.ToString();
+        var houseNumberAddition = Huisnummertoevoeging;
+
+        if (string.IsNullOrWhiteSpace(street))
+        {
+            throw new Exception("Street is empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(houseNumber))
+        {
+            throw new Exception("House number is empty");
+        }
+
+        // Capitalize the first letter of the street
+        street = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(street.ToLower());
+
+        // Remove unexpected commas from the inputs
+        street = street.Replace(",", "").Trim();
+        houseNumber = houseNumber.Replace(",", "").Trim();
+        houseNumberAddition = string.IsNullOrWhiteSpace(houseNumberAddition) ? "" : houseNumberAddition.Replace(",", "").Trim();
+
+        // Conditionally add comma based on the presence of houseNumber
+        if (!string.IsNullOrEmpty(houseNumber))
+        {
+            return $"{street} {houseNumber}{houseNumberAddition}";
+        }
+        else
+        {
+            return $"{street} {houseNumberAddition}".Trim();
+        }
+    }
 }

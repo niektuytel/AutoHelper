@@ -67,24 +67,41 @@ internal class GarageService : IGarageService
         return await _rdwService.GetAllServices();
     }
 
-    public async Task<bool> NeedToUpdate(RDWCompany company, GarageLookupItem? garage)
+    public async Task<(GarageLookupItem? itemToInsert, GarageLookupItem? itemToUpdate)> UpsertLookup(GarageLookupItem? garage, RDWCompany company)
     {
-        // ignore update when garage is using the GarageItem table
-        // the user can update the garage information manually
-        if (garage?.GarageId != null)
+        if (garage == null)
+        {
+            garage = await CreateLookup(company);
+            return (garage, null);
+        }
+        else
+        {
+            var updateRequired = IsGarageUpdateRequired(company, garage);
+            if (updateRequired)
+            {
+                garage = await UpdateLookup(company, garage);
+                return (null, garage);
+            }
+        }
+
+        return (null, null);
+    }
+    
+    private bool IsGarageUpdateRequired(RDWCompany company, GarageLookupItem garage)
+    {
+        if (garage == null || garage.GarageId != null)
         {
             return false;
         }
 
-        var expectedAddress = GetAddress(company);
-        return expectedAddress != garage?.Address;
+        return !company.GetFormattedAddress().Equals(garage.Address, StringComparison.OrdinalIgnoreCase);
     }
 
-    public async Task<GarageLookupItem> CreateLookup(RDWCompany company)
+    private async Task<GarageLookupItem> CreateLookup(RDWCompany company)
     {
         var identifier = company.Volgnummer.ToString();
         var name = company.Naambedrijf.ToPascalCase();
-        var address = GetAddress(company);
+        var address = company.GetFormattedAddress();
         var city = company.Plaats.ToPascalCase();
 
         var garage = new GarageLookupItem()
@@ -104,10 +121,10 @@ internal class GarageService : IGarageService
         return garage;
     }
 
-    public async Task<GarageLookupItem> UpdateLookup(RDWCompany company, GarageLookupItem garage)
+    private async Task<GarageLookupItem> UpdateLookup(RDWCompany company, GarageLookupItem garage)
     {
         var name = company.Naambedrijf.ToPascalCase();
-        var address = GetAddress(company);
+        var address = company.GetFormattedAddress();
         var city = company.Plaats.ToPascalCase();
 
         garage.Name = name;
@@ -120,8 +137,7 @@ internal class GarageService : IGarageService
     }
 
     public async Task<(
-        List<GarageLookupServiceItem> itemsToInsert, 
-        List<GarageLookupServiceItem> itemsToUpdate,
+        List<GarageLookupServiceItem> itemsToInsert,
         List<GarageLookupServiceItem> itemsToRemove
     )>  
     UpsertLookupServices(
@@ -130,77 +146,18 @@ internal class GarageService : IGarageService
         string garageIdentifier
     )
     {
+        var itemsToRemove = garageServices?.ToList() ?? new List<GarageLookupServiceItem>();
         var itemsToInsert = new List<GarageLookupServiceItem>();
-        var itemsToUpdate = new List<GarageLookupServiceItem>();
         foreach (var rdwService in rdwServices)
         {
-            var garageService = garageServices?.FirstOrDefault(x => 
-                x.GarageLookupIdentifier == garageIdentifier &&
-                x.Type == rdwService.Type &&
-                x.VehicleType == rdwService.VehicleType && 
-                x.Title == rdwService.Title
-            );
-
-            if (garageService == null)
-            {
-                var service = await CreateService(garageIdentifier, rdwService);
-                itemsToInsert.Add(service);
-            }
-            else
-            {
-                var needToUpdate = NeedToUpdate(garageService!, rdwService!);
-                if (needToUpdate)
-                {
-                    var service = await UpdateService(garageService, rdwService);
-                    itemsToInsert.Add(service);
-                    itemsToUpdate.Add(garageService);
-                }
-            }
+            var service = await CreateService(garageIdentifier, rdwService);
+            itemsToInsert.Add(service);
         }
 
-        var itemsToRemove = new List<GarageLookupServiceItem>();
-        if (garageServices != null)
-        {
-            foreach (var garageService in garageServices)
-            {
-                var rdwService = rdwServices.FirstOrDefault(x =>
-                    x.GarageLookupIdentifier == garageIdentifier &&
-                    x.Type == garageService.Type && 
-                    x.VehicleType == garageService.VehicleType && 
-                    x.Title == garageService.Title
-                );
-
-                if (rdwService == null)
-                {
-                    itemsToRemove.Add(garageService);
-                }
-            }
-        }
-
-        return (itemsToInsert, itemsToUpdate, itemsToRemove);
+        return (itemsToInsert, itemsToRemove);
     }
 
-    private static bool NeedToUpdate(GarageLookupServiceItem garageService, GarageLookupServiceItem rdwService)
-    {
-        if (garageService.Description != rdwService.Description)
-        {
-            return true;
-        }
-
-        if (garageService.ExpectedNextDateIsRequired != rdwService.ExpectedNextDateIsRequired)
-        {
-            return true;
-        }
-
-        if (garageService.ExpectedNextOdometerReadingIsRequired != rdwService.ExpectedNextOdometerReadingIsRequired)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public async Task<GarageLookupServiceItem> CreateService(string garageLookupIdentifier, GarageLookupServiceItem rdwService)
+    private async Task<GarageLookupServiceItem> CreateService(string garageLookupIdentifier, GarageLookupServiceItem rdwService)
     {
         var service = new GarageLookupServiceItem()
         {
@@ -215,49 +172,6 @@ internal class GarageService : IGarageService
         };
 
         return service;
-    }
-
-    public async Task<GarageLookupServiceItem> UpdateService(GarageLookupServiceItem service, GarageLookupServiceItem rdwService)
-    {
-        service.Description = rdwService.Description;
-        service.ExpectedNextDateIsRequired = rdwService.ExpectedNextDateIsRequired;
-        service.ExpectedNextOdometerReadingIsRequired = rdwService.ExpectedNextOdometerReadingIsRequired;
-        return service;
-    }
-
-    private static string GetAddress(RDWCompany company)
-    {
-        var street = company.Straat;
-        var houseNumber = company.Huisnummer.ToString();
-        var houseNumberAddition = company.Huisnummertoevoeging;
-
-        if (string.IsNullOrWhiteSpace(street))
-        {
-            throw new Exception("Street is empty");
-        }
-
-        if (string.IsNullOrWhiteSpace(houseNumber))
-        {
-            throw new Exception("House number is empty");
-        }
-
-        // Capitalize the first letter of the street
-        street = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(street.ToLower());
-
-        // Remove unexpected commas from the inputs
-        street = street.Replace(",", "").Trim();
-        houseNumber = houseNumber.Replace(",", "").Trim();
-        houseNumberAddition = string.IsNullOrWhiteSpace(houseNumberAddition) ? "" : houseNumberAddition.Replace(",", "").Trim();
-
-        // Conditionally add comma based on the presence of houseNumber
-        if (!string.IsNullOrEmpty(houseNumber))
-        {
-            return $"{street} {houseNumber}{houseNumberAddition}";
-        }
-        else
-        {
-            return $"{street} {houseNumberAddition}".Trim();
-        }
     }
 
     private async Task<GarageLookupItem> SetInformationFromGoogle(GarageLookupItem item)

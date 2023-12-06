@@ -144,7 +144,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
             var start = request.StartRowIndex + (i * request.BatchSize);
             var batch = await _garageService.GetRDWCompanies(start, request.BatchSize);
 
-            var (garageItemsToInsert, garageItemsToUpdate, garageServicesToInsert, garageServicesToUpdate, garageServicesToRemove) = await ProcessGarageBatchAsync(batch, request, cancellationToken);
+            var (garageItemsToInsert, garageItemsToUpdate, garageServicesToInsert, garageServicesToRemove) = await ProcessGarageBatchAsync(batch, request, cancellationToken);
 
             if (garageItemsToInsert.Any())
             {
@@ -161,11 +161,6 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
                 await _dbContext.BulkInsertAsync(garageServicesToInsert, cancellationToken);
             }
 
-            if (garageServicesToUpdate.Any())
-            {
-                await _dbContext.BulkUpdateAsync(garageServicesToUpdate, cancellationToken);
-            }
-
             if (garageServicesToRemove.Any())
             {
                 await _dbContext.BulkRemoveAsync(garageServicesToRemove, cancellationToken);
@@ -178,7 +173,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
 
     }
 
-    private async Task<(List<GarageLookupItem> InsertLookupItems, List<GarageLookupItem> UpdateLookupItems, List<GarageLookupServiceItem> InsertServiceItems, List<GarageLookupServiceItem> UpdateServiceItems, List<GarageLookupServiceItem> RemoveServiceItems)> ProcessGarageBatchAsync(IEnumerable<RDWCompany> batch, UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
+    private async Task<(List<GarageLookupItem> InsertLookupItems, List<GarageLookupItem> UpdateLookupItems, List<GarageLookupServiceItem> InsertServiceItems, List<GarageLookupServiceItem> RemoveServiceItems)> ProcessGarageBatchAsync(IEnumerable<RDWCompany> batch, UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         var storedGarages = await _dbContext.GarageLookups
             .AsNoTracking()
@@ -189,14 +184,14 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
         var garagesToInsert = new List<GarageLookupItem>();
         var garagesToUpdate = new List<GarageLookupItem>();
         var garageServicesToInsert = new List<GarageLookupServiceItem>();
-        var garageServicesToUpdate = new List<GarageLookupServiceItem>();
         var garageServicesToRemove = new List<GarageLookupServiceItem>();
-        foreach (var garage in batch)
+        foreach (var company in batch)
         {
             try
             {
+                var identifier = company.Volgnummer.ToString();
                 var rdwServices = _allRDWServices
-                    .Where(y => y.Volgnummer == garage.Volgnummer)
+                    .Where(y => y.Volgnummer.ToString() == identifier)
                     .SelectMany(y => y.RelatedServiceItems);
 
                 // garage is useless if it doesn't provide any service
@@ -205,36 +200,25 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
                     continue;
                 }
 
-                var storedGarage = storedGarages.FirstOrDefault(x => x.Identifier == garage.Volgnummer.ToString());
-                if (storedGarage == null)
+                var storedGarage = storedGarages.FirstOrDefault(x => x.Identifier == identifier);
+                var (itemToInsert, itemToUpdate) = await _garageService.UpsertLookup(storedGarage, company);
+                if (itemToInsert != null)
                 {
-                    storedGarage = await _garageService.CreateLookup(garage);
-                    garagesToInsert.Add(storedGarage);
+                    garagesToInsert.Add(itemToInsert);
                     _maxInsertAmount--;
                 }
-                else
+                if (itemToUpdate != null)
                 {
-                    var needToUpdate = await _garageService.NeedToUpdate(garage, storedGarage);
-                    if (needToUpdate)
-                    {
-                        storedGarage = await _garageService.UpdateLookup(garage, storedGarage);
-                        garagesToUpdate.Add(storedGarage);
-                        _maxUpdateAmount--;
-                    }
+                    garagesToUpdate.Add(itemToUpdate);
+                    _maxUpdateAmount--;
                 }
 
                 // Always check the services as they can change very often
-                var (itemsToInsert, itemsToUpdate, itemsToRemove) = await _garageService.UpsertLookupServices(storedGarage.Services, rdwServices, storedGarage.Identifier);
+                var (itemsToInsert, itemsToRemove) = await _garageService.UpsertLookupServices(storedGarage?.Services, rdwServices, identifier);
                 if (itemsToInsert?.Any() == true)
                 {
                     garageServicesToInsert.AddRange(itemsToInsert);
                 }
-                
-                if (itemsToUpdate?.Any() == true)
-                {
-                    garageServicesToUpdate.AddRange(itemsToUpdate);
-                }
-
                 if (itemsToRemove?.Any() == true)
                 {
                     garageServicesToRemove.AddRange(itemsToRemove);
@@ -247,11 +231,11 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
             }
             catch (Exception ex)
             {
-                request.QueueService.LogError($"[{garage.Naambedrijf}]:{ex.Message}");
+                request.QueueService.LogError($"[{company.Naambedrijf}]:{ex.Message}");
             }
         }
 
-        return (garagesToInsert, garagesToUpdate, garageServicesToInsert, garageServicesToUpdate, garageServicesToRemove);
+        return (garagesToInsert, garagesToUpdate, garageServicesToInsert, garageServicesToRemove);
     }
 
     private bool ShouldStopProcessing(UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
