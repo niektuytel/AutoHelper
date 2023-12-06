@@ -2,10 +2,11 @@
 using System.IO;
 using System.Net;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
-using AutoHelper.Infrastructure.Common.Models;
 using Azure;
 using GoogleApi.Entities.Interfaces;
 using Newtonsoft.Json;
@@ -343,11 +344,11 @@ internal partial class RDWApiClient
     /// https://opendata.rdw.nl/resource/5k74-3jha.json
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<RDWKnownCompany>> GetKnownCompanies()
+    public async Task<IEnumerable<RDWCompany>> GetAllCompanies()
     {
         var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json";
-        var allCompanies = new List<RDWKnownCompany>();
-        var limit = 2000;
+        var allCompanies = new List<RDWCompany>();
+        var limit = 4000;
         var offset = 0;
 
         do
@@ -360,7 +361,7 @@ internal partial class RDWApiClient
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var page = JsonConvert.DeserializeObject<IEnumerable<RDWKnownCompany>>(json) ?? new List<RDWKnownCompany>();
+                var page = JsonConvert.DeserializeObject<IEnumerable<RDWCompany>>(json) ?? new List<RDWCompany>();
 
                 allCompanies.AddRange(page!);
                 offset++;
@@ -402,11 +403,11 @@ internal partial class RDWApiClient
     /// - Kentekenloket
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<RDWKnownService>> GetKnownServices()
+    public async Task<IEnumerable<RDWCompanyService>> GetAllServices(bool skipOnUnkownServiceType = true)
     {
         var url = $"https://opendata.rdw.nl/resource/nmwb-dqkz.json";
-        var allServices = new List<RDWKnownService>();
-        var limit = 5000;
+        var allServices = new List<RDWCompanyService>();
+        var limit = 30000;
         var offset = 0;
 
         do
@@ -419,10 +420,16 @@ internal partial class RDWApiClient
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var page = JsonConvert.DeserializeObject<IEnumerable<RDWKnownService>>(json) ?? new List<RDWKnownService>();
+                var page = JsonConvert.DeserializeObject<IEnumerable<RDWCompanyService>>(json) ?? new List<RDWCompanyService>();
                 foreach (var item in page)
                 {
-                    item.ServiceType = GetKnownServiceType(item.Erkenning);
+                    var services = CreateServiceItems(item.Erkenning);
+                    if (skipOnUnkownServiceType && services?.Any() != true)
+                    {
+                        continue;
+                    }
+
+                    item.RelatedServiceItems = services;
                     allServices.Add(item);
                 }
 
@@ -438,31 +445,139 @@ internal partial class RDWApiClient
         return allServices;
     }
 
-    private static GarageServiceType GetKnownServiceType(string rdwErkenning)
+    private static List<GarageLookupServiceItem> CreateServiceItems(string rdwErkenning)
     {
-        return rdwErkenning switch
+        var items = new List<GarageLookupServiceItem>();
+        switch(rdwErkenning)
         {
-            // Assuming these are maintenance-related
-            "Bedrijfsvoorraad" => GarageServiceType.Service,
-            "Tenaamstellen" => GarageServiceType.Service,
+            case "Demontage":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Service,
+                    VehicleType = VehicleType.Any,
+                    Title = "Voertuig Slopen",
+                    Description = "Veilig ontmantelen en recyclen van oude en beschadigde voertuigen."
+                });
+                break;
+            case "Kentekenplaatfabrikant":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Service,
+                    VehicleType = VehicleType.Any,
+                    Title = "Kentekenplaat maken",
+                    Description = "Vervaardiging en levering van kentekenplaten volgens wettelijke specificaties."
+                });
+                break;
+            case "APK Lichte voertuigen":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.Motorcycle,
+                    Title = "APK keuring",
+                    Description = "2Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true,
+                    ExpectedNextOdometerReadingIsRequired = true
+                });
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.LightCar,
+                    Title = "APK keuring",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true,
+                    ExpectedNextOdometerReadingIsRequired = true
+                });
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.Taxi,
+                    Title = "APK keuring",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true,
+                    ExpectedNextOdometerReadingIsRequired = true
+                });
+                break;
+                
+            case "APK Zware voertuigen":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.HeavyCar,
+                    Title = "APK keuring",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true,
+                    ExpectedNextOdometerReadingIsRequired = true
+                });
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.Bus,
+                    Title = "APK keuring",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true,
+                    ExpectedNextOdometerReadingIsRequired = true
+                });
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.Truck,
+                    Title = "APK keuring",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true,
+                    ExpectedNextOdometerReadingIsRequired = true
+                });
+                break;
 
-            // Assuming these are repair-related
-            "Versnelde inschrijving" => GarageServiceType.Repair,
-            "Ombouwmelding Snorfiets" => GarageServiceType.Repair,
+            case "APK-Landbouw":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.Tractor,
+                    Title = "APK keuring",
+                    Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
+                    ExpectedNextDateIsRequired = true
+                });
+                break;
 
-            // Assuming these are inspection-related
-            "APK Lichte voertuigen" => GarageServiceType.Inspection,
-            "APK Zware voertuigen" => GarageServiceType.Inspection,
-            "APK-Landbouw" => GarageServiceType.Inspection,
-            "Controleapparaten" => GarageServiceType.Inspection,
-            "Gasinstallaties" => GarageServiceType.Inspection,
-            "Demontage" => GarageServiceType.Inspection,
-            "Boordcomputertaxi" => GarageServiceType.Inspection,
-            "Kentekenplaatfabrikant" => GarageServiceType.Inspection,
+            case "Controleapparaten":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Service,
+                    VehicleType = VehicleType.Bus,
+                    Title = "Besturingsapparaat Onderhoud",
+                    Description = "RDW Gecertificeerd voor onderhoud en reparatie aan voertuigbesturingsapparaten."
+                });
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Service,
+                    VehicleType = VehicleType.Truck,
+                    Title = "Besturingsapparaat Onderhoud",
+                    Description = "RDW Gecertificeerd voor onderhoud en reparatie aan voertuigbesturingsapparaten."
+                });
+                break;
 
-            // Everything else
-            _ => GarageServiceType.Other,
+            case "Gasinstallaties":
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Service,
+                    VehicleType = VehicleType.Any,
+                    Title = "Gas Installatie Onderhoud",
+                    Description = "RDW Gecertificeerd voor onderhoud en reparatie van voertuig gasinstallaties."
+                });
+                break;
+
+            case "Boordcomputertaxi" :
+                items.Add(new GarageLookupServiceItem()
+                {
+                    Type = GarageServiceType.Inspection,
+                    VehicleType = VehicleType.Taxi,
+                    Title = "Taxi Computer Onderhoud",
+                    Description = "RDW Gecertificeerd voor onderhoud en reparatie van gespecialiseerde computersystemen voor taxi's."
+                });
+                break;
         };
+
+        return items;
     }
 
 
@@ -637,6 +752,74 @@ internal partial class RDWApiClient
 
         var json = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<IEnumerable<VehicleInspectionNotificationDtoItem>>(json) ?? new List<VehicleInspectionNotificationDtoItem>();
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/5k74-3jha.json
+    /// </summary>
+    internal async Task<IEnumerable<RDWCompany>> GetAllCompanies(int offset, int limit, bool includeFiltering = true)
+    {
+        var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json?$limit={limit}&$offset={offset * limit}";
+        if (includeFiltering)
+        {
+            // Additional filters
+            string additionalFilters = "volgnummer IS NOT NULL AND naam_bedrijf IS NOT NULL AND plaats IS NOT NULL AND straat IS NOT NULL";
+            string encodedWhereClause = WebUtility.UrlEncode(additionalFilters);
+            url += $"&$where={encodedWhereClause}";
+        }
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<IEnumerable<RDWCompany>>(json) ?? new List<RDWCompany>();
+    }
+
+    /// <summary>
+    /// https://opendata.rdw.nl/resource/5k74-3jha.json
+    /// </summary>
+    internal async Task<int> GetAllCompaniesCount(bool includeFiltering = true)
+    {
+        var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json?$select=count(*)";
+        if (includeFiltering)
+        {
+            // Additional filters
+            string additionalFilters = "volgnummer IS NOT NULL AND naam_bedrijf IS NOT NULL AND plaats IS NOT NULL AND straat IS NOT NULL";
+            string encodedWhereClause = WebUtility.UrlEncode(additionalFilters);
+            url += $"&$where={encodedWhereClause}";
+        }
+
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
+        request.Headers.Add("Accept", "application/json");
+        var response = await _httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception($"RDW API returned status code {response.StatusCode}");
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var jsonArray = JArray.Parse(json);
+
+        // Check if the JSON array has at least one element
+        if (jsonArray.Count > 0)
+        {
+            // Get the first element of the JSON array
+            var firstElement = jsonArray[0];
+
+            // Retrieve the count value
+            var countValue = firstElement.Value<int>("count");
+
+            return countValue;
+        }
+        else
+        {
+            throw new Exception("No data returned from RDW API");
+        }
     }
 
 }

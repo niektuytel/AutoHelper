@@ -72,6 +72,14 @@ public class VehicleController : ApiControllerBase
     {
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
+    [HttpGet($"{nameof(GetRelatedServices)}/{{licensePlate}}")]
+    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<GarageServiceType>> GetRelatedServices([FromRoute] string licensePlate)
+    {
+        var query = new GetVehicleRelatedServicesQuery(licensePlate);
+        return await Mediator.Send(query);
+    }
 
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
@@ -94,16 +102,6 @@ public class VehicleController : ApiControllerBase
         }
 
         return await Mediator.Send(command, cancellationToken);
-    }
-
-
-    [HttpGet($"{nameof(GetRelatedServices)}/{{licensePlate}}")]
-    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetRelatedServices([FromRoute] string licensePlate)
-    {
-        var query = new GetVehicleRelatedServicesQuery(licensePlate);
-        return await Mediator.Send(query);
     }
 
 }

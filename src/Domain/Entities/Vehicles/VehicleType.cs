@@ -9,7 +9,7 @@ namespace AutoHelper.Domain.Entities.Vehicles;
 
 public enum VehicleType
 {
-    Other = 0,
+    Any = 0,
     LightCar = 1,
     HeavyCar = 2,
     Taxi = 3,

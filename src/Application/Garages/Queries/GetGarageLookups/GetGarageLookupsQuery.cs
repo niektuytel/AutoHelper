@@ -74,7 +74,6 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         var queryable = _context.GarageLookups
             .AsNoTracking()
             .Where(x => x.Location != null
-                        && !string.IsNullOrEmpty(x.KnownServicesString)
                         && !string.IsNullOrEmpty(x.DaysOfWeekString)
                         && (!string.IsNullOrEmpty(x.Website))
             );

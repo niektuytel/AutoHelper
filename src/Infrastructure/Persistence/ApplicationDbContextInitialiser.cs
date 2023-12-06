@@ -131,7 +131,6 @@ public class ApplicationDbContextInitialiser
             EmailAddress = $"contact@garage{random.Next(1, 101)}.com",
             ConversationContactEmail = random.Next(2) == 0 ? $"contact@garage{random.Next(1, 101)}.com" : null,
             ConversationContactWhatsappNumber = random.Next(2) == 0 ? "+1555" + random.Next(1000, 9999) : null,
-            KnownServicesString = string.Join(";", Enumerable.Range(1, 5).OrderBy(_ => random.Next()).Take(random.Next(1, 6))),
             DaysOfWeekString = string.Join(",", Enumerable.Range(1, 7).OrderBy(_ => random.Next()).Take(random.Next(1, 8))),
             Website = "www.garage" + random.Next(1, 101) + ".com",
             Rating = (float)Math.Round(random.NextDouble() * 4 + 1, 1),
@@ -139,8 +138,7 @@ public class ApplicationDbContextInitialiser
             Created = DateTime.Now,
             CreatedBy = "System",
             LastModified = DateTime.Now,
-            LastModifiedBy = "System",
-            LargeData = null // Assuming LargeData is not set initially
+            LastModifiedBy = "System"
         };
     }
 

@@ -23,6 +23,8 @@ public class VehicleServiceLogItem: BaseAuditableEntity
     [ForeignKey(nameof(GarageLookupIdentifier))]
     public GarageLookupItem? GarageLookup { get; set; } = null!;
 
+    public Guid? GarageServiceId { get; set; }
+
     [Required]
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
 

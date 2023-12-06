@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Garages.Queries.GetGarageLookupStatus;
 using AutoHelper.Hangfire.MediatR;
 using Hangfire.Server;
 using AutoHelper.Domain.Entities.Conversations;

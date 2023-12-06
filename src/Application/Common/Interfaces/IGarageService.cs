@@ -4,12 +4,18 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using MediatR;
 using AutoHelper.Domain.Entities.Conversations.Enums;
+using AutoHelper.Application.Garages._DTOs;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IGarageService
 {
-    Task<GarageLookupItem[]> GetBriefGarageLookups();
-    Task<GarageLookupItem> SetConversationSettings(string garageIdentifier, string contactIdentifier, ContactType contactType, GarageServiceType[] services, CancellationToken cancellationToken);
-    Task<GarageLookupItem> UpdateByLocation(GarageLookupItem item);
+    Task<IEnumerable<RDWCompany>> GetRDWCompanies(int offset, int limit);
+    Task<int> GetRDWCompaniesCount();
+    Task<IEnumerable<RDWCompanyService>> GetRDWServices();
+    Task<GarageLookupItem> CreateLookup(RDWCompany company);
+    Task<bool> NeedToUpdate(RDWCompany company, GarageLookupItem garage);
+    Task<GarageLookupItem> UpdateLookup(RDWCompany company, GarageLookupItem garage);
+    Task<(List<GarageLookupServiceItem> itemsToInsert, List<GarageLookupServiceItem> itemsToUpdate, List<GarageLookupServiceItem> itemsToRemove)> UpsertLookupServices(IEnumerable<GarageLookupServiceItem> garageServices, IEnumerable<GarageLookupServiceItem> rdwServices, string garageIdentifier);
+
 }

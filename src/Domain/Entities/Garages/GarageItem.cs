@@ -5,7 +5,6 @@ using System;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Domain.Entities.Conversations;
 using NetTopologySuite.Geometries;
-using AutoHelper.Domain.Entities.Garages.Unused;
 
 namespace AutoHelper.Domain.Entities.Garages;
 

@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace AutoHelper.Infrastructure.Common.Models;
+namespace AutoHelper.Application.Garages._DTOs;
 
-public class RDWKnownCompany
+public class RDWCompany
 {
     [JsonProperty("volgnummer")]
     public int Volgnummer { get; set; }

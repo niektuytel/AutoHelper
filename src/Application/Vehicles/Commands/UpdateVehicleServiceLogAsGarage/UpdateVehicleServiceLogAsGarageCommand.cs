@@ -25,7 +25,7 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     public UpdateVehicleServiceLogAsGarageCommand(string userId, UpdateVehicleServiceAsGarageLogDtoItem data)
     {
         UserId = userId;
-        ServiceLogId = data.ServiceLogId;
+        Id = data.GarageServiceId;
         VehicleLicensePlate = data.VehicleLicensePlate;
         Type = data.Type;
         Description = data.Description;
@@ -36,8 +36,8 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
         Status = data.Status;
     }
 
+    public Guid Id { get; private set; }
     internal string UserId { get; private set; }
-    public Guid ServiceLogId { get; private set; }
     public string VehicleLicensePlate { get; set; }
 
     public Guid? GarageServiceId { get; set; } = null!;

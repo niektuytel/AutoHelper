@@ -6,36 +6,6 @@
     "version": "v1"
   },
   "paths": {
-    "/api/AdminAccount/GetGarageLookupStatuses": {
-      "get": {
-        "tags": [
-          "AdminAccount"
-        ],
-        "operationId": "AdminAccount_GetGarageLookupStatuses",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageLookupsStatusDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/AdminAccount/UpsertGarageLookups": {
       "put": {
         "tags": [
@@ -44,15 +14,35 @@
         "operationId": "AdminAccount_UpsertGarageLookups",
         "parameters": [
           {
-            "name": "maxInsertAmount",
+            "name": "startRowIndex",
             "in": "query",
-            "description": "-1 is all of them",
             "schema": {
               "type": "integer",
               "format": "int32",
               "default": 0
             },
             "x-position": 1
+          },
+          {
+            "name": "endRowIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "maxInsertAmount",
+            "in": "query",
+            "description": "-1 is all of them",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": -1
+            },
+            "x-position": 3
           },
           {
             "name": "maxUpdateAmount",
@@ -63,7 +53,17 @@
               "format": "int32",
               "default": 0
             },
-            "x-position": 2
+            "x-position": 4
+          },
+          {
+            "name": "batchSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1000
+            },
+            "x-position": 5
           }
         ],
         "responses": {
@@ -684,8 +684,17 @@
                   "VehicleLicensePlate": {
                     "type": "string"
                   },
+                  "GarageServiceId": {
+                    "type": "string",
+                    "format": "guid",
+                    "nullable": true
+                  },
                   "Type": {
                     "$ref": "#/components/schemas/GarageServiceType"
+                  },
+                  "title": {
+                    "type": "string",
+                    "nullable": true
                   },
                   "Description": {
                     "type": "string",
@@ -837,15 +846,23 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "ServiceLogId": {
+                  "Id": {
                     "type": "string",
                     "format": "guid"
                   },
                   "VehicleLicensePlate": {
                     "type": "string"
                   },
+                  "GarageServiceId": {
+                    "type": "string",
+                    "format": "guid"
+                  },
                   "Type": {
                     "$ref": "#/components/schemas/GarageServiceType"
+                  },
+                  "title": {
+                    "type": "string",
+                    "nullable": true
                   },
                   "Description": {
                     "type": "string",
@@ -1494,6 +1511,62 @@
         }
       }
     },
+    "/api/Vehicle/GetRelatedServices/{licensePlate}": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_GetRelatedServices",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageServiceType",
+                    "wrapped": true
+                  },
+                  "items": {
+                    "xml": {
+                      "name": "GarageServiceType"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageServiceType"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/CreateServiceLog": {
       "post": {
         "tags": [
@@ -1514,8 +1587,17 @@
                     "type": "string",
                     "nullable": true
                   },
+                  "ServiceLogCommand.GarageServiceId": {
+                    "type": "string",
+                    "format": "guid",
+                    "nullable": true
+                  },
                   "ServiceLogCommand.Type": {
                     "$ref": "#/components/schemas/GarageServiceType"
+                  },
+                  "ServiceLogCommand.Title": {
+                    "type": "string",
+                    "nullable": true
                   },
                   "ServiceLogCommand.Description": {
                     "type": "string",
@@ -1576,62 +1658,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/VehicleServiceLogDtoItem"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Vehicle/GetRelatedServices/{licensePlate}": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetRelatedServices",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "xml": {
-                    "name": "ArrayOfGarageServiceType",
-                    "wrapped": true
-                  },
-                  "items": {
-                    "xml": {
-                      "name": "GarageServiceType"
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/GarageServiceType"
-                      }
-                    ]
-                  }
                 }
               }
             }
@@ -1735,28 +1761,6 @@
   },
   "components": {
     "schemas": {
-      "GarageLookupsStatusDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "ableToInsert": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "ableToUpdate": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "upToDate": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "total": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
       "BadRequestResponse": {
         "type": "object",
         "additionalProperties": false,
@@ -1969,7 +1973,6 @@
           "name",
           "address",
           "city",
-          "knownServicesString",
           "created",
           "lastModified"
         ],
@@ -2035,26 +2038,6 @@
             "type": "string",
             "nullable": true
           },
-          "knownServices": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "GarageServiceType"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/GarageServiceType"
-                }
-              ]
-            }
-          },
-          "knownServicesString": {
-            "type": "string",
-            "minLength": 1
-          },
           "daysOfWeek": {
             "type": "array",
             "nullable": true,
@@ -2086,6 +2069,22 @@
             "format": "int32",
             "nullable": true
           },
+          "services": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "GarageLookupServiceItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageLookupServiceItem"
+                }
+              ]
+            }
+          },
           "created": {
             "type": "string",
             "format": "date-time",
@@ -2103,14 +2102,6 @@
           "lastModifiedBy": {
             "type": "string",
             "nullable": true
-          },
-          "largeData": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/GarageLookupLargeItem"
-              }
-            ]
           }
         }
       },
@@ -2753,7 +2744,7 @@
           }
         }
       },
-      "GarageLookupLargeItem": {
+      "GarageLookupServiceItem": {
         "allOf": [
           {
             "$ref": "#/components/schemas/BaseEntity"
@@ -2761,12 +2752,74 @@
           {
             "type": "object",
             "additionalProperties": false,
+            "required": [
+              "garageLookupIdentifier",
+              "type",
+              "vehicleType"
+            ],
             "properties": {
-              "googleApiDetailsJson": {
-                "type": "string"
+              "garageLookupIdentifier": {
+                "type": "string",
+                "minLength": 1
+              },
+              "garageLookup": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/GarageLookupItem"
+                  }
+                ]
+              },
+              "type": {
+                "$ref": "#/components/schemas/GarageServiceType"
+              },
+              "vehicleType": {
+                "$ref": "#/components/schemas/VehicleType"
+              },
+              "title": {
+                "type": "string",
+                "nullable": true
+              },
+              "description": {
+                "type": "string",
+                "nullable": true
+              },
+              "expectedNextDateIsRequired": {
+                "type": "boolean"
+              },
+              "expectedNextOdometerReadingIsRequired": {
+                "type": "boolean"
               }
             }
           }
+        ]
+      },
+      "VehicleType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Any",
+          "LightCar",
+          "HeavyCar",
+          "Taxi",
+          "Bus",
+          "Truck",
+          "Motorcycle",
+          "Tractor",
+          "Trailer",
+          "Caravan"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
         ]
       },
       "BaseEntity": {
@@ -2974,10 +3027,11 @@
         "description": "",
         "x-enumNames": [
           "Unknown",
-          "SucceededMOT",
-          "FailedMOT",
           "Service",
           "Repair",
+          "Inspection",
+          "SucceededMOT",
+          "FailedMOT",
           "OwnerChange"
         ],
         "enum": [
@@ -2985,8 +3039,9 @@
           1,
           2,
           3,
-          4,
-          5
+          400,
+          401,
+          402
         ]
       },
       "VehicleTimelinePriority": {
@@ -3245,6 +3300,11 @@
                   }
                 ]
               },
+              "garageServiceId": {
+                "type": "string",
+                "format": "guid",
+                "nullable": true
+              },
               "type": {
                 "$ref": "#/components/schemas/GarageServiceType"
               },
@@ -3399,16 +3459,28 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "format": "guid",
+            "nullable": true
           },
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
+          "vehicleType": {
+            "$ref": "#/components/schemas/VehicleType"
+          },
           "title": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
+          },
+          "expectedNextDateIsRequired": {
+            "type": "boolean"
+          },
+          "expectedNextOdometerReadingIsRequired": {
+            "type": "boolean"
           }
         }
       },
@@ -3423,8 +3495,16 @@
           "vehicleLicensePlate": {
             "type": "string"
           },
+          "serviceLogId": {
+            "type": "string",
+            "format": "guid"
+          },
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
           },
           "description": {
             "type": "string",
@@ -3673,18 +3753,18 @@
               }
             }
           },
-          "knownServices": {
+          "services": {
             "type": "array",
             "xml": {
               "wrapped": true
             },
             "items": {
               "xml": {
-                "name": "GarageServiceType"
+                "name": "GarageLookupServiceItem"
               },
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/GarageServiceType"
+                  "$ref": "#/components/schemas/GarageLookupServiceItem"
                 }
               ]
             }
@@ -3840,7 +3920,7 @@
             "type": "string"
           },
           "type": {
-            "$ref": "#/components/schemas/VehicleLookupType"
+            "$ref": "#/components/schemas/VehicleType"
           },
           "brand": {
             "type": "string"
@@ -3862,34 +3942,6 @@
             "nullable": true
           }
         }
-      },
-      "VehicleLookupType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "LightCar",
-          "HeavyCar",
-          "Taxi",
-          "Bus",
-          "Truck",
-          "Motorcycle",
-          "Tractor",
-          "Trailer",
-          "Caravan"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9
-        ]
       },
       "VehicleSpecificationsDtoItem": {
         "type": "object",
@@ -3944,11 +3996,20 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
           "garageLookupName": {
             "type": "string"
           },
           "garageLookupIdentifier": {
             "type": "string"
+          },
+          "garageServiceId": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
           },
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"

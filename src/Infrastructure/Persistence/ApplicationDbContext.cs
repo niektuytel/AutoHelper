@@ -8,7 +8,6 @@ using AutoHelper.Application.Garages.Queries.GetGaragesLookups;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Garages.Unused;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Identity;
@@ -44,9 +43,10 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<VehicleServiceLogItem> VehicleServiceLogs => Set<VehicleServiceLogItem>();
     public DbSet<VehicleTimelineItem> VehicleTimelineItems => Set<VehicleTimelineItem>();
 
-    public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();
     public DbSet<GarageItem> Garages => Set<GarageItem>();
     public DbSet<GarageServiceItem> GarageServices => Set<GarageServiceItem>();
+    public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();
+    public DbSet<GarageLookupServiceItem> GarageLookupServices => Set<GarageLookupServiceItem>();
 
     public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
     public DbSet<ConversationMessageItem> ConversationMessages => Set<ConversationMessageItem>();
@@ -133,6 +133,11 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
         };
 
         await this.BulkUpdateAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);
+    }
+
+    public async Task BulkRemoveAsync<T>(IList<T> entities, CancellationToken cancellationToken = default) where T : class
+    {
+        await this.BulkDeleteAsync(entities, cancellationToken: cancellationToken);
     }
 
 }

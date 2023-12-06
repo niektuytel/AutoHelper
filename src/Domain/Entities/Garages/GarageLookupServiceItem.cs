@@ -4,22 +4,13 @@ using AutoHelper.Domain.Entities.Vehicles;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
-public class GarageServiceItem : BaseEntity
+public class GarageLookupServiceItem : BaseEntity
 {
-    /// <summary>
-    /// UserId of the garage owner
-    /// </summary>
     [Required]
-    public string UserId { get; set; }
+    public string GarageLookupIdentifier { get; set; }
 
-    /// <summary>
-    /// GarageId for the full garage foreign data
-    /// </summary>
-    [Required]
-    public Guid GarageId { get; set; }
-
-    [ForeignKey(nameof(GarageId))]
-    public GarageItem Garage { get; set; }
+    [ForeignKey(nameof(GarageLookupIdentifier))]
+    public GarageLookupItem? GarageLookup { get; set; } = null!;
 
     /// <summary>
     /// Like: Inspection, Repair, Maintenance, etc.

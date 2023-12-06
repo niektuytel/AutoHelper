@@ -131,7 +131,9 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 const response = await vehicleClient.createServiceLog(
                     licensePlate,
                     data.garageLookup.identifier,
+                    data.garageServiceId,
                     data.type,
+                    data.title,
                     data.description,
                     data.date.toISOString(), 
                     data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 

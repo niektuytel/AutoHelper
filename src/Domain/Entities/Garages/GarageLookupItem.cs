@@ -6,6 +6,7 @@ using AutoHelper.Domain.Entities.Vehicles;
 using NetTopologySuite.Geometries;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Conversations.Enums;
+using System.Collections;
 
 namespace AutoHelper.Domain.Entities.Garages;
 
@@ -59,29 +60,6 @@ public class GarageLookupItem
     public string? ConversationContactWhatsappNumber { get; set; }
 
     [NotMapped]
-    public GarageServiceType[] KnownServices
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(KnownServicesString))
-            {
-                return new GarageServiceType[0];
-            }
-            return KnownServicesString
-                .Split(';')
-                .Select(x => (GarageServiceType)int.Parse(x))
-                .ToArray();
-        }
-        set
-        {
-            KnownServicesString = value == null ? "" : string.Join(";", value.Select(v => ((int)v).ToString()));
-        }
-    }
-
-    [Required]
-    public string KnownServicesString { get; set; } = "";
-
-    [NotMapped]
     public int[]? DaysOfWeek
     {
         get
@@ -104,6 +82,8 @@ public class GarageLookupItem
     public float? Rating { get; set; }
 
     public int? UserRatingsTotal { get; set; }
+
+    public ICollection<GarageLookupServiceItem> Services { get; set; }
 
     [Required]
     public DateTime Created { get; set; }

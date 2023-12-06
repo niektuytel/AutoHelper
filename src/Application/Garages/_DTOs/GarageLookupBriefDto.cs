@@ -18,7 +18,7 @@ public class GarageLookupBriefDto
         City = garageLookupItem.City;
         Website = garageLookupItem.Website;
         DaysOfWeek = garageLookupItem.DaysOfWeek == null ? new int[0] : garageLookupItem.DaysOfWeek;
-        KnownServices = garageLookupItem.KnownServices == null ? new GarageServiceType[0] : garageLookupItem.KnownServices;
+        Services = garageLookupItem.Services == null ? new List<GarageLookupServiceItem>() : garageLookupItem.Services;
         DistanceInMeter = (int)distanceInMeters;
         Rating = garageLookupItem.Rating;
         UserRatingsTotal = garageLookupItem.UserRatingsTotal;
@@ -38,7 +38,7 @@ public class GarageLookupBriefDto
 
     public int[] DaysOfWeek { get; set; }
 
-    public GarageServiceType[] KnownServices { get; set; }
+    public ICollection<GarageLookupServiceItem> Services { get; set; }
 
     public float? Rating { get; set; }
 

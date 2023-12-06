@@ -50,7 +50,6 @@ public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Del
         {
             _context.VehicleTimelineItems.Remove(timelineEntity);
             await _context.SaveChangesAsync(cancellationToken);
-            //entity.AddDomainEvent(new SomeDomainEvent(entity));
         }
 
         _context.VehicleServiceLogs.Remove(request.ServiceLog);

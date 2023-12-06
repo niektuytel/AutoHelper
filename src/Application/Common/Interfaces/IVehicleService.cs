@@ -3,7 +3,6 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Infrastructure.Services;
 using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Application.Common.Interfaces;
@@ -20,6 +19,5 @@ public interface IVehicleService
     Task<IEnumerable<VehicleBasicsDtoItem>> GetVehicleBasicsWithMOTRequirement(int offset, int limit);
     Task<int> GetVehicleBasicsWithMOTRequirementCount();
     Task<(List<VehicleTimelineItem> itemsToInsert, List<VehicleTimelineItem> itemsToUpdate)> UpsertTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> defectsBatch, IEnumerable<VehicleInspectionNotificationDtoItem> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions);
-    Task<VehicleType> GetVehicleType(string licensePlate);
     VehicleTimelineItem CreateServiceLogTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog);
 }

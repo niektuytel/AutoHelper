@@ -25,7 +25,7 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
             .MustAsync(BeValidAndExistingGarageLookup)
             .WithMessage("No garage found for this user.");
 
-        RuleFor(command => command.ServiceLogId)
+        RuleFor(command => command.Id)
             .NotEmpty().WithMessage("The ID must not be empty")
             .NotEqual(Guid.Empty).WithMessage("The ID must not be a default GUID")
             .MustAsync(BeValidAndExistingServiceLog)

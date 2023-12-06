@@ -54,7 +54,9 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
 
     type CreateServiceLogParams = {
         vehicleLicensePlate: string | undefined;
+        garageServiceId: string | undefined;
         type: GarageServiceType | undefined;
+        title: string | undefined;
         description: string | undefined;
         date: string | undefined;
         expectedNextDate: string | undefined;
@@ -65,7 +67,9 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
 
     const createMutationFunction = async ({
         vehicleLicensePlate,
+        garageServiceId,
         type,
+        title,
         description,
         date,
         expectedNextDate,
@@ -75,7 +79,9 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     }: CreateServiceLogParams) => {
         return await garageClient.createServiceLog(
             vehicleLicensePlate,
+            garageServiceId,
             type,
+            title,
             description,
             date,
             expectedNextDate,
@@ -106,7 +112,9 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     const createServiceLog = (data: any, file: File | null) => {
         createMutation.mutate({
             vehicleLicensePlate: data.licensePlate,
+            garageServiceId: data.garageServiceId,
             type: data.type,
+            title: data.title,
             description: data.description,
             date: data.date?.toISOString(),
             expectedNextDate: data.expectedNextDate?.toISOString(),
@@ -117,9 +125,11 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     }
 
     type UpdateServiceLogParams = {
-        serviceLogId: string;
+        id: string;
         vehicleLicensePlate: string | undefined;
+        garageServiceId: string | undefined;
         type: GarageServiceType | undefined;
+        title: string | undefined;
         description: string | undefined;
         date: string | undefined;
         expectedNextDate: string | undefined;
@@ -130,9 +140,11 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     };
 
     const updateMutationFunction = async ({
-        serviceLogId,
+        id,
         vehicleLicensePlate,
+        garageServiceId,
         type,
+        title,
         description,
         date,
         expectedNextDate,
@@ -142,9 +154,11 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         attachmentFile
     }: UpdateServiceLogParams) => {
         return await garageClient.updateServiceLog(
-            serviceLogId,
+            id,
             vehicleLicensePlate,
+            garageServiceId,
             type,
+            title,
             description,
             date,
             expectedNextDate,
@@ -183,9 +197,11 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
 
     const updateServiceLog = (data: any, file: File | null) => {
         updateMutation.mutate({
-            serviceLogId: data.id!,
+            id: data.id,
             vehicleLicensePlate: data.vehicleLicensePlate,
+            garageServiceId: data.garageServiceId,
             type: data.type,
+            title: data.title,
             description: data.description,
             date: data.date?.toISOString(),
             expectedNextDate: data.expectedNextDate?.toISOString(),

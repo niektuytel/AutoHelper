@@ -83,16 +83,19 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
         request.GarageLookup.LastModified = DateTime.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
 
-        // Insert all services
-        foreach (var serviceType in request.GarageLookup.KnownServices)
+        // Insert all lookup services
+        foreach (var lookupService in request.GarageLookup.Services)
         {
-            if(serviceType == GarageServiceType.Other) continue;
-
             var service = new GarageServiceItem
             {
                 UserId = request.UserId!,
                 GarageId = entity.Id,
-                Type = serviceType
+                Type = lookupService.Type,
+                VehicleType = lookupService.VehicleType,
+                Title = lookupService.Title,
+                Description = lookupService.Description,
+                ExpectedNextDateIsRequired = lookupService.ExpectedNextDateIsRequired,
+                ExpectedNextOdometerReadingIsRequired = lookupService.ExpectedNextOdometerReadingIsRequired
             };
 
             _context.GarageServices.Add(service);

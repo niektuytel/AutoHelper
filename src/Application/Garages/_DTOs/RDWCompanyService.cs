@@ -1,9 +1,9 @@
 ﻿using AutoHelper.Domain.Entities.Garages;
 using Newtonsoft.Json;
 
-namespace AutoHelper.Infrastructure.Common.Models;
+namespace AutoHelper.Application.Garages._DTOs;
 
-public class RDWKnownService
+public class RDWCompanyService
 {
     [JsonProperty("volgnummer")]
     public int Volgnummer { get; set; }
@@ -12,5 +12,5 @@ public class RDWKnownService
     public string Erkenning { get; set; }
 
     [JsonIgnore]
-    public GarageServiceType ServiceType { get; set; }
+    public List<GarageLookupServiceItem> RelatedServiceItems { get; set; }
 }

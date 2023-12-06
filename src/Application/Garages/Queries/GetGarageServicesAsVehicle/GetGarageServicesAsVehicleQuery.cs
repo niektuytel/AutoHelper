@@ -16,17 +16,18 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 
 public record GetGarageServicesAsVehicleQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
-    public GetGarageServicesAsVehicleQuery(string userId)
+    public GetGarageServicesAsVehicleQuery(string licensePlate, string garageLookupIdentifier)
     {
-        UserId = userId;
+        LicensePlate = licensePlate;
+        GarageLookupIdentifier = garageLookupIdentifier;
     }
 
-    [JsonIgnore]
-    public string UserId { get; private set; }
+    public string LicensePlate { get; internal set; }
+
+    public string GarageLookupIdentifier { get; internal set; }
 
     [JsonIgnore]
-    public GarageItem? Garage { get; set; } = new GarageItem();
-
+    public GarageLookupItem? GarageLookup { get; internal set; }
 }
 
 public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAsVehicleQuery, IEnumerable<GarageServiceDtoItem>>
@@ -42,20 +43,23 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAs
 
     public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesAsVehicleQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-        if (entity == null)
+        IEnumerable<GarageServiceDtoItem> result;
+        if (request.GarageLookup!.GarageId != null)
         {
-            throw new NotFoundException(nameof(GarageItem), request.UserId);
+            var entities = _context.GarageServices
+                .Where(x => x.GarageId == request.GarageLookup.GarageId);
+
+            result = _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
+        }
+        else
+        {
+            var entities = _context.GarageLookupServices
+                .Where(x => x.GarageLookupIdentifier == request.GarageLookupIdentifier);
+
+            result = _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
         }
 
-        var entities = _context.GarageServices
-            .Where(x =>
-                x.UserId == request.UserId &&
-                x.GarageId == entity.Id
-            )
-            .AsEnumerable();
-
-        return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
+        return result;
     }
 
 }

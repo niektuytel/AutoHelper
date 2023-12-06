@@ -160,7 +160,7 @@ internal class VehicleService : IVehicleService
 
 
         // If no matches, return Other
-        return VehicleType.Other;
+        return VehicleType.Any;
     }
 
     public async Task<VehicleTechnicalDtoItem?> GetTechnicalBriefByLicensePlateAsync(string licensePlate)
