@@ -200,6 +200,18 @@
 
 
 
+  "GarageServiceDialog.Title.Create": "Create",
+  "GarageServiceDialog.Title.Update": "Update",
+  "GarageServiceDialog.Type.Label": "Service type",
+  "GarageServiceDialog.Type.Required": "Service type is required",
+  "GarageServiceDialog.VehicleType.Label": "Vehicle type",
+  "GarageServiceDialog.VehicleType.Required": "Vehicle type is required",
+  "GarageServiceDialog.Title.Label": "Title",
+  "GarageServiceDialog.Title.Required": "Title is required",
+  "GarageServiceDialog.Description.Label": "Description",
+  "GarageServiceDialog.Description.Required": "Description is required",
+  "GarageServiceDialog.ExpectedNextOdometerReading.Label": "Maintenance interval (km)",
+  "GarageServiceDialog.ExpectedNextDate.Label": "Maintenance interval (date)",
 
 
 

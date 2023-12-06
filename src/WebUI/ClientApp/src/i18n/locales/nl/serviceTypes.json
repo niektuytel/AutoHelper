@@ -3,71 +3,26 @@
   "Other.Title": "Anders",
   "Other.Description": "Een dienst dat niet beschreven is toch willen afhandelen",
 
-  "CompanyStockService.Title": "Handelaar Voorraad Dienst",
-  "CompanyStockService.Description": "Beheer en onderhoud van bedrijfsvoorraad voor handelaren.",
-  "CompanyStockService.Filter": "Handelaar",
+  "Service.Title": "Onderhoud",
+  "Service.Description": "Onderhoud dat om de zoveel tijd terug komt, zoals Olie verversen, grote beurt kleine beurt.",
+  "Service.Filter": "Onderhoud",
 
-  "RegistrationService.Title": "Registratie Dienst",
-  "RegistrationService.Description": "Dienst voor het registreren van uw voertuig volgens wettelijke normen.",
-  "RegistrationService.Filter": "Registratie",
-
-  "AcceleratedRegistrationService.Title": "Snelle Registratie Dienst",
-  "AcceleratedRegistrationService.Description": "Versnelde dienst voor het snel registreren van uw voertuig.",
-  "AcceleratedRegistrationService.Filter": "Snelle Registratie",
-
-  "MOTServiceLightVehicle.Title": "APK beurt",
-  "MOTServiceLightVehicle.Description": "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
-  "MOTServiceLightVehicle.Filter": "APK Keuring",
-
-  "MOTServiceHeavyVehicle.Title": "APK beurt",
-  "MOTServiceHeavyVehicle.Description": "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
-  "MOTServiceHeavyVehicle.Filter": "APK Keuring",
-
-  "MOTServiceAgriculture.Title": "APK beurt",
-  "MOTServiceAgriculture.Description": "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
-  "MOTServiceAgriculture.Filter": "APK Keuring",
-
-  "ControlDeviceService.Title": "Besturingsapparaat Dienst",
-  "ControlDeviceService.Description": "Onderhoud en reparatie van voertuigbesturingsapparaten.",
-  "ControlDeviceService.Filter": "Besturingsapparaat Onderhoud",
-
-  "GasInstallationService.Title": "Gas Installatie Dienst",
-  "GasInstallationService.Description": "Onderhoud en reparatie van voertuig gasinstallaties.",
-  "GasInstallationService.Filter": "Gas Installatie Onderhoud",
-
-  "MopedConversionService.Title": "Brommer Ombouw Dienst",
-  "MopedConversionService.Description": "Conversie en aanpassing van bromfietsen volgens specificaties.",
-  "MopedConversionService.Filter": "Brommer Ombouw",
-
-  "DismantlingService.Title": "Voertuig Sloop Dienst",
-  "DismantlingService.Description": "Veilig ontmantelen en recyclen van oude en beschadigde voertuigen.",
-  "DismantlingService.Filter": "Voertuig Slopen",
-
-  "TaxiComputerService.Title": "Taxi Computer Onderhoud Dienst",
-  "TaxiComputerService.Description": "Reparatie en onderhoud van gespecialiseerde computersystemen voor taxi's.",
-  "TaxiComputerService.Filter": "Taxi Computer Onderhoud",
-
-  "LicensePlateManufactureService.Title": "Kentekenplaat Productie Dienst",
-  "LicensePlateManufactureService.Description": "Vervaardiging en levering van kentekenplaten volgens wettelijke specificaties.",
-  "LicensePlateManufactureService.Filter": "Kentekenplaat Produceren",
+  "Repair.Title": "Reparatie",
+  "Repair.Description": "Deskundige reparatiediensten voor allerlei soorten voertuigproblemen, van kleine deuken tot grote mechanische defecten.",
+  "Repair.Filter": "Reparatie",
 
   "Inspection.Title": "Inspectie",
   "Inspection.Description": "Wij controleren essentiële onderdelen van uw voertuig, zoals remmen, banden en vloeistoffen, om ervoor te zorgen dat u veilig en zonder onderbrekingen kunt reizen.",
   "Inspection.Filter": "Voertuig Keuren",
 
-  "SmallMaintenance.Title": "Klein onderhoud",
-  "SmallMaintenance.Description": "Je auto wordt op de belangrijkste punten gecontroleerd. We verversen o.a. de motorolie, vervangen het oliefilter en vullen de ruitensproeiervloeistof bij.",
-  "SmallMaintenance.Filter": "Kleine Beurt",
-
-  "GreatMaintenance.Title": "Groot onderhoud",
-  "GreatMaintenance.Description": "Tijdens de tweejaarlijkse grote beurt controleren we je auto op een groot aantal belangrijke punten. We verversen o.a. de motorolie, vervangen het olie- en interieurfilter, doen een uitlijncontrole, reinigen en controleren je remmen. Alle onderdelen van de auto worden nagelopen op werking, slijtage en eventuele beschadiging.",
-  "GreatMaintenance.Filter": "Groot Beurt",
-
-  "AirConditioningMaintenance.Title": "Airco onderhoud",
-  "AirConditioningMaintenance.Description": "Het controleren en bijvullen van u airco",
-  "AirConditioningMaintenance.Filter": "Airco Onderhoud",
-
-  "SeasonalTireChange.Title": "Seizoens bandenwissel",
-  "SeasonalTireChange.Description": "Een dienst waarbij uw banden worden verwisseld op basis van het seizoen, om optimale veiligheid en prestaties van uw voertuig te garanderen gedurende het hele jaar.",
-  "SeasonalTireChange.Filter": "Seizoensbanden Vervangen"
+  "Any.Title": "Elk Voertuig",
+  "LightCar.Title": "Lichte Auto",
+  "HeavyCar.Title": "Zware Auto",
+  "Taxi.Title": "Taxi",
+  "Bus.Title": "Bus",
+  "Truck.Title": "Vrachtwagen",
+  "Motorcycle.Title": "Motorfiets",
+  "Tractor.Title": "Tractor",
+  "Trailer.Title": "Aanhanger",
+  "Caravan.Title": "Caravan"
 }

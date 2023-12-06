@@ -200,8 +200,18 @@
 
 
 
-
-
+  "GarageServiceDialog.Title.Create": "Nieuwe aanmaken",
+  "GarageServiceDialog.Title.Update": "Aanpassen",
+  "GarageServiceDialog.Type.Label": "Soort dienst",
+  "GarageServiceDialog.Type.Required": "Soort dienst is verplicht",
+  "GarageServiceDialog.VehicleType.Label": "Type voertuig",
+  "GarageServiceDialog.VehicleType.Required": "Type voertuig is verplicht",
+  "GarageServiceDialog.Title.Label": "Titel",
+  "GarageServiceDialog.Title.Required": "Titel is verplicht",
+  "GarageServiceDialog.Description.Label": "Omschrijving",
+  "GarageServiceDialog.Description.Required": "Omschrijving is verplicht",
+  "GarageServiceDialog.ExpectedNextOdometerReading.Label": "Verplichte kilometerstand voor volgend onderhoud",
+  "GarageServiceDialog.ExpectedNextDate.Label": "Verplichte datum voor volgend onderhoud",
 
 
 

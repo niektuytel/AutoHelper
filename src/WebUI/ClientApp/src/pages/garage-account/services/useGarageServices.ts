@@ -122,7 +122,12 @@ function useGarageServices(onResponse: (data: any) => void) {
     const createService = (data: any) => {
         var command = new CreateGarageServiceCommand();
         command.type = data.type;
+        command.vehicleType = data.vehicleType;
+        command.title = data.title;
         command.description = data.description;
+        command.expectedNextOdometerReadingIsRequired = data.expectedNextOdometerReadingIsRequired;
+        command.expectedNextDateIsRequired = data.expectedNextDateIsRequired;
+
         
         console.log(command.toJSON());
         createMutation.mutate(command);
@@ -132,7 +137,11 @@ function useGarageServices(onResponse: (data: any) => void) {
         var command = new UpdateGarageServiceCommand();
         command.id = data.id;
         command.type = data.type;
+        command.vehicleType = data.vehicleType;
+        command.title = data.title;
         command.description = data.description;
+        command.expectedNextOdometerReadingIsRequired = data.expectedNextOdometerReadingIsRequired;
+        command.expectedNextDateIsRequired = data.expectedNextDateIsRequired;
         
         console.log(command.toJSON());
         updateMutation.mutate(command);

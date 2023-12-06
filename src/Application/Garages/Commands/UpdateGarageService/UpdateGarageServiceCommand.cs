@@ -6,6 +6,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +23,15 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceDtoItem>
 
     public GarageServiceType Type { get; set; }
 
+    public VehicleType VehicleType { get; set; }
+
     public string Title { get; set; } = null!;
 
     public string Description { get; set; } = null!;
+
+    public bool ExpectedNextDateIsRequired { get; set; } = false;
+
+    public bool ExpectedNextOdometerReadingIsRequired { get; set; } = false;
 
 }
 
@@ -48,8 +55,11 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
         }
 
         entity.Type = request.Type;
+        entity.VehicleType = request.VehicleType;
         entity.Title = request.Title;
         entity.Description = request.Description;
+        entity.ExpectedNextDateIsRequired = request.ExpectedNextDateIsRequired;
+        entity.ExpectedNextOdometerReadingIsRequired = request.ExpectedNextOdometerReadingIsRequired;
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));

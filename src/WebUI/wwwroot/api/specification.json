@@ -3606,11 +3606,20 @@
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
+          "vehicleType": {
+            "$ref": "#/components/schemas/VehicleType"
+          },
           "title": {
             "type": "string"
           },
           "description": {
             "type": "string"
+          },
+          "expectedNextDateIsRequired": {
+            "type": "boolean"
+          },
+          "expectedNextOdometerReadingIsRequired": {
+            "type": "boolean"
           }
         }
       },
@@ -3667,11 +3676,20 @@
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"
           },
+          "vehicleType": {
+            "$ref": "#/components/schemas/VehicleType"
+          },
           "title": {
             "type": "string"
           },
           "description": {
             "type": "string"
+          },
+          "expectedNextDateIsRequired": {
+            "type": "boolean"
+          },
+          "expectedNextOdometerReadingIsRequired": {
+            "type": "boolean"
           }
         }
       },

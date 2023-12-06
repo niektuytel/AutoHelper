@@ -1,6 +1,6 @@
 ﻿import { TFunction, useTranslation } from "react-i18next";
 import { enumToKeyValueArray } from "../../app/utils";
-import { CreateGarageServiceCommand, GarageServiceDtoItem, GarageServiceType } from "../../app/web-api-client";
+import { CreateGarageServiceCommand, GarageServiceDtoItem, GarageServiceType, VehicleType } from "../../app/web-api-client";
 
 // Display all enum items except the first one (None)
 export function getDefaultGarageServicesInfo(t: any) {
@@ -15,6 +15,17 @@ export function getDefaultGarageServicesInfo(t: any) {
 
 export function getAllGarageServiceTypes(t: any) {
     return enumToKeyValueArray(GarageServiceType).map(({ key, value }) =>
+    ({
+        type: key,
+        title: t(`serviceTypes:${value}.Title`),
+        description: t(`serviceTypes:${value}.Description`),
+        filter: t(`serviceTypes:${value}.Filter`)
+    })
+    );
+}
+
+export function getAllVehicleType(t: any) {
+    return enumToKeyValueArray(VehicleType).map(({ key, value }) =>
     ({
         type: key,
         title: t(`serviceTypes:${value}.Title`),

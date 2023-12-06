@@ -112,10 +112,10 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                         {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
                     <Box>
-                        {garage.knownServices && garage.knownServices.map(service => service !== GarageServiceType.Other &&
+                        {garage.services && garage.services.map(service => service.type !== GarageServiceType.Other &&
                             <Chip
-                                key={service}
-                                label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}
+                                key={service.id}
+                                label={service.title}
                                 sx={{ mr: 1, mt: 1 }}
                                 variant="outlined"
                                 size="small"

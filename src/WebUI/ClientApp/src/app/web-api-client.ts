@@ -4100,8 +4100,11 @@ export interface IGarageLocationDtoItem {
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     type?: GarageServiceType;
+    vehicleType?: VehicleType;
     title?: string;
     description?: string;
+    expectedNextDateIsRequired?: boolean;
+    expectedNextOdometerReadingIsRequired?: boolean;
 
     constructor(data?: ICreateGarageServiceCommand) {
         if (data) {
@@ -4115,8 +4118,11 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     init(_data?: any) {
         if (_data) {
             this.type = _data["type"];
+            this.vehicleType = _data["vehicleType"];
             this.title = _data["title"];
             this.description = _data["description"];
+            this.expectedNextDateIsRequired = _data["expectedNextDateIsRequired"];
+            this.expectedNextOdometerReadingIsRequired = _data["expectedNextOdometerReadingIsRequired"];
         }
     }
 
@@ -4130,16 +4136,22 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["type"] = this.type;
+        data["vehicleType"] = this.vehicleType;
         data["title"] = this.title;
         data["description"] = this.description;
+        data["expectedNextDateIsRequired"] = this.expectedNextDateIsRequired;
+        data["expectedNextOdometerReadingIsRequired"] = this.expectedNextOdometerReadingIsRequired;
         return data;
     }
 }
 
 export interface ICreateGarageServiceCommand {
     type?: GarageServiceType;
+    vehicleType?: VehicleType;
     title?: string;
     description?: string;
+    expectedNextDateIsRequired?: boolean;
+    expectedNextOdometerReadingIsRequired?: boolean;
 }
 
 export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand {
@@ -4209,8 +4221,11 @@ export interface IUpdateGarageSettingsCommand {
 export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     id?: string;
     type?: GarageServiceType;
+    vehicleType?: VehicleType;
     title?: string;
     description?: string;
+    expectedNextDateIsRequired?: boolean;
+    expectedNextOdometerReadingIsRequired?: boolean;
 
     constructor(data?: IUpdateGarageServiceCommand) {
         if (data) {
@@ -4225,8 +4240,11 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
         if (_data) {
             this.id = _data["id"];
             this.type = _data["type"];
+            this.vehicleType = _data["vehicleType"];
             this.title = _data["title"];
             this.description = _data["description"];
+            this.expectedNextDateIsRequired = _data["expectedNextDateIsRequired"];
+            this.expectedNextOdometerReadingIsRequired = _data["expectedNextOdometerReadingIsRequired"];
         }
     }
 
@@ -4241,8 +4259,11 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["type"] = this.type;
+        data["vehicleType"] = this.vehicleType;
         data["title"] = this.title;
         data["description"] = this.description;
+        data["expectedNextDateIsRequired"] = this.expectedNextDateIsRequired;
+        data["expectedNextOdometerReadingIsRequired"] = this.expectedNextOdometerReadingIsRequired;
         return data;
     }
 }
@@ -4250,8 +4271,11 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
 export interface IUpdateGarageServiceCommand {
     id?: string;
     type?: GarageServiceType;
+    vehicleType?: VehicleType;
     title?: string;
     description?: string;
+    expectedNextDateIsRequired?: boolean;
+    expectedNextOdometerReadingIsRequired?: boolean;
 }
 
 export class PaginatedListOfGarageLookupBriefDto implements IPaginatedListOfGarageLookupBriefDto {
