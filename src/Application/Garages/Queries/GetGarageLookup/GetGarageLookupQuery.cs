@@ -52,6 +52,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupQue
     public async Task<GarageLookupDtoItem> Handle(GetGarageLookupQuery request, CancellationToken cancellationToken)
     {
         var lookup = await _context.GarageLookups
+            .Include(x => x.Services)
             .FirstOrDefaultAsync(x => x.Identifier == request.Identifier);
 
         if (lookup == null)

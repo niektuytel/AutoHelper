@@ -5,6 +5,7 @@ using AutoHelper.Domain.Entities.Garages;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
 using AutoHelper.Domain.Entities.Conversations.Enums;
+using AutoMapper;
 
 namespace AutoHelper.Application.Garages._DTOs;
 
@@ -27,9 +28,9 @@ public class GarageLookupDtoItem : IMapFrom<GarageLookupItem>
 
     public string ImageThumbnail { get; set; }
 
-    public GarageServiceType[] KnownServices { get; set; }
-
     public int[] DaysOfWeek { get; set; }
+
+    public ICollection<GarageLookupServiceItem> Services { get; set; }
 
     public string? PhoneNumber { get; set; }
 
@@ -52,11 +53,23 @@ public class GarageLookupDtoItem : IMapFrom<GarageLookupItem>
     /// This can be a email address or whatsapp number.
     /// When defined, the garage is available for conversation.
     /// </summary>
-    public string? ConversationContactIdentifier { get; set; }
-    public ContactType? ConversationContactType { get; set; }
+    public string? ConversationContactEmail { get; set; }
+    public string? ConversationContactWhatsappNumber { get; set; }
 
-    public bool HasPickupService { get; set; } = false;// TODO: Implement pickup service
-
-    public bool HasReplacementTransportService { get; set; } = false;// TODO: Implement replacement transport service
-
+    public void Mapping(Profile profile)
+    {
+        profile.CreateMap<GarageLookupItem, GarageLookupDtoItem>()
+            .ForMember(d => d.Id, opt => opt.MapFrom(s => s.GarageId))
+            .ForMember(d => d.Image, opt => opt.MapFrom(s => s.Image))
+            .ForMember(d => d.ImageThumbnail, opt => opt.MapFrom(s => s.ImageThumbnail))
+            .ForMember(d => d.DaysOfWeek, opt => opt.MapFrom(s => s.DaysOfWeek))
+            .ForMember(d => d.Services, opt => opt.MapFrom(s => s.Services))
+            .ForMember(d => d.PhoneNumber, opt => opt.MapFrom(s => s.PhoneNumber))
+            .ForMember(d => d.WhatsappNumber, opt => opt.MapFrom(s => s.WhatsappNumber))
+            .ForMember(d => d.EmailAddress, opt => opt.MapFrom(s => s.EmailAddress))
+            .ForMember(d => d.Address, opt => opt.MapFrom(s => s.Address))
+            .ForMember(d => d.City, opt => opt.MapFrom(s => s.City))
+            .ForMember(d => d.ConversationContactEmail, opt => opt.MapFrom(s => s.ConversationContactEmail))
+            .ForMember(d => d.ConversationContactWhatsappNumber, opt => opt.MapFrom(s => s.ConversationContactWhatsappNumber))
+    }
 }

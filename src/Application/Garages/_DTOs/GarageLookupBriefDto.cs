@@ -49,8 +49,4 @@ public class GarageLookupBriefDto
     /// </summary>
     public int DistanceInMeter { get; set; }
 
-    public bool HasPickupService { get; set; } = false;
-
-    public bool HasReplacementTransportService { get; set; } = false;
-
 }

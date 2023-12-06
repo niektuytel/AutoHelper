@@ -5,9 +5,9 @@ import {
     GarageClient,
     PaginatedListOfGarageLookupBriefDto,
     VehicleClient,
-} from "../../app/web-api-client";
+} from "../app/web-api-client";
 
-function useGarageServiceTypes(licensePlate: string) {
+functon useGarageServiceTypes(licensePlate: string) {
     const garageSearchClient = new VehicleClient(process.env.PUBLIC_URL);
 
     const fetchGarageServiceTypes = async (licensePlate: string) => {
