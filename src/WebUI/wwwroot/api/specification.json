@@ -456,42 +456,23 @@
         }
       }
     },
-    "/api/GarageAccount/GetOverview": {
-      "get": {
-        "tags": [
-          "GarageAccount"
-        ],
-        "operationId": "GarageAccount_GetOverview",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GarageOverview"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/GarageAccount/GetServices": {
       "get": {
         "tags": [
           "GarageAccount"
         ],
         "operationId": "GarageAccount_GetServices",
+        "parameters": [
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -689,13 +670,6 @@
                     "format": "guid",
                     "nullable": true
                   },
-                  "Type": {
-                    "$ref": "#/components/schemas/GarageServiceType"
-                  },
-                  "title": {
-                    "type": "string",
-                    "nullable": true
-                  },
                   "Description": {
                     "type": "string",
                     "nullable": true
@@ -856,13 +830,6 @@
                   "GarageServiceId": {
                     "type": "string",
                     "format": "guid"
-                  },
-                  "Type": {
-                    "$ref": "#/components/schemas/GarageServiceType"
-                  },
-                  "title": {
-                    "type": "string",
-                    "nullable": true
                   },
                   "Description": {
                     "type": "string",
@@ -1291,6 +1258,71 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GarageLookupDtoItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Garage/GetServices/{identifier}": {
+      "get": {
+        "tags": [
+          "Garage"
+        ],
+        "operationId": "Garage_GetServices",
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "licensePlate",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "xml": {
+                    "name": "ArrayOfGarageServiceDtoItem",
+                    "wrapped": true
+                  },
+                  "items": {
+                    "xml": {
+                      "name": "GarageServiceDtoItem"
+                    },
+                    "oneOf": [
+                      {
+                        "$ref": "#/components/schemas/GarageServiceDtoItem"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -1845,16 +1877,20 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "garageServiceId": {
+            "type": "string",
+            "format": "guid"
+          },
           "relatedGarageLookupIdentifier": {
             "type": "string"
           },
           "relatedGarageLookupName": {
             "type": "string"
           },
-          "relatedServiceType": {
-            "$ref": "#/components/schemas/GarageServiceType"
+          "conversationContactEmail": {
+            "type": "string"
           },
-          "relatedServiceTypeTitle": {
+          "conversationContactWhatsappNumber": {
             "type": "string"
           },
           "vehicleLicensePlate": {
@@ -1879,22 +1915,6 @@
             ]
           }
         }
-      },
-      "GarageServiceType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "Service",
-          "Repair",
-          "Inspection"
-        ],
-        "enum": [
-          0,
-          10,
-          20,
-          30
-        ]
       },
       "ContactType": {
         "type": "integer",
@@ -2794,6 +2814,22 @@
           }
         ]
       },
+      "GarageServiceType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Service",
+          "Repair",
+          "Inspection"
+        ],
+        "enum": [
+          0,
+          10,
+          20,
+          30
+        ]
+      },
       "VehicleType": {
         "type": "integer",
         "description": "",
@@ -3428,31 +3464,6 @@
           }
         }
       },
-      "GarageOverview": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "vehicles": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "VehicleLookupItem"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/VehicleLookupItem"
-                }
-              ]
-            }
-          }
-        }
-      },
       "GarageServiceDtoItem": {
         "type": "object",
         "additionalProperties": false,
@@ -3800,12 +3811,6 @@
           "distanceInMeter": {
             "type": "integer",
             "format": "int32"
-          },
-          "hasPickupService": {
-            "type": "boolean"
-          },
-          "hasReplacementTransportService": {
-            "type": "boolean"
           }
         }
       },
@@ -3834,22 +3839,6 @@
           "imageThumbnail": {
             "type": "string"
           },
-          "knownServices": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "GarageServiceType"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/GarageServiceType"
-                }
-              ]
-            }
-          },
           "daysOfWeek": {
             "type": "array",
             "xml": {
@@ -3861,6 +3850,22 @@
               "xml": {
                 "name": "int"
               }
+            }
+          },
+          "services": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "GarageLookupServiceItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageLookupServiceItem"
+                }
+              ]
             }
           },
           "phoneNumber": {
@@ -3895,23 +3900,13 @@
           "city": {
             "type": "string"
           },
-          "conversationContactIdentifier": {
+          "conversationContactEmail": {
             "type": "string",
             "nullable": true
           },
-          "conversationContactType": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ContactType"
-              }
-            ]
-          },
-          "hasPickupService": {
-            "type": "boolean"
-          },
-          "hasReplacementTransportService": {
-            "type": "boolean"
+          "conversationContactWhatsappNumber": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

@@ -72,6 +72,7 @@ public class VehicleController : ApiControllerBase
     {
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
+
     [HttpGet($"{nameof(GetRelatedServices)}/{{licensePlate}}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]

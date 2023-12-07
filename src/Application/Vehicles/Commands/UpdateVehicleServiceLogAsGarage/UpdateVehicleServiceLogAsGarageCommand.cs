@@ -27,7 +27,7 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
         UserId = userId;
         Id = data.GarageServiceId;
         VehicleLicensePlate = data.VehicleLicensePlate;
-        Type = data.Type;
+        GarageServiceId = data.GarageServiceId;
         Description = data.Description;
         Date = data.Date;
         ExpectedNextDate = data.ExpectedNextDate;
@@ -38,19 +38,16 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
 
     public Guid Id { get; private set; }
     internal string UserId { get; private set; }
-    public string VehicleLicensePlate { get; set; }
 
+    public string VehicleLicensePlate { get; set; }
     public Guid? GarageServiceId { get; set; } = null!;
-    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
-    public string? Title { get; set; }
     public string? Description { get; set; }
+    public VehicleServiceLogStatus Status { get; set; }
 
     public string Date { get; set; }
     public string? ExpectedNextDate { get; set; } = null!;
     public int OdometerReading { get; set; }
     public int? ExpectedNextOdometerReading { get; set; } = null!;
-
-    public VehicleServiceLogStatus Status { get; set; }
 
     public VehicleServiceLogAttachmentDtoItem? Attachment { get; set; }
 
@@ -61,6 +58,8 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     internal DateTime? ParsedDate { get; private set; }
 
     internal DateTime? ParsedExpectedNextDate { get; private set; }
+
+    public GarageServiceItem? GarageService { get; internal set; }
 
     public void SetParsedDates(DateTime? date, DateTime? expectedNextDate)
     {
@@ -96,10 +95,17 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
     private VehicleServiceLogItem UpdateVehicleServiceLogEntity(UpdateVehicleServiceLogAsGarageCommand request)
     {
+        var description = request.Description;
+        if (string.IsNullOrEmpty(description))
+        {
+            description = request.Description;
+        }
+
         var serviceLog = request.ServiceLog; 
         serviceLog.VehicleLicensePlate = request.VehicleLicensePlate;
-        serviceLog.Type = request.Type;
-        serviceLog.Description = request.Description;
+        serviceLog.Type = request.GarageService!.Type;
+        serviceLog.Title = request.GarageService.Title;
+        serviceLog.Description = description;
         serviceLog.Status = request.Status;
 
         serviceLog.Date = (DateTime)request.ParsedDate!;

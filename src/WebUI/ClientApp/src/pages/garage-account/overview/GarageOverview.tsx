@@ -3,7 +3,7 @@ import { Box, Container, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "../../../constants/routes";
-import { GarageClient, GarageOverview } from "../../../app/web-api-client";
+//import { GarageClient, GarageOverview } from "../../../app/web-api-client";
 import { ROLES } from "../../../constants/roles";
 import SimpleLineChart from "./components/ChartsLineBoard";
 
@@ -13,9 +13,9 @@ interface IProps {
 }
 
 export default ({ }: IProps) => {
-    const garageClient = new GarageClient(process.env.PUBLIC_URL);
+    //const garageClient = new GarageClient(process.env.PUBLIC_URL);
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [garageOverview, setGarageOverview] = React.useState<GarageOverview | undefined>(undefined);
+    //const [garageOverview, setGarageOverview] = React.useState<GarageOverview | undefined>(undefined);
     const { t } = useTranslation();
     const navigate = useNavigate();
 

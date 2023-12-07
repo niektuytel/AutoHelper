@@ -55,9 +55,8 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     type CreateServiceLogParams = {
         vehicleLicensePlate: string | undefined;
         garageServiceId: string | undefined;
-        type: GarageServiceType | undefined;
-        title: string | undefined;
         description: string | undefined;
+
         date: string | undefined;
         expectedNextDate: string | undefined;
         odometerReading: number | undefined;
@@ -68,8 +67,6 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     const createMutationFunction = async ({
         vehicleLicensePlate,
         garageServiceId,
-        type,
-        title,
         description,
         date,
         expectedNextDate,
@@ -80,8 +77,6 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         return await garageClient.createServiceLog(
             vehicleLicensePlate,
             garageServiceId,
-            type,
-            title,
             description,
             date,
             expectedNextDate,
@@ -113,9 +108,8 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         createMutation.mutate({
             vehicleLicensePlate: data.licensePlate,
             garageServiceId: data.garageServiceId,
-            type: data.type,
-            title: data.title,
             description: data.description,
+
             date: data.date?.toISOString(),
             expectedNextDate: data.expectedNextDate?.toISOString(),
             odometerReading: data.odometerReading,
@@ -128,9 +122,8 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         id: string;
         vehicleLicensePlate: string | undefined;
         garageServiceId: string | undefined;
-        type: GarageServiceType | undefined;
-        title: string | undefined;
         description: string | undefined;
+
         date: string | undefined;
         expectedNextDate: string | undefined;
         odometerReading: number | undefined;
@@ -143,8 +136,6 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         id,
         vehicleLicensePlate,
         garageServiceId,
-        type,
-        title,
         description,
         date,
         expectedNextDate,
@@ -157,8 +148,6 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             id,
             vehicleLicensePlate,
             garageServiceId,
-            type,
-            title,
             description,
             date,
             expectedNextDate,
@@ -200,8 +189,6 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             id: data.id,
             vehicleLicensePlate: data.vehicleLicensePlate,
             garageServiceId: data.garageServiceId,
-            type: data.type,
-            title: data.title,
             description: data.description,
             date: data.date?.toISOString(),
             expectedNextDate: data.expectedNextDate?.toISOString(),

@@ -43,18 +43,20 @@ public class ConversationController : ApiControllerBase
 
             foreach (var garage in garages)
             {
-                var services = selectedServices.Services
-                    .Where(item => 
-                        item.VehicleLicensePlate == vehicle.LicensePlate && 
-                        item.RelatedGarageLookupIdentifier == garage.RelatedGarageLookupIdentifier
-                    )
-                    .Select(item => item.RelatedServiceType)
-                    .ToArray();
+                //var services = selectedServices.Services
+                //    .Where(item => 
+                //        item.VehicleLicensePlate == vehicle.LicensePlate && 
+                //        item.RelatedGarageLookupIdentifier == garage.RelatedGarageLookupIdentifier
+                //    )
+                //    .Select(item => item.RelatedServiceType)
+                //    .ToArray();
+
+                throw new NotImplementedException("Missing service of garage");
 
                 var command = new StartConversationCommand(
                     garage.RelatedGarageLookupIdentifier,
                     vehicle.LicensePlate,
-                    services,
+                    null,
                     selectedServices.SenderPhoneNumber,
                     garage.GarageContactIdentifier,
                     selectedServices.MessageType,

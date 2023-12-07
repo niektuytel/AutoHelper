@@ -163,11 +163,11 @@ export default ({ control, setFormValue, defaultLocation, notFound }: LocationSe
         setFormValue("phoneNumber", value.phoneNumber);
         setFormValue("whatsAppNumber", value.whatsappNumber);
         setFormValue("email", value.emailAddress);
-        
-        if (value.conversationContactType == ContactType.Email) {
+
+        if (value.conversationContactEmail !== undefined) {
             setFormValue("conversationEmail", value);
             setFormValue("conversationWhatsAppNumber", "");
-        } else if (value.conversationContactType == ContactType.WhatsApp) {
+        } else if (value.conversationContactWhatsappNumber !== undefined) {
             setFormValue("conversationEmail", "");
             setFormValue("conversationWhatsAppNumber", value);
         }

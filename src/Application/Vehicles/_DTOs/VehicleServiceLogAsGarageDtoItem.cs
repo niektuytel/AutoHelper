@@ -14,7 +14,6 @@ public class VehicleServiceLogAsGarageDtoItem: IMapFrom<VehicleServiceLogItem>
     public string VehicleLicensePlate { get; set; }
 
     public Guid ServiceLogId { get; set; }
-    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
     public string? Title { get; set; }
     public string? Description { get; set; }
     public string? AttachedFile { get; set; }
@@ -33,7 +32,6 @@ public class VehicleServiceLogAsGarageDtoItem: IMapFrom<VehicleServiceLogItem>
         profile.CreateMap<VehicleServiceLogItem, VehicleServiceLogAsGarageDtoItem>()
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
             .ForMember(d => d.VehicleLicensePlate, opt => opt.MapFrom(s => s.VehicleLicensePlate))
-            .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
             .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Title))
             .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Description))
             .ForMember(d => d.AttachedFile, opt => opt.MapFrom(s => s.AttachedFile))

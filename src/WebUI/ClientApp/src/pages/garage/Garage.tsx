@@ -39,25 +39,26 @@ export default ({ }: IProps) => {
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
     const services: SelectedService[] = useSelector((state: any) => state.storedServices);
 
+    // TODO: implement when using converstations
     const tryAddCartItem = (service: SelectedService) => {
-        service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
-        service.relatedGarageLookupName = garageLookup?.name;
+        //service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
+        //service.relatedGarageLookupName = garageLookup?.name;
 
-        if (services.some(item => (
-            item.relatedGarageLookupIdentifier === service.relatedGarageLookupIdentifier &&
-            item.relatedServiceType === service.relatedServiceType
-        ))) {
-            dispatch(showOnError(t("Cart item already exist")));
-            return;
-        }
+        //if (services.some(item => (
+        //    item.relatedGarageLookupIdentifier === service.relatedGarageLookupIdentifier &&
+        //    item.relatedServiceType === service.relatedServiceType
+        //))) {
+        //    dispatch(showOnError(t("Cart item already exist")));
+        //    return;
+        //}
 
-        service.garageContactIdentifier = garageLookup?.conversationContactIdentifier;
-        service.garageContactType = garageLookup?.conversationContactType;
-        service.vehicleLicensePlate = licensePlate!;
-        service.vehicleLatitude = lat!;
-        service.vehicleLongitude = lng!;
+        //service.conversationContactEmail = garageLookup?.conversationContactEmail;
+        //service.conversationContactWhatsappNumber = garageLookup?.conversationContactWhatsappNumber;
+        //service.vehicleLicensePlate = licensePlate!;
+        //service.vehicleLatitude = lat!;
+        //service.vehicleLongitude = lng!;
 
-        dispatch(addService(service));
+        //dispatch(addService(service));
     }
 
     const hasQuestionItem = (serviceType: GarageServiceType) => {
@@ -71,7 +72,7 @@ export default ({ }: IProps) => {
     }
 
     const imageUrl = `http://127.0.0.1:10000/devstoreaccount1/garage-images/${garageLookup?.image}`;
-    const showConversation = garageLookup?.conversationContactIdentifier !== undefined && garageLookup?.conversationContactIdentifier !== null;
+    const showConversation = garageLookup?.conversationContactEmail !== undefined || garageLookup?.conversationContactWhatsappNumber !== null;
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(location.state?.from?.pathname)} />
         <Container sx={{ mb: 5 }}>
@@ -107,25 +108,26 @@ export default ({ }: IProps) => {
                         </Tooltip>
                     </Typography>
 
-                    {loading ?
+                    {loading &&
                         <>
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }}  />
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
                         </>
-                        :
-                        garageLookup?.knownServices?.map((item) =>
-                            <GarageServiceInfoCard
-                                key={`service-card-${item}`}
-                                showConversationActions={showConversation}
-                                serviceType={item}
-                                selectedItem={selectedItem}
-                                setSelectedItem={setSelectedItem}
-                                addCartItem={tryAddCartItem}
-                                hasQuestionItem={hasQuestionItem}
-                            />
-                        )
                     }
+                    {/*TODO: implement all services on garage*/}
+                    {/*:*/}
+                    {/*garageLookup.services && garageLookup.services.map(service =>*/}
+                    {/*    <GarageServiceInfoCard*/}
+                    {/*        key={`service-card-${service.id}`}*/}
+                    {/*        showConversationActions={showConversation}*/}
+                    {/*        service={service}*/}
+                    {/*        selectedItem={selectedItem}*/}
+                    {/*        setSelectedItem={setSelectedItem}*/}
+                    {/*        addCartItem={tryAddCartItem}*/}
+                    {/*        hasQuestionItem={hasQuestionItem}*/}
+                    {/*    />*/}
+                    {/*)*/}
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <GarageContactSection
@@ -135,21 +137,23 @@ export default ({ }: IProps) => {
                 </Grid>  
             </Grid>
         </Container>
-        {garageLookup && relatedServiceTypes &&
-            <GarageContactDialog
-                services={[new SelectedService({
-                    relatedServiceType: relatedServiceTypes![0],
-                    relatedGarageLookupIdentifier: garageLookup?.identifier!,
-                    relatedGarageLookupName: garageLookup?.name,
-                    garageContactIdentifier: garageLookup?.conversationContactIdentifier,
-                    garageContactType: garageLookup?.conversationContactType,
-                    vehicleLicensePlate: licensePlate!,
-                    vehicleLatitude: lat!,
-                    vehicleLongitude: lng!
-                })]}
-                open={dialogOpen}
-                onClose={() => setDialogOpen(false)}
-            />
-        }
     </>;
+
+    //{garageLookup && relatedServiceTypes &&
+    //    <GarageContactDialog
+    //        services={[new SelectedService({
+    //            relatedServiceType: relatedServiceTypes![0],
+    //            relatedGarageLookupIdentifier: garageLookup?.identifier!,
+    //            relatedGarageLookupName: garageLookup?.name,
+    //            conversationContactEmail: garageLookup?.conversationContactEmail,
+    //            conversationContactWhatsappNumber: garageLookup?.conversationContactWhatsappNumber,
+    //            vehicleLicensePlate: licensePlate!,
+    //            vehicleLatitude: lat!,
+    //            vehicleLongitude: lng!
+    //        })]}
+    //        open={dialogOpen}
+    //        onClose={() => setDialogOpen(false)}
+    //    />
+    //}
+
 }

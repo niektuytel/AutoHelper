@@ -12,7 +12,7 @@ import { GetGarageAccountClient } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
-function useGarageServices(onResponse: (data: any) => void) {
+export default (onResponse: (data: any) => void) => {
     const { userRole } = useUserRole()
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
     const { getAccessTokenSilently } = useAuth0();
@@ -25,7 +25,7 @@ function useGarageServices(onResponse: (data: any) => void) {
 
     const fetchGarageServicesData = async () => {
         try {
-            const response = await garageClient.getServices();
+            const response = await garageClient.getServices(undefined);
 
             return response;
         } catch (response: any) {
@@ -159,4 +159,3 @@ function useGarageServices(onResponse: (data: any) => void) {
     }
 }
 
-export default useGarageServices;

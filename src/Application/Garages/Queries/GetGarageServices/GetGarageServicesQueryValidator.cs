@@ -20,6 +20,23 @@ public class GetGarageServicesQueryValidator : AbstractValidator<GetGarageServic
             .MustAsync(BeValidAndExistingGarageLookup)
             .WithMessage("No garage found for this user.");
 
+        // Custom rule for processing and validating LicensePlate
+        RuleFor(x => x.LicensePlate)
+            .Custom((licensePlate, context) =>
+            {
+                // Ignore when no license plate is provided
+                if (string.IsNullOrWhiteSpace(licensePlate))
+                {
+                    return;
+                }
+
+                // Replace spaces or hyphens with an empty string
+                var processedLicensePlate = licensePlate.Replace(" ", "").Replace("-", "");
+                context.InstanceToValidate.LicensePlate = processedLicensePlate;
+
+            });
+
+
     }
 
     private async Task<bool> BeValidAndExistingGarageLookup(GetGarageServicesQuery command, string? userId, CancellationToken cancellationToken)

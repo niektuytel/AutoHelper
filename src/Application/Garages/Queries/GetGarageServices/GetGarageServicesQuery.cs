@@ -16,9 +16,10 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
 
 public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
-    public GetGarageServicesQuery(string userId)
+    public GetGarageServicesQuery(string userId, string? licensePlate=null)
     {
         UserId = userId;
+        LicensePlate = licensePlate;
     }
 
     [JsonIgnore]
@@ -26,6 +27,8 @@ public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem
 
     [JsonIgnore]
     public GarageItem? Garage { get; set; } = new GarageItem();
+
+    public string? LicensePlate { get; internal set;}
 
 }
 
@@ -42,20 +45,13 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
 
     public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Garages.FirstOrDefaultAsync(x => x.UserId == request.UserId);
-        if (entity == null)
-        {
-            throw new NotFoundException(nameof(GarageItem), request.UserId);
-        }
+        // TODO: get services on vehicle type, to reduce response size
 
         var entities = _context.GarageServices
-            .Where(x =>
-                x.UserId == request.UserId &&
-                x.GarageId == entity.Id
-            )
-            .AsEnumerable();
+            .Where(x => x.GarageId == request.Garage!.Id);
 
-        return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
+        var result = _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
+        return result;
     }
 
 }

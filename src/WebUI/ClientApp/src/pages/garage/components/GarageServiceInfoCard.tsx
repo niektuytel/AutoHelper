@@ -35,19 +35,19 @@ import { getDefaultGarageServicesInfo } from "../../garage-account/defaultGarage
 // own imports
 
 interface IProps {
+    service: GarageServiceDtoItem;
     showConversationActions: boolean;
-    serviceType: GarageServiceType;
     selectedItem: any | null;
     setSelectedItem: (serviceType: any) => void;
     addCartItem: (selectedService: SelectedService) => void;
     hasQuestionItem: (serviceType: GarageServiceType) => void;
 }
 
-export default ({ showConversationActions, serviceType, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
+export default ({ service, showConversationActions, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
     const { t } = useTranslation('serviceTypes');
 
-    const defaultAvailableServices = getDefaultGarageServicesInfo(t);
-    const service = defaultAvailableServices.find(item => item.type === serviceType) as any;
+    //const defaultAvailableServices = getDefaultGarageServicesInfo(t);
+    //const service = defaultAvailableServices.find(item => item.type === serviceType) as any;
 
     if (!service) {
         return <></>;
@@ -68,7 +68,8 @@ export default ({ showConversationActions, serviceType, selectedItem, setSelecte
                         <IconButton
                             onClick={(e) => {
                                 e.stopPropagation();
-                                hasQuestionItem(serviceType);
+                                //hasQuestionItem(serviceType);
+                                // TODO: open conersation chat
                             }}
                         >
                             <HelpCenterOutlinedIcon />
@@ -77,12 +78,13 @@ export default ({ showConversationActions, serviceType, selectedItem, setSelecte
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                const selectedService: SelectedService = new SelectedService({
-                                    relatedServiceType: serviceType,
-                                    relatedServiceTypeTitle: service.title
-                                });
+                                // TODO: open conersation chat
+                                //const selectedService: SelectedService = new SelectedService({
+                                //    relatedServiceType: serviceType,
+                                //    relatedServiceTypeTitle: service.title
+                                //});
 
-                                addCartItem(selectedService);
+                                //addCartItem(selectedService);
                             }}
                         >
                             <AddIcon sx={{ color: "black"}} />

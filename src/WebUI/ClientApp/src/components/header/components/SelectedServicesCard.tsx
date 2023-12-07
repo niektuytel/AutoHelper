@@ -87,38 +87,39 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
                     />
                     <CardContent>
                         <List dense>
-                            {services.map((service, index) => (
-                                <React.Fragment key={`${service.relatedGarageLookupIdentifier};${service.relatedServiceType}`}>
-                                    {index > 0 && <Divider component="li" />}
-                                    <ListItem
-                                        onClick={() => handleServiceClick(service)}
-                                        secondaryAction={
-                                            <IconButton onClick={(e: any) => handleServiceRemove(e, service)} edge="end" aria-label="delete">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                        sx={{
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(0, 0, 0, 0.04)', // Or any other color
-                                                cursor: 'pointer',
-                                            },
-                                        }}
-                                    >
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant="subtitle1" noWrap>
-                                                    {service.relatedServiceTypeTitle}
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography variant="body2" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                    {service.relatedGarageLookupName} {t("for")} {service.vehicleLicensePlate}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                </React.Fragment>
-                            ))}
+                            {/* TODO: implement de services as well*/}
+                            {/*{services.map((service, index) => (*/}
+                            {/*    <React.Fragment key={`${service.relatedGarageLookupIdentifier};${service.relatedServiceType}`}>*/}
+                            {/*        {index > 0 && <Divider component="li" />}*/}
+                            {/*        <ListItem*/}
+                            {/*            onClick={() => handleServiceClick(service)}*/}
+                            {/*            secondaryAction={*/}
+                            {/*                <IconButton onClick={(e: any) => handleServiceRemove(e, service)} edge="end" aria-label="delete">*/}
+                            {/*                    <DeleteIcon />*/}
+                            {/*                </IconButton>*/}
+                            {/*            }*/}
+                            {/*            sx={{*/}
+                            {/*                '&:hover': {*/}
+                            {/*                    backgroundColor: 'rgba(0, 0, 0, 0.04)', // Or any other color*/}
+                            {/*                    cursor: 'pointer',*/}
+                            {/*                },*/}
+                            {/*            }}*/}
+                            {/*        >*/}
+                            {/*            <ListItemText*/}
+                            {/*                primary={*/}
+                            {/*                    <Typography variant="subtitle1" noWrap>*/}
+                            {/*                        {service.relatedServiceTypeTitle}*/}
+                            {/*                    </Typography>*/}
+                            {/*                }*/}
+                            {/*                secondary={*/}
+                            {/*                    <Typography variant="body2" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>*/}
+                            {/*                        {service.relatedGarageLookupName} {t("for")} {service.vehicleLicensePlate}*/}
+                            {/*                    </Typography>*/}
+                            {/*                }*/}
+                            {/*            />*/}
+                            {/*        </ListItem>*/}
+                            {/*    </React.Fragment>*/}
+                            {/*))}*/}
                         </List>
                         <Button variant="outlined" fullWidth sx={{ marginTop: 1 }} onClick={handleAskQuestionClick}>
                             {t("Ask question")}

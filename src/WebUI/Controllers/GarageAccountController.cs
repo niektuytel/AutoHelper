@@ -5,7 +5,6 @@ using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.DeleteGarageService;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
-using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using Microsoft.AspNetCore.Mvc;
@@ -44,23 +43,13 @@ public class GarageAccountController : ApiControllerBase
     }
 
     [Authorize(Policy = "GarageRole")]
-    [HttpGet($"{nameof(GetOverview)}")]
-    [ProducesResponseType(typeof(GarageOverview), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<GarageOverview> GetOverview()
-    {
-        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
-        return await Mediator.Send(new GetGarageOverviewQuery(userId));
-    }
-
-    [Authorize(Policy = "GarageRole")]
     [HttpGet($"{nameof(GetServices)}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceDtoItem>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceDtoItem>> GetServices()
+    public async Task<IEnumerable<GarageServiceDtoItem>> GetServices([FromQuery] string? licensePlate = null)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
-        return await Mediator.Send(new GetGarageServicesQuery(userId));
+        return await Mediator.Send(new GetGarageServicesQuery(userId, licensePlate));
     }
 
     [Authorize(Policy = "GarageRole")]

@@ -59,7 +59,7 @@ export default ({ item, handleEdit, handleDelete }: IProps) => {
                         onClick={gotoVehiclePage}
                     />
                 </TableCell>
-                <TableCell>{t(`serviceTypes:${GarageServiceType[item.type!]}.Title`)}</TableCell>
+                <TableCell>{item.title}</TableCell>
                 <TableCell>
                     {isNotVerified && (
                         <>

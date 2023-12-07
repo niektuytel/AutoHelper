@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 // own imports
 import { GarageLookupDtoItem, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
-import useGarageServiceTypes from "../useGarageSearchServiceTypes";
+import useGarageServiceTypes from "../../garage-account/servicelogs/useGarageServiceTypes";
 
 
 
@@ -34,7 +34,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [filters, setFilters] = useState<string[]>([]);
     const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDtoItem[]>([]);
 
-    const { loading, garageServiceTypes } = useGarageServiceTypes(license_plate!);
+    //const { loading, garageServiceTypes } = useGarageServiceTypes(license_plate!);
     const useGarageClient = new GarageClient(process.env.PUBLIC_URL);
 
     useEffect(() => {
@@ -161,21 +161,22 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 }}
             />
             <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%" }}>
-                {loading ?
+                {/*{loading &&*/}
                     <>
                         <Skeleton variant="rounded" width="100%" height="32px" sx={{ mt: 1 }} />
                     </>
-                    :
-                    garageServiceTypes!.map(service =>
-                        <Chip
-                            key={service}
-                            label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}
-                            variant={filters.includes(String(service)) ? "filled" : "outlined"}
-                            sx={{ mr: 1, mt: 1 }}
-                            onClick={() => handleChipClick(String(service))}
-                        />
-                    )
-                }
+                    {/*// TODO: Uncomment this when the garage service types are ready*/}
+                    {/*//:*/}
+                    {/*//garageServiceTypes!.map(service =>*/}
+                    {/*//    <Chip*/}
+                    {/*//        key={service.id}*/}
+                    {/*//        label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}*/}
+                    {/*//        variant={filters.includes(String(service)) ? "filled" : "outlined"}*/}
+                    {/*//        sx={{ mr: 1, mt: 1 }}*/}
+                    {/*//        onClick={() => handleChipClick(String(service))}*/}
+                    {/*//    />*/}
+                    {/*//)*/}
+                {/*}*/}
             </Box>
         </Box>
     </>

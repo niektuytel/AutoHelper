@@ -121,26 +121,26 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                                 size="small"
                             />
                         )}
-                        {garage.hasPickupService === true &&
-                            <Chip
-                                variant="outlined"
-                                color="primary"
-                                size="small"
-                                label={t('have the car picked up')}
-                                icon={<ModeOfTravelIcon />}
-                                sx={{ mr: "3px", mt: "3px" }}
-                            />
-                        }
-                        {garage.hasReplacementTransportService === true &&
-                            <Chip
-                                variant="outlined"
-                                color="default"
-                                size="small"
-                                label={t('replacement vehicle')}
-                                icon={<PublishedWithChangesIcon />}
-                                sx={{ mr: "3px", mt: "3px" }}
-                            />
-                        }
+                        {/*{garage.hasPickupService === true &&*/}
+                        {/*    <Chip*/}
+                        {/*        variant="outlined"*/}
+                        {/*        color="primary"*/}
+                        {/*        size="small"*/}
+                        {/*        label={t('have the car picked up')}*/}
+                        {/*        icon={<ModeOfTravelIcon />}*/}
+                        {/*        sx={{ mr: "3px", mt: "3px" }}*/}
+                        {/*    />*/}
+                        {/*}*/}
+                        {/*{garage.hasReplacementTransportService === true &&*/}
+                        {/*    <Chip*/}
+                        {/*        variant="outlined"*/}
+                        {/*        color="default"*/}
+                        {/*        size="small"*/}
+                        {/*        label={t('replacement vehicle')}*/}
+                        {/*        icon={<PublishedWithChangesIcon />}*/}
+                        {/*        sx={{ mr: "3px", mt: "3px" }}*/}
+                        {/*    />*/}
+                        {/*}*/}
                     </Box>
                 </Box>
             </Box>

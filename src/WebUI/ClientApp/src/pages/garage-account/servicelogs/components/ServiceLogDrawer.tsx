@@ -9,16 +9,16 @@ import GarageIcon from '@mui/icons-material/CarRepair';
 import CarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
 import CheckIcon from '@mui/icons-material/Check';
+import { useDispatch } from 'react-redux';
+import { useAuth0 } from '@auth0/auth0-react';
 
 
 // own imports
 import StepVehicle from './StepVehicle';
-import StepGarage from './StepGarage';
-import { useDispatch } from 'react-redux';
-import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
+import StepConfirmation from './StepConfirmation';
+import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { GetGarageAccountClient } from '../../../../app/GarageClient';
-import { useAuth0 } from '@auth0/auth0-react';
 
 interface IServiceLogDrawerProps {
     drawerOpen: boolean;
@@ -28,23 +28,21 @@ interface IServiceLogDrawerProps {
 
 interface IServiceLogDrawerData {
     licensePlate: string;
-    type: string;
+    garageServiceId: string;
     description: string;
+
     date: Date | null;
     expectedNextDate: Date | null;
     odometerReading: number | 0;
     expectedNextOdometerReading: number | 0;
-    createdby: string;
-    phonenumber: string | null;
-    emailaddress: string | null;
 }
 
-const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Vehicle.Title'];
+const steps = ['AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
 
 export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const dispatch = useDispatch();
-    const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
+    const [selectedService, setSelectedService] = useState<GarageServiceDtoItem | undefined>(undefined);
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -59,10 +57,10 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
     const handleNext = (data: IServiceLogDrawerData) => {
         let hasError = false;
 
-        if (activeStep === 0) {
+        if (activeStep === 0 && selectedService) {
 
             // Validate Description for 'Other' Type
-            if (data.type === 'Other' && !data.description?.trim()) {
+            if (selectedService.type === GarageServiceType.Other && !data.description?.trim()) {
                 setError('description', { type: 'manual', message: t('AddMaintenanceLog.DescriptionOnTypeOther.Required')});
                 hasError = true;
             }
@@ -102,6 +100,7 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
         }
 
         if (activeStep === steps.length - 1) {
+            data.garageServiceId = selectedService!.id || "";
             handleService(data, file);
         } else {
             setActiveStep(activeStep+1);
@@ -118,55 +117,6 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
             setActiveStep((prevActiveStep) => prevActiveStep - 1);
         }
     };
-
-
-    //const onSubmit = (data: any) => {
-    //    handleService(data, file);
-
-    //    //console.log(data);
-    //    //setIsLoading(true); // Set loading to true
-
-    //    //const garageAccountClient = new GarageAccountClient(process.env.PUBLIC_URL);
-    //    //const createLog = async () => {
-    //    //    try {
-    //    //        const response = await garageClient.createServiceLog(
-    //    //            data.licensePlate,
-    //    //            data.type,
-    //    //            data.description,
-    //    //            data.date.toISOString(),
-    //    //            data.expectedNextDate ? data.expectedNextDate.toISOString() : null,
-    //    //            data.odometerReading,
-    //    //            data.expectedNextOdometerReading,
-    //    //            file ? { data: file, fileName: file?.name || '' } : null
-    //    //        );
-
-    //    //        // Reset only specific form fields
-    //    //        setValue('type', '');
-    //    //        setValue('description', '');
-    //    //        setValue('date', null);
-    //    //        setValue('expectedNextDate', null);
-    //    //        setValue('odometerReading', 0);
-    //    //        setValue('expectedNextOdometerReading', 0);
-    //    //        file && setFile(null);
-
-    //    //        // done
-    //    //        setActiveStep(0); // Reset active step to 0
-    //    //        handleService(response, file);
-    //    //        dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
-    //    //    } catch (error) {
-    //    //        console.error('Error:', error);
-
-    //    //        // Display specific error message from server response
-    //    //        if (error instanceof BadRequestResponse && error.errors) {
-    //    //            dispatch(showOnError(Object.entries(error.errors)[0][1]));
-    //    //        }
-    //    //    } finally {
-    //    //        setIsLoading(false); // Reset loading to false regardless of request outcome
-    //    //    }
-    //    //};
-
-    //    //createLog();
-    //};
 
     const drawerWidth = isMobile ? '100%' : '600px';
     return <Drawer
@@ -207,8 +157,17 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
                 ))}
             </Stepper>
             <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
-                {activeStep === 0 && <StepGarage control={control} setIsMaintenance={setIsMaintenance} file={file} setFile={setFile} />}
-                {activeStep === 1 && <StepVehicle control={control} isMaintenance={isMaintenance} />}
+                {activeStep === 0 && <StepVehicle
+                    setSelectedService={setSelectedService}
+                    control={control}
+                    file={file}
+                    setFile={setFile}
+                />}
+                {activeStep === 1 && <StepConfirmation
+                    expectedNextDate={selectedService?.expectedNextDateIsRequired || false}
+                    expectedNextOdometerReading={selectedService?.expectedNextOdometerReadingIsRequired || false}
+                    control={control}
+                />}
                 <Box component="footer" sx={{ ml:1, mb: 2 }}>
                     <Button onClick={handleBack}>{(activeStep === 0) ? t("Cancel") : t("Back")}</Button>
                     <Button
@@ -238,9 +197,9 @@ const CustomStepIcon = ({ active, completed, icon }:any) => {
         }
         switch (icon) {
             case 1:
-                return <GarageIcon color='primary' />;
-            case 2:
                 return <CarIcon color='primary' />;
+            case 2:
+                return <PersonIcon color='primary' />;
             default:
                 return <CheckIcon color='primary' />;
         }

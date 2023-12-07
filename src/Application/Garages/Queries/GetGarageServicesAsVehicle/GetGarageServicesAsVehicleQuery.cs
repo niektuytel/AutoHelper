@@ -16,13 +16,13 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 
 public record GetGarageServicesAsVehicleQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
-    public GetGarageServicesAsVehicleQuery(string licensePlate, string garageLookupIdentifier)
+    public GetGarageServicesAsVehicleQuery(string garageLookupIdentifier, string? licensePlate=null)
     {
         LicensePlate = licensePlate;
         GarageLookupIdentifier = garageLookupIdentifier;
     }
 
-    public string LicensePlate { get; internal set; }
+    public string? LicensePlate { get; internal set; }
 
     public string GarageLookupIdentifier { get; internal set; }
 
@@ -43,6 +43,8 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAs
 
     public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesAsVehicleQuery request, CancellationToken cancellationToken)
     {
+        // TODO: get services on vehicle type, to reduce response size
+
         IEnumerable<GarageServiceDtoItem> result;
         if (request.GarageLookup!.GarageId != null)
         {

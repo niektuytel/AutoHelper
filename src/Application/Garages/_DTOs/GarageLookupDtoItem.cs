@@ -70,6 +70,6 @@ public class GarageLookupDtoItem : IMapFrom<GarageLookupItem>
             .ForMember(d => d.Address, opt => opt.MapFrom(s => s.Address))
             .ForMember(d => d.City, opt => opt.MapFrom(s => s.City))
             .ForMember(d => d.ConversationContactEmail, opt => opt.MapFrom(s => s.ConversationContactEmail))
-            .ForMember(d => d.ConversationContactWhatsappNumber, opt => opt.MapFrom(s => s.ConversationContactWhatsappNumber))
+            .ForMember(d => d.ConversationContactWhatsappNumber, opt => opt.MapFrom(s => s.ConversationContactWhatsappNumber));
     }
 }

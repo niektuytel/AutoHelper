@@ -25,8 +25,9 @@ public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     {
         UserId = userId;
         VehicleLicensePlate = data.VehicleLicensePlate;
-        Type = data.Type;
+        GarageServiceId = data.GarageServiceId;
         Description = data.Description;
+
         Date = data.Date;
         ExpectedNextDate = data.ExpectedNextDate;
         OdometerReading = data.OdometerReading;
@@ -43,10 +44,7 @@ public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     public string UserId { get; set; } = null!;
 
     public string VehicleLicensePlate { get; set; }
-
     public Guid? GarageServiceId { get; set; } = null!;
-    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
-    public string? Title { get; set; }
     public string? Description { get; set; }
 
     public string Date { get; set; }
@@ -61,6 +59,9 @@ public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
 
     [JsonIgnore]
     internal DateTime? ParsedExpectedNextDate { get; private set; }
+
+    [JsonIgnore]
+    public GarageServiceItem? GarageService { get; internal set; }
 
     public void SetParsedDates(DateTime? date, DateTime? expectedNextDate)
     {
@@ -103,19 +104,26 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
 
     private VehicleServiceLogItem CreateVehicleServiceLogEntity(CreateVehicleServiceLogAsGarageCommand request)
     {
+        var description = request.Description;
+        if (string.IsNullOrEmpty(description))
+        {
+            description = request.Description;
+        }
+
         return new VehicleServiceLogItem
         {
-            VehicleLicensePlate = request.VehicleLicensePlate,
             GarageLookupIdentifier = request.Garage.GarageLookupIdentifier,
-            Type = request.Type,
-            Description = request.Description,
+            VehicleLicensePlate = request.VehicleLicensePlate,
+            Type = request.GarageService!.Type,
+            Title = request.GarageService.Title,
+            Description = description,
+            Status = VehicleServiceLogStatus.VerifiedByGarage,
 
             Date = (DateTime)request.ParsedDate!,
             ExpectedNextDate = request.ParsedExpectedNextDate,
             OdometerReading = request.OdometerReading,
             ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
             
-            Status = VehicleServiceLogStatus.VerifiedByGarage,
             ReporterName = request.Garage.Lookup.Name,
             ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
             ReporterEmailAddress = request.Garage.Lookup.EmailAddress,

@@ -18,10 +18,9 @@ public class GetGarageServicesAsVehicleQueryValidator : AbstractValidator<GetGar
         RuleFor(x => x.LicensePlate)
             .Custom((licensePlate, context) =>
             {
-                // Validate if the license plate is not empty
+                // Ignore when no license plate is provided
                 if (string.IsNullOrWhiteSpace(licensePlate))
                 {
-                    context.AddFailure("License plate is required.");
                     return;
                 }
 
@@ -53,10 +52,10 @@ public class GetGarageServicesAsVehicleQueryValidator : AbstractValidator<GetGar
 
     }
 
-    private async Task<bool> BeValidAndExistingGarageLookup(GetGarageServicesAsVehicleQuery command, string? garageLookupIdentifier, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingGarageLookup(GetGarageServicesAsVehicleQuery command, string? identifier, CancellationToken cancellationToken)
     {
         var entity = await _context.GarageLookups
-            .FirstOrDefaultAsync(x => x.Identifier == garageLookupIdentifier, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Identifier == identifier, cancellationToken);
 
         command.GarageLookup = entity;
         return command.GarageLookup != null;
