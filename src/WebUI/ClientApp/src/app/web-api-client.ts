@@ -3587,7 +3587,6 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
     vehicleLookup?: VehicleLookupItem;
     garageLookupIdentifier!: string;
     garageLookup?: GarageLookupItem | undefined;
-    garageServiceId?: string | undefined;
     type!: GarageServiceType;
     title?: string | undefined;
     description?: string | undefined;
@@ -3614,7 +3613,6 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
             this.vehicleLookup = _data["vehicleLookup"] ? VehicleLookupItem.fromJS(_data["vehicleLookup"]) : <any>undefined;
             this.garageLookupIdentifier = _data["garageLookupIdentifier"];
             this.garageLookup = _data["garageLookup"] ? GarageLookupItem.fromJS(_data["garageLookup"]) : <any>undefined;
-            this.garageServiceId = _data["garageServiceId"];
             this.type = _data["type"];
             this.title = _data["title"];
             this.description = _data["description"];
@@ -3645,7 +3643,6 @@ export class VehicleServiceLogItem extends BaseAuditableEntity implements IVehic
         data["vehicleLookup"] = this.vehicleLookup ? this.vehicleLookup.toJSON() : <any>undefined;
         data["garageLookupIdentifier"] = this.garageLookupIdentifier;
         data["garageLookup"] = this.garageLookup ? this.garageLookup.toJSON() : <any>undefined;
-        data["garageServiceId"] = this.garageServiceId;
         data["type"] = this.type;
         data["title"] = this.title;
         data["description"] = this.description;
@@ -3670,7 +3667,6 @@ export interface IVehicleServiceLogItem extends IBaseAuditableEntity {
     vehicleLookup?: VehicleLookupItem;
     garageLookupIdentifier: string;
     garageLookup?: GarageLookupItem | undefined;
-    garageServiceId?: string | undefined;
     type: GarageServiceType;
     title?: string | undefined;
     description?: string | undefined;
@@ -3860,7 +3856,6 @@ export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGar
     id?: string;
     vehicleLicensePlate?: string;
     serviceLogId?: string;
-    type?: GarageServiceType;
     title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
@@ -3886,7 +3881,6 @@ export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGar
             this.id = _data["id"];
             this.vehicleLicensePlate = _data["vehicleLicensePlate"];
             this.serviceLogId = _data["serviceLogId"];
-            this.type = _data["type"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.attachedFile = _data["attachedFile"];
@@ -3912,7 +3906,6 @@ export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGar
         data["id"] = this.id;
         data["vehicleLicensePlate"] = this.vehicleLicensePlate;
         data["serviceLogId"] = this.serviceLogId;
-        data["type"] = this.type;
         data["title"] = this.title;
         data["description"] = this.description;
         data["attachedFile"] = this.attachedFile;
@@ -3931,7 +3924,6 @@ export interface IVehicleServiceLogAsGarageDtoItem {
     id?: string;
     vehicleLicensePlate?: string;
     serviceLogId?: string;
-    type?: GarageServiceType;
     title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
@@ -4712,7 +4704,6 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
     id?: string;
     garageLookupName?: string;
     garageLookupIdentifier?: string;
-    garageServiceId?: string | undefined;
     type?: GarageServiceType;
     title?: string | undefined;
     description?: string | undefined;
@@ -4742,7 +4733,6 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
             this.id = _data["id"];
             this.garageLookupName = _data["garageLookupName"];
             this.garageLookupIdentifier = _data["garageLookupIdentifier"];
-            this.garageServiceId = _data["garageServiceId"];
             this.type = _data["type"];
             this.title = _data["title"];
             this.description = _data["description"];
@@ -4772,7 +4762,6 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
         data["id"] = this.id;
         data["garageLookupName"] = this.garageLookupName;
         data["garageLookupIdentifier"] = this.garageLookupIdentifier;
-        data["garageServiceId"] = this.garageServiceId;
         data["type"] = this.type;
         data["title"] = this.title;
         data["description"] = this.description;
@@ -4795,7 +4784,6 @@ export interface IVehicleServiceLogDtoItem {
     id?: string;
     garageLookupName?: string;
     garageLookupIdentifier?: string;
-    garageServiceId?: string | undefined;
     type?: GarageServiceType;
     title?: string | undefined;
     description?: string | undefined;

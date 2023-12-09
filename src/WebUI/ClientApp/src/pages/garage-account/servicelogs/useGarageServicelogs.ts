@@ -88,7 +88,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
 
     const createMutation = useMutation(createMutationFunction, {
         onSuccess: (response) => {
-            dispatch(showOnSuccess("Garage service log is been updated!"));
+            dispatch(showOnSuccess("Garage service log is been created!"));
 
             // Update the garageSettings in the cache after creating
             queryClient.setQueryData(['garageServiceLogs'], [...garageServiceLogs!, response]);

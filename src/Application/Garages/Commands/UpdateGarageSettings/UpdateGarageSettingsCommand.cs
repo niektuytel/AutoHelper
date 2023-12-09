@@ -12,6 +12,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NetTopologySuite;
+using Microsoft.Extensions.Logging;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 
@@ -59,6 +60,12 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
         {
             throw new NotFoundException(nameof(GarageItem), request.Name);
         }
+        else if (request.Garage.Lookup.GarageId == null)
+        {
+            // NOTE: check how this can happen anyways? (should on create also add garage ID if so this can been removed)
+            request.Garage.Lookup.GarageId = request.Garage.Id;
+        }
+
 
         request.Garage.Lookup.Name = request.Name;
         //TODO: request.GarageLookup.Image = entity.Image;
@@ -81,11 +88,10 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
+        // Update Garagelookup
         request.Garage.Lookup.LastModifiedBy = $"{nameof(UpdateGarageSettingsCommand)}:{request.UserId}";
         request.Garage.Lookup.LastModified = DateTime.UtcNow;
         _context.GarageLookups.Update(request.Garage.Lookup);
-
-        // Update garagelookup
         await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<GarageSettingsDtoItem>(request.Garage);

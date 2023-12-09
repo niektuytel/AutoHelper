@@ -1,5 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
@@ -27,12 +28,13 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
             .MustAsync(BeValidAndExistingGarage)
             .WithMessage("Invalid or non-existent garage."); ;
 
-        RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title is required.");
+        RuleFor(x => x.GarageServiceId)
+            .NotEmpty().WithMessage("Garage service ID is required.")
+            .MustAsync(BeValidAndExistingGarageService)
+            .WithMessage("Invalid or non-existent garage service.");
 
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description is required.")
-            .When(x => x.Type == GarageServiceType.Other);
+            .NotEmpty().WithMessage("Description is required.");
 
         RuleFor(x => x.Date)
             .Must(ValidDate)
@@ -90,6 +92,19 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
     {
         var garage = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
         return garage != null;
+    }
+
+    private async Task<bool> BeValidAndExistingGarageService(CreateVehicleServiceLogCommand command, Guid? garageServiceId, CancellationToken cancellationToken)
+    {
+        var entity = await _context.GarageServices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.Id == garageServiceId,
+                cancellationToken: cancellationToken
+            );
+
+        command.GarageService = entity;
+        return command.GarageService != null;
     }
 
     private bool ValidDate(CreateVehicleServiceLogCommand command, string date)

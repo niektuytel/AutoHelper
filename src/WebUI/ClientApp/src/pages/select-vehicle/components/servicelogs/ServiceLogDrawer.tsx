@@ -12,7 +12,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 
 // own imports
-import { BadRequestResponse, GarageLookupSimplefiedDto, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
+import { BadRequestResponse, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import StepConfirmation from './StepConfirmation';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
@@ -26,7 +26,7 @@ interface IServiceLogDrawerProps {
 
 interface IServiceLogDrawerData {
     garageLookup: GarageLookupSimplefiedDto;
-    type: string;
+    garageService: GarageServiceDtoItem;
     description: string;
     date: Date | null;
     expectedNextDate: Date | null;
@@ -44,7 +44,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { addServiceLog } = useVehicleServiceLogs(licensePlate);
     const dispatch = useDispatch();
-    const [isMaintenance, setIsMaintenance] = useState<boolean>(false);
+    const [selectedService, setSelectedService] = useState<GarageServiceDtoItem | undefined>(undefined);
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -59,7 +59,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         if (activeStep === 0) {
 
             // Validate Description for 'Other' Type
-            if (data.type === 'Other' && !data.description?.trim()) {
+            if (data.garageService.type === GarageServiceType.Other && !data.description?.trim()) {
                 setError('description', { type: 'manual', message: t('AddMaintenanceLog.DescriptionOnTypeOther.Required')});
                 hasError = true;
             }
@@ -128,36 +128,33 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
         const createLog = async () => {
             try {
-                const response = await vehicleClient.createServiceLog(
-                    licensePlate,
-                    data.garageLookup.identifier,
-                    data.garageServiceId,
-                    data.type,
-                    data.title,
-                    data.description,
-                    data.date.toISOString(), 
-                    data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 
-                    data.odometerReading,
-                    data.expectedNextOdometerReading,
-                    data.createdby,
-                    data.phonenumber,
-                    data.emailaddress,
-                    file?.name || '',
-                    null,
-                    file ? { data: file, fileName: file?.name || '' } : null
-                );
+                //const response = await vehicleClient.createServiceLog(
+                //    licensePlate,
+                //    data.garageLookup.identifier,
+                //    data.garageService.id,
+                //    data.description,
+                //    data.date.toISOString(), 
+                //    data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 
+                //    data.odometerReading,
+                //    data.expectedNextOdometerReading,
+                //    data.createdby,
+                //    data.phonenumber,
+                //    data.emailaddress,
+                //    file?.name || '',
+                //    null,
+                //    file ? { data: file, fileName: file?.name || '' } : null
+                //);
 
                 dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
 
                 // Reset only specific form fields
-                setValue('type', '');
                 setValue('description', '');
                 setValue('date', null);
                 setValue('expectedNextDate', null);
                 setValue('odometerReading', 0);
                 setValue('expectedNextOdometerReading', 0);
 
-                addServiceLog(response);
+                //addServiceLog(response);
                 setDrawerOpen(false);
                 setActiveStep(0);
             } catch (error) {
@@ -215,8 +212,18 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                     ))}
                 </Stepper>
                 <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
-                    {activeStep === 0 && <StepGarage control={control} setIsMaintenance={setIsMaintenance} file={file} setFile={setFile} />}
-                    {activeStep === 1 && <StepVehicle control={control} isMaintenance={isMaintenance} />}
+                    {activeStep === 0 && <StepGarage
+                        control={control}
+                        licensePlate={licensePlate}
+                        setSelectedService={setSelectedService}
+                        file={file}
+                        setFile={setFile}
+                    />}
+                    {activeStep === 1 && <StepVehicle
+                        control={control}
+                        expectedNextDate={selectedService?.expectedNextDateIsRequired || false}
+                        expectedNextOdometerReading={selectedService?.expectedNextOdometerReadingIsRequired || false}
+                    />}
                     {activeStep === 2 && <StepConfirmation control={control} />}
                     <Box component="footer" sx={{ ml: 1, mb: 1 }}>
                         <Button onClick={handleBack}>{(activeStep === 0) ? t("Cancel") : t("Back")}</Button>

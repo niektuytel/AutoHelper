@@ -3336,11 +3336,6 @@
                   }
                 ]
               },
-              "garageServiceId": {
-                "type": "string",
-                "format": "guid",
-                "nullable": true
-              },
               "type": {
                 "$ref": "#/components/schemas/GarageServiceType"
               },
@@ -3509,9 +3504,6 @@
           "serviceLogId": {
             "type": "string",
             "format": "guid"
-          },
-          "type": {
-            "$ref": "#/components/schemas/GarageServiceType"
           },
           "title": {
             "type": "string",
@@ -4018,11 +4010,6 @@
           },
           "garageLookupIdentifier": {
             "type": "string"
-          },
-          "garageServiceId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
           },
           "type": {
             "$ref": "#/components/schemas/GarageServiceType"

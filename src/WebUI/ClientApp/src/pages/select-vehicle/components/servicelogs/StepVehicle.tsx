@@ -7,16 +7,17 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 interface IProps {
     control: any;
-    isMaintenance: boolean;
+    expectedNextDate: boolean;
+    expectedNextOdometerReading: boolean;
 }
 
-const VehicleStep = ({ control, isMaintenance }: IProps) => {
+const VehicleStep = ({ control, expectedNextDate, expectedNextOdometerReading }: IProps) => {
     const { t } = useTranslation();
 
     return <>
         <Box flexGrow={1} p={1}>
             <Grid container spacing={2} sx={{ mb: 1 }}>
-                <Grid item xs={isMaintenance ? 6 : 12}>
+                <Grid item xs={expectedNextDate ? 6 : 12}>
                     <Controller
                         name="date"
                         control={control}
@@ -39,7 +40,7 @@ const VehicleStep = ({ control, isMaintenance }: IProps) => {
                         )}
                     />
                 </Grid>
-                {isMaintenance &&
+                {expectedNextDate &&
                     <Grid item xs={6}>
                         <Controller
                             name="expectedNextDate"
@@ -65,7 +66,7 @@ const VehicleStep = ({ control, isMaintenance }: IProps) => {
                 }
             </Grid>
             <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={isMaintenance ? 6 : 12}>
+                <Grid item xs={expectedNextOdometerReading ? 6 : 12}>
                     <Controller
                         name="odometerReading"
                         control={control}
@@ -84,7 +85,7 @@ const VehicleStep = ({ control, isMaintenance }: IProps) => {
                         )}
                     />
                 </Grid>
-                {isMaintenance &&
+                {expectedNextOdometerReading &&
                     <Grid item xs={6}>
                         <Controller
                             name="expectedNextOdometerReading"

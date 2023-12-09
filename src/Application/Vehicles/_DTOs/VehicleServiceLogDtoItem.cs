@@ -23,7 +23,6 @@ public class VehicleServiceLogDtoItem : IMapFrom<VehicleServiceLogItem>
     public string GarageLookupName { get; set; }
     public string GarageLookupIdentifier { get; set; }
 
-    public Guid? GarageServiceId { get; set; }
     public GarageServiceType Type { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
@@ -47,7 +46,6 @@ public class VehicleServiceLogDtoItem : IMapFrom<VehicleServiceLogItem>
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
             .ForMember(d => d.GarageLookupName, opt => opt.MapFrom(s => s.GarageLookup!.Name))
             .ForMember(d => d.GarageLookupIdentifier, opt => opt.MapFrom(s => s.GarageLookupIdentifier))
-            .ForMember(d => d.GarageServiceId, opt => opt.MapFrom(s => s.GarageServiceId))
             .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
             .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Title))
             .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Description))

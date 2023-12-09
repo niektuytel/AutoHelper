@@ -1,42 +1,34 @@
 ﻿import React, { ChangeEvent } from 'react';
 import { Controller } from 'react-hook-form';
-import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Chip, Button } from '@mui/material';
+import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Chip, Button, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 import SearchGarage from './SearchGarage';
-import { GarageServiceType } from '../../../../app/web-api-client';
+import { GarageServiceDtoItem, GarageServiceType } from '../../../../app/web-api-client';
 import { enumToKeyValueArray } from '../../../../app/utils';
-
-function getVehicleServicesTypes() {
-    // TODO: get services from this own garage
-
-    const items = [
-        GarageServiceType.Other,
-        GarageServiceType.Inspection,
-        //GarageServiceType.SmallMaintenance,
-        //GarageServiceType.GreatMaintenance,
-        //GarageServiceType.AirConditioningMaintenance,
-        //GarageServiceType.SeasonalTireChange
-    ];
-
-    return enumToKeyValueArray(GarageServiceType)
-        .filter(({ key, value }) => items.includes(key))
-        .map(({ key, value }) => ({
-            key: key,
-            value: value,
-        }));
-}
+import useGarageServiceTypes from './useGarageServiceTypes';
 
 interface IProps {
     control: any;
-    setIsMaintenance: (isMaintenance: boolean) => void;
+    licensePlate: string;
+    setSelectedService: (service: GarageServiceDtoItem | undefined) => void;
     file: File | null;
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ control, setIsMaintenance, file, setFile }: IProps) => {
+const GarageStep = ({ control, licensePlate, setSelectedService, file, setFile }: IProps) => {
     const { t } = useTranslation();
+    const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
+
+    const handleServiceChange = (event: any) => {
+        if (!garageServiceTypes) return;
+
+        const selectedService = garageServiceTypes!.find(service => service.title === event.target.value);
+        if (selectedService) {
+            setSelectedService(selectedService);
+        }
+    };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -57,15 +49,23 @@ const GarageStep = ({ control, setIsMaintenance, file, setFile }: IProps) => {
                 render={({ field, fieldState: { error } }) => (
                     <SearchGarage
                         value={field.value}
-                        onChange={(value) => field.onChange(value)}
+                        onChange={(value) => {
+                            // remove selected service
+                            setSelectedService(undefined);
+
+                            field.onChange(value)
+                            if (value.identifier) {
+                                triggerFetch(value.identifier!);
+                            }
+                        }}
                         error={error}
                     />
                 )}
             />
             <Controller
-                name="type"
+                name="garageService"
                 control={control}
-                defaultValue={"Other"}
+                defaultValue={""}
                 render={({ field }) => (
                     <FormControl fullWidth sx={{ mb: 2, mt: 2 }} size='small'>
                         <InputLabel id="service-type-label">
@@ -77,14 +77,15 @@ const GarageStep = ({ control, setIsMaintenance, file, setFile }: IProps) => {
                             label={t("AddMaintenanceLog.ServiceType.Label")}
                             onChange={(e) => {
                                 field.onChange(e);
-                                setIsMaintenance(e.target.value === GarageServiceType[GarageServiceType.Service])
+                                handleServiceChange(e);
                             }}
+                            endAdornment={loading ? <CircularProgress size={24} /> : null}
                         >
-                            {getVehicleServicesTypes().map(({ key, value }) => (
-                                <MenuItem key={key} value={value}>
-                                    {t(`serviceTypes:${value}.Title`)}
+                            {garageServiceTypes?.map((service, index) => service.title &&
+                                <MenuItem key={service.id} value={service.title}>
+                                    {service.title}
                                 </MenuItem>
-                            ))}
+                            )}
                         </Select>
                     </FormControl>
                 )}

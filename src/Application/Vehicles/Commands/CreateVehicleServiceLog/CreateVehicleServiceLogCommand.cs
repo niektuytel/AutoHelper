@@ -26,8 +26,6 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem
     public string GarageLookupIdentifier { get; set; }
 
     public Guid? GarageServiceId { get; set; } = null!;
-    public GarageServiceType Type { get; set; } = GarageServiceType.Other;
-    public string? Title { get; set; }
     public string? Description { get; set; }
 
     public string Date { get; set; }
@@ -46,6 +44,9 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem
 
     [JsonIgnore]
     internal DateTime? ParsedExpectedNextDate { get; private set; }
+
+    [JsonIgnore]
+    public GarageServiceItem? GarageService { get; internal set; }
 
     public void SetParsedDates(DateTime? date, DateTime? expectedNextDate)
     {
@@ -83,9 +84,10 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
     {
         return new VehicleServiceLogItem
         {
-            VehicleLicensePlate = request.VehicleLicensePlate,
             GarageLookupIdentifier = request.GarageLookupIdentifier,
-            Type = request.Type,
+            VehicleLicensePlate = request.VehicleLicensePlate,
+            Type = request.GarageService!.Type,
+            Title = request.GarageService.Title,
             Description = request.Description,
 
             Date = (DateTime)request.ParsedDate!,
