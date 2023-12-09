@@ -22,6 +22,23 @@ namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
 public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem>
 {
+    public CreateVehicleServiceLogCommand(CreateVehicleServiceLogDtoItem data)
+    {
+        VehicleLicensePlate = data.VehicleLicensePlate;
+        GarageLookupIdentifier = data.GarageLookupIdentifier;
+        GarageServiceId = data.GarageServiceId;
+        Description = data.Description;
+
+        Date = data.Date;
+        ExpectedNextDate = data.ExpectedNextDate;
+        OdometerReading = data.OdometerReading;
+        ExpectedNextOdometerReading = data.ExpectedNextOdometerReading;
+
+        ReporterName = data.ReporterName;
+        ReporterPhoneNumber = data.ReporterPhoneNumber;
+        ReporterEmailAddress = data.ReporterEmailAddress;
+    }
+
     public string VehicleLicensePlate { get; set; }
     public string GarageLookupIdentifier { get; set; }
 

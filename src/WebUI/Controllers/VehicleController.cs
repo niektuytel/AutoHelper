@@ -24,6 +24,7 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using System;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -87,7 +88,8 @@ public class VehicleController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceLogDtoItem commandWithAttachment, CancellationToken cancellationToken)
     {
-        var command = commandWithAttachment.ServiceLogCommand;
+        // JsonIgnore does not work on the controller level, so we do the mapping
+        var command = new CreateVehicleServiceLogCommand(commandWithAttachment);
 
         // If a file is included, process it
         if (commandWithAttachment.AttachmentFile != null && commandWithAttachment.AttachmentFile.Length > 0)

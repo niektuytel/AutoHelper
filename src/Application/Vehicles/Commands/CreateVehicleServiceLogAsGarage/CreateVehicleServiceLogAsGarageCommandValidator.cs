@@ -31,10 +31,10 @@ public class CreateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
             .MustAsync(BeValidAndExistingVehicle)
             .WithMessage("Invalid or non-existent vehicle.");
 
-        RuleFor(x => x.GarageServiceId)
-            .NotEmpty().WithMessage("Garage service ID is required.")
-            .MustAsync(BeValidAndExistingGarageService)
-            .WithMessage("Invalid or non-existent garage service.");
+        //RuleFor(x => x.GarageServiceId)
+        //    .NotEmpty().WithMessage("Garage service ID is required.")
+        //    .MustAsync(BeValidAndExistingGarageService)
+        //    .WithMessage("Invalid or non-existent garage service.");
 
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required.");
@@ -76,18 +76,18 @@ public class CreateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
         return command.Garage != null;
     }
     
-    private async Task<bool> BeValidAndExistingGarageService(CreateVehicleServiceLogAsGarageCommand command, Guid? garageServiceId, CancellationToken cancellationToken)
-    {
-        var entity = await _context.GarageServices
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => 
-                x.Id == garageServiceId, 
-                cancellationToken: cancellationToken
-            );
+    //private async Task<bool> BeValidAndExistingGarageService(CreateVehicleServiceLogAsGarageCommand command, Guid? garageServiceId, CancellationToken cancellationToken)
+    //{
+    //    var entity = await _context.GarageServices
+    //        .AsNoTracking()
+    //        .FirstOrDefaultAsync(x => 
+    //            x.Id == garageServiceId, 
+    //            cancellationToken: cancellationToken
+    //        );
 
-        command.GarageService = entity;
-        return command.GarageService != null;
-    }
+    //    command.GarageService = entity;
+    //    return command.GarageService != null;
+    //}
 
     private async Task<bool> BeValidAndExistingVehicle(CreateVehicleServiceLogAsGarageCommand command, string licensePlate, CancellationToken cancellationToken)
     {

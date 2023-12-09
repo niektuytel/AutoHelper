@@ -1358,7 +1358,7 @@ export interface IVehicleClient {
 
     getRelatedServices(licensePlate: string | null): Promise<GarageServiceType[]>;
 
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_GarageServiceId: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Title: string | null | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
+    createServiceLog(vehicleLicensePlate: string | null | undefined, garageLookupIdentifier: string | null | undefined, garageServiceId: string | null | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, reporterName: string | null | undefined, reporterPhoneNumber: string | null | undefined, reporterEmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1616,45 +1616,35 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<GarageServiceType[]>(null as any);
     }
 
-    createServiceLog(serviceLogCommand_VehicleLicensePlate: string | null | undefined, serviceLogCommand_GarageLookupIdentifier: string | null | undefined, serviceLogCommand_GarageServiceId: string | null | undefined, serviceLogCommand_Type: GarageServiceType | undefined, serviceLogCommand_Title: string | null | undefined, serviceLogCommand_Description: string | null | undefined, serviceLogCommand_Date: string | null | undefined, serviceLogCommand_ExpectedNextDate: string | null | undefined, serviceLogCommand_OdometerReading: number | undefined, serviceLogCommand_ExpectedNextOdometerReading: number | null | undefined, serviceLogCommand_ReporterName: string | null | undefined, serviceLogCommand_ReporterPhoneNumber: string | null | undefined, serviceLogCommand_ReporterEmailAddress: string | null | undefined, serviceLogCommand_Attachment_FileName: string | null | undefined, serviceLogCommand_Attachment_FileData: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
+    createServiceLog(vehicleLicensePlate: string | null | undefined, garageLookupIdentifier: string | null | undefined, garageServiceId: string | null | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, reporterName: string | null | undefined, reporterPhoneNumber: string | null | undefined, reporterEmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (serviceLogCommand_VehicleLicensePlate !== null && serviceLogCommand_VehicleLicensePlate !== undefined)
-            content_.append("ServiceLogCommand.VehicleLicensePlate", serviceLogCommand_VehicleLicensePlate.toString());
-        if (serviceLogCommand_GarageLookupIdentifier !== null && serviceLogCommand_GarageLookupIdentifier !== undefined)
-            content_.append("ServiceLogCommand.GarageLookupIdentifier", serviceLogCommand_GarageLookupIdentifier.toString());
-        if (serviceLogCommand_GarageServiceId !== null && serviceLogCommand_GarageServiceId !== undefined)
-            content_.append("ServiceLogCommand.GarageServiceId", serviceLogCommand_GarageServiceId.toString());
-        if (serviceLogCommand_Type === null || serviceLogCommand_Type === undefined)
-            throw new Error("The parameter 'serviceLogCommand_Type' cannot be null.");
+        if (vehicleLicensePlate !== null && vehicleLicensePlate !== undefined)
+            content_.append("VehicleLicensePlate", vehicleLicensePlate.toString());
+        if (garageLookupIdentifier !== null && garageLookupIdentifier !== undefined)
+            content_.append("GarageLookupIdentifier", garageLookupIdentifier.toString());
+        if (garageServiceId !== null && garageServiceId !== undefined)
+            content_.append("GarageServiceId", garageServiceId.toString());
+        if (description !== null && description !== undefined)
+            content_.append("Description", description.toString());
+        if (date !== null && date !== undefined)
+            content_.append("Date", date.toString());
+        if (expectedNextDate !== null && expectedNextDate !== undefined)
+            content_.append("ExpectedNextDate", expectedNextDate.toString());
+        if (odometerReading === null || odometerReading === undefined)
+            throw new Error("The parameter 'odometerReading' cannot be null.");
         else
-            content_.append("ServiceLogCommand.Type", serviceLogCommand_Type.toString());
-        if (serviceLogCommand_Title !== null && serviceLogCommand_Title !== undefined)
-            content_.append("ServiceLogCommand.Title", serviceLogCommand_Title.toString());
-        if (serviceLogCommand_Description !== null && serviceLogCommand_Description !== undefined)
-            content_.append("ServiceLogCommand.Description", serviceLogCommand_Description.toString());
-        if (serviceLogCommand_Date !== null && serviceLogCommand_Date !== undefined)
-            content_.append("ServiceLogCommand.Date", serviceLogCommand_Date.toString());
-        if (serviceLogCommand_ExpectedNextDate !== null && serviceLogCommand_ExpectedNextDate !== undefined)
-            content_.append("ServiceLogCommand.ExpectedNextDate", serviceLogCommand_ExpectedNextDate.toString());
-        if (serviceLogCommand_OdometerReading === null || serviceLogCommand_OdometerReading === undefined)
-            throw new Error("The parameter 'serviceLogCommand_OdometerReading' cannot be null.");
-        else
-            content_.append("ServiceLogCommand.OdometerReading", serviceLogCommand_OdometerReading.toString());
-        if (serviceLogCommand_ExpectedNextOdometerReading !== null && serviceLogCommand_ExpectedNextOdometerReading !== undefined)
-            content_.append("ServiceLogCommand.ExpectedNextOdometerReading", serviceLogCommand_ExpectedNextOdometerReading.toString());
-        if (serviceLogCommand_ReporterName !== null && serviceLogCommand_ReporterName !== undefined)
-            content_.append("ServiceLogCommand.ReporterName", serviceLogCommand_ReporterName.toString());
-        if (serviceLogCommand_ReporterPhoneNumber !== null && serviceLogCommand_ReporterPhoneNumber !== undefined)
-            content_.append("ServiceLogCommand.ReporterPhoneNumber", serviceLogCommand_ReporterPhoneNumber.toString());
-        if (serviceLogCommand_ReporterEmailAddress !== null && serviceLogCommand_ReporterEmailAddress !== undefined)
-            content_.append("ServiceLogCommand.ReporterEmailAddress", serviceLogCommand_ReporterEmailAddress.toString());
-        if (serviceLogCommand_Attachment_FileName !== null && serviceLogCommand_Attachment_FileName !== undefined)
-            content_.append("ServiceLogCommand.Attachment.FileName", serviceLogCommand_Attachment_FileName.toString());
-        if (serviceLogCommand_Attachment_FileData !== null && serviceLogCommand_Attachment_FileData !== undefined)
-            content_.append("ServiceLogCommand.Attachment.FileData", serviceLogCommand_Attachment_FileData.toString());
+            content_.append("OdometerReading", odometerReading.toString());
+        if (expectedNextOdometerReading !== null && expectedNextOdometerReading !== undefined)
+            content_.append("ExpectedNextOdometerReading", expectedNextOdometerReading.toString());
+        if (reporterName !== null && reporterName !== undefined)
+            content_.append("ReporterName", reporterName.toString());
+        if (reporterPhoneNumber !== null && reporterPhoneNumber !== undefined)
+            content_.append("ReporterPhoneNumber", reporterPhoneNumber.toString());
+        if (reporterEmailAddress !== null && reporterEmailAddress !== undefined)
+            content_.append("ReporterEmailAddress", reporterEmailAddress.toString());
         if (attachmentFile !== null && attachmentFile !== undefined)
             content_.append("AttachmentFile", attachmentFile.data, attachmentFile.fileName ? attachmentFile.fileName : "AttachmentFile");
 

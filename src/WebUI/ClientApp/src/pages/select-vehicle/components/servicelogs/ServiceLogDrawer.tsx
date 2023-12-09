@@ -128,22 +128,20 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
         const createLog = async () => {
             try {
-                //const response = await vehicleClient.createServiceLog(
-                //    licensePlate,
-                //    data.garageLookup.identifier,
-                //    data.garageService.id,
-                //    data.description,
-                //    data.date.toISOString(), 
-                //    data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 
-                //    data.odometerReading,
-                //    data.expectedNextOdometerReading,
-                //    data.createdby,
-                //    data.phonenumber,
-                //    data.emailaddress,
-                //    file?.name || '',
-                //    null,
-                //    file ? { data: file, fileName: file?.name || '' } : null
-                //);
+                const response = await vehicleClient.createServiceLog(
+                    licensePlate,
+                    data.garageLookup.identifier,
+                    selectedService!.id,
+                    data.description,
+                    data.date.toISOString(), 
+                    data.expectedNextDate ? data.expectedNextDate.toISOString() : null, 
+                    data.odometerReading,
+                    data.expectedNextOdometerReading,
+                    data.createdby,
+                    data.phonenumber,
+                    data.emailaddress,
+                    file ? { data: file, fileName: file?.name || '' } : null
+                );
 
                 dispatch(showOnSuccess(t('AddMaintenanceLog.Succeeded')));
 
@@ -154,7 +152,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 setValue('odometerReading', 0);
                 setValue('expectedNextOdometerReading', 0);
 
-                //addServiceLog(response);
+                addServiceLog(response);
                 setDrawerOpen(false);
                 setActiveStep(0);
             } catch (error) {
@@ -215,6 +213,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                     {activeStep === 0 && <StepGarage
                         control={control}
                         licensePlate={licensePlate}
+                        selectedService={selectedService}
                         setSelectedService={setSelectedService}
                         file={file}
                         setFile={setFile}

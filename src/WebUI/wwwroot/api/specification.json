@@ -1611,66 +1611,50 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "ServiceLogCommand.VehicleLicensePlate": {
+                  "VehicleLicensePlate": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.GarageLookupIdentifier": {
+                  "GarageLookupIdentifier": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.GarageServiceId": {
+                  "GarageServiceId": {
                     "type": "string",
                     "format": "guid",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Type": {
-                    "$ref": "#/components/schemas/GarageServiceType"
-                  },
-                  "ServiceLogCommand.Title": {
+                  "Description": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Description": {
+                  "Date": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.Date": {
+                  "ExpectedNextDate": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.ExpectedNextDate": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.OdometerReading": {
+                  "OdometerReading": {
                     "type": "integer",
                     "format": "int32"
                   },
-                  "ServiceLogCommand.ExpectedNextOdometerReading": {
+                  "ExpectedNextOdometerReading": {
                     "type": "integer",
                     "format": "int32",
                     "nullable": true
                   },
-                  "ServiceLogCommand.ReporterName": {
+                  "ReporterName": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.ReporterPhoneNumber": {
+                  "ReporterPhoneNumber": {
                     "type": "string",
                     "nullable": true
                   },
-                  "ServiceLogCommand.ReporterEmailAddress": {
+                  "ReporterEmailAddress": {
                     "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.Attachment.FileName": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "ServiceLogCommand.Attachment.FileData": {
-                    "type": "string",
-                    "format": "byte",
                     "nullable": true
                   },
                   "AttachmentFile": {

@@ -1,4 +1,4 @@
-﻿import React, { ChangeEvent } from 'react';
+﻿import React, { ChangeEvent, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Chip, Button, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -12,22 +12,21 @@ import useGarageServiceTypes from './useGarageServiceTypes';
 interface IProps {
     control: any;
     licensePlate: string;
+    selectedService: GarageServiceDtoItem
     setSelectedService: (service: GarageServiceDtoItem | undefined) => void;
     file: File | null;
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ control, licensePlate, setSelectedService, file, setFile }: IProps) => {
+const GarageStep = ({ control, licensePlate, selectedService, setSelectedService, file, setFile }: IProps) => {
     const { t } = useTranslation();
     const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
 
     const handleServiceChange = (event: any) => {
         if (!garageServiceTypes) return;
 
-        const selectedService = garageServiceTypes!.find(service => service.title === event.target.value);
-        if (selectedService) {
-            setSelectedService(selectedService);
-        }
+        const selectedService = garageServiceTypes.find(service => service.title === event.target.value);
+        setSelectedService(selectedService); // Update the state directly
     };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
