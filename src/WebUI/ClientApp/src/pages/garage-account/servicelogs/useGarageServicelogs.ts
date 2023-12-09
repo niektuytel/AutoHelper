@@ -185,6 +185,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
     });
 
     const updateServiceLog = (data: any, file: File | null) => {
+        console.log(data);
         updateMutation.mutate({
             id: data.id,
             vehicleLicensePlate: data.vehicleLicensePlate,

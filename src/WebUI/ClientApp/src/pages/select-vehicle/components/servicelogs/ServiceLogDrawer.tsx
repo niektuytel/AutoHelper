@@ -19,6 +19,7 @@ import StepGarage from './StepGarage';
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { useDispatch } from 'react-redux';
 import useVehicleServiceLogs from '../../useVehicleServiceLogs';
+import useGarageServiceTypes from './useGarageServiceTypes';
 
 interface IServiceLogDrawerProps {
     licensePlate: string;
@@ -49,6 +50,8 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogDrawerData>();
+    const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
+
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -59,7 +62,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         if (activeStep === 0) {
 
             // Validate Description for 'Other' Type
-            if (data.garageService.type === GarageServiceType.Other && !data.description?.trim()) {
+            if (selectedService && selectedService.type === GarageServiceType.Other && !data.description?.trim()) {
                 setError('description', { type: 'manual', message: t('AddMaintenanceLog.DescriptionOnTypeOther.Required')});
                 hasError = true;
             }
@@ -212,7 +215,8 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
                     {activeStep === 0 && <StepGarage
                         control={control}
-                        licensePlate={licensePlate}
+                        garageServiceTypes={garageServiceTypes}
+                        triggerFetch={triggerFetch}
                         selectedService={selectedService}
                         setSelectedService={setSelectedService}
                         file={file}

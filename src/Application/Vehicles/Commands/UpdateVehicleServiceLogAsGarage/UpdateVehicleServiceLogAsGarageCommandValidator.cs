@@ -37,11 +37,6 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
             .MustAsync(BeValidAndExistingVehicle)
             .WithMessage("Invalid or non-existent vehicle.");
 
-        RuleFor(x => x.GarageServiceId)
-            .NotEmpty().WithMessage("Garage service ID is required.")
-            .MustAsync(BeValidAndExistingGarageService)
-            .WithMessage("Invalid or non-existent garage service.");
-
         RuleFor(x => x.Date)
             .Must(ValidDate)
             .WithMessage("Invalid date format.")
@@ -77,19 +72,6 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
 
         command.Garage = entity;
         return command.Garage != null;
-    }
-
-    private async Task<bool> BeValidAndExistingGarageService(UpdateVehicleServiceLogAsGarageCommand command, Guid? garageServiceId, CancellationToken cancellationToken)
-    {
-        var entity = await _context.GarageServices
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x =>
-                x.Id == garageServiceId,
-                cancellationToken: cancellationToken
-            );
-
-        command.GarageService = entity;
-        return command.GarageService != null;
     }
 
     private async Task<bool> BeValidAndExistingServiceLog(UpdateVehicleServiceLogAsGarageCommand command, Guid logId, CancellationToken cancellationToken)

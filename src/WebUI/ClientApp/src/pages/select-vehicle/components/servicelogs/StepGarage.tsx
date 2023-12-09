@@ -11,16 +11,16 @@ import useGarageServiceTypes from './useGarageServiceTypes';
 
 interface IProps {
     control: any;
-    licensePlate: string;
-    selectedService: GarageServiceDtoItem
+    garageServiceTypes: GarageServiceDtoItem[] | undefined;
+    triggerFetch: (garageId: string) => void;
+    selectedService: GarageServiceDtoItem | undefined;
     setSelectedService: (service: GarageServiceDtoItem | undefined) => void;
     file: File | null;
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ control, licensePlate, selectedService, setSelectedService, file, setFile }: IProps) => {
+const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService, setSelectedService, file, setFile }: IProps) => {
     const { t } = useTranslation();
-    const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
 
     const handleServiceChange = (event: any) => {
         if (!garageServiceTypes) return;
@@ -62,9 +62,9 @@ const GarageStep = ({ control, licensePlate, selectedService, setSelectedService
                 )}
             />
             <Controller
-                name="garageService"
+                name="title"
                 control={control}
-                defaultValue={""}
+                defaultValue={selectedService?.title || ""}
                 render={({ field }) => (
                     <FormControl fullWidth sx={{ mb: 2, mt: 2 }} size='small'>
                         <InputLabel id="service-type-label">
@@ -78,7 +78,6 @@ const GarageStep = ({ control, licensePlate, selectedService, setSelectedService
                                 field.onChange(e);
                                 handleServiceChange(e);
                             }}
-                            endAdornment={loading ? <CircularProgress size={24} /> : null}
                         >
                             {garageServiceTypes?.map((service, index) => service.title &&
                                 <MenuItem key={service.id} value={service.title}>

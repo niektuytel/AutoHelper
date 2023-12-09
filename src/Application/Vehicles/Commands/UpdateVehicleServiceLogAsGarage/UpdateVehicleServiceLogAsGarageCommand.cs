@@ -59,8 +59,6 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
 
     internal DateTime? ParsedExpectedNextDate { get; private set; }
 
-    public GarageServiceItem? GarageService { get; internal set; }
-
     public void SetParsedDates(DateTime? date, DateTime? expectedNextDate)
     {
         ParsedDate = date;
@@ -83,7 +81,14 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(UpdateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
-        var entity = UpdateVehicleServiceLogEntity(request);
+        var serviceLog = await _context.GarageServices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.Id == request.GarageServiceId,
+                cancellationToken: cancellationToken
+            );
+
+        var entity = UpdateVehicleServiceLogEntity(request, serviceLog);
         UploadAttachmentIfPresent(request, entity, cancellationToken);
 
         // update entity
@@ -93,7 +98,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
     }
 
-    private VehicleServiceLogItem UpdateVehicleServiceLogEntity(UpdateVehicleServiceLogAsGarageCommand request)
+    private VehicleServiceLogItem UpdateVehicleServiceLogEntity(UpdateVehicleServiceLogAsGarageCommand request, GarageServiceItem? serviceItem)
     {
         var description = request.Description;
         if (string.IsNullOrEmpty(description))
@@ -103,8 +108,11 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
         var serviceLog = request.ServiceLog; 
         serviceLog.VehicleLicensePlate = request.VehicleLicensePlate;
-        serviceLog.Type = request.GarageService!.Type;
-        serviceLog.Title = request.GarageService.Title;
+        if (serviceItem != null)
+        {
+            serviceLog.Type = serviceItem.Type;
+            serviceLog.Title = serviceItem.Title;
+        }
         serviceLog.Description = description;
         serviceLog.Status = request.Status;
 

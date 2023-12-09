@@ -45,17 +45,19 @@ public class GetVehicleServiceLogsAsGarageQueryHandler : IRequestHandler<GetVehi
 
     public async Task<VehicleServiceLogAsGarageDtoItem[]> Handle(GetVehicleServiceLogsAsGarageQuery request, CancellationToken cancellationToken)
     {
-        var entities = _context.VehicleServiceLogs
+        var query = _context.VehicleServiceLogs
             .AsNoTracking()
             .Where(v => v.GarageLookupIdentifier == request.Garage.GarageLookupIdentifier);
 
         if(!string.IsNullOrWhiteSpace(request.LicensePlate))
         {
-            entities = entities.Where(v => v.VehicleLicensePlate == request.LicensePlate);
+            query = query.Where(v => v.VehicleLicensePlate == request.LicensePlate);
         }
 
+        query.OrderByDescending(x => x.Created);
+
         var result = await _mapper
-            .ProjectTo<VehicleServiceLogAsGarageDtoItem>(entities)
+            .ProjectTo<VehicleServiceLogAsGarageDtoItem>(query)
             .ToArrayAsync(cancellationToken);
 
         return result;

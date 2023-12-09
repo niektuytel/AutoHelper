@@ -33,9 +33,6 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
             .MustAsync(BeValidAndExistingGarageService)
             .WithMessage("Invalid or non-existent garage service.");
 
-        RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description is required.");
-
         RuleFor(x => x.Date)
             .Must(ValidDate)
             .WithMessage("Invalid date format.")
