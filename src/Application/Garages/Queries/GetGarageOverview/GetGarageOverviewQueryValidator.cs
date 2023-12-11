@@ -5,13 +5,13 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageStatistics;
+namespace AutoHelper.Application.Garages.Queries.GetGarageOverview;
 
-public class GetGarageStatisticsQueryValidator : AbstractValidator<GetGarageStatisticsQuery>
+public class GetGarageOverviewQueryValidator : AbstractValidator<GetGarageOverviewQuery>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetGarageStatisticsQueryValidator(IApplicationDbContext context)
+    public GetGarageOverviewQueryValidator(IApplicationDbContext context)
     {
         _context = context;
 
@@ -23,7 +23,7 @@ public class GetGarageStatisticsQueryValidator : AbstractValidator<GetGarageStat
 
     }
 
-    private async Task<bool> BeValidAndExistingGarageLookup(GetGarageStatisticsQuery command, string? userId, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingGarageLookup(GetGarageOverviewQuery command, string? userId, CancellationToken cancellationToken)
     {
         var entity = await _context.Garages
             .Include(x => x.Services)

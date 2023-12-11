@@ -9,22 +9,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Garages\Queries\GetGarageOverview\**" />
       <Compile Remove="TodoItems\**" />
       <Compile Remove="TodoLists\**" />
       <Compile Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
       <Compile Remove="WeatherForecasts\**" />
-      <EmbeddedResource Remove="Garages\Queries\GetGarageOverview\**" />
       <EmbeddedResource Remove="TodoItems\**" />
       <EmbeddedResource Remove="TodoLists\**" />
       <EmbeddedResource Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
       <EmbeddedResource Remove="WeatherForecasts\**" />
-      <EntityDeploy Remove="Garages\Queries\GetGarageOverview\**" />
       <EntityDeploy Remove="TodoItems\**" />
       <EntityDeploy Remove="TodoLists\**" />
       <EntityDeploy Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
       <EntityDeploy Remove="WeatherForecasts\**" />
-      <None Remove="Garages\Queries\GetGarageOverview\**" />
       <None Remove="TodoItems\**" />
       <None Remove="TodoLists\**" />
       <None Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />

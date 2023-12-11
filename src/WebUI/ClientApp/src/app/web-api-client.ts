@@ -466,6 +466,8 @@ export interface IGarageAccountClient {
 
     getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogAsGarageDtoItem[]>;
 
+    getOverview(): Promise<GarageOverviewDtoItem>;
+
     createGarage(command: CreateGarageCommand): Promise<GarageSettingsDtoItem>;
 
     createService(command: CreateGarageServiceCommand): Promise<GarageServiceDtoItem>;
@@ -632,6 +634,47 @@ export class GarageAccountClient implements IGarageAccountClient {
             });
         }
         return Promise.resolve<VehicleServiceLogAsGarageDtoItem[]>(null as any);
+    }
+
+    getOverview(): Promise<GarageOverviewDtoItem> {
+        let url_ = this.baseUrl + "/api/GarageAccount/GetOverview";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetOverview(_response);
+        });
+    }
+
+    protected processGetOverview(response: Response): Promise<GarageOverviewDtoItem> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GarageOverviewDtoItem.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GarageOverviewDtoItem>(null as any);
     }
 
     createGarage(command: CreateGarageCommand): Promise<GarageSettingsDtoItem> {
@@ -3924,6 +3967,126 @@ export interface IVehicleServiceLogAsGarageDtoItem {
     expectedNextOdometerReading?: number | undefined;
     status?: VehicleServiceLogStatus;
     metaData?: string;
+}
+
+export class GarageOverviewDtoItem implements IGarageOverviewDtoItem {
+    totalApprovedServiceLogs?: number;
+    totalPendingServiceLogs?: number;
+    chartPoints?: ServiceLogsChartPoint[];
+    recentServiceLogs?: VehicleServiceLogAsGarageDtoItem[];
+    supportedServices?: GarageServiceDtoItem[];
+
+    constructor(data?: IGarageOverviewDtoItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalApprovedServiceLogs = _data["totalApprovedServiceLogs"];
+            this.totalPendingServiceLogs = _data["totalPendingServiceLogs"];
+            if (Array.isArray(_data["chartPoints"])) {
+                this.chartPoints = [] as any;
+                for (let item of _data["chartPoints"])
+                    this.chartPoints!.push(ServiceLogsChartPoint.fromJS(item));
+            }
+            if (Array.isArray(_data["recentServiceLogs"])) {
+                this.recentServiceLogs = [] as any;
+                for (let item of _data["recentServiceLogs"])
+                    this.recentServiceLogs!.push(VehicleServiceLogAsGarageDtoItem.fromJS(item));
+            }
+            if (Array.isArray(_data["supportedServices"])) {
+                this.supportedServices = [] as any;
+                for (let item of _data["supportedServices"])
+                    this.supportedServices!.push(GarageServiceDtoItem.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GarageOverviewDtoItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new GarageOverviewDtoItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalApprovedServiceLogs"] = this.totalApprovedServiceLogs;
+        data["totalPendingServiceLogs"] = this.totalPendingServiceLogs;
+        if (Array.isArray(this.chartPoints)) {
+            data["chartPoints"] = [];
+            for (let item of this.chartPoints)
+                data["chartPoints"].push(item.toJSON());
+        }
+        if (Array.isArray(this.recentServiceLogs)) {
+            data["recentServiceLogs"] = [];
+            for (let item of this.recentServiceLogs)
+                data["recentServiceLogs"].push(item.toJSON());
+        }
+        if (Array.isArray(this.supportedServices)) {
+            data["supportedServices"] = [];
+            for (let item of this.supportedServices)
+                data["supportedServices"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGarageOverviewDtoItem {
+    totalApprovedServiceLogs?: number;
+    totalPendingServiceLogs?: number;
+    chartPoints?: ServiceLogsChartPoint[];
+    recentServiceLogs?: VehicleServiceLogAsGarageDtoItem[];
+    supportedServices?: GarageServiceDtoItem[];
+}
+
+export class ServiceLogsChartPoint implements IServiceLogsChartPoint {
+    approvedAmount?: number;
+    pendingAmount?: number;
+    vehiclesAmount?: number;
+
+    constructor(data?: IServiceLogsChartPoint) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.approvedAmount = _data["approvedAmount"];
+            this.pendingAmount = _data["pendingAmount"];
+            this.vehiclesAmount = _data["vehiclesAmount"];
+        }
+    }
+
+    static fromJS(data: any): ServiceLogsChartPoint {
+        data = typeof data === 'object' ? data : {};
+        let result = new ServiceLogsChartPoint();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["approvedAmount"] = this.approvedAmount;
+        data["pendingAmount"] = this.pendingAmount;
+        data["vehiclesAmount"] = this.vehiclesAmount;
+        return data;
+    }
+}
+
+export interface IServiceLogsChartPoint {
+    approvedAmount?: number;
+    pendingAmount?: number;
+    vehiclesAmount?: number;
 }
 
 export class CreateGarageCommand implements ICreateGarageCommand {

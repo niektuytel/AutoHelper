@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
@@ -12,17 +9,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageOverview;
 
-public record GetGarageOverviewQuery : IRequest<GarageOverview>
+public class GetGarageOverviewQuery : IRequest<GarageOverviewDtoItem>
 {
     public GetGarageOverviewQuery(string userId)
     {
         UserId = userId;
     }
 
+    [JsonIgnore]
     public string UserId { get; private set; }
+
+    [JsonIgnore]
+    public GarageItem? Garage { get; set; } = new GarageItem();
+
 }
 
-public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQuery, GarageOverview>
+public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQuery, GarageOverviewDtoItem>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -33,17 +35,52 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
         _mapper = mapper;
     }
 
-    public async Task<GarageOverview> Handle(GetGarageOverviewQuery request, CancellationToken cancellationToken)
+    public async Task<GarageOverviewDtoItem> Handle(GetGarageOverviewQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Garages
-            .FirstOrDefaultAsync(x => x.UserId == request.UserId);
+        var query = _context.VehicleServiceLogs.Where(x =>
+            x.GarageLookupIdentifier == request.Garage!.GarageLookupIdentifier &&
+            x.Date >= DateTime.Now.AddYears(-1) // last year - now
+        )
+        .OrderByDescending(x => x.Date);
 
-        if (entity == null)
+        var chartPoints = Enumerable.Range(0, 12)
+            .Select(_ => new ServiceLogsChartPoint())
+            .ToArray();
+
+        var serviceLogs = query.GroupBy(x => x.Date.Month);
+        foreach (var item in serviceLogs)
         {
-            throw new NotFoundException(nameof(GarageItem), request.UserId);
+            var monthIndex = item.Key - 1;
+
+            var approvedCount = item.Where(x => x.Status == Domain.VehicleServiceLogStatus.VerifiedByGarage).Count();
+            chartPoints[monthIndex].ApprovedAmount = approvedCount;
+
+            var pendingCount = item.Where(x => x.Status == Domain.VehicleServiceLogStatus.NotVerified).Count();
+            chartPoints[monthIndex].PendingAmount = pendingCount;
+
+            var vehiclesCount = item.Select(x => x.VehicleLicensePlate).Distinct().Count();
+            chartPoints[monthIndex].VehiclesAmount = vehiclesCount;
         }
 
-        return _mapper.Map<GarageOverview>(entity);
+        var totalApprovedServiceLogs = chartPoints.Length > 0 ? chartPoints.Sum(x => x.ApprovedAmount) : 0;
+        var totalPendingServiceLogs = chartPoints.Length > 0 ? chartPoints.Sum(x => x.PendingAmount) : 0;
+        var totalVehicles = chartPoints.Length > 0 ? chartPoints.Sum(x => x.VehiclesAmount) : 0;
+
+        var supportedServices = _mapper.Map<List<GarageServiceDtoItem>>(request.Garage!.Services);
+
+        var recentServiceLogs = await query.Take(15).ToListAsync(cancellationToken);
+        var recentServiceLogsDto = _mapper.Map<List<VehicleServiceLogAsGarageDtoItem>>(recentServiceLogs);
+        
+        var statistics = new GarageOverviewDtoItem(
+            totalApprovedServiceLogs,
+            totalPendingServiceLogs,
+            totalVehicles,
+            chartPoints,
+            recentServiceLogsDto,
+            supportedServices
+        );
+
+        return statistics;
     }
 
 }

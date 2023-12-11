@@ -566,6 +566,36 @@
         }
       }
     },
+    "/api/GarageAccount/GetOverview": {
+      "get": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_GetOverview",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GarageOverviewDtoItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GarageAccount/CreateGarage": {
       "post": {
         "tags": [
@@ -3527,6 +3557,86 @@
           },
           "metaData": {
             "type": "string"
+          }
+        }
+      },
+      "GarageOverviewDtoItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "totalApprovedServiceLogs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPendingServiceLogs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "chartPoints": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "ServiceLogsChartPoint"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ServiceLogsChartPoint"
+                }
+              ]
+            }
+          },
+          "recentServiceLogs": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "VehicleServiceLogAsGarageDtoItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/VehicleServiceLogAsGarageDtoItem"
+                }
+              ]
+            }
+          },
+          "supportedServices": {
+            "type": "array",
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "GarageServiceDtoItem"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/GarageServiceDtoItem"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "ServiceLogsChartPoint": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "approvedAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pendingAmount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vehiclesAmount": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

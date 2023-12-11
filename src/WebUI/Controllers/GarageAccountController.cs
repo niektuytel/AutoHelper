@@ -17,7 +17,7 @@ using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
 using System.Threading;
-using AutoHelper.Application.Garages.Queries.GetGarageStatistics;
+using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -60,6 +60,16 @@ public class GarageAccountController : ApiControllerBase
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new GetVehicleServiceLogsAsGarageQuery(userId, licensePlate));
+    }
+
+    [Authorize(Policy = "GarageRole")]
+    [HttpGet($"{nameof(GetOverview)}")]
+    [ProducesResponseType(typeof(GarageOverviewDtoItem), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<GarageOverviewDtoItem> GetOverview()
+    {
+        var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
+        return await Mediator.Send(new GetGarageOverviewQuery(userId));
     }
 
     [Authorize]
