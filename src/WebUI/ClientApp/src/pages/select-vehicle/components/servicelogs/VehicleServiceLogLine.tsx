@@ -62,19 +62,18 @@ export default ({ isMobile, keyIndex, license_plate, logItem }: IProps) => {
         <Box key={`serviceLog-${keyIndex}`} sx={textStyles.hoverSection} onClick={handleToggleOpen}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', m: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {open ?
+                    {open ? (
                         <KeyboardArrowUpIcon />
-                        :
+                    ) : (
                         <KeyboardArrowDownIcon />
-                    }
+                    )}
                     <Typography variant="h6" sx={textStyles.root}>
                         <b>{logItem.title ? logItem.title : t(`serviceTypes:${GarageServiceType[logItem.type!]}.Title`)}</b>
                     </Typography>
-                    <Typography sx={{ mx: 1 }}> - </Typography>
-                    <Typography variant="subtitle1" color="text.secondary">
-                        {logItem.date!.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                    </Typography>
                 </Box>
+                <Typography variant="subtitle1" color="text.secondary" sx={{ mr: 0.5, alignSelf:"start" }}>
+                    {logItem.date!.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                </Typography>
             </Box>
             {open && <>
                 <Typography variant="body2" sx={{ ml: 1.5 }}>
