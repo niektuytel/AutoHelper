@@ -75,46 +75,25 @@ export default ({ isMobile, keyIndex, license_plate, logItem }: IProps) => {
                         {logItem.date!.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </Typography>
                 </Box>
-                {logItem.status === VehicleServiceLogStatus.VerifiedByGarage ?
-                    <Tooltip title={t("ServiceLog.Verified.Title")}>
-                        <Chip
-                            color="success"
-                            sx={{ ml: 'auto' }}
-                            icon={<VerifiedIcon />}
-                            label={t("ServiceLog.Verified.Label")}
-                            variant="outlined"
-                        />
-                    </Tooltip>
-                    :
-                    <Tooltip title={t("ServiceLog.UnVerified.Title")}>
-                        <Chip
-                            color="warning"
-                            sx={{ ml: 'auto' }}
-                            icon={<NewReleasesIcon />}
-                            label={t("ServiceLog.UnVerified.Label")}
-                            variant="outlined"
-                        />
-                    </Tooltip>
-                }
             </Box>
             {open && <>
                 <Typography variant="body2" sx={{ ml: 1.5 }}>
                     {logItem.description ? logItem.description : t(`serviceTypes:${GarageServiceType[logItem.type!]}.Description`)}
                 </Typography>
             </>}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', m: 1 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', m: 1, mt: 0 }}>
                 <Chip
                     icon={<SpeedIcon />}
                     label={`${logItem.odometerReading!.toLocaleString()} km`}
                     variant="outlined"
-                    sx={{ mr: 1 }}
+                    sx={{ mr: 1, mt: 1 }}
                 />
                 <Chip
                     icon={<GarageIcon />}
                     label={logItem.garageLookupName}
                     variant="outlined"
                     onClick={() => navigate(`${ROUTES.GARAGE}/${logItem.garageLookupIdentifier}?licensePlate=${license_plate}`, { state: { from: location } })}
-                    sx={{ mr: 1 }}
+                    sx={{ mr: 1, mt: 1 }}
                 />
                 {logItem.attachedFile && (
                     <Chip
@@ -122,9 +101,30 @@ export default ({ isMobile, keyIndex, license_plate, logItem }: IProps) => {
                         label={"Bijlage"}
                         variant="outlined"
                         onClick={() => window.open(logItem.attachedFile, '_blank')}
-                        sx={{ mr: 1 }}
+                        sx={{ mr: 1, mt: 1 }}
                     />
                 )}
+                {logItem.status === VehicleServiceLogStatus.VerifiedByGarage ?
+                    <Tooltip title={t("ServiceLog.Verified.Title")}>
+                        <Chip
+                            color="success"
+                            icon={<VerifiedIcon />}
+                            label={t("ServiceLog.Verified.Label")}
+                            variant="outlined"
+                            sx={{ mr: 1, mt: 1 }}
+                        />
+                    </Tooltip>
+                    :
+                    <Tooltip title={t("ServiceLog.UnVerified.Title")}>
+                        <Chip
+                            color="warning"
+                            icon={<NewReleasesIcon />}
+                            label={t("ServiceLog.UnVerified.Label")}
+                            variant="outlined"
+                            sx={{ mr: 1, mt: 1 }}
+                        />
+                    </Tooltip>
+                }
             </Box>
             <Divider sx={{ mt: 1 }} />
         </Box>

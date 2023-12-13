@@ -117,6 +117,19 @@
   "by": "aan",
   "Back": "Vorige",
   "Next": "Volgende",
+  "Calendar.Jan": "Jan",
+  "Calendar.Feb": "Feb",
+  "Calendar.Mar": "Mrt",
+  "Calendar.Apr": "Apr",
+  "Calendar.May": "Mei",
+  "Calendar.Jun": "Jun",
+  "Calendar.Jul": "Jul",
+  "Calendar.Aug": "Aug",
+  "Calendar.Sep": "Sep",
+  "Calendar.Oct": "Okt",
+  "Calendar.Nov": "Nov",
+  "Calendar.Dec": "Dec",
+
 
 
 
@@ -142,6 +155,14 @@
   "GarageAccount.Conversation.Description": " Eenvoudig contact met klanten via e-mail of WhatsApp. Communicatie loopt via ons, zodat wij meer informatie kunnen geven over de auto.",
   "GarageAccount.ServiceLogs.Title": "Onderhouds logboek",
   "GarageAccount.ServiceLogs.Description": "Alle onderhoud gerelateerd aan u garage.",
+  "GarageAccount.Overview.VehiclesIn.Title": "Voertuigen in",
+  "GarageAccount.Overview.ServicesIn.Title": "Diensten in",
+  "GarageAccount.Overview.AllServicesIn.Title": "U ondersteund",
+  "GarageAccount.Overview.AllServicesIn.Title2": "Diensten",
+  "GarageAccount.Overview.AllServices.Title": "Alle Diensten",
+  "GarageAccount.Overview.Chart.Services": "Diensten",
+  "GarageAccount.Overview.Chart.Vehicles": "Voertuigen",
+  "GarageAccount.Overview.ServiceLogs.Title": "Recent onderhouden",
 
   "Search.LicensePlate.NotFound": "Opgegeven kentekenplaat niet gevonden",
   "Request a quote": "Offerte aanvragen",

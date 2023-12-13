@@ -64,7 +64,7 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
 
         var totalApprovedServiceLogs = chartPoints.Length > 0 ? chartPoints.Sum(x => x.ApprovedAmount) : 0;
         var totalPendingServiceLogs = chartPoints.Length > 0 ? chartPoints.Sum(x => x.PendingAmount) : 0;
-        var totalVehicles = chartPoints.Length > 0 ? chartPoints.Sum(x => x.VehiclesAmount) : 0;
+        var totalServedVehicles = chartPoints.Length > 0 ? chartPoints.Sum(x => x.VehiclesAmount) : 0;
 
         var supportedServices = _mapper.Map<List<GarageServiceDtoItem>>(request.Garage!.Services);
 
@@ -74,7 +74,7 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
         var statistics = new GarageOverviewDtoItem(
             totalApprovedServiceLogs,
             totalPendingServiceLogs,
-            totalVehicles,
+            totalServedVehicles,
             chartPoints,
             recentServiceLogsDto,
             supportedServices

@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 //import AccessTimeIcon from '@mui/icons-material/AccessTime';
 //import EuroIcon from '@mui/icons-material/Euro';
 //import { useNavigate, useParams } from "react-router";
-import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -89,6 +89,18 @@ export default ({ }: IProps) => {
         setSelectedItem(undefined);
     };
 
+    const handleUpdateServiceLog = (item: any, file: File | null) => {
+        setSelectedItem(item);
+        setDialogMode("edit");
+        setDrawerOpen(true);
+    }
+
+    const handleApprove = (item: any, file: File | null) => {
+        item.garageServiceId = 
+        item.status = VehicleServiceLogStatus.VerifiedByGarage;
+        updateServiceLog(item, file);
+    }
+
     // Sample data
     const handleAddClick = () => {
         setSelectedItem(undefined);
@@ -132,16 +144,15 @@ export default ({ }: IProps) => {
                 <Table aria-label="garage service logs table">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}>Date</TableCell>
-                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}>License Plate</TableCell>
-                            <TableCell sx={{ flexGrow: 1, minWidth: 0 }}>Type</TableCell>
-                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}></TableCell>
-                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap' }}></TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}>Date</TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}>License Plate</TableCell>
+                            <TableCell sx={{ flexGrow: 1, minWidth: 0, padding: '8px' }}>Type</TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {garageServiceLogs?.map((item) => (
-                            <ServiceLogTableRow key={`service-log-row-${item.id}`} item={item} handleEdit={updateServiceLog} handleDelete={deleteServiceLog} />
+                            <ServiceLogTableRow key={`service-log-row-${item.id}`} item={item} handleEdit={handleUpdateServiceLog} handleApprove={handleApprove} handleDelete={deleteServiceLog} />
                         ))}
                     </TableBody>
                 </Table>

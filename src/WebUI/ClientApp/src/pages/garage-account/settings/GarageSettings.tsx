@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, ButtonGroup, CircularProgress, Divider, Grid, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, ButtonGroup, CircularProgress, Divider, Grid, IconButton, Tab, Tabs, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useForm } from "react-hook-form";
@@ -17,6 +17,7 @@ import ServicesGeneralSection from "./components/ServicesGeneralSection";
 import ServicesDeliverySection from "./components/ServicesDeliverySection";
 import { COLORS } from "../../../constants/colors";
 import { ROLES } from "../../../constants/roles";
+import React from "react";
 
 interface IProps
 {
@@ -31,7 +32,12 @@ export default ({ }: IProps) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
-    
+
+    const sections = ["profile", "services", "employees", "planning"];
+    const handleChange = (event:any, newValue:number) => {
+        handleSectionChange(sections[newValue]);
+    };
+
     // redirect when user is on confirmation step 1
     const userRole = localStorage.getItem('userRole');
     const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
@@ -92,20 +98,20 @@ export default ({ }: IProps) => {
             </Typography>
         </Box>
         {!notFound ?
-            <ButtonGroup sx={{ paddingBottom: 1 }}>
-                <Button variant={activeSection === "profile" ? "contained" : "outlined"} onClick={() => handleSectionChange('profile')}>
-                    {t('profile')}
-                </Button>
-                <Button disabled variant={activeSection === "services" ? "contained" : "outlined"} onClick={() => handleSectionChange('services')}>
-                    {t('services')}
-                </Button>
-                <Button disabled variant={activeSection === "employees" ? "contained" : "outlined"} onClick={() => handleSectionChange('employees')}>
-                    {t('employees')}
-                </Button>
-                <Button disabled variant={activeSection === "planning" ? "contained" : "outlined"} onClick={() => handleSectionChange('planning')}>
-                    {t('planning')}
-                </Button>
-            </ButtonGroup>
+            <Box sx={{ maxWidth: { xs: 320, sm: 480 }} }>
+                <Tabs
+                    value={sections.indexOf(activeSection)}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    sx={{ width:"100%" }}
+                >
+                    <Tab label={t('profile')} />
+                    <Tab label={t('services')} disabled />
+                    <Tab label={t('employees')} disabled />
+                    <Tab label={t('planning')} disabled />
+                </Tabs>
+            </Box>
             :
             <Box py={3}></Box>
         }

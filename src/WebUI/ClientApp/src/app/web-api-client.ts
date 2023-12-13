@@ -3888,7 +3888,7 @@ export interface IGarageServiceDtoItem {
 export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGarageDtoItem {
     id?: string;
     vehicleLicensePlate?: string;
-    serviceLogId?: string;
+    garageServiceId?: string;
     title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
@@ -3913,7 +3913,7 @@ export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGar
         if (_data) {
             this.id = _data["id"];
             this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-            this.serviceLogId = _data["serviceLogId"];
+            this.garageServiceId = _data["garageServiceId"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.attachedFile = _data["attachedFile"];
@@ -3938,7 +3938,7 @@ export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGar
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        data["serviceLogId"] = this.serviceLogId;
+        data["garageServiceId"] = this.garageServiceId;
         data["title"] = this.title;
         data["description"] = this.description;
         data["attachedFile"] = this.attachedFile;
@@ -3956,7 +3956,7 @@ export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGar
 export interface IVehicleServiceLogAsGarageDtoItem {
     id?: string;
     vehicleLicensePlate?: string;
-    serviceLogId?: string;
+    garageServiceId?: string;
     title?: string | undefined;
     description?: string | undefined;
     attachedFile?: string | undefined;
@@ -3972,6 +3972,7 @@ export interface IVehicleServiceLogAsGarageDtoItem {
 export class GarageOverviewDtoItem implements IGarageOverviewDtoItem {
     totalApprovedServiceLogs?: number;
     totalPendingServiceLogs?: number;
+    totalServedVehicle?: number;
     chartPoints?: ServiceLogsChartPoint[];
     recentServiceLogs?: VehicleServiceLogAsGarageDtoItem[];
     supportedServices?: GarageServiceDtoItem[];
@@ -3989,6 +3990,7 @@ export class GarageOverviewDtoItem implements IGarageOverviewDtoItem {
         if (_data) {
             this.totalApprovedServiceLogs = _data["totalApprovedServiceLogs"];
             this.totalPendingServiceLogs = _data["totalPendingServiceLogs"];
+            this.totalServedVehicle = _data["totalServedVehicle"];
             if (Array.isArray(_data["chartPoints"])) {
                 this.chartPoints = [] as any;
                 for (let item of _data["chartPoints"])
@@ -4018,6 +4020,7 @@ export class GarageOverviewDtoItem implements IGarageOverviewDtoItem {
         data = typeof data === 'object' ? data : {};
         data["totalApprovedServiceLogs"] = this.totalApprovedServiceLogs;
         data["totalPendingServiceLogs"] = this.totalPendingServiceLogs;
+        data["totalServedVehicle"] = this.totalServedVehicle;
         if (Array.isArray(this.chartPoints)) {
             data["chartPoints"] = [];
             for (let item of this.chartPoints)
@@ -4040,6 +4043,7 @@ export class GarageOverviewDtoItem implements IGarageOverviewDtoItem {
 export interface IGarageOverviewDtoItem {
     totalApprovedServiceLogs?: number;
     totalPendingServiceLogs?: number;
+    totalServedVehicle?: number;
     chartPoints?: ServiceLogsChartPoint[];
     recentServiceLogs?: VehicleServiceLogAsGarageDtoItem[];
     supportedServices?: GarageServiceDtoItem[];

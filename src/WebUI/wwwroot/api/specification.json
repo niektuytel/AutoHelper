@@ -3515,7 +3515,7 @@
           "vehicleLicensePlate": {
             "type": "string"
           },
-          "serviceLogId": {
+          "garageServiceId": {
             "type": "string",
             "format": "guid"
           },
@@ -3569,6 +3569,10 @@
             "format": "int32"
           },
           "totalPendingServiceLogs": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalServedVehicle": {
             "type": "integer",
             "format": "int32"
           },

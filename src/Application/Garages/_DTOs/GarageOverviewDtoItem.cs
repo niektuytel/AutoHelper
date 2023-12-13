@@ -16,7 +16,7 @@ public class GarageOverviewDtoItem
     public GarageOverviewDtoItem(
         int totalApprovedServiceLogs,
         int totalPendingServiceLogs,
-        int totalServiceLogs,
+        int totalServedVehicle,
         ServiceLogsChartPoint[] chartPoints,
         List<VehicleServiceLogAsGarageDtoItem> recentServiceLogs,
         List<GarageServiceDtoItem> supportedServices
@@ -24,7 +24,7 @@ public class GarageOverviewDtoItem
     {
         TotalApprovedServiceLogs = totalApprovedServiceLogs;
         TotalPendingServiceLogs = totalPendingServiceLogs;
-        TotalServiceLogs = totalServiceLogs;
+        TotalServedVehicle = totalServedVehicle;
         ChartPoints = chartPoints;
         RecentServiceLogs = recentServiceLogs;
         SupportedServices = supportedServices;
@@ -33,7 +33,7 @@ public class GarageOverviewDtoItem
 
     public int TotalApprovedServiceLogs { get; set; }
     public int TotalPendingServiceLogs { get; set; }
-    public int TotalServiceLogs { get; set; }
+    public int TotalServedVehicle { get; set; }
 
     public ServiceLogsChartPoint[] ChartPoints { get; set; }
     public List<VehicleServiceLogAsGarageDtoItem> RecentServiceLogs { get; set; }

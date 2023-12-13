@@ -27,10 +27,8 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
             .WithMessage("No garage found for this user.");
 
         RuleFor(command => command.Id)
-            .NotEmpty().WithMessage("The ID must not be empty")
-            .NotEqual(Guid.Empty).WithMessage("The ID must not be a default GUID")
             .MustAsync(BeValidAndExistingServiceLog)
-            .WithMessage("Service log does not exist under this garage."); ;
+            .WithMessage("Service log does not exist under this garage.");
 
         RuleFor(x => x.VehicleLicensePlate)
             .NotEmpty().WithMessage("Vehicle license plate is required.")
@@ -78,14 +76,14 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
     {
         var entity = await _context.VehicleServiceLogs
             .FirstOrDefaultAsync(x =>
-                x.GarageLookupIdentifier == command.Garage.GarageLookupIdentifier && x.Id == logId,
+                x.GarageLookupIdentifier == command.Garage.GarageLookupIdentifier && 
+                x.Id == logId,
                 cancellationToken
             );
 
         command.ServiceLog = entity;
         return command.Garage != null;
     }
-
 
     private async Task<bool> BeValidAndExistingVehicle(UpdateVehicleServiceLogAsGarageCommand command, string licensePlate, CancellationToken cancellationToken)
     {
