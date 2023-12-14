@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -20,7 +20,9 @@ import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, Gar
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { GetGarageAccountClient } from '../../../../app/GarageClient';
 
-interface IServiceLogDrawerProps {
+interface IProps {
+    mode: 'create' | 'edit';
+    item: VehicleServiceLogAsGarageDtoItem | undefined;
     drawerOpen: boolean;
     toggleDrawer: (open: boolean) => void;
     handleService: (data: any, file: File | null) => void;
@@ -29,6 +31,7 @@ interface IServiceLogDrawerProps {
 interface IServiceLogDrawerData {
     licensePlate: string;
     garageServiceId: string;
+    title: string;
     description: string;
 
     date: Date | null;
@@ -39,7 +42,7 @@ interface IServiceLogDrawerData {
 
 const steps = ['AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
 
-export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerProps) => {
+export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const dispatch = useDispatch();
     const [selectedService, setSelectedService] = useState<GarageServiceDtoItem | undefined>(undefined);
@@ -54,11 +57,24 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        if (mode === 'edit' && item) {
+            setValue("licensePlate", item.vehicleLicensePlate!);
+            setValue("title", item.title!);
+            setValue("description", item.description!);
+            setValue("date", item.date!);
+            setValue("expectedNextDate", item.expectedNextDate!);
+            setValue("odometerReading", item.odometerReading!);
+            setValue("expectedNextOdometerReading", item.expectedNextOdometerReading!);
+        } else {
+            reset();
+        }
+    }, [item, mode, setValue]);
+
     const handleNext = (data: IServiceLogDrawerData) => {
         let hasError = false;
 
         if (activeStep === 0 && selectedService) {
-
             // Validate Description for 'Other' Type
             if (selectedService.type === GarageServiceType.Other && !data.description?.trim()) {
                 setError('description', { type: 'manual', message: t('AddMaintenanceLog.DescriptionOnTypeOther.Required')});
@@ -164,6 +180,7 @@ export default ({ drawerOpen, toggleDrawer, handleService }: IServiceLogDrawerPr
                     setFile={setFile}
                 />}
                 {activeStep === 1 && <StepConfirmation
+                    mode={mode}
                     expectedNextDate={selectedService?.expectedNextDateIsRequired || false}
                     expectedNextOdometerReading={selectedService?.expectedNextOdometerReadingIsRequired || false}
                     control={control}

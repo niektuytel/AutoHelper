@@ -6,11 +6,6 @@ import {
     IconButton,
     Tooltip,
     Typography,
-    TextField,
-    Card,
-    CardHeader,
-    CardContent,
-    CardActions,
     CircularProgress,
     useTheme,
     useMediaQuery,
@@ -19,26 +14,17 @@ import {
     TableCell,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-//import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-//import AddIcon from '@mui/icons-material/Add';
-//import EditIcon from '@mui/icons-material/Edit';
-//import DeleteIcon from '@mui/icons-material/Delete';
-//import AccessTimeIcon from '@mui/icons-material/AccessTime';
-//import EuroIcon from '@mui/icons-material/Euro';
-//import { useNavigate, useParams } from "react-router";
-import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { Table, TableBody, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-
 import { useDispatch } from "react-redux";
+
+// own imports
 import useGarageServicelogs from "./useGarageServicelogs";
 import ServiceLogDrawer from "./components/ServiceLogDrawer";
 import ServiceLogTableRow from "./components/ServiceLogTableRow";
+import { VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 
-// own imports
 
 
 interface IProps {
@@ -50,9 +36,7 @@ export default ({ }: IProps) => {
     const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [selectedItem, setSelectedItem] = useState<any>(null);
-    //const [cartItems, setCartItems] = useState<GarageServiceDtoItem[]>([]);
-    //const [dialogOpen, setDrawerOpen] = useState<boolean>(false);
+    const [selectedItem, setSelectedItem] = useState<VehicleServiceLogAsGarageDtoItem | undefined>(undefined);
     const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
     const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
 
@@ -144,9 +128,9 @@ export default ({ }: IProps) => {
                 <Table aria-label="garage service logs table">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}>Date</TableCell>
-                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}>License Plate</TableCell>
-                            <TableCell sx={{ flexGrow: 1, minWidth: 0, padding: '8px' }}>Type</TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}>{t("GarageAccount.ServiceLogs.Date")}</TableCell>
+                            <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}>{t("GarageAccount.ServiceLogs.LicensePlate")}</TableCell>
+                            <TableCell sx={{ flexGrow: 1, minWidth: 0, padding: '8px' }}>{t("GarageAccount.ServiceLogs.Service")}</TableCell>
                             <TableCell sx={{ width: '1%', whiteSpace: 'nowrap', padding: '8px' }}></TableCell>
                         </TableRow>
                     </TableHead>
@@ -158,6 +142,8 @@ export default ({ }: IProps) => {
                 </Table>
             </TableContainer>
             <ServiceLogDrawer
+                mode={dialogMode}
+                item={selectedItem}
                 drawerOpen={drawerOpen}
                 toggleDrawer={toggleDrawer}
                 handleService={handleService}
