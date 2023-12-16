@@ -80,7 +80,6 @@ export default ({ }: IProps) => {
     }
 
     const handleApprove = (item: any, file: File | null) => {
-        item.garageServiceId = 
         item.status = VehicleServiceLogStatus.VerifiedByGarage;
         updateServiceLog(item, file);
     }

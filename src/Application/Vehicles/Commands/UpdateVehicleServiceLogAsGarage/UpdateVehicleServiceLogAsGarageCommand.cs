@@ -25,7 +25,7 @@ public record UpdateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLo
     public UpdateVehicleServiceLogAsGarageCommand(string userId, UpdateVehicleServiceAsGarageLogDtoItem data)
     {
         UserId = userId;
-        Id = data.GarageServiceId;
+        Id = data.Id;
         VehicleLicensePlate = data.VehicleLicensePlate;
         GarageServiceId = data.GarageServiceId;
         Description = data.Description;
@@ -101,10 +101,6 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
     private VehicleServiceLogItem UpdateVehicleServiceLogEntity(UpdateVehicleServiceLogAsGarageCommand request, GarageServiceItem? serviceItem)
     {
         var description = request.Description;
-        if (string.IsNullOrEmpty(description))
-        {
-            description = request.Description;
-        }
 
         var serviceLog = request.ServiceLog; 
         serviceLog.VehicleLicensePlate = request.VehicleLicensePlate;
@@ -112,6 +108,11 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         {
             serviceLog.Type = serviceItem.Type;
             serviceLog.Title = serviceItem.Title;
+
+            if (string.IsNullOrEmpty(description))
+            {
+                description = serviceItem.Description;
+            }
         }
         serviceLog.Description = description;
         serviceLog.Status = request.Status;

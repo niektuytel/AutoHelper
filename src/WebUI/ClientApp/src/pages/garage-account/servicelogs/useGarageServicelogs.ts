@@ -188,7 +188,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
         console.log(data);
         updateMutation.mutate({
             id: data.id,
-            vehicleLicensePlate: data.vehicleLicensePlate,
+            vehicleLicensePlate: data.licensePlate,
             garageServiceId: data.garageServiceId,
             description: data.description,
             date: data.date?.toISOString(),

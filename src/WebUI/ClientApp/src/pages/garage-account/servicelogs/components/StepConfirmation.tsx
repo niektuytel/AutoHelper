@@ -18,7 +18,7 @@ const ConfirmationStep = ({ mode, expectedNextDate, expectedNextOdometerReading,
     return <>
         <Box flexGrow={1} p={1}>
             <Grid container spacing={2} sx={{ mb: 1 }}>
-                <Grid item xs={(mode == "edit" || expectedNextDate) ? 6 : 12}>
+                <Grid item xs={(mode === 'edit' || expectedNextDate) ? 6 : 12}>
                     <Controller
                         name="date"
                         control={control}
@@ -41,12 +41,12 @@ const ConfirmationStep = ({ mode, expectedNextDate, expectedNextOdometerReading,
                         )}
                     />
                 </Grid>
-                { (mode == "edit" || expectedNextDate) &&
+                {(mode === 'edit' || expectedNextDate) &&
                     <Grid item xs={6}>
                         <Controller
                             name="expectedNextDate"
                             control={control}
-                            rules={{ required: t('AddMaintenanceLog.ExpectedNextDate.Required') }}
+                            rules={(mode === 'create') ? { required: t('AddMaintenanceLog.ExpectedNextDate.Required') } : {}}
                             render={({ field, fieldState: { error } }) => (
                                 <DatePicker
                                     {...field}
@@ -67,7 +67,7 @@ const ConfirmationStep = ({ mode, expectedNextDate, expectedNextOdometerReading,
                 }
             </Grid>
             <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={(mode == "edit" || expectedNextOdometerReading) ? 6 : 12}>
+                <Grid item xs={(mode === 'edit' || expectedNextOdometerReading) ? 6 : 12}>
                     <Controller
                         name="odometerReading"
                         control={control}
@@ -86,12 +86,12 @@ const ConfirmationStep = ({ mode, expectedNextDate, expectedNextOdometerReading,
                         )}
                     />
                 </Grid>
-                {(mode == "edit" || expectedNextOdometerReading) &&
+                {(mode === 'edit' || expectedNextOdometerReading) &&
                     <Grid item xs={6}>
                         <Controller
                             name="expectedNextOdometerReading"
                             control={control}
-                            rules={{ required: t('AddMaintenanceLog.ExpectedNextOdometerReading.Required') }}
+                            rules={(mode === 'create') ? { required: t('AddMaintenanceLog.ExpectedNextOdometerReading.Required') } : {}}
                             render={({ field, fieldState: { error } }) =>
                                 <TextField
                                     {...field}

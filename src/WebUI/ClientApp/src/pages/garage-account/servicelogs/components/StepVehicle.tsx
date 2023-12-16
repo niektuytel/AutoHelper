@@ -10,15 +10,37 @@ import { getFormatedLicense } from '../../../../app/LicensePlateUtils';
 import { GarageServiceDtoItem } from '../../../../app/web-api-client';
 
 interface IProps {
+    licensePlate: string;
     setSelectedService: (service: GarageServiceDtoItem | undefined) => void;
     control: any;
     file: File | null;
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ setSelectedService, control, file, setFile }: IProps) => {
+const GarageStep = ({ licensePlate, setSelectedService, control, file, setFile }: IProps) => {
     const { t } = useTranslation();
-    const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes();
+    const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
+
+    const getOptionsWithCurrentTitle = (currentTitle: string) => {
+        if (!garageServiceTypes) {
+            if (currentTitle) {
+                return [{ id: 'temp-id', title: currentTitle }];
+            }
+
+            return [];
+        }
+
+        // Check if currentTitle is in garageServiceTypes
+        const titleExists = garageServiceTypes?.some(service => service.title === currentTitle);
+
+        // If the currentTitle is not in garageServiceTypes, add it
+        if (!titleExists && currentTitle) {
+            return [{ id: 'temp-id', title: currentTitle }, ...garageServiceTypes];
+        }
+
+        return garageServiceTypes;
+    };
+
 
     const handleServiceChange = (event: any) => {
         if (!garageServiceTypes) return;
@@ -44,7 +66,6 @@ const GarageStep = ({ setSelectedService, control, file, setFile }: IProps) => {
         return license;
     };
 
-    console.log(loading);
     return <>
         <Box flexGrow={1} p={1}>
             <Grid item xs={12}>
@@ -73,31 +94,31 @@ const GarageStep = ({ setSelectedService, control, file, setFile }: IProps) => {
                     )}
                 />
             </Grid>
-
             <Controller
                 name="title"
                 control={control}
                 defaultValue={""}
-                render={({ field }) => (
+                render={({ field, fieldState: { error } }) => (
                     <FormControl fullWidth sx={{ mb: 2, mt: 2 }} size='small'>
                         <InputLabel id="service-type-label">
                             {t("AddMaintenanceLog.ServiceType.Label")}
                         </InputLabel>
                         <Select
                             {...field}
-                            labelId="service-type-label"
-                            label={t("AddMaintenanceLog.ServiceType.Label")}
+                            value={field.value}
                             onChange={(e) => {
                                 field.onChange(e);
                                 handleServiceChange(e);
                             }}
+                            labelId="service-type-label"
+                            label={t("AddMaintenanceLog.ServiceType.Label")}
                             endAdornment={loading ? <CircularProgress size={24} /> : null}
                         >
-                            {garageServiceTypes?.map((service, index) => service.title &&
+                            {getOptionsWithCurrentTitle(field.value).map((service) => (
                                 <MenuItem key={service.id} value={service.title}>
                                     {service.title}
                                 </MenuItem>
-                            )}
+                            ))}
                         </Select>
                     </FormControl>
                 )}

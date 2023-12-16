@@ -4,12 +4,11 @@ import { GarageClient } from "../../../app/web-api-client";
 import { useAuth0 } from "@auth0/auth0-react";
 import { GetGarageAccountClient } from "../../../app/GarageClient";
 
-export default () => {
+export default (license: string) => {
     const { getAccessTokenSilently } = useAuth0();
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageAccountClient(accessToken);
-
-    const [licensePlate, setLicensePlate] = useState("");
+    const [licensePlate, setLicensePlate] = useState(license);
 
     const fetchGarageServiceTypes = async () => {
         try {
@@ -24,7 +23,7 @@ export default () => {
         ['garageServices-ForLogs', licensePlate],
         fetchGarageServiceTypes,
         {
-            enabled: licensePlate?.length > 0,
+            enabled: (licensePlate?.length > 0),
             retry: 1,
             refetchOnWindowFocus: false,
             cacheTime: 30 * 60 * 1000, // 30 minutes

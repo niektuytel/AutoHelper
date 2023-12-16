@@ -16,21 +16,15 @@ import { useAuth0 } from '@auth0/auth0-react';
 // own imports
 import StepVehicle from './StepVehicle';
 import StepConfirmation from './StepConfirmation';
-import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
+import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem, VehicleServiceLogStatus } from '../../../../app/web-api-client';
 import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { GetGarageAccountClient } from '../../../../app/GarageClient';
-
-interface IProps {
-    mode: 'create' | 'edit';
-    item: VehicleServiceLogAsGarageDtoItem | undefined;
-    drawerOpen: boolean;
-    toggleDrawer: (open: boolean) => void;
-    handleService: (data: any, file: File | null) => void;
-}
+import { getFormatedLicense } from '../../../../app/LicensePlateUtils';
 
 interface IServiceLogDrawerData {
+    id: string | undefined;
     licensePlate: string;
-    garageServiceId: string;
+    garageServiceId: string | undefined;
     title: string;
     description: string;
 
@@ -38,6 +32,15 @@ interface IServiceLogDrawerData {
     expectedNextDate: Date | null;
     odometerReading: number | 0;
     expectedNextOdometerReading: number | 0;
+    status?: VehicleServiceLogStatus;
+}
+
+interface IProps {
+    mode: 'create' | 'edit';
+    item: VehicleServiceLogAsGarageDtoItem | undefined;
+    drawerOpen: boolean;
+    toggleDrawer: (open: boolean) => void;
+    handleService: (data: any, file: File | null) => void;
 }
 
 const steps = ['AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.Confirmation.Title'];
@@ -59,13 +62,15 @@ export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps)
 
     useEffect(() => {
         if (mode === 'edit' && item) {
-            setValue("licensePlate", item.vehicleLicensePlate!);
+            setValue("id", item.id!);
+            setValue("licensePlate", getFormatedLicense(item.vehicleLicensePlate!));
             setValue("title", item.title!);
             setValue("description", item.description!);
             setValue("date", item.date!);
             setValue("expectedNextDate", item.expectedNextDate!);
             setValue("odometerReading", item.odometerReading!);
             setValue("expectedNextOdometerReading", item.expectedNextOdometerReading!);
+            setValue("status", item.status!);
         } else {
             reset();
         }
@@ -116,8 +121,12 @@ export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps)
         }
 
         if (activeStep === steps.length - 1) {
-            data.garageServiceId = selectedService!.id || "";
+            data.garageServiceId = selectedService?.id || "";
             handleService(data, file);
+
+            toggleDrawer(false);
+            setActiveStep(0);
+            reset();
         } else {
             setActiveStep(activeStep+1);
         }
@@ -174,6 +183,7 @@ export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps)
             </Stepper>
             <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
                 {activeStep === 0 && <StepVehicle
+                    licensePlate={item?.vehicleLicensePlate || ""}
                     setSelectedService={setSelectedService}
                     control={control}
                     file={file}
