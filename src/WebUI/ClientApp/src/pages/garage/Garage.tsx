@@ -39,28 +39,6 @@ export default ({ }: IProps) => {
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
     const services: SelectedService[] = useSelector((state: any) => state.storedServices);
 
-    // TODO: implement when using converstations
-    const tryAddCartItem = (service: SelectedService) => {
-        //service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
-        //service.relatedGarageLookupName = garageLookup?.name;
-
-        //if (services.some(item => (
-        //    item.relatedGarageLookupIdentifier === service.relatedGarageLookupIdentifier &&
-        //    item.relatedServiceType === service.relatedServiceType
-        //))) {
-        //    dispatch(showOnError(t("Cart item already exist")));
-        //    return;
-        //}
-
-        //service.conversationContactEmail = garageLookup?.conversationContactEmail;
-        //service.conversationContactWhatsappNumber = garageLookup?.conversationContactWhatsappNumber;
-        //service.vehicleLicensePlate = licensePlate!;
-        //service.vehicleLatitude = lat!;
-        //service.vehicleLongitude = lng!;
-
-        //dispatch(addService(service));
-    }
-
     const hasQuestionItem = (serviceType: GarageServiceType) => {
         setRelatedServiceTypes([ serviceType ]);
         setDialogOpen(true);
@@ -74,7 +52,7 @@ export default ({ }: IProps) => {
     const imageUrl = `http://127.0.0.1:10000/devstoreaccount1/garage-images/${garageLookup?.image}`;
     const showConversation = garageLookup?.conversationContactEmail !== undefined || garageLookup?.conversationContactWhatsappNumber !== null;
     return <>
-        <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(location.state?.from?.pathname)} />
+        <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
         <Container sx={{ mb: 5 }}>
             <Box pt={1} pb={2}>
                 <Paper
@@ -115,19 +93,6 @@ export default ({ }: IProps) => {
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
                         </>
                     }
-                    {/*TODO: implement all services on garage*/}
-                    {/*:*/}
-                    {/*garageLookup.services && garageLookup.services.map(service =>*/}
-                    {/*    <GarageServiceInfoCard*/}
-                    {/*        key={`service-card-${service.id}`}*/}
-                    {/*        showConversationActions={showConversation}*/}
-                    {/*        service={service}*/}
-                    {/*        selectedItem={selectedItem}*/}
-                    {/*        setSelectedItem={setSelectedItem}*/}
-                    {/*        addCartItem={tryAddCartItem}*/}
-                    {/*        hasQuestionItem={hasQuestionItem}*/}
-                    {/*    />*/}
-                    {/*)*/}
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <GarageContactSection
@@ -138,22 +103,5 @@ export default ({ }: IProps) => {
             </Grid>
         </Container>
     </>;
-
-    //{garageLookup && relatedServiceTypes &&
-    //    <GarageContactDialog
-    //        services={[new SelectedService({
-    //            relatedServiceType: relatedServiceTypes![0],
-    //            relatedGarageLookupIdentifier: garageLookup?.identifier!,
-    //            relatedGarageLookupName: garageLookup?.name,
-    //            conversationContactEmail: garageLookup?.conversationContactEmail,
-    //            conversationContactWhatsappNumber: garageLookup?.conversationContactWhatsappNumber,
-    //            vehicleLicensePlate: licensePlate!,
-    //            vehicleLatitude: lat!,
-    //            vehicleLongitude: lng!
-    //        })]}
-    //        open={dialogOpen}
-    //        onClose={() => setDialogOpen(false)}
-    //    />
-    //}
 
 }

@@ -63,7 +63,7 @@ export default ({ }: IProps) => {
         // Combine pathname, search query, and hash fragment
         let fullURI = location.pathname + location.search + location.hash;
         const uri = fullURI.replace(licence_plate, value);
-        navigate(uri);
+        navigate(uri, { state: { from: location } });
     }
 
 

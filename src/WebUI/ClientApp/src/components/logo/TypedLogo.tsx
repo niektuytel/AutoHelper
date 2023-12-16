@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 
@@ -21,10 +21,11 @@ interface IProps {
 
 export default ({small, large, very_large}:IProps) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const variant = small ? "h4" : large ? "h3" : very_large ? "h2" : "h5";
     
     const onClick = () => {
-        navigate("/");
+        navigate("/", { state: { from: location } });
     }
 
     return <>

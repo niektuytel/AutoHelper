@@ -1,6 +1,6 @@
 ﻿import { Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 // own imports
@@ -15,9 +15,10 @@ interface IProps {
 export default ({ loading, supportedServices }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const gotoServices = (e: any) => {
-        navigate(`${ROUTES.GARAGE_ACCOUNT.SERVICES}/`);
+        navigate(`${ROUTES.GARAGE_ACCOUNT.SERVICES}/`, { state: { from: location } });
     }
 
     return <>

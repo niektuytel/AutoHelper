@@ -1,6 +1,6 @@
 ﻿import { Chip, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // own imports
 import { ROUTES } from "../../../../constants/routes";
@@ -15,9 +15,10 @@ interface IProps {
 export default ({ loading, servicelogs }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const gotoVehiclePage = (licensePlate: string) => {
-        navigate(`${ROUTES.SELECT_VEHICLE}/${licensePlate}`);
+        navigate(`${ROUTES.SELECT_VEHICLE}/${licensePlate}`, { state: { from: location } });
     }
 
     return <>

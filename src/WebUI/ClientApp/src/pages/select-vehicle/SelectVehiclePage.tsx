@@ -43,7 +43,7 @@ export default ({ }: IProps) => {
     const [activeTab, setActiveTab] = useState(findTabValueByHash(location.hash));
     const handleCardClick = (index: number) => {
         setActiveTab(index);
-        navigate(tabsConfig[index].hash);
+        navigate(tabsConfig[index].hash, { state: { from: location } });
     };
 
     

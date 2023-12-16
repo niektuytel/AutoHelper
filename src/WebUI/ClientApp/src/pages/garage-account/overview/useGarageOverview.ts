@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "react-router";
+﻿import { useLocation, useNavigate } from "react-router";
 import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -16,6 +16,7 @@ export default () => {
     const accessToken = getAccessTokenSilently();
     const garageClient = GetGarageAccountClient(accessToken);
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
 
     const fetchGarageOverview = async () => {
@@ -26,7 +27,7 @@ export default () => {
             // redirect + enable garage register page
             if (response.status === 404) {
                 setConfigurationIndex(0, userRole);
-                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
+                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS, { state: { from: location } });
                 return;
             }
 

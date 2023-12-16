@@ -31,7 +31,7 @@ export default ({ small, large, very_large, className, navigateGoto }: IProps) =
             disableRipple
             variant={undefined}
             startIcon={navigateGoto ? <ArrowBackIosNewRoundedIcon /> : undefined}
-            onClick={() => navigateGoto ? navigateGoto() : navigate(ROUTES.SELECT_VEHICLE)}
+            onClick={() => navigateGoto ? navigateGoto() : navigate(ROUTES.SELECT_VEHICLE, { state: { from: location } })}
         >
             <Hidden mdUp>
                 <StyledImg

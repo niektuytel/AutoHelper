@@ -4,7 +4,7 @@ import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // own imports
 import { GarageLookupDtoItem, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
@@ -25,6 +25,7 @@ interface IProps
 export default ({ license_plate, latitude, longitude, in_km_range, page_size, onSearchExecuted }: IProps) => {
     const navigate = useNavigate();
     const theme = useTheme();
+    const location = useLocation();
     const queryParams = new URLSearchParams(window.location.search);
     const { t } = useTranslation(["translations", "serviceTypes"]);
 
@@ -105,7 +106,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
         const filtersRecord: Record<string, string> = {};
         filtersRecord["filters"] = filterValues.join(",");
         const newQueryParams = new URLSearchParams(filtersRecord);
-        navigate(`${window.location.pathname}?${newQueryParams.toString()}`);
+        navigate(`${window.location.pathname}?${newQueryParams.toString()}`, { state: { from: location } });
 
         setIsLoading(false);
     };

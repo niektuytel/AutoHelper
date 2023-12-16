@@ -3,7 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 // own imports
@@ -40,13 +40,14 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
     const cardRef = useRef<HTMLDivElement>(null);
     useOutsideClick(cardRef, onClose);
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [requestQuote, setRequestQuote] = useState(false);
 
     const handleServiceClick = (service: SelectedService) => {
-        navigate(`${ROUTES.GARAGE}/${service.relatedGarageLookupIdentifier}?licensePlate=${service.vehicleLicensePlate}&lat=${service.vehicleLatitude}&lng=${service.vehicleLongitude}`);
+        navigate(`${ROUTES.GARAGE}/${service.relatedGarageLookupIdentifier}?licensePlate=${service.vehicleLicensePlate}&lat=${service.vehicleLatitude}&lng=${service.vehicleLongitude}`, { state: { from: location } });
     };
 
     const handleServiceRemove = (event: React.MouseEvent<HTMLButtonElement>, service: SelectedService) => {

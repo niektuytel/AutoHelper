@@ -1,7 +1,7 @@
 ﻿import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 //own imports
 import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
@@ -21,6 +21,7 @@ export default (onResponse: (data: any) => void) => {
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslation();
 
     const fetchGarageServicesData = async () => {
@@ -32,7 +33,7 @@ export default (onResponse: (data: any) => void) => {
             // redirect + enable garage register page
             if (response.status === 404) {
                 setConfigurationIndex(1, userRole);
-                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
+                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS, { state: { from: location } });
                 return;
             }
 

@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useOnclickOutside from "react-cool-onclickoutside";
 import { useDispatch } from "react-redux";
 
@@ -31,6 +31,7 @@ export default ({ }: IProps) => {
     const { t } = useTranslation();
     const theme = useTheme();
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [value, setValue] = React.useState<string>("");
@@ -53,7 +54,7 @@ export default ({ }: IProps) => {
         if (response) {
             console.log("Response received:", response);
 
-            navigate(`${ROUTES.SELECT_VEHICLE}/${value}`);
+            navigate(`${ROUTES.SELECT_VEHICLE}/${value}`, { state: { from: location } });
         } else {
             console.error("Failed to get vehicle by license plate");
         }

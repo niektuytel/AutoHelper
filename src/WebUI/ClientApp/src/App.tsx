@@ -61,6 +61,7 @@ export default () => {
         );
     }
 
+
     return <>
         <ThemeProvider theme={theme}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -86,13 +87,13 @@ export default () => {
                     } />
                     <Route path={`${ROUTES.SELECT_VEHICLE}/:license_plate`} element={
                         <>
-                            <Header showStaticDrawer={false} navigateGoto={() => navigate("..", { relative: "path" })} />
+                            <Header showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
                             <SelectVehiclePage />
                         </>
                     } />
                     <Route path={`${ROUTES.SELECT_GARAGE}/:license_plate/:lat/:lng`} element={
                         <>
-                            <Header showStaticDrawer={false} navigateGoto={() => navigate(location.state?.from?.pathname ?? ROUTES.SELECT_VEHICLE)} />
+                            <Header showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
                             <SelectGarage />
                         </>
                     } />

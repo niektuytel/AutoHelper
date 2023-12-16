@@ -1,6 +1,6 @@
 ﻿import { Box, Card, CardContent, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 // own imports
@@ -15,9 +15,10 @@ export default ({ loading, totalServiceLogs }: IProps) => {
     const currentYear = new Date().getFullYear();
     const { t } = useTranslation(["translations"]);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const gotoServiceLogs = (e: any) => {
-        navigate(`${ROUTES.GARAGE_ACCOUNT.SERVICELOGS}/`);
+        navigate(`${ROUTES.GARAGE_ACCOUNT.SERVICELOGS}/`, { state: { from: location } });
     }
 
     return <>

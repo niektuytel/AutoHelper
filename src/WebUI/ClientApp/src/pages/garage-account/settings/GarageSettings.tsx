@@ -60,7 +60,7 @@ export default ({ }: IProps) => {
     }, [location.hash]);
 
     const handleSectionChange = (section: string) => {
-        navigate(`#${section}`);
+        navigate(`#${section}`, { state: { from: location } });
     }
 
     const onSubmit = async (data: any) => {

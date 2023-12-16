@@ -49,7 +49,7 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         <ListItem
             button
             disabled={disabled}
-            onClick={() => { navigate(to); setOnMenu && setOnMenu(false); }}
+            onClick={() => { navigate(to, { state: { from: location } }); setOnMenu && setOnMenu(false); }}
             style={location.pathname === to ? { backgroundColor: '#e0e0e0' } : {}}
         >
             <ListItemIcon style={location.pathname === to ? { color: 'black' } : {}}>

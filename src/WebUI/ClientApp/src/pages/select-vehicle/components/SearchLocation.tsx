@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import usePlacesAutocomplete, { getGeocode, getLatLng, Suggestion } from "use-places-autocomplete";
 import useOnclickOutside from "react-cool-onclickoutside";
 import { useDispatch } from "react-redux";
@@ -21,6 +21,7 @@ interface IProps {
 
 export default ({ licence_plate }: IProps) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const theme = useTheme();
     const dispatch = useDispatch();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -50,7 +51,7 @@ export default ({ licence_plate }: IProps) => {
 
                 // TODO: Set input string value to the the cookie: named 'recently_used_place'
                 const { lat, lng } = getLatLng(results[0]);
-                navigate(`${ROUTES.SELECT_GARAGE}/${licence_plate}/${lat}/${lng}`);
+                navigate(`${ROUTES.SELECT_GARAGE}/${licence_plate}/${lat}/${lng}`, { state: { from: location } });
             })
             .catch(error => {
                 dispatch(showOnError(t("Error on getting address location")));

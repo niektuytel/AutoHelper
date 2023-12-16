@@ -7,7 +7,7 @@ import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useTranslation } from 'react-i18next';
 import StarIcon from '@mui/icons-material/Star';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 // own imports
 import { GarageLookupBriefDto, GarageServiceType } from '../../../app/web-api-client';
@@ -24,6 +24,7 @@ interface IProps {
 export default ({ garage, licensePlate, lat, lng }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Local state for hover effect
     const [isHovered, setIsHovered] = React.useState(false);
@@ -40,7 +41,7 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
 
     // Handler for click
     const handleClick = () => {
-        navigate(`${ROUTES.GARAGE}/${garage.identifier}?licensePlate=${licensePlate}&lat=${lat}&lng=${lng}`);
+        navigate(`${ROUTES.GARAGE}/${garage.identifier}?licensePlate=${licensePlate}&lat=${lat}&lng=${lng}`, { state: { from: location } });
     };
 
 
