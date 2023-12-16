@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231201002630_Description service type make nullable")]
-    partial class Descriptionservicetypemakenullable
+    [Migration("20231216162913_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -202,13 +202,6 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("ImageThumbnail")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("KnownServicesString")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("LargeDataId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("LastModified")
                         .IsRequired()
                         .HasColumnType("datetime2");
@@ -243,24 +236,42 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasKey("Identifier");
 
-                    b.HasIndex("LargeDataId");
-
                     b.ToTable("GarageLookups");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupLargeItem", b =>
+            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupServiceItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("GoogleApiDetailsJson")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ExpectedNextDateIsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ExpectedNextOdometerReadingIsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("GarageLookupIdentifier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GarageLookupLargeItem");
+                    b.HasIndex("GarageLookupIdentifier");
+
+                    b.ToTable("GarageLookupServices");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageServiceItem", b =>
@@ -272,8 +283,17 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("ExpectedNextDateIsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ExpectedNextOdometerReadingIsRequired")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("GarageId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -281,6 +301,9 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VehicleType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -384,6 +407,9 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -430,6 +456,10 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<string>("VehicleLicensePlate")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("VehicleServiceLogId")
+                        .IsRequired()
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -826,13 +856,15 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Navigation("Lookup");
                 });
 
-            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupItem", b =>
+            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupServiceItem", b =>
                 {
-                    b.HasOne("AutoHelper.Domain.Entities.Garages.GarageLookupLargeItem", "LargeData")
-                        .WithMany()
-                        .HasForeignKey("LargeDataId");
+                    b.HasOne("AutoHelper.Domain.Entities.Garages.GarageLookupItem", "GarageLookup")
+                        .WithMany("Services")
+                        .HasForeignKey("GarageLookupIdentifier")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("LargeData");
+                    b.Navigation("GarageLookup");
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageServiceItem", b =>
@@ -936,6 +968,11 @@ namespace AutoHelper.Infrastructure.Migrations
                 {
                     b.Navigation("Conversations");
 
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupItem", b =>
+                {
                     b.Navigation("Services");
                 });
 

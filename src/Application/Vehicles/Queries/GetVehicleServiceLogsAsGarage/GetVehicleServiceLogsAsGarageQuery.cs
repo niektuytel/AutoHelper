@@ -54,7 +54,7 @@ public class GetVehicleServiceLogsAsGarageQueryHandler : IRequestHandler<GetVehi
             query = query.Where(v => v.VehicleLicensePlate == request.LicensePlate);
         }
 
-        query.OrderByDescending(x => x.Created);
+        query.OrderBy(x => x.Date);
 
         var result = await _mapper
             .ProjectTo<VehicleServiceLogAsGarageDtoItem>(query)

@@ -32,12 +32,10 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
     const [isFocused, setIsFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [value, setValue] = useState("");
-    const [filters, setFilters] = useState<string[]>([]);
     const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDtoItem[]>([]);
-
-    //const { loading, garageServiceTypes } = useGarageServiceTypes(license_plate!);
     const useGarageClient = new GarageClient(process.env.PUBLIC_URL);
 
+    const [filters, setFilters] = useState<string[]>([]);
     useEffect(() => {
         if (queryParams.has("filters")) {
             const filters = queryParams.get("filters")?.split(",");
@@ -69,7 +67,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
 
         setValue(e.target.value);
         var data = await fetchGaragesData(e.target.value, filters);
-        setSuggestions(data?.items || []);
+        setSuggestions(data?.items ? data?.items : []);
 
         // Overwrite the cached data with the new data
         if (data?.items && data?.items?.length > 0)
@@ -93,7 +91,7 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
 
         // Refetch the data
         const data = await fetchGaragesData(value, filterValues);
-        setSuggestions(data?.items || []);
+        setSuggestions(data?.items ? data?.items : []);
         setFilters(filterValues);
 
         // Overwrite the cached data with the new data
@@ -162,22 +160,15 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 }}
             />
             <Box sx={{ height: 'fit-content', maxHeight: 'calc(2 * 40px)', display: "flex", overflowX: "auto", maxWidth: "100%" }}>
-                {/*{loading &&*/}
-                    <>
-                        <Skeleton variant="rounded" width="100%" height="32px" sx={{ mt: 1 }} />
-                    </>
-                    {/*// TODO: Uncomment this when the garage service types are ready*/}
-                    {/*//:*/}
-                    {/*//garageServiceTypes!.map(service =>*/}
-                    {/*//    <Chip*/}
-                    {/*//        key={service.id}*/}
-                    {/*//        label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}*/}
-                    {/*//        variant={filters.includes(String(service)) ? "filled" : "outlined"}*/}
-                    {/*//        sx={{ mr: 1, mt: 1 }}*/}
-                    {/*//        onClick={() => handleChipClick(String(service))}*/}
-                    {/*//    />*/}
-                    {/*//)*/}
-                {/*}*/}
+                {[GarageServiceType.Repair, GarageServiceType.Service, GarageServiceType.Inspection].map((service, index) =>
+                    <Chip
+                        key={`service.id:${index}`}
+                        label={t(`serviceTypes:${GarageServiceType[service]}.Filter`)}
+                        variant={filters.includes(String(service)) ? "filled" : "outlined"}
+                        sx={{ mr: 1, mt: 1 }}
+                        onClick={() => handleChipClick(String(service))}
+                    />
+                )}
             </Box>
         </Box>
     </>

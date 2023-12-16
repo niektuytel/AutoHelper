@@ -2,9 +2,9 @@
 
 
 export const DAYSINWEEK = [
-    "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
+    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
 ];
 
 export const DAYSINWEEKSHORT = [
-    "sun", "mon", "tue", "wed", "thu", "fri", "sat"
+    "mon", "tue", "wed", "thu", "fri", "sat", "sun"
 ];

@@ -137,6 +137,15 @@ public static class ConfigureServices
             UseProductionServices(app);
         }
 
+        // Initialise and seed database
+        using (var scope = app.Services.CreateScope())
+        {
+            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            initialiser.InitialiseAsync().Wait();
+            initialiser.SeedAsync().Wait();
+            initialiser.StartSyncTasksWhenEmpty().Wait();
+        }
+
         return app;
     }
 
@@ -145,13 +154,6 @@ public static class ConfigureServices
         app.UseDeveloperExceptionPage();
         app.UseMigrationsEndPoint();
 
-        // Initialise and seed database
-        using (var scope = app.Services.CreateScope())
-        {
-            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-            initialiser.InitialiseAsync().Wait();
-            initialiser.SeedAsync().Wait();
-        }
     }
 
     private static void UseProductionServices(WebApplication app)

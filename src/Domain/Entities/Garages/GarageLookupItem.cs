@@ -60,19 +60,20 @@ public class GarageLookupItem
     public string? ConversationContactWhatsappNumber { get; set; }
 
     [NotMapped]
-    public int[]? DaysOfWeek
+    public string[]? DaysOfWeek
     {
         get
         {
             if (string.IsNullOrEmpty(DaysOfWeekString))
             {
-                return new int[0];
+                return new string[0];
             }
-            return Array.ConvertAll(DaysOfWeekString.Split(','), int.Parse);
+
+            return DaysOfWeekString.Split(';');
         }
         set
         {
-            DaysOfWeekString = value == null ? "" : string.Join(",", value);
+            DaysOfWeekString = value == null ? "" : string.Join(";", value);
         }
     }
     public string DaysOfWeekString { get; set; } = "";

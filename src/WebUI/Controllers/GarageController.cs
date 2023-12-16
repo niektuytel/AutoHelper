@@ -14,8 +14,8 @@ using AutoHelper.Domain.Entities.Conversations;
 using WebUI.Models;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageLookups;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
+using AutoHelper.Application.Vehicles._DTOs;
 
 namespace AutoHelper.WebUI.Controllers;
 

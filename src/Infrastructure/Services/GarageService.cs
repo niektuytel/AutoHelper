@@ -207,10 +207,7 @@ internal class GarageService : IGarageService
         }
 
         item.Status = details.result.business_status;
-        item.DaysOfWeek = details.result.opening_hours?.periods != null ?
-            details.result.opening_hours?.periods!.Select(x => x.open.day).Distinct().ToArray()
-            :
-            null;
+        item.DaysOfWeek = details.result.opening_hours?.weekday_text;
         item.PhoneNumber = details.result.formatted_phone_number;
 
         if (details.result.geometry.location != null)

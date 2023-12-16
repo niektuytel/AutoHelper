@@ -1,6 +1,6 @@
 ﻿
 import { Box, Chip, Paper, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PlaceIcon from '@mui/icons-material/Place';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
@@ -26,6 +26,16 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const queryParams = new URLSearchParams(window.location.search);
+    const [filters, setFilters] = useState<string[]>([]);
+    useEffect(() => {
+        if (queryParams.has("filters")) {
+            const filters = queryParams.get("filters")?.split(",");
+            setFilters(filters || []);
+        }
+
+    }, [window.location.search]);
+
     // Local state for hover effect
     const [isHovered, setIsHovered] = React.useState(false);
 
@@ -44,6 +54,12 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
         navigate(`${ROUTES.GARAGE}/${garage.identifier}?licensePlate=${licensePlate}&lat=${lat}&lng=${lng}`, { state: { from: location } });
     };
 
+    const uniqueTypes = new Set();
+    const uniqueServices = garage.services?.filter(service => {
+        const isUnique = !uniqueTypes.has(service.type);
+        uniqueTypes.add(service.type);
+        return isUnique && service.type !== GarageServiceType.Other;
+    });
 
     return <>
         <Paper
@@ -77,7 +93,7 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                 <Box
                     style={{
                         display: "flex",
-                        flexDirection: "column", // keep this as 'column'
+                        flexDirection: "column",
                         alignItems: "flex-start",
                         width: "100%"
                     }}
@@ -85,10 +101,10 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                     <Box
                         style={{
                             display: "flex",
-                            flexDirection: "row", // Change this to 'row'
+                            flexDirection: "row",
                             alignItems: "center",
-                            justifyContent: "space-between", // Spread items apart
-                            width: "100%" // Ensure this inner container also takes up the full width
+                            justifyContent: "space-between",
+                            width: "100%"
                         }}
                     >
                         <Typography variant="h6">{garage.name}</Typography>
@@ -105,43 +121,23 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                         }
                     </Box>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
-                        <PlaceIcon fontSize='small'  /> {/*, color:"#E34133"*/}
+                        <PlaceIcon fontSize='small'  />
                         {`${garage?.address}, ${garage?.city} (${Math.round(garage.distanceInMeter! * 0.001)} km)`}
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <AccessTimeIcon fontSize='small' sx={{ mr: "4px" }} />
-                        {`${[...new Set(garage.daysOfWeek! || [])].map(dayIndex => t(DAYSINWEEKSHORT[dayIndex!]))}`}
+                        {`${[...new Set(garage.daysOfWeek?.filter(day => day.includes(': ')) || [])].map((day, dayIndex) => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
                     <Box>
-                        {garage.services && garage.services.map(service => service.type !== GarageServiceType.Other &&
+                        {uniqueServices?.map(service => (
                             <Chip
-                                key={service.id}
-                                label={service.title}
+                                key={`service.id:${service.id}`}
+                                label={t(`serviceTypes:${GarageServiceType[service.type!]}.Filter`)}
+                                variant={filters.includes(String(service.type)) ? "filled" : "outlined"}
                                 sx={{ mr: 1, mt: 1 }}
-                                variant="outlined"
                                 size="small"
                             />
-                        )}
-                        {/*{garage.hasPickupService === true &&*/}
-                        {/*    <Chip*/}
-                        {/*        variant="outlined"*/}
-                        {/*        color="primary"*/}
-                        {/*        size="small"*/}
-                        {/*        label={t('have the car picked up')}*/}
-                        {/*        icon={<ModeOfTravelIcon />}*/}
-                        {/*        sx={{ mr: "3px", mt: "3px" }}*/}
-                        {/*    />*/}
-                        {/*}*/}
-                        {/*{garage.hasReplacementTransportService === true &&*/}
-                        {/*    <Chip*/}
-                        {/*        variant="outlined"*/}
-                        {/*        color="default"*/}
-                        {/*        size="small"*/}
-                        {/*        label={t('replacement vehicle')}*/}
-                        {/*        icon={<PublishedWithChangesIcon />}*/}
-                        {/*        sx={{ mr: "3px", mt: "3px" }}*/}
-                        {/*    />*/}
-                        {/*}*/}
+                        ))}
                     </Box>
                 </Box>
             </Box>

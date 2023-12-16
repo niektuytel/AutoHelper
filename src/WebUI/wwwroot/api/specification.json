@@ -1573,62 +1573,6 @@
         }
       }
     },
-    "/api/Vehicle/GetRelatedServices/{licensePlate}": {
-      "get": {
-        "tags": [
-          "Vehicle"
-        ],
-        "operationId": "Vehicle_GetRelatedServices",
-        "parameters": [
-          {
-            "name": "licensePlate",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "xml": {
-                    "name": "ArrayOfGarageServiceType",
-                    "wrapped": true
-                  },
-                  "items": {
-                    "xml": {
-                      "name": "GarageServiceType"
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/GarageServiceType"
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/Vehicle/CreateServiceLog": {
       "post": {
         "tags": [
@@ -2079,10 +2023,9 @@
               "wrapped": true
             },
             "items": {
-              "type": "integer",
-              "format": "int32",
+              "type": "string",
               "xml": {
-                "name": "int"
+                "name": "string"
               }
             }
           },
@@ -3865,10 +3808,9 @@
               "wrapped": true
             },
             "items": {
-              "type": "integer",
-              "format": "int32",
+              "type": "string",
               "xml": {
-                "name": "int"
+                "name": "string"
               }
             }
           },
@@ -3879,11 +3821,11 @@
             },
             "items": {
               "xml": {
-                "name": "GarageLookupServiceItem"
+                "name": "GarageServiceDtoItem"
               },
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/GarageLookupServiceItem"
+                  "$ref": "#/components/schemas/GarageServiceDtoItem"
                 }
               ]
             }
@@ -3935,10 +3877,9 @@
               "wrapped": true
             },
             "items": {
-              "type": "integer",
-              "format": "int32",
+              "type": "string",
               "xml": {
-                "name": "int"
+                "name": "string"
               }
             }
           },
@@ -3949,11 +3890,11 @@
             },
             "items": {
               "xml": {
-                "name": "GarageLookupServiceItem"
+                "name": "GarageServiceDtoItem"
               },
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/GarageLookupServiceItem"
+                  "$ref": "#/components/schemas/GarageServiceDtoItem"
                 }
               ]
             }

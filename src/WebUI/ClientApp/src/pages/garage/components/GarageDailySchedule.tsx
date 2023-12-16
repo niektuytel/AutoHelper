@@ -16,13 +16,12 @@ import { DAYSINWEEK } from '../../../constants/days';
 import { useTranslation } from 'react-i18next';
 
 interface IProps {
-    openDaysOfWeek: number[] | undefined;
+    openDaysOfWeek: string[] | undefined;
 }
 
 export default ({ openDaysOfWeek }: IProps) => {
     const { t } = useTranslation();
 
-    // TODO: also show the time range for each day
     return (
         <Paper elevation={3} sx={{ marginTop: '16px', padding: 1 }}>
             <TableContainer>
@@ -37,18 +36,16 @@ export default ({ openDaysOfWeek }: IProps) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {DAYSINWEEK.map((day, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{t(day)}</TableCell>
-                                <TableCell>
-                                    {openDaysOfWeek ?
-                                        openDaysOfWeek.includes(index) ? t("Open") : t("Closed")
-                                        :
-                                        <Skeleton />
-                                    }
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {openDaysOfWeek?.map((day, index) => {
+                            const splitted = day.split(": ");
+                            const dayOfWeek = splitted[0];
+                            const hours = splitted[1];
+
+                            return <TableRow key={index}>
+                                <TableCell>{dayOfWeek}</TableCell>
+                                <TableCell>{hours}</TableCell>
+                            </TableRow>;
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

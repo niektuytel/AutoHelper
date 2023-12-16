@@ -137,7 +137,7 @@
   "ServiceLog.Verified.Title": "Garage heeft onderhoud bevestigt",
   "ServiceLog.Verified.Label": "Gecheckt",
   "ServiceLog.UnVerified.Title": "Garage kan het bevestigen via zijn account",
-  "ServiceLog.UnVerified.Label": "Ongeverifieerd",
+  "ServiceLog.UnVerified.Label": "Niet gecheckt",
 
   "VehiclePage.Title": "Zoek Garage",
   "VehiclePage.SubTitle": "voor onderhoud",
@@ -149,6 +149,8 @@
   "VehiclePage.SpecificationsCard.Source": "bron",
   "HomePage.Title": "Bekijk voertuig",
   "HomePage.SubTitle": "voor je onderhoud en informatie",
+  "SelectGaragePage.Title": "Voor een snelle afspraak",
+
 
   "GarageAccount.GarageLookup.Requried": "Selecteer u garage",
   "GarageAccount.Conversation.Title": "Direct Klantencontact",

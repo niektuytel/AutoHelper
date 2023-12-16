@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Box, Button, Container, Pagination, Paper, Skeleton } from "@mui/material";
+import { Box, Button, Container, Pagination, Paper, Skeleton, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
@@ -10,6 +10,7 @@ import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";
 import { PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
 import GarageSearchField from "./components/GarageSearchField";
+
 
 interface IProps {
 }
@@ -38,7 +39,15 @@ export default ({ }: IProps) => {
             <Box sx={{ marginBottom: "75px" }}>
                 <Box flexGrow={1}>
                     <Box sx={{ backgroundColor: COLORS.BLUE, borderBottomLeftRadius: "5px", borderBottomRightRadius: "5px", p: 1 }}>
-                        <Box sx={{ height: "90px"}}>
+                        <Box sx={{
+                            height: "90px",
+                            display: 'flex',     
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <Typography variant="h4" sx={{ color: "white", fontFamily: "'Nunito', sans-serif" }}>
+                                {t("SelectGaragePage.Title")}
+                            </Typography>
                         </Box>
                         <Paper
                             elevation={2}

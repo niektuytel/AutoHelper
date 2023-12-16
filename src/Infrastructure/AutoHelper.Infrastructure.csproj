@@ -38,10 +38,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations\" />
+        <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
     </ItemGroup>
 
 </Project>

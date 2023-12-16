@@ -28,7 +28,7 @@ import QuestionMark from '@mui/icons-material/QuestionMark';
 import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceDtoItem, GarageServiceType, SelectedService } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType, SelectedService, VehicleType } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
 import { getDefaultGarageServicesInfo } from "../../garage-account/defaultGarageService";
 
@@ -40,24 +40,25 @@ interface IProps {
     selectedItem: any | null;
     setSelectedItem: (serviceType: any) => void;
     addCartItem: (selectedService: SelectedService) => void;
-    hasQuestionItem: (serviceType: GarageServiceType) => void;
+    hasQuestionItem: (serviceType: GarageServiceDtoItem) => void;
 }
 
 export default ({ service, showConversationActions, selectedItem, setSelectedItem, addCartItem, hasQuestionItem }: IProps) => {
     const { t } = useTranslation('serviceTypes');
+    const theme = useTheme();
 
-    //const defaultAvailableServices = getDefaultGarageServicesInfo(t);
-    //const service = defaultAvailableServices.find(item => item.type === serviceType) as any;
+    const typeTitle = t(`serviceTypes:${GarageServiceType[service.type!]}.Title`);
+    const vehicleTypeTitle = t(`serviceTypes:${VehicleType[service.vehicleType!]}.Title`);
+    const title = service.title ? service.title : typeTitle;
+    const description = service.description ? service.description : t(`serviceTypes:${GarageServiceType[service.type!]}.Description`);
 
-    if (!service) {
-        return <></>;
-    }
 
     return <>
         <Card
             style={{
                 marginBottom: "10px",
                 padding: "8px",
+                cursor: "pointer",
                 border: selectedItem === service ? `1px solid black` : `1px solid ${COLORS.BORDER_GRAY}`
             }}
             onClick={() => setSelectedItem(service)}
@@ -69,7 +70,7 @@ export default ({ service, showConversationActions, selectedItem, setSelectedIte
                             onClick={(e) => {
                                 e.stopPropagation();
                                 //hasQuestionItem(serviceType);
-                                // TODO: open conersation chat
+                                // TODO: open conversation chat
                             }}
                         >
                             <HelpCenterOutlinedIcon />
@@ -78,7 +79,7 @@ export default ({ service, showConversationActions, selectedItem, setSelectedIte
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                // TODO: open conersation chat
+                                // TODO: open conversation chat
                                 //const selectedService: SelectedService = new SelectedService({
                                 //    relatedServiceType: serviceType,
                                 //    relatedServiceTypeTitle: service.title
@@ -91,15 +92,17 @@ export default ({ service, showConversationActions, selectedItem, setSelectedIte
                         </IconButton>
                     </>
                 }
-                title={service.title}
-                titleTypographyProps={{ variant: "body1" }}
+                title={`${title} (${vehicleTypeTitle})`}
+                titleTypographyProps={{ variant: "body1", fontWeight: 'bold' }} 
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />
             <CardContent style={{ paddingTop: "4px", paddingBottom: "4px", paddingLeft: "4px" }}>
-                <Typography variant="caption" color="textSecondary">
-                    {service.description}
-                </Typography>
+                <Box display="flex" alignItems="center">
+                    {description}
+                </Box>
             </CardContent>
+
         </Card>
+
     </>;
 }

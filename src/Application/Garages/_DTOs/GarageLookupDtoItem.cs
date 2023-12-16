@@ -28,9 +28,9 @@ public class GarageLookupDtoItem : IMapFrom<GarageLookupItem>
 
     public string ImageThumbnail { get; set; }
 
-    public int[] DaysOfWeek { get; set; }
+    public string[] DaysOfWeek { get; set; }
 
-    public ICollection<GarageLookupServiceItem> Services { get; set; }
+    public IEnumerable<GarageServiceDtoItem> Services { get; set; }
 
     public string? PhoneNumber { get; set; }
 

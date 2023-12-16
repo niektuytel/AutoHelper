@@ -23,7 +23,6 @@ using YamlDotNet.Core.Tokens;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using System;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleRelatedServices;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
 namespace AutoHelper.WebUI.Controllers;
@@ -72,15 +71,6 @@ public class VehicleController : ApiControllerBase
     public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount=5)
     {
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
-    }
-
-    [HttpGet($"{nameof(GetRelatedServices)}/{{licensePlate}}")]
-    [ProducesResponseType(typeof(IEnumerable<GarageServiceType>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceType>> GetRelatedServices([FromRoute] string licensePlate)
-    {
-        var query = new GetVehicleRelatedServicesQuery(licensePlate);
-        return await Mediator.Send(query);
     }
 
     [HttpPost($"{nameof(CreateServiceLog)}")]

@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // local
-import { GarageLookupDtoItem, GarageServiceDtoItem, GarageServiceType, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
+import { GarageLookupDtoItem, GarageServiceDtoItem, PaginatedListOfGarageLookupBriefDto, SelectedService } from "../../app/web-api-client";
 import useGarage from "./useGarage";
 import Header from "../../components/header/Header";
 import GarageServiceInfoCard from "./components/GarageServiceInfoCard";
@@ -28,7 +28,7 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const dispatch = useDispatch();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [relatedServiceTypes, setRelatedServiceTypes] = useState<GarageServiceType[]>([]);
+    const [relatedServiceTypes, setRelatedServiceTypes] = useState<GarageServiceDtoItem[]>([]);
     const [selectedItem, setSelectedItem] = useState<GarageServiceDtoItem | null>(null);
     const queryParams = new URLSearchParams(location.search);
     const { identifier } = useParams();
@@ -39,18 +39,39 @@ export default ({ }: IProps) => {
     const { loading, garageLookup, fetchGarageLookupByPlate } = useGarage(identifier!, licensePlate);
     const services: SelectedService[] = useSelector((state: any) => state.storedServices);
 
-    const hasQuestionItem = (serviceType: GarageServiceType) => {
+    const hasQuestionItem = (serviceType: GarageServiceDtoItem) => {
         setRelatedServiceTypes([ serviceType ]);
         setDialogOpen(true);
     };
+
+    // TODO: implement when using converstations
+    const tryAddCartItem = (service: SelectedService) => {
+        //service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
+        //service.relatedGarageLookupName = garageLookup?.name;
+
+        //if (services.some(item => (
+        //    item.relatedGarageLookupIdentifier === service.relatedGarageLookupIdentifier &&
+        //    item.relatedServiceType === service.relatedServiceType
+        //))) {
+        //    dispatch(showOnError(t("Cart item already exist")));
+        //    return;
+        //}
+
+        //service.conversationContactEmail = garageLookup?.conversationContactEmail;
+        //service.conversationContactWhatsappNumber = garageLookup?.conversationContactWhatsappNumber;
+        //service.vehicleLicensePlate = licensePlate!;
+        //service.vehicleLatitude = lat!;
+        //service.vehicleLongitude = lng!;
+
+        //dispatch(addService(service));
+    }
 
     if (!loading && garageLookup?.garageId)
     {
         // TODO: handle garage specific page
     }
-
     const imageUrl = `http://127.0.0.1:10000/devstoreaccount1/garage-images/${garageLookup?.image}`;
-    const showConversation = garageLookup?.conversationContactEmail !== undefined || garageLookup?.conversationContactWhatsappNumber !== null;
+    const showConversation = garageLookup?.conversationContactEmail !== null || garageLookup?.conversationContactWhatsappNumber !== null;
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
         <Container sx={{ mb: 5 }}>
@@ -85,13 +106,24 @@ export default ({ }: IProps) => {
                             </IconButton>
                         </Tooltip>
                     </Typography>
-
-                    {loading &&
+                    {loading ?
                         <>
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }}  />
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
                             <Skeleton variant="rounded" width="100%" height="90px" sx={{ mb:2 }} />
                         </>
+                        :
+                        garageLookup?.services?.map((item) =>
+                            <GarageServiceInfoCard
+                                key={`service-card-${item.id}`}
+                                service={item}
+                                showConversationActions={showConversation}
+                                selectedItem={selectedItem}
+                                setSelectedItem={setSelectedItem}
+                                addCartItem={tryAddCartItem}
+                                hasQuestionItem={hasQuestionItem}
+                            />
+                        )
                     }
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -104,4 +136,20 @@ export default ({ }: IProps) => {
         </Container>
     </>;
 
+    //{garageLookup && relatedServiceTypes &&
+    //    <GarageContactDialog
+    //        services={[new SelectedService({
+    //            relatedServiceType: relatedServiceTypes![0],
+    //            relatedGarageLookupIdentifier: garageLookup?.identifier!,
+    //            relatedGarageLookupName: garageLookup?.name,
+    //            conversationContactEmail: garageLookup?.conversationContactEmail,
+    //            conversationContactWhatsappNumber: garageLookup?.conversationContactWhatsappNumber,
+    //            vehicleLicensePlate: licensePlate!,
+    //            vehicleLatitude: lat!,
+    //            vehicleLongitude: lng!
+    //        })]}
+    //        open={dialogOpen}
+    //        onClose={() => setDialogOpen(false)}
+    //    />
+    //}
 }

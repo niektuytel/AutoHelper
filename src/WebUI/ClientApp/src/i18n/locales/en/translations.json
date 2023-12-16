@@ -146,6 +146,8 @@
   "VehiclePage.SpecificationsCard.Source": "source",
   "HomePage.Title": "Search Vehicle",
   "HomePage.SubTitle": "for services and information",
+  "SelectGaragePage.Title": "Automate Your Maintenancelogbook",
+
 
   "GarageAccount.GarageLookup.Requried": "Select your garage",
   "GarageAccount.Conversation.Title": "Direct Customer Contact",

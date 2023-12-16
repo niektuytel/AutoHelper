@@ -11,6 +11,8 @@ using WebUI.Extensions;
 using Microsoft.Extensions.Configuration;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMessagingServices(builder.Configuration);

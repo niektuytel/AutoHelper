@@ -4,12 +4,14 @@ using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities.Garages;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Index.HPRtree;
+using MediatR;
+using AutoMapper;
 
 namespace AutoHelper.Application.Garages._DTOs;
 
 public class GarageLookupBriefDto
 {
-    public GarageLookupBriefDto(GarageLookupItem garageLookupItem, double distanceInMeters)
+    public GarageLookupBriefDto(GarageLookupItem garageLookupItem, double distanceInMeters, IMapper _mapper)
     {
         GarageId = garageLookupItem.GarageId;
         Identifier = garageLookupItem.Identifier;
@@ -17,11 +19,11 @@ public class GarageLookupBriefDto
         Address = garageLookupItem.Address;
         City = garageLookupItem.City;
         Website = garageLookupItem.Website;
-        DaysOfWeek = garageLookupItem.DaysOfWeek == null ? new int[0] : garageLookupItem.DaysOfWeek;
-        Services = garageLookupItem.Services == null ? new List<GarageLookupServiceItem>() : garageLookupItem.Services;
-        DistanceInMeter = (int)distanceInMeters;
+        DaysOfWeek = garageLookupItem.DaysOfWeek == null ? new string[0] : garageLookupItem.DaysOfWeek;
+        Services = _mapper.Map<IEnumerable<GarageServiceDtoItem>>(garageLookupItem.Services) ?? new List<GarageServiceDtoItem>();
         Rating = garageLookupItem.Rating;
         UserRatingsTotal = garageLookupItem.UserRatingsTotal;
+        DistanceInMeter = (int)distanceInMeters;
     }
 
     public Guid? GarageId { get; set; }
@@ -36,9 +38,9 @@ public class GarageLookupBriefDto
 
     public string? Website { get; set; }
 
-    public int[] DaysOfWeek { get; set; }
+    public string[] DaysOfWeek { get; set; }
 
-    public ICollection<GarageLookupServiceItem> Services { get; set; }
+    public IEnumerable<GarageServiceDtoItem> Services { get; set; }
 
     public float? Rating { get; set; }
 

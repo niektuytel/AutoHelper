@@ -1,7 +1,11 @@
-﻿using AutoHelper.Domain.Entities;
+﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Infrastructure.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,13 +18,15 @@ public class ApplicationDbContextInitialiser
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IMediator _mediator;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMediator mediator)
     {
         _logger = logger;
         _context = context;
         _userManager = userManager;
         _roleManager = roleManager;
+        _mediator = mediator;
     }
 
     public async Task InitialiseAsync()
@@ -46,6 +52,14 @@ public class ApplicationDbContextInitialiser
             if (!_context.Database.EnsureCreated())
             {
                 await TrySeedAsync();
+            }
+
+            // Default (development) garages
+            var testGarageLookup = GetTestGarageLookup();
+            if (_context.GarageLookups.FirstOrDefault(x => x.Name == testGarageLookup.Name) == null)
+            {
+                _context.GarageLookups.Add(testGarageLookup);
+                await _context.SaveChangesAsync();
             }
         }
         catch (Exception ex)
@@ -99,14 +113,6 @@ public class ApplicationDbContextInitialiser
             }
         }
 
-        // Default (development) garages
-        var testGarageLookup = GetTestGarageLookup();
-        if (!_context.GarageLookups.Any())
-        {
-            _context.GarageLookups.Add(testGarageLookup);
-            await _context.SaveChangesAsync();
-        }
-
     }
 
     /// <summary>
@@ -117,9 +123,9 @@ public class ApplicationDbContextInitialiser
         var random = new Random();
         return new GarageLookupItem
         {
-            Identifier = "Garage_" + random.Next(1000, 9999),
+            Identifier = "Garage_1337",
             GarageId = null, // Assuming GarageId is not set initially
-            Name = "Garage " + random.Next(1, 101),
+            Name = "Garage 1337",
             Address = "1234 Test Street",
             City = "TestCity",
             Location = null, // Assuming location is not known initially
@@ -140,6 +146,20 @@ public class ApplicationDbContextInitialiser
             LastModified = DateTime.Now,
             LastModifiedBy = "System"
         };
+    }
+
+    public async Task StartSyncTasksWhenEmpty()
+    {
+        // Insert All when empty
+        var vehicleCount = await _context.VehicleLookups.CountAsync();
+        if (vehicleCount == 0)
+        {
+            var command = new UpsertVehicleLookupsCommand();
+            var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
+            var title = $"{nameof(StartSyncTasksWhenEmpty)} lookups";
+            _mediator.Enqueue(queue, title, command);
+        }
+
     }
 
 

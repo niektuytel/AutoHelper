@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
@@ -23,15 +24,18 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageLookup;
 
 public record GetGarageLookupQuery : IRequest<GarageLookupDtoItem>
 {
-    public GetGarageLookupQuery(string identifier, string? licensePlate = null)
+    public GetGarageLookupQuery(string garageLookupIdentifier, string? licensePlate = null)
     {
-        Identifier = identifier;
+        GarageLookupIdentifier = garageLookupIdentifier;
         LicensePlate = licensePlate;
     }
 
-    public string Identifier { get; private set; }
+    public string? LicensePlate { get; internal set; }
 
-    public string? LicensePlate { get; private set; }
+    public string GarageLookupIdentifier { get; internal set; }
+
+    [JsonIgnore]
+    public GarageLookupItem? GarageLookup { get; internal set; }
 }
 
 public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupQuery, GarageLookupDtoItem>
@@ -51,17 +55,23 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupQue
 
     public async Task<GarageLookupDtoItem> Handle(GetGarageLookupQuery request, CancellationToken cancellationToken)
     {
-        var lookup = await _context.GarageLookups
-            .Include(x => x.Services)
-            .FirstOrDefaultAsync(x => x.Identifier == request.Identifier);
+        var response = _mapper.Map<GarageLookupDtoItem>(request.GarageLookup);
+        response.Services = UpdateGarageServices(request);
+        response.Services.OrderBy(x => x.VehicleType);
 
-        if (lookup == null)
+        return response;
+    }
+
+    private IEnumerable<GarageServiceDtoItem> UpdateGarageServices(GetGarageLookupQuery request)
+    {
+        if (request.GarageLookup!.GarageId != null)
         {
-            throw new NotFoundException(nameof(GarageLookupDtoItem), request.Identifier);
+            var entities = _context.GarageServices
+                .Where(x => x.GarageId == request.GarageLookup.GarageId);
+            return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
         }
 
-        var response = _mapper.Map<GarageLookupDtoItem>(lookup);
-        return response;
+        return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(request.GarageLookup.Services) ?? new List<GarageServiceDtoItem>();
     }
 
 }

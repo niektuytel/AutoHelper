@@ -9,6 +9,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages._DTOs;
+using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -73,12 +74,14 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
     {
         var queryable = _context.GarageLookups
             .AsNoTracking()
+            .Include(x => x.Services)
             .Where(x => x.Location != null
                         && !string.IsNullOrEmpty(x.DaysOfWeekString)
                         && (!string.IsNullOrEmpty(x.Website))
             );
 
         queryable = WhenHasRelatedGarageName(queryable, request.AutoCompleteOnGarageName);
+        queryable = await WhenHasSelectedFilters(queryable, request.Filters);
 
         // (filter + order by) distance
         var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -92,8 +95,14 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         var pageRecords = queryable
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(item => new GarageLookupBriefDto(item, item.Location!.Distance(userLocation)))
+            .Select(item => new GarageLookupBriefDto(item, item.Location!.Distance(userLocation), _mapper))
             .ToList();
+
+        // Update the services for each garage
+        foreach (var item in pageRecords)
+        {
+            item.Services = UpdateGarageServices(item);
+        }
 
         var pagedResults = new PaginatedList<GarageLookupBriefDto>(
             pageRecords,
@@ -116,6 +125,40 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         queryable = queryable.Where(x => x.Name.ToLower().Contains(value));
 
         return queryable;
+    }
+
+    private async Task<IQueryable<GarageLookupItem>> WhenHasSelectedFilters(IQueryable<GarageLookupItem> queryable, string[]? filters)
+    {
+        // Remove any null values from the filters array
+        filters = filters?.Where(f => f != null).ToArray();
+        if (filters?.Any() != true)
+        {
+            return queryable;
+        }
+
+        // All filters should match for the item to be included
+        foreach (var filter in filters)
+        {
+            queryable = queryable.Where(x => 
+                x.Services.Any(y => ((int)y.Type).ToString() == filter)
+            );
+        }
+
+        return queryable;
+    }
+
+
+    // TODO: BUG, What if filter is defined we Get the services from the database after de filtering option is applied
+    private IEnumerable<GarageServiceDtoItem> UpdateGarageServices(GarageLookupBriefDto request)
+    {
+        if (request.GarageId != null)
+        {
+            var entities = _context.GarageServices
+                .Where(x => x.GarageId == request.GarageId);
+            return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
+        }
+
+        return request.Services;
     }
 
 }

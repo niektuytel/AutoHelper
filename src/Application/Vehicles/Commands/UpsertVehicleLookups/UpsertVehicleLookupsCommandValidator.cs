@@ -18,10 +18,7 @@ public class UpsertVehicleLookupsCommandValidator : AbstractValidator<UpsertVehi
         // Validation for EndRowIndex
         RuleFor(command => command.EndRowIndex)
             .GreaterThanOrEqualTo(UpsertVehicleTimelinesCommand.DefaultEndingRowIndex)
-            .WithMessage("End row index must be -1 or greater.")
-            .When(command => command.EndRowIndex != UpsertVehicleTimelinesCommand.DefaultEndingRowIndex)
-            .GreaterThanOrEqualTo(command => command.StartRowIndex)
-            .WithMessage("End row index must be greater than or equal to start row index.");
+            .WithMessage("End row index must be -1 or greater.");
 
         // Validation for MaxInsertAmount
         RuleFor(command => command.MaxInsertAmount)
