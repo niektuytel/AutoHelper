@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
@@ -150,7 +151,6 @@ public class ApplicationDbContextInitialiser
 
     public async Task StartSyncTasksWhenEmpty()
     {
-        // Insert All when empty
         var vehicleCount = await _context.VehicleLookups.CountAsync();
         if (vehicleCount == 0)
         {
@@ -160,6 +160,14 @@ public class ApplicationDbContextInitialiser
             _mediator.Enqueue(queue, title, command);
         }
 
+        var garageCount = await _context.GarageLookups.CountAsync();
+        if (garageCount == 0)
+        {
+            var command = new UpsertGarageLookupsCommand(0, 200);
+            var queue = $"{nameof(UpsertGarageLookupsCommand)}";
+            var title = $"{nameof(StartSyncTasksWhenEmpty)} lookups";
+            _mediator.Enqueue(queue, title, command);
+        }
     }
 
 
