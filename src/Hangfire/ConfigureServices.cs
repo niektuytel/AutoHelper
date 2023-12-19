@@ -61,7 +61,7 @@ public static class ConfigureServices
         configuration.UseSerializerSettings(jsonSettings);
     }
 
-    public static void UseHangfireServices(this WebApplication app, IServiceScope scope, IHostEnvironment env)
+    public static void UseHangfireServices(this WebApplication app, IServiceScope scope)
     {
         //// define that we want to use batches
         //GlobalConfiguration.Configuration.UseBatches();
@@ -76,7 +76,7 @@ public static class ConfigureServices
 
         var options = new DashboardOptions
         {
-            Authorization = new[] { new HangfireDashboardAuthFilter(env) }
+            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
         };
 
         app.UseHangfireDashboard("/hangfire", options);
