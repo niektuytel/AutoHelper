@@ -22,11 +22,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="appsettings.json" />
+      <None Remove="appsettings.IntegrationTests.json" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="appsettings.json">
+      <Content Include="appsettings.IntegrationTests.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
