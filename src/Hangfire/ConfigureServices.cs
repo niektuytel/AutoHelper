@@ -17,6 +17,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+using Microsoft.Extensions.Hosting;
+using Hangfire.Dashboard;
+using System.Net;
 
 namespace AutoHelper.Hangfire;
 
@@ -58,17 +61,25 @@ public static class ConfigureServices
         configuration.UseSerializerSettings(jsonSettings);
     }
 
-    public static void UseHangfireServices(this WebApplication app, IServiceScope scope)
+    public static void UseHangfireServices(this WebApplication app, IServiceScope scope, IHostEnvironment env)
     {
         //// define that we want to use batches
         //GlobalConfiguration.Configuration.UseBatches();
 
-        // Migrate and Update the database
-        var context = scope.ServiceProvider.GetRequiredService<HangfireDbContext>();
-        var created = context.Database.EnsureCreated();
-        context.Database.Migrate();
+        if(app.Environment.IsDevelopment())
+        {
+            // Migrate and Update the database
+            var context = scope.ServiceProvider.GetRequiredService<HangfireDbContext>();
+            var created = context.Database.EnsureCreated();
+            context.Database.Migrate();
+        }
 
-        app.UseHangfireDashboard();
+        var options = new DashboardOptions
+        {
+            Authorization = new[] { new HangfireDashboardAuthFilter(env) }
+        };
+
+        app.UseHangfireDashboard("/hangfire", options);
     }
 
 }

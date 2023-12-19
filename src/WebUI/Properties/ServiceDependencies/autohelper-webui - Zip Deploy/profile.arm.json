@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "AutoHelperWebUI20231218200431",
+      "defaultValue": "autohelper-webui",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }

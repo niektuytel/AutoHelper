@@ -143,7 +143,7 @@ public static class ConfigureServices
             var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
             initialiser.InitialiseAsync().Wait();
             initialiser.SeedAsync().Wait();
-            initialiser.StartSyncTasksWhenEmpty().Wait();
+            //initialiser.StartSyncTasksWhenEmpty().Wait();
         }
 
         return app;
