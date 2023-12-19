@@ -22,7 +22,7 @@ import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
 import theme from './constants/theme';
 import Garage from './pages/garage/Garage';
-import GarageServiceLogs from './pages/garage-account/servicelogs/GarageServiceLogs';
+import GarageServiceLogs from './pages/garage-account/servicelogs/garageservicelogs';
 import HomePage from './pages/home/HomePage';
 
 export default () => {
