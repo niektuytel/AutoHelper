@@ -3,13 +3,15 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <IsPackable>true</IsPackable>
+        <SpaRoot>ClientApp\</SpaRoot>
+        <SpaProxyServerUrl>https://localhost:44447</SpaProxyServerUrl>
+        <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+        <ImplicitUsings>enable</ImplicitUsings>
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <IsPackable>false</IsPackable>
-        <SpaRoot>ClientApp\</SpaRoot>
         <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
     <ItemGroup>
@@ -48,45 +50,9 @@
 
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
-        <Compile Remove="ClientApp\src\pages\garage\agenda\**" />
-        <Compile Remove="ClientApp\src\pages\garage\car-service-book\**" />
-        <Compile Remove="ClientApp\src\pages\garage\overview\**" />
         <Content Remove="$(SpaRoot)**" />
-        <Content Remove="ClientApp\src\pages\garage\agenda\**" />
-        <Content Remove="ClientApp\src\pages\garage\car-service-book\**" />
-        <Content Remove="ClientApp\src\pages\garage\overview\**" />
-        <EmbeddedResource Remove="ClientApp\src\pages\garage\agenda\**" />
-        <EmbeddedResource Remove="ClientApp\src\pages\garage\car-service-book\**" />
-        <EmbeddedResource Remove="ClientApp\src\pages\garage\overview\**" />
         <None Remove="$(SpaRoot)**" />
-        <None Remove="ClientApp\src\pages\garage\agenda\**" />
-        <None Remove="ClientApp\src\pages\garage\car-service-book\**" />
-        <None Remove="ClientApp\src\pages\garage\overview\**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Controllers\GarageRegisterController.cs" />
-      <Compile Remove="Controllers\GarageSearchController.cs" />
-      <Compile Remove="Controllers\TodoItemsController.cs" />
-      <Compile Remove="Controllers\TodoListsController.cs" />
-      <Compile Remove="Controllers\WeatherForecastController.cs" />
-      <Compile Remove="Services\IRDWService.cs" />
-      <Compile Remove="Services\IVehicleInformationService.cs" />
-      <Compile Remove="Services\RDWService.cs" />
-      <Compile Remove="Services\VehicleInformationService.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="ClientApp\src\components\ProtectedRoute.tsx" />
-      <None Remove="ClientApp\src\pages\garage-account\servicelogs\components\GarageServiceLogDialog.tsx" />
-      <None Remove="ClientApp\src\pages\garage-account\servicelogs\components\GarageServicesCollectionCard.tsx" />
-      <None Remove="ClientApp\src\pages\garage\agenda\GarageAgenda.tsx" />
-      <None Remove="ClientApp\src\pages\garage\car-service-book\CarServiceBook.tsx" />
-      <None Remove="ClientApp\src\pages\garage\overview\GarageOverview.tsx" />
-      <None Remove="ClientApp\src\pages\select-vehicle\components\NavSection.tsx" />
-      <None Remove="ClientApp\src\pages\select-vehicle\components\VehicleHeaderBar.tsx" />
-      <None Remove="ClientApp\src\pages\select-vehicle\SelectVehicleStyle.ts" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -103,7 +69,7 @@
     <PropertyGroup>
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
-    
+
     <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
         <Exec ConsoleToMSBuild="true" ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net70) run /variables:Configuration=$(Configuration)">
             <Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
@@ -112,16 +78,6 @@
 
         <Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
         <Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
-    </Target>
-
-    <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
-        <!-- Ensure Node.js is installed -->
-        <Exec Command="node --version" ContinueOnError="true">
-            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-        </Exec>
-        <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-        <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-        <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
     </Target>
 
     <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
@@ -139,4 +95,5 @@
             </ResolvedFileToPublish>
         </ItemGroup>
     </Target>
+    
 </Project>
