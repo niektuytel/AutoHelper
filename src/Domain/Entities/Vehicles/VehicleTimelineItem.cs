@@ -19,7 +19,6 @@ public class VehicleTimelineItem: BaseEntity
     /// <summary>
     /// Only defined if the timeline item is related to a service log item
     /// </summary>
-    [Required]
     public Guid? VehicleServiceLogId { get; set; }
 
     [Required]
