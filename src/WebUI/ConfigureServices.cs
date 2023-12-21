@@ -120,21 +120,17 @@ public static class ConfigureServices
         return services;
     }
 
-
-
-
-
     public static WebApplication UseWebUIServices(this WebApplication app)
     {
-        UseCommonWebUIServices(app);
-
         if (app.Environment.IsDevelopment())
         {
-            UseDevelopmentServices(app);
+            app.UseDeveloperExceptionPage();
+            app.UseMigrationsEndPoint();
         }
         else
         {
-            UseProductionServices(app);
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
         }
 
         // Initialise and seed database
@@ -146,35 +142,31 @@ public static class ConfigureServices
             //initialiser.StartSyncTasksWhenEmpty().Wait();
         }
 
-        return app;
-    }
-
-    private static void UseDevelopmentServices(WebApplication app)
-    {
-        app.UseDeveloperExceptionPage();
-        app.UseMigrationsEndPoint();
-
-    }
-
-    private static void UseProductionServices(WebApplication app)
-    {
-        app.UseExceptionHandler("/Error");
-        app.UseHsts();
-    }
-
-    private static void UseCommonWebUIServices(WebApplication app)
-    {
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-
         if (!app.Environment.IsDevelopment())
         {
             app.UseSpaStaticFiles();
         }
 
         UseOpenApi(app);
-        UseRoutingAndAuth(app);
-        UseSpaServices(app);
+
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseHealthChecks("/health");
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+        app.UseSpa(spa =>
+        {
+            spa.Options.SourcePath = "ClientApp";
+            if (app.Environment.IsDevelopment())
+            {
+                spa.UseReactDevelopmentServer(npmScript: "start");
+            }
+        });
+
+        return app;
     }
 
     private static void UseOpenApi(WebApplication app)
@@ -202,25 +194,5 @@ public static class ConfigureServices
         });
     }
 
-    private static void UseRoutingAndAuth(WebApplication app)
-    {
-        app.UseRouting();
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.UseHealthChecks("/health");
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
-    }
-
-    private static void UseSpaServices(WebApplication app)
-    {
-        app.UseSpa(spa =>
-        {
-            spa.Options.SourcePath = "ClientApp";
-            if (app.Environment.IsDevelopment())
-            {
-                spa.UseReactDevelopmentServer(npmScript: "start");
-            }
-        });
-    }
 }
 
