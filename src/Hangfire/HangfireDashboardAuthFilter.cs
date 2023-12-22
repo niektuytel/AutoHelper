@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire.Dashboard;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
 namespace AutoHelper.Hangfire;
@@ -21,29 +23,31 @@ public class HangfireDashboardAuthFilter : IDashboardAuthorizationFilter
 
     public bool Authorize(DashboardContext context)
     {
-        // Skip authorization if environment is Development
-        if (_env.IsDevelopment())
-        {
-            return true;
-        }
+        return true;
 
-        var httpContext = context.GetHttpContext();
-        string authHeader = httpContext.Request.Headers["Authorization"];
+        //// Skip authorization if environment is Development
+        //if (_env.IsDevelopment())
+        //{
+        //    return true;
+        //}
 
-        if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Basic "))
-        {
-            return false;
-        }
+        //var httpContext = context.GetHttpContext();
+        //string authHeader = httpContext.Request.Headers["Authorization"];
+        //var user = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Basic "))
+        //{
+        //    return false;
+        //}
 
-        string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
-        var encoding = Encoding.GetEncoding("iso-8859-1");
-        string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
+        //string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
+        //var encoding = Encoding.GetEncoding("iso-8859-1");
+        //string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
 
-        int separatorIndex = usernamePassword.IndexOf(':');
+        //int separatorIndex = usernamePassword.IndexOf(':');
 
-        var username = usernamePassword.Substring(0, separatorIndex);
-        var password = usernamePassword.Substring(separatorIndex + 1);
+        //var username = usernamePassword.Substring(0, separatorIndex);
+        //var password = usernamePassword.Substring(separatorIndex + 1);
 
-        return username == RequiredUsername && password == RequiredPassword;
+        //return username == RequiredUsername && password == RequiredPassword;
     }
 }

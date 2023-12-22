@@ -46,10 +46,10 @@ public static class ConfigureServices
             options.Filters.Add<ApiExceptionFilterAttribute>())
                 .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 
-        services.AddSpaStaticFiles(configuration =>
-        {
-            configuration.RootPath = "ClientApp/build";  // In production, the React files will be served from this directory
-        });
+        //services.AddSpaStaticFiles(configuration =>
+        //{
+        //    configuration.RootPath = "ClientApp/build";  // In production, the React files will be served from this directory
+        //});
 
         services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
@@ -144,10 +144,10 @@ public static class ConfigureServices
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        if (!app.Environment.IsDevelopment())
-        {
-            app.UseSpaStaticFiles();
-        }
+        //if (!app.Environment.IsDevelopment())
+        //{
+        //    app.UseSpaStaticFiles();
+        //}
 
         UseOpenApi(app);
 
@@ -157,14 +157,16 @@ public static class ConfigureServices
         app.UseHealthChecks("/health");
         app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-        app.UseSpa(spa =>
-        {
-            spa.Options.SourcePath = "ClientApp";
-            if (app.Environment.IsDevelopment())
-            {
-                spa.UseReactDevelopmentServer(npmScript: "start");
-            }
-        });
+        //app.UseSpa(spa =>
+        //{
+        //    spa.Options.SourcePath = "ClientApp";
+        //    if (app.Environment.IsDevelopment())
+        //    {
+        //        spa.UseReactDevelopmentServer(npmScript: "start");
+        //    }
+        //});
+
+        app.MapFallbackToFile("index.html");
 
         return app;
     }
