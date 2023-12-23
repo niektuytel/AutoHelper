@@ -72,12 +72,12 @@ export default () => {
                             <AuthCallback />
                         </>
                     } />{/*TODO: Maybe able to remove???*/}
-                    <Route path="*" element={
-                        <>
-                            <Header showStaticDrawer={showStaticDrawer} />
-                            <NotFoundPage />
-                        </>
-                    } />
+                    {/*<Route path="*" element={*/}
+                    {/*    <>*/}
+                    {/*        <Header showStaticDrawer={showStaticDrawer} />*/}
+                    {/*        <NotFoundPage />*/}
+                    {/*    </>*/}
+                    {/*} />*/}
                     <Route path='/' element={<Navigate to="/select-vehicle" />} />
                     <Route path={`${ROUTES.SELECT_VEHICLE}`} element={
                         <>

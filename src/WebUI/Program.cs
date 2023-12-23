@@ -7,7 +7,6 @@ using AutoHelper.Hangfire;
 using AutoHelper.Whatsapp;
 using Hangfire;
 using MediatR;
-using WebUI.Extensions;
 using Microsoft.Extensions.Configuration;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;

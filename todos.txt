@@ -1,5 +1,7 @@
 <h1>AutoHelper: BUGS</h1>
 - Login does all automatic choose previous logged in account, we need to decide which account we want to use
+- Hangfire is not accesable on production 
+- Use Bicep for ARM templates
 
 <h1>AutoHelper: THINKS ABOUT</h1>
 - 
