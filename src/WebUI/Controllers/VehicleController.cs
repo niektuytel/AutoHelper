@@ -17,7 +17,6 @@ using AutoHelper.Hangfire.MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using WebUI.Extensions;
 using WebUI.Models;
 using YamlDotNet.Core.Tokens;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;

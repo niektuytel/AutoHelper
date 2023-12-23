@@ -19,7 +19,6 @@ using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
-using WebUI.Extensions;
 using ZymLabs.NSwag.FluentValidation;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -169,10 +168,11 @@ public static class ConfigureServices
         app.UseEndpoints(endpoints => {
             var options = new DashboardOptions
             {
-                Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
+                Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) },
+                AppPath = "/hangfire"
             };
 
-            endpoints.MapHangfireDashboard("/hangfire", options);
+            endpoints.MapHangfireDashboard(options);
             endpoints.MapHealthChecks("/health");
             endpoints.MapControllerRoute(
                 name: "default",
