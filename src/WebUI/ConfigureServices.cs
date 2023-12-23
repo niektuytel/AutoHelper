@@ -20,6 +20,7 @@ using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using WebUI.Extensions;
+using ZymLabs.NSwag.FluentValidation;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -30,28 +31,63 @@ public static class ConfigureServices
         services.AddDatabaseDeveloperPageExceptionFilter()
                 .AddHttpContextAccessor()
                 .AddAuthenticationServices(configuration)
-                .AddControllerServices()
                 .AddAuthorizationServices()
-                .AddOpenApiServices(configuration)
+                .AddControllerServices(configuration)
                 .AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
         return services;
     }
 
-    private static IServiceCollection AddControllerServices(this IServiceCollection services)
+    private static IServiceCollection AddControllerServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
         services.AddControllersWithViews(options =>
             options.Filters.Add<ApiExceptionFilterAttribute>())
                 .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
+
+        services.AddScoped<FluentValidationSchemaProcessor>(provider =>
+        {
+            var validationRules = provider.GetService<IEnumerable<FluentValidationRule>>();
+            var loggerFactory = provider.GetService<ILoggerFactory>();
+
+            return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
+        });
+
+        // Customise default API behaviour
+        services.Configure<ApiBehaviorOptions>(options =>
+            options.SuppressModelStateInvalidFilter = true);
 
         //services.AddSpaStaticFiles(configuration =>
         //{
         //    configuration.RootPath = "ClientApp/build";  // In production, the React files will be served from this directory
         //});
 
-        services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+        services.AddOpenApiDocument((configure, serviceProvider) =>
+        {
+            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<FluentValidationSchemaProcessor>();
+
+            // Add the fluent validations schema processor
+            configure.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+
+            configure.Title = "AutoHelper API";
+            configure.Version = "v1";
+            configure.XmlDocumentationFormatting = Namotion.Reflection.XmlDocsFormattingMode.Markdown;
+            configure.IgnoreObsoleteProperties = true;
+            configure.GenerateXmlObjects = true;
+            configure.GenerateExamples = true;
+
+            var audience = configuration["OAuth0:Audience"];
+            configure.AddSecurity("OAuth2", new[] { audience }, new OpenApiSecurityScheme
+            {
+                Type = OpenApiSecuritySchemeType.OAuth2,
+                Flow = OpenApiOAuth2Flow.Implicit,
+                AuthorizationUrl = $"{configuration["OAuth0:Domain"]}/authorize",
+                TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
+            });
+        });
+
 
         return services;
     }
@@ -94,32 +130,6 @@ public static class ConfigureServices
         return services;
     }
 
-    private static IServiceCollection AddOpenApiServices(this IServiceCollection services, IConfiguration configuration)
-    {
-        var audience = configuration["OAuth0:Audience"];
-
-        services.AddOpenApiDocument(configure =>
-        {
-            configure.Title = "AutoHelper API";
-            configure.Version = "v1";
-            configure.XmlDocumentationFormatting = Namotion.Reflection.XmlDocsFormattingMode.Markdown;
-            configure.IgnoreObsoleteProperties = true;
-            configure.GenerateXmlObjects = true;
-            configure.GenerateExamples = true;
-
-
-            configure.AddSecurity("OAuth2", new[] { audience }, new OpenApiSecurityScheme
-            {
-                Type = OpenApiSecuritySchemeType.OAuth2,
-                Flow = OpenApiOAuth2Flow.Implicit,
-                AuthorizationUrl = $"{configuration["OAuth0:Domain"]}/authorize",
-                TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
-            });
-        });
-
-        return services;
-    }
-
     public static WebApplication UseWebUIServices(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
@@ -142,6 +152,7 @@ public static class ConfigureServices
             //initialiser.StartSyncTasksWhenEmpty().Wait();
         }
 
+        app.UseHealthChecks("/health");
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         //if (!app.Environment.IsDevelopment())
@@ -149,25 +160,28 @@ public static class ConfigureServices
         //    app.UseSpaStaticFiles();
         //}
 
-        UseOpenApi(app);
-
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseHealthChecks("/health");
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-        //app.UseSpa(spa =>
-        //{
-        //    spa.Options.SourcePath = "ClientApp";
-        //    if (app.Environment.IsDevelopment())
-        //    {
-        //        spa.UseReactDevelopmentServer(npmScript: "start");
-        //    }
-        //});
+        UseOpenApi(app);
 
-        app.MapFallbackToFile("index.html");
+        app.UseEndpoints(endpoints => {
+            var options = new DashboardOptions
+            {
+                Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
+            };
 
+            endpoints.MapHangfireDashboard("/hangfire", options);
+            endpoints.MapHealthChecks("/health");
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller}/{action=Index}/{id?}"
+            );
+
+            endpoints.MapFallbackToFile("index.html");
+        });
+        
         return app;
     }
 

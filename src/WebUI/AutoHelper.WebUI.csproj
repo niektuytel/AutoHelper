@@ -46,6 +46,8 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="ZymLabs.NSwag.FluentValidation" Version="0.6.2" />
+        <PackageReference Include="ZymLabs.NSwag.FluentValidation.AspNetCore" Version="0.6.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -68,7 +70,7 @@
     <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
         <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
         <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-        <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build --configuration production" />
 
         <!-- Include the newly-built files in the publish output -->
         <ItemGroup>

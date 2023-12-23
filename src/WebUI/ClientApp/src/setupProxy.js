@@ -2,19 +2,28 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const { env } = require('process');
 
 // Use environment variables for configuration
-const target = env.API_TARGET || 'https://localhost:5000';
-const context = ["/api", "/swagger", "/hangfire"];
+const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
+    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:5001';
+
+const context = ["/api/**", "/swagger/**", "/hangfire/**"];
+
+const onError = (err, req, resp, target) => {
+    console.error(`${err.message}`);
+}
 
 module.exports = function (app) {
     const appProxy = createProxyMiddleware(context, {
         proxyTimeout: env.PROXY_TIMEOUT || 10000, // Use an environment variable or default
         target: target,
-        onError: (err, req, resp) => {
-            // Implement more robust error logging
-            console.error(`Proxy error: ${err.message}`);
-        },
-        secure: false, // Set to true for verifying SSL certificates
-        // Additional production-ready configurations
+        // Handle errors to prevent the proxy middleware from crashing when
+        // the ASP NET Core webserver is unavailable
+        onError: onError,
+        secure: false,
+        // Uncomment this line to add support for proxying websockets
+        //ws: true, 
+        headers: {
+            Connection: 'Keep-Alive'
+        }
     });
 
     app.use(appProxy);
