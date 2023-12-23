@@ -23,8 +23,7 @@ const Footer = () => {
     };
 
     return (
-        <footer>
-            <Container maxWidth="lg" style={{ backgroundColor: "#f7f7f7", padding: "20px" }}>
+        <footer style={{ backgroundColor: "#f7f7f7", padding: "10px" }}>
                 <Box ml={4} mr={4}>
                     {/* Use flexbox on the container Grid to center the items */}
                     <Grid container justifyContent="center" alignItems="center" style={{ height: '100%' }}>
@@ -44,7 +43,6 @@ const Footer = () => {
                     </Grid>
                 </Box>
                 <CopyRight />
-            </Container>
         </footer>
     )
 }
