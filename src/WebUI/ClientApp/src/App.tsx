@@ -22,7 +22,7 @@ import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
 import theme from './constants/theme';
 import Garage from './pages/garage/Garage';
-import GarageServiceLogs from './pages/garage-account/servicelogs/GarageServiceLogs';
+import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
 import HomePage from './pages/home/HomePage';
 
 export default () => {
@@ -117,7 +117,7 @@ export default () => {
                             <Header showStaticDrawer={showStaticDrawer} />
                             <AuthenticatedRoute requiredRole={ROLES.GARAGE}>
                                 <GarageRouteContent>
-                                    <GarageServiceLogs />
+                                    <GarageServicelogs />
                                 </GarageRouteContent>
                             </AuthenticatedRoute>
                         </>
