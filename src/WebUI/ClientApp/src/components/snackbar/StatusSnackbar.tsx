@@ -17,7 +17,12 @@ export default () => {
     };
 
     return (
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+        >
             <Alert onClose={handleClose} severity={type}>
                 {message}
             </Alert>
