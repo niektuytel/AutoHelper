@@ -249,7 +249,14 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         <Button
             variant="contained"
             color="primary"
-            sx={{ position: 'fixed', p: 2, bottom: 16, right: 16, borderRadius: 10 }}
+            sx={{
+                position: 'fixed',
+                p: 2,
+                bottom: 16,
+                right: 16,
+                borderRadius: 10,
+                zIndex: 1000
+            }}
             onClick={() => setDrawerOpen(true)}
             endIcon={<AddIcon />}
         >

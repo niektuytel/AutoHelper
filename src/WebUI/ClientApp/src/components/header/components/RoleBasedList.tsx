@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import BuildIcon from '@mui/icons-material/Build';
 import GroupIcon from '@mui/icons-material/Group';
+import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ServicelogsIcon from '@mui/icons-material/Notes';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
@@ -73,6 +74,7 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         return (
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />
+                {/*<ListItemLink primary={t('Add Maintenance')} icon={<AddIcon />} to={`${ROUTES.SELECT_VEHICLE}?open_maintenance_drawer=true`} />*/}
                 <ListItemButton onClick={handleClick2}>
                     <ListItemIcon>
                         <AccountBoxIcon />
