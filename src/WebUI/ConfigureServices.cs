@@ -164,6 +164,12 @@ public static class ConfigureServices
         app.UseAuthorization();
 
         UseOpenApi(app);
+        var options = new DashboardOptions
+        {
+            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
+        };
+
+        app.UseHangfireDashboard("/hangfire", options);
 
         app.UseEndpoints(endpoints => {
             var options = new DashboardOptions

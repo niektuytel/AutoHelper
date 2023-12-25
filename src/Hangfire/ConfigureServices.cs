@@ -74,12 +74,12 @@ public static class ConfigureServices
             context.Database.Migrate();
         }
 
-        var options = new DashboardOptions
-        {
-            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
-        };
+        //var options = new DashboardOptions
+        //{
+        //    Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
+        //};
 
-        app.UseHangfireDashboard("/hangfire", options);
+        //app.UseHangfireDashboard("/hangfire", options);
     }
 
 }
