@@ -3,6 +3,7 @@ using System.Text;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Hangfire.MediatR;
+using AutoHelper.Infrastructure.Common.Interfaces;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;

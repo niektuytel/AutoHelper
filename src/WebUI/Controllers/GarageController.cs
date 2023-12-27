@@ -16,6 +16,7 @@ using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Infrastructure.Common.Interfaces;
 
 namespace AutoHelper.WebUI.Controllers;
 

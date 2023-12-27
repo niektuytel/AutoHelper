@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.6" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.6" />
+    <PackageReference Include="Hangfire.Dashboard.Management.v2" Version="2.2.0" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.8.0" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Application\AutoHelper.Application.csproj" />
+    <ProjectReference Include="..\src\Domain\AutoHelper.Domain.csproj" />
+    <ProjectReference Include="..\src\Hangfire\AutoHelper.Hangfire.csproj" />
+    <ProjectReference Include="..\src\Infrastructure\AutoHelper.Infrastructure.csproj" />
+    <ProjectReference Include="..\src\Messaging\AutoHelper.Messaging.csproj" />
+  </ItemGroup>
+
+</Project>

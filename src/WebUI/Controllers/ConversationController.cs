@@ -2,8 +2,10 @@
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Hangfire.MediatR;
+using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.WebUI.Models;
 using GoogleApi.Entities.Search.Common;
+using Hangfire;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
@@ -14,12 +16,13 @@ public class ConversationController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
     private readonly IIdentityService _identityService;
+    private readonly IBackgroundJobClient _backgroundJobClient;
 
-
-    public ConversationController(ICurrentUserService currentUser, IIdentityService identityService)
+    public ConversationController(ICurrentUserService currentUser, IIdentityService identityService, IBackgroundJobClient backgroundJobClient)
     {
         _currentUser = currentUser;
         _identityService = identityService;
+        _backgroundJobClient = backgroundJobClient;
     }
 
     [HttpPost($"{nameof(StartConversations)}")]
@@ -80,7 +83,7 @@ public class ConversationController : ApiControllerBase
         var queue = nameof(StartConversationCommand);
         var title = $"{command.SenderWhatsAppNumberOrEmail.ToLower()} to {command.ReceiverWhatsAppNumberOrEmail.ToLower()} about {command.RelatedVehicle.LicensePlate}";
 
-        Mediator.Enqueue(queue, title, command, isRecursive: true);
+        Mediator.Enqueue(_backgroundJobClient, queue, title, command, isRecursive: true);
         return queue;
     }
 }

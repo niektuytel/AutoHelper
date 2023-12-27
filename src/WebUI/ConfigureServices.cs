@@ -4,6 +4,7 @@ using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire;
 using AutoHelper.Hangfire.MediatR;
+using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Services;
 using AutoHelper.WebUI.Filters;
@@ -11,6 +12,7 @@ using AutoHelper.WebUI.Services;
 using FluentValidation.AspNetCore;
 using Hangfire;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +37,9 @@ public static class ConfigureServices
                 .AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
+        services.AddAuthentication()
+            .AddIdentityServerJwt();
+
         return services;
     }
 
@@ -57,11 +62,6 @@ public static class ConfigureServices
         // Customise default API behaviour
         services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);
-
-        //services.AddSpaStaticFiles(configuration =>
-        //{
-        //    configuration.RootPath = "ClientApp/build";  // In production, the React files will be served from this directory
-        //});
 
         services.AddOpenApiDocument((configure, serviceProvider) =>
         {
@@ -86,7 +86,6 @@ public static class ConfigureServices
                 TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
             });
         });
-
 
         return services;
     }
@@ -154,45 +153,11 @@ public static class ConfigureServices
         app.UseHealthChecks("/health");
         app.UseHttpsRedirection();
         app.UseStaticFiles();
-        //if (!app.Environment.IsDevelopment())
-        //{
-        //    app.UseSpaStaticFiles();
-        //}
 
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
 
-        UseOpenApi(app);
-        var options = new DashboardOptions
-        {
-            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
-        };
-
-        app.UseHangfireDashboard("/hangfire", options);
-
-        app.UseEndpoints(endpoints => {
-            var options = new DashboardOptions
-            {
-                Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) },
-                AppPath = "/hangfire"
-            };
-
-            endpoints.MapHangfireDashboard(options);
-            endpoints.MapHealthChecks("/health");
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller}/{action=Index}/{id?}"
-            );
-
-            endpoints.MapFallbackToFile("index.html");
-        });
-        
-        return app;
-    }
-
-    private static void UseOpenApi(WebApplication app)
-    {
         app.UseOpenApi(configure =>
         {
             configure.DocumentName = "v1";
@@ -214,6 +179,17 @@ public static class ConfigureServices
             settings.Path = "/swagger";
             settings.DocumentPath = "/swagger/v1/swagger.json";
         });
+
+        app.UseEndpoints(endpoints => {
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller}/{action=Index}/{id?}"
+            );
+
+            endpoints.MapFallbackToFile("index.html");
+        });
+        
+        return app;
     }
 
 }

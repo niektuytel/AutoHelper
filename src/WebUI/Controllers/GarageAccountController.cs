@@ -18,6 +18,7 @@ using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
 using System.Threading;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
+using AutoHelper.Infrastructure.Common.Interfaces;
 
 namespace AutoHelper.WebUI.Controllers;
 

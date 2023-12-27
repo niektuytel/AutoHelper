@@ -1,5 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Whatsapp.Services;
+using AutoHelper.Messaging.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WhatsappBusiness.CloudApi.Interfaces;
@@ -8,7 +8,7 @@ using WhatsappBusiness.CloudApi.Configurations;
 using WhatsappBusiness.CloudApi.Extensions;
 using AutoHelper.Messaging.Services;
 
-namespace AutoHelper.Whatsapp;
+namespace AutoHelper.Messaging;
 
 public static class ConfigureService
 {

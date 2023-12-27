@@ -20,36 +20,68 @@ using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
 using Microsoft.Extensions.Hosting;
 using Hangfire.Dashboard;
 using System.Net;
+using Hangfire.Common;
+using Hangfire.Dashboard.Management.v2.Support;
+using Hangfire.Dashboard.Management.v2;
+using Hangfire.SqlServer;
 
 namespace AutoHelper.Hangfire;
 
 public static class ConfigureServices
 {
-    public static void AddHangfireServices(this IServiceCollection services, IConfiguration configuration)
+    public static void AddHangfireServices(this WebApplicationBuilder builder)
     {
-        var hangfireConnection = configuration.GetConnectionString("HangfireConnection");
-        services.AddDbContext<HangfireDbContext>(o => o.UseSqlServer(hangfireConnection));
-        services.AddHangfire(configuration =>
+        var hangfireConnection = builder.Configuration.GetConnectionString("HangfireConnection");
+        builder.Services.AddDbContext<HangfireDbContext>(o => o.UseSqlServer(hangfireConnection));
+
+        builder.Services.AddHangfire(config =>
         {
-            configuration.UseSqlServerStorage(hangfireConnection);
-            configuration.UseConsole();
-            configuration.UseMediatR();
-            configuration.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(hangfireConnection);
+            config.UseSqlServerStorage(hangfireConnection, new SqlServerStorageOptions
+            {
+                InvisibilityTimeout = TimeSpan.FromDays(1)//,
+                //SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                //QueuePollInterval = TimeSpan.Zero,
+                //UseRecommendedIsolationLevel = true,
+                //DisableGlobalLocks = true
+            })
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseConsole()
+            .UseMediatR();
+
+            config.UseManagementPages(typeof(ConfigureServices).Assembly);
         });
-        services.AddHangfireServer(options =>
+
+        builder.Services.AddTransient<IQueueService, HangfireJobService>();
+
+        // production we use an external service to run the jobs
+        if (builder.Environment.IsDevelopment())
         {
-            options.CancellationCheckInterval = TimeSpan.FromSeconds(5);
-            options.Queues = new[] { 
-                nameof(UpsertGarageLookupsCommand).ToLower(), 
+            builder.AddHangfireServerInstance();
+        }
+    }
+
+    public static void AddHangfireServerInstance(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHangfireServer(options =>
+        {
+            var queues = new List<string>
+            {
+                "default",
+                "critical",
+                "long-running",
+                nameof(UpsertGarageLookupsCommand).ToLower(),
                 nameof(UpsertVehicleLookupsCommand).ToLower(),
                 nameof(StartConversationCommand).ToLower(),
-                "default" 
             };
+            queues.AddRange(JobsHelper.GetAllQueues());
+
+            //options.HeartbeatInterval = TimeSpan.FromSeconds(5);
+            options.CancellationCheckInterval = TimeSpan.FromSeconds(5);
+            options.WorkerCount = Environment.ProcessorCount * 5;
+            options.Queues = queues.Distinct().ToArray();
         });
-        services.AddTransient<IQueueService, HangfireJobService>();
     }
 
     public static void UseMediatR(this IGlobalConfiguration configuration)
@@ -74,12 +106,21 @@ public static class ConfigureServices
             context.Database.Migrate();
         }
 
-        //var options = new DashboardOptions
-        //{
-        //    Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
-        //};
-
-        //app.UseHangfireDashboard("/hangfire", options);
+        // production we use an external service to run the jobs
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseHangfireDashboardInstance();
+        }
     }
 
+    public static void UseHangfireDashboardInstance(this WebApplication app)
+    {
+        app.UseHangfireDashboard("", new DashboardOptions()
+        {
+            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) },
+            DisplayStorageConnectionString = false,
+            DashboardTitle = "Hangfire Management",
+            StatsPollingInterval = 5000
+        });
+    }
 }

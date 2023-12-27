@@ -151,23 +151,23 @@ public class ApplicationDbContextInitialiser
 
     public async Task StartSyncTasksWhenEmpty()
     {
-        var vehicleCount = await _context.VehicleLookups.CountAsync();
-        if (vehicleCount == 0)
-        {
-            var command = new UpsertVehicleLookupsCommand();
-            var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
-            var title = $"{nameof(StartSyncTasksWhenEmpty)} lookups";
-            _mediator.Enqueue(queue, title, command);
-        }
+        //var vehicleCount = await _context.VehicleLookups.CountAsync();
+        //if (vehicleCount == 0)
+        //{
+        //    var command = new UpsertVehicleLookupsCommand();
+        //    var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
+        //    var title = $"{nameof(StartSyncTasksWhenEmpty)} lookups";
+        //    _mediator.Enqueue(queue, title, command);
+        //}
 
-        var garageCount = await _context.GarageLookups.CountAsync();
-        if (garageCount == 0)
-        {
-            var command = new UpsertGarageLookupsCommand(0, 200);
-            var queue = $"{nameof(UpsertGarageLookupsCommand)}";
-            var title = $"{nameof(StartSyncTasksWhenEmpty)} lookups";
-            _mediator.Enqueue(queue, title, command);
-        }
+        //var garageCount = await _context.GarageLookups.CountAsync();
+        //if (garageCount == 0)
+        //{
+        //    var command = new UpsertGarageLookupsCommand(0, 200);
+        //    var queue = $"{nameof(UpsertGarageLookupsCommand)}";
+        //    var title = $"{nameof(StartSyncTasksWhenEmpty)} lookups";
+        //    _mediator.Enqueue(queue, title, command);
+        //}
     }
 
 

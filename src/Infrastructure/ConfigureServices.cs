@@ -64,8 +64,6 @@ public static class ConfigureServices
         services.AddTransient<IIdentityService, IdentityService>();
         //services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
-        services.AddAuthentication()
-            .AddIdentityServerJwt();
 
         //services.AddAuthorization(options =>
         //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));

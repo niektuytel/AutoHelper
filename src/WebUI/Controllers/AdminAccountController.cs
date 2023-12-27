@@ -6,6 +6,7 @@ using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
 using AutoHelper.Hangfire.MediatR;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using WebUI.Models;
 
@@ -13,6 +14,13 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class AdminAccountController: ApiControllerBase
 {
+    private readonly IBackgroundJobClient _backgroundJobClient;
+
+    public AdminAccountController(IBackgroundJobClient backgroundJobClient)
+    {
+        _backgroundJobClient = backgroundJobClient;
+    }
+
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize(Policy = "AdminRole")]
@@ -31,7 +39,7 @@ public class AdminAccountController: ApiControllerBase
         var queue = nameof(UpsertGarageLookupsCommand);
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
-        Mediator.Enqueue(queue, title, command);
+        Mediator.Enqueue(_backgroundJobClient, queue, title, command);
         return $"Successfully start hangfire job: {queue}";
     }
 
@@ -64,7 +72,7 @@ public class AdminAccountController: ApiControllerBase
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
-        Mediator.Enqueue(queue, title, command);
+        Mediator.Enqueue(_backgroundJobClient, queue, title, command);
         return $"Successfully start new queue: {queue}";
     }
 
@@ -97,7 +105,7 @@ public class AdminAccountController: ApiControllerBase
         var queue = $"{nameof(UpsertVehicleLookupsCommand)}";
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] timelines";
 
-        Mediator.Enqueue(queue, title, command);
+        Mediator.Enqueue(_backgroundJobClient, queue, title, command);
         return $"Successfully start queue: {queue}";
     }
 

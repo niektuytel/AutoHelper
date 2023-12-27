@@ -1,5 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Domain.Common;
+using AutoHelper.Infrastructure.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

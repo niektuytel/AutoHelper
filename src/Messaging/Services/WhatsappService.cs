@@ -10,7 +10,7 @@ using WhatsappBusiness.CloudApi.Exceptions;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Messages.Requests;
 
-namespace AutoHelper.Whatsapp.Services;
+namespace AutoHelper.Messaging.Services;
 
 internal class WhatsappService : IWhatsappService
 {

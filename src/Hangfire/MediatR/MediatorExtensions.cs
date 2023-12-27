@@ -16,10 +16,8 @@ namespace AutoHelper.Hangfire.MediatR;
 public static class MediatorExtensions
 {
     /// <param name="isRecursive">Enqueue response until repsonse is not MediatR.IBaseRequest</param>
-    public static void Enqueue(this ISender mediator, string queue, string title, IQueueRequest request, bool isRecursive = false)
+    public static void Enqueue(this ISender mediator, IBackgroundJobClient client, string queue, string title, IQueueRequest request, bool isRecursive = false)
     {
-        var client = new BackgroundJobClient();
-
         queue = queue.ToLower();
         if (isRecursive)
         {
@@ -32,10 +30,8 @@ public static class MediatorExtensions
     }
 
     /// <param name="isRecursive">Enqueue response until repsonse is not MediatR.IBaseRequest</param>
-    public static void Enqueue<T>(this ISender mediator, string queue, string title, IQueueRequest<T> request, bool isRecursive = false)
+    public static void Enqueue<T>(this ISender mediator, IBackgroundJobClient client, string queue, string title, IQueueRequest<T> request, bool isRecursive = false)
     {
-        var client = new BackgroundJobClient();
-
         queue = queue.ToLower();
         if (isRecursive)
         {

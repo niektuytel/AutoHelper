@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 

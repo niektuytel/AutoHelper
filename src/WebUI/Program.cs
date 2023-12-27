@@ -4,7 +4,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Infrastructure.Common;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Hangfire;
-using AutoHelper.Whatsapp;
+using AutoHelper.Messaging;
 using Hangfire;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +14,9 @@ using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddMessagingServices(builder.Configuration);
-builder.Services.AddHangfireServices(builder.Configuration);
+builder.AddHangfireServices();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebUIServices(builder.Configuration);
