@@ -15,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Application\AutoHelper.Application.csproj" />
-    <ProjectReference Include="..\src\Domain\AutoHelper.Domain.csproj" />
-    <ProjectReference Include="..\src\Hangfire\AutoHelper.Hangfire.csproj" />
-    <ProjectReference Include="..\src\Infrastructure\AutoHelper.Infrastructure.csproj" />
-    <ProjectReference Include="..\src\Messaging\AutoHelper.Messaging.csproj" />
+    <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
+    <ProjectReference Include="..\Domain\AutoHelper.Domain.csproj" />
+    <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
+    <ProjectReference Include="..\Infrastructure\AutoHelper.Infrastructure.csproj" />
+    <ProjectReference Include="..\Messaging\AutoHelper.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
