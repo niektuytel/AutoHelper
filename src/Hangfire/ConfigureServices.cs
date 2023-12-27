@@ -55,7 +55,7 @@ public static class ConfigureServices
 
         builder.Services.AddTransient<IQueueService, HangfireJobService>();
 
-        // production we use an external service to run the jobs
+        // production we use the dashboard web service to run the jobs
         if (builder.Environment.IsDevelopment())
         {
             builder.AddHangfireServerInstance();
@@ -105,8 +105,8 @@ public static class ConfigureServices
             var created = context.Database.EnsureCreated();
             context.Database.Migrate();
         }
-
-        // production we use an external service to run the jobs
+        
+        // production we use the dashboard web service to run the dashboard
         if (app.Environment.IsDevelopment())
         {
             app.UseHangfireDashboardInstance();
