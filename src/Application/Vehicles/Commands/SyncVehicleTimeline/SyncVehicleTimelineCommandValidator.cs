@@ -1,14 +1,14 @@
-﻿using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
+﻿using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleLookup;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using FluentValidation;
 
-namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
+namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 
-public class UpsertVehicleTimelineCommandValidator : AbstractValidator<UpsertVehicleTimelineCommand>
+public class SyncVehicleTimelineCommandValidator : AbstractValidator<SyncVehicleTimelineCommand>
 {
-    public UpsertVehicleTimelineCommandValidator()
+    public SyncVehicleTimelineCommandValidator()
     {
         // Custom rule for processing and validating LicensePlate
         RuleFor(x => x.LicensePlate)

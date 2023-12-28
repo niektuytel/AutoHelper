@@ -21,7 +21,7 @@ namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGara
 
 public record CreateVehicleServiceLogAsGarageCommand : IRequest<VehicleServiceLogAsGarageDtoItem>
 {
-    public CreateVehicleServiceLogAsGarageCommand(string userId, CreateVehicleServiceAsGarageLogDtoItem data) 
+    public CreateVehicleServiceLogAsGarageCommand(string userId, CreateVehicleServiceAsGarageLogDtoItem data)
     {
         UserId = userId;
         VehicleLicensePlate = data.VehicleLicensePlate;
@@ -75,14 +75,14 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly IVehicleService _vehicleService;
+    private readonly IVehicleTimelineService _vehicleTimelineService;
 
-    public CreateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IVehicleService vehicleService)
+    public CreateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IVehicleTimelineService vehicleTimelineService)
     {
         _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
-        _vehicleService = vehicleService;
+        _vehicleTimelineService = vehicleTimelineService;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(CreateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
@@ -94,7 +94,7 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        var item = _vehicleService.CreateServiceLogTimelineItem(request.VehicleLicensePlate, entity);
+        var item = _vehicleTimelineService.CreateServiceLogItem(request.VehicleLicensePlate, entity);
         _context.VehicleTimelineItems.Add(item);
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
@@ -123,7 +123,7 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
             ExpectedNextDate = request.ParsedExpectedNextDate,
             OdometerReading = request.OdometerReading,
             ExpectedNextOdometerReading = request.ExpectedNextOdometerReading,
-            
+
             ReporterName = request.Garage.Lookup.Name,
             ReporterPhoneNumber = request.Garage.Lookup.PhoneNumber,
             ReporterEmailAddress = request.Garage.Lookup.EmailAddress,

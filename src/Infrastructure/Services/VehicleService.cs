@@ -4,7 +4,7 @@ using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
@@ -226,218 +226,6 @@ internal class VehicleService : IVehicleService
         return await _rdwService.GetVehicleBasicsWithMOTRequirementCount();
     }
 
-    private async Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> FailedMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> detectedDefects, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions)
-    {
-        var itemsToInsert = new List<VehicleTimelineItem>();
-        var itemsToUpdate = new List<VehicleTimelineItem>();
-
-        // No defects found
-        if (detectedDefects?.Any() != true)
-        {
-            return (itemsToInsert, itemsToUpdate);
-        }
-
-        var groupedByDate = detectedDefects.GroupBy(x => x.DetectionDate);
-        foreach (var group in groupedByDate)
-        {
-            if (vehicle.Timeline?.Any(x => x.Date == group.Key) == true)
-            {
-                // Already exists
-                continue;
-            }
-
-            var item = CreateFailedMOTTimelineItem(vehicle.LicensePlate, group, defectDescriptions);
-            itemsToInsert.Add(item);
-        }
-
-        return (itemsToInsert, itemsToUpdate);
-    }
-
-    private async Task<(List<VehicleTimelineItem> failedMOTsToInsert, List<VehicleTimelineItem> failedMOTsToUpdate)> SucceededMOTTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleInspectionNotificationDtoItem> notifications)
-    {
-        var itemsToInsert = new List<VehicleTimelineItem>();
-        var itemsToUpdate = new List<VehicleTimelineItem>();
-
-        // No notifications found
-        if (notifications?.Any() != true)
-        {
-            return (itemsToInsert, itemsToUpdate);
-        }
-
-        var items = new List<VehicleTimelineItem>();
-        var groupedByDate = notifications.GroupBy(x => x.DateTimeByAuthority);
-        foreach (var notification in notifications)
-        {
-            if (vehicle.Timeline?.Any(x => x.Date == notification!.DateTimeByAuthority) == true)
-            {
-                // Already exists
-                continue;
-            }
-
-            var item = CreateSucceededMOTTimelineItem(vehicle.LicensePlate, notification);
-            itemsToInsert.Add(item);
-        }
-
-        return (itemsToInsert, itemsToUpdate);
-    }
-
-    private async Task<VehicleTimelineItem?> OwnerChangedTimelineItem(VehicleLookupItem vehicle)
-    {
-        var entity = vehicle.Timeline?.FirstOrDefault(x => 
-            x.Type == VehicleTimelineType.OwnerChange &&
-            x.Date == vehicle.DateOfAscription
-        );
-
-        // Already exists or has invalid date
-        if (entity != null || vehicle.DateOfAscription == null || vehicle.DateOfAscription == DateTime.MinValue)
-        {
-            return null;
-        }
-
-        var item = CreateOwnerChangeTimelineItem(vehicle.LicensePlate, (DateTime)vehicle.DateOfAscription);
-        return item;
-    }
-
-    private async Task<(List<VehicleTimelineItem> serviceLogsChangedToInsert, List<VehicleTimelineItem> serviceLogsChangedToUpdate)> ServiceLogsTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs)
-    {
-        var itemsToInsert = new List<VehicleTimelineItem>();
-        var itemsToUpdate = new List<VehicleTimelineItem>();
-
-        // No serviceLogs found
-        if (serviceLogs?.Any() != true)
-        {
-            return (itemsToInsert, itemsToUpdate);
-        }
-
-        var items = new List<VehicleTimelineItem>();
-        foreach (var serviceLog in serviceLogs)
-        {
-            if (vehicle.Timeline?.Any(x => x.Date.Date == serviceLog!.Date.Date) == true)
-            {
-                // Already exists
-                continue;
-            }
-
-            var item = CreateServiceLogTimelineItem(vehicle.LicensePlate, serviceLog);
-            itemsToInsert.Add(item);
-        }
-
-        return (itemsToInsert, itemsToUpdate);
-    }
-
-    private static VehicleTimelineItem CreateFailedMOTTimelineItem(string licensePlate, IGrouping<DateTime, VehicleDetectedDefectDtoItem> group, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions)
-    {
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Id = Guid.NewGuid(),
-            VehicleLicensePlate = licensePlate,
-            Date = group.Key,
-            Title = "APK afgekeurd",
-            Type = VehicleTimelineType.FailedMOT,
-            Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new List<Tuple<string, string>>()
-        };
-
-        // avoid repeated deserialization
-        var extraData = timelineItem.ExtraData;
-
-        foreach (var defect in group)
-        {
-            var information = defectDescriptions.First(x => x.Identification == defect.Identifier);
-            var description = information.Description;
-            if (defect.DetectedAmount > 1)
-            {
-                description += $" ({defect.DetectedAmount}x)";
-            }
-
-            extraData.Add(new (description, information.DefectArticleNumber));
-        }
-
-        // set the property back to serialize and store the updates
-        timelineItem.ExtraData = extraData;
-
-        var total = group.Select(x => x.DetectedAmount).Sum();
-        timelineItem.Description = $"Er waren {total} opmerkingen";
-
-        return timelineItem;
-    }
-
-    private static VehicleTimelineItem CreateSucceededMOTTimelineItem(string licensePlate, VehicleInspectionNotificationDtoItem notification)
-    {
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Id = Guid.NewGuid(),
-            VehicleLicensePlate = licensePlate,
-            Date = notification.DateTimeByAuthority,
-            Title = "APK goedgekeurd",
-            Description = "",
-            Type = VehicleTimelineType.SucceededMOT,
-            Priority = VehicleTimelinePriority.Medium,
-            ExtraData = new List<Tuple<string, string>>()
-            {
-                new ("Verval datum", notification.ExpiryDateTime.ToShortDateString())
-            }
-        };
-
-        return timelineItem;
-    }
-
-    private static VehicleTimelineItem CreateOwnerChangeTimelineItem(string licensePlate, DateTime dateOfAscription)
-    {
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Id = Guid.NewGuid(),
-            VehicleLicensePlate = licensePlate,
-            Date = dateOfAscription,
-            Title = "Nieuwe eigenaar",
-            Description = "",
-            Type = VehicleTimelineType.OwnerChange,
-            Priority = VehicleTimelinePriority.Low,
-            ExtraData = new List<Tuple<string, string>>()
-        };
-
-        return timelineItem;
-    }
-
-    public VehicleTimelineItem CreateServiceLogTimelineItem(string licensePlate, VehicleServiceLogItem serviceLog)
-    {
-        var type = VehicleTimelineType.Service;
-        var title = "Onderhoud";
-        if (serviceLog.Type == GarageServiceType.Repair)
-        {
-            type = VehicleTimelineType.Repair;
-            title = "Reparatie";
-        }
-
-        var extraData = new List<Tuple<string, string>>();
-        if (string.IsNullOrEmpty(serviceLog.Notes))
-        {
-            extraData.Add(new ("Notities", serviceLog.Notes));
-        }
-        else if (serviceLog.ExpectedNextDate != null && serviceLog.ExpectedNextDate != DateTime.MinValue)
-        {
-            extraData.Add(new("Volgende onderhoudsbeurt bij datum", ((DateTime)serviceLog.ExpectedNextDate).ToShortDateString()));
-        }
-        else if (serviceLog.ExpectedNextOdometerReading != null && serviceLog.ExpectedNextOdometerReading != 0)
-        {
-            extraData.Add(new("Volgende onderhoudsbeurt bij km", $"{serviceLog.ExpectedNextOdometerReading} km"));
-        }
-
-        var timelineItem = new VehicleTimelineItem()
-        {
-            Id = Guid.NewGuid(),
-            VehicleLicensePlate = licensePlate,
-            VehicleServiceLogId = serviceLog.Id,
-            Date = serviceLog.Date.Date,
-            Title = title,
-            Description = serviceLog.Description ?? "",
-            Type = type,
-            Priority = VehicleTimelinePriority.Medium,
-            ExtraData = extraData
-        };
-
-        return timelineItem;
-    }
 
     public async Task<IEnumerable<VehicleDetectedDefectDtoItem>> GetVehicleDetectedDefects(List<string> licensePlates)
     {
@@ -471,47 +259,55 @@ internal class VehicleService : IVehicleService
         return inspections.ToArray();
     }
 
-    public async Task<(List<VehicleTimelineItem> itemsToInsert, List<VehicleTimelineItem> itemsToUpdate)> UpsertTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> defectsBatch, IEnumerable<VehicleInspectionNotificationDtoItem> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions)
+    public bool UpdateVehicleRecord(VehicleBasicsDtoItem? vehicle, VehicleLookupItem vehicleLookup, DateTime? upsertOnlyLastModifiedOlderThan = null)
     {
-        var vehicleTimelinesToInsert = new List<VehicleTimelineItem>();
-        var vehicleTimelinesToUpdate = new List<VehicleTimelineItem>();
-
-        // handle failed MOTs
-        var defects = defectsBatch!.Where(x => x.LicensePlate == vehicle.LicensePlate);
-        var (failedMOTsToInsert, _) = await FailedMOTTimelineItems(vehicle, defects, defectDescriptions);
-        if (failedMOTsToInsert?.Any() == true)
+        bool somethingChanged = VehicleRecordHasChanges(vehicleLookup, vehicle, upsertOnlyLastModifiedOlderThan);
+        if (!somethingChanged)
         {
-            vehicleTimelinesToInsert.AddRange(failedMOTsToInsert);
+            return false;
         }
 
-        // handle succeeded MOTs
-        var inspections = inspectionsBatch!.Where(x => x.LicensePlate == vehicle.LicensePlate);
-        var (succeededMOTsToInsert, _) = await SucceededMOTTimelineItems(vehicle, inspections);
-        if (succeededMOTsToInsert?.Any() == true)
-        {
-            vehicleTimelinesToInsert.AddRange(succeededMOTsToInsert);
-        }
+        // Update vehicleLookup details
+        vehicleLookup.DateOfMOTExpiry = vehicle.MOTExpiryDateDt;
+        vehicleLookup.DateOfAscription = vehicle.RegistrationDateDt;
+        vehicleLookup.LastModified = DateTime.UtcNow;
+        vehicleLookup.LastModifiedBy = $"system";
 
-        // handle owner changes
-        var ownerChangedToInsert = await OwnerChangedTimelineItem(vehicle);
-        if (ownerChangedToInsert != null)
-        {
-            vehicleTimelinesToInsert.Add(ownerChangedToInsert);
-        }
-
-        // handle servicelogs changes
-        var serviceLogs = serviceLogsBatch!.Where(x => 
-            x.VehicleLicensePlate == vehicle.LicensePlate && 
-            x.Status != Domain.VehicleServiceLogStatus.NotVerified
-        );
-
-        var (serviceLogsChangedToInsert, _) = await ServiceLogsTimelineItems(vehicle, serviceLogs);
-        if (serviceLogsChangedToInsert?.Any() == true)
-        {
-            vehicleTimelinesToInsert.AddRange(serviceLogsChangedToInsert);
-        }
-
-        return (vehicleTimelinesToInsert, vehicleTimelinesToUpdate);
+        return true;
     }
+
+    private bool VehicleRecordHasChanges(VehicleLookupItem vehicleLookup, VehicleBasicsDtoItem vehicle, DateTime? upsertOnlyLastModifiedOlderThan = null)
+    {
+        var sameExpirationDate = vehicleLookup.DateOfMOTExpiry == vehicle.MOTExpiryDateDt;
+        var sameRegistrationDate = vehicleLookup.DateOfAscription == vehicle.RegistrationDateDt;
+
+        if (upsertOnlyLastModifiedOlderThan != null && vehicleLookup!.LastModified >= upsertOnlyLastModifiedOlderThan)
+        {
+            return false;
+        }
+        else if (sameExpirationDate && sameRegistrationDate)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public VehicleLookupItem CreateVehicleRecord(VehicleBasicsDtoItem vehicle)
+    {
+        var vehicleLookup = new VehicleLookupItem
+        {
+            LicensePlate = vehicle.LicensePlate,
+            DateOfMOTExpiry = vehicle.MOTExpiryDateDt,
+            DateOfAscription = vehicle.RegistrationDateDt,
+            Created = DateTime.UtcNow,
+            CreatedBy = $"system",
+            LastModified = DateTime.UtcNow,
+            LastModifiedBy = $"system"
+        };
+
+        return vehicleLookup;
+    }
+
 
 }

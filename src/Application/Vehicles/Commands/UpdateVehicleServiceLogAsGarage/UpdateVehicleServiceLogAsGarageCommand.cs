@@ -102,7 +102,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
     {
         var description = request.Description;
 
-        var serviceLog = request.ServiceLog; 
+        var serviceLog = request.ServiceLog;
         serviceLog.VehicleLicensePlate = request.VehicleLicensePlate;
         if (serviceItem != null)
         {

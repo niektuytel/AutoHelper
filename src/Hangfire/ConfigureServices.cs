@@ -3,7 +3,6 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Vehicles.Commands;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
@@ -16,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookup;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
 using Microsoft.Extensions.Hosting;
 using Hangfire.Dashboard;
 using System.Net;
@@ -24,6 +23,7 @@ using Hangfire.Common;
 using Hangfire.Dashboard.Management.v2.Support;
 using Hangfire.Dashboard.Management.v2;
 using Hangfire.SqlServer;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 
 namespace AutoHelper.Hangfire;
 
@@ -72,7 +72,7 @@ public static class ConfigureServices
                 "critical",
                 "long-running",
                 nameof(UpsertGarageLookupsCommand).ToLower(),
-                nameof(UpsertVehicleLookupsCommand).ToLower(),
+                nameof(SyncVehicleLookupsCommand).ToLower(),
                 nameof(StartConversationCommand).ToLower(),
             };
             queues.AddRange(JobsHelper.GetAllQueues());

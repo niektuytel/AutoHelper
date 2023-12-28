@@ -14,11 +14,11 @@ using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimeline;
+namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 
-public record UpsertVehicleTimelineCommand : IRequest<string>
+public record SyncVehicleTimelineCommand : IRequest<string>
 {
-    public UpsertVehicleTimelineCommand(string licensePlate)
+    public SyncVehicleTimelineCommand(string licensePlate)
     {
         LicensePlate = licensePlate;
     }
@@ -27,25 +27,30 @@ public record UpsertVehicleTimelineCommand : IRequest<string>
 
 }
 
-public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicleTimelineCommand, string>
+public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleTimelineCommand, string>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IVehicleService _vehicleService;
+    private readonly IVehicleTimelineService _vehicleTimelineService;
     private readonly ILogger<UpsertVehicleTimelinesCommandHandler> _logger;
     private IEnumerable<VehicleDetectedDefectDescriptionDtoItem> _defectDescriptions;
 
-    public UpsertVehicleTimelinesCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, ILogger<UpsertVehicleTimelinesCommandHandler> logger)
+    public UpsertVehicleTimelinesCommandHandler(IApplicationDbContext dbContext, IMapper mapper, IVehicleService vehicleService, IVehicleTimelineService vehicleTimelineService, ILogger<UpsertVehicleTimelinesCommandHandler> logger)
     {
         _dbContext = dbContext;
         _mapper = mapper;
         _vehicleService = vehicleService;
+        _vehicleTimelineService = vehicleTimelineService;
         _logger = logger;
     }
 
-    public async Task<string> Handle(UpsertVehicleTimelineCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(SyncVehicleTimelineCommand request, CancellationToken cancellationToken)
     {
-        var vehicle = await _dbContext.VehicleLookups.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate, cancellationToken);
+        var vehicle = await _dbContext.VehicleLookups
+            .Include(x => x.Timeline)
+            .FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate, cancellationToken);
+
         if (vehicle == null)
         {
             return "Vehicle not found";
@@ -62,7 +67,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
         var vehicleTimelinesToUpdate = new List<VehicleTimelineItem>();
         try
         {
-            var (itemsToInsert, itemsToUpdate) = await _vehicleService.UpsertTimelineItems(
+            var itemsToInsert = await _vehicleTimelineService.InsertableTimelineItems(
                 vehicle,
                 defectsBatch,
                 inspectionsBatch,
@@ -75,7 +80,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<UpsertVehicl
                 await _dbContext.BulkInsertAsync(itemsToInsert, cancellationToken);
             }
 
-            return $"insert: {itemsToInsert.Count} | update: {itemsToUpdate.Count} items";
+            return $"insert: {itemsToInsert.Count} | update: 0 items";
         }
         catch (Exception ex)
         {

@@ -112,17 +112,35 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     {
         return this.Database.BeginTransactionAsync(cancellationToken);
     }
-
     public async Task BulkInsertAsync<T>(IList<T> entities, CancellationToken cancellationToken = default) where T : class
     {
         var bulkConfig = new BulkConfig
         {
-            PreserveInsertOrder = true, // Set to true if the insert order should be preserved
-            SetOutputIdentity = true,   // Set to true to update entities' identities after inserting them
-            BatchSize = entities.Count  // Optional: specify a batch size for large inserts
+            PreserveInsertOrder = true,
+            SetOutputIdentity = true,
+            BatchSize = Math.Min(1000, entities.Count) // Use a smaller batch size if the list is very large
         };
 
-        await this.BulkInsertAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);
+        int retryCount = 0;
+        int maxRetries = 5;
+        TimeSpan delay = TimeSpan.FromSeconds(2);
+
+        while (true)
+        {
+            try
+            {
+                await this.BulkInsertAsync(entities, bulkConfig: bulkConfig, cancellationToken: cancellationToken);
+                break;
+            }
+
+            // 1205 is the SQL Server error code for a deadlock
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 1205 && retryCount < maxRetries) 
+            {
+                retryCount++;
+                await Task.Delay(delay, cancellationToken);
+                delay = delay * 2;
+            }
+        }
     }
 
     public async Task BulkUpdateAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class

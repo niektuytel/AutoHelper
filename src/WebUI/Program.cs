@@ -10,7 +10,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

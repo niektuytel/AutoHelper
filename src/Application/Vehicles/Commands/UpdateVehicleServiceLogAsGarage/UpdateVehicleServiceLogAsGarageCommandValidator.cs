@@ -76,7 +76,7 @@ public class UpdateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
     {
         var entity = await _context.VehicleServiceLogs
             .FirstOrDefaultAsync(x =>
-                x.GarageLookupIdentifier == command.Garage.GarageLookupIdentifier && 
+                x.GarageLookupIdentifier == command.Garage.GarageLookupIdentifier &&
                 x.Id == logId,
                 cancellationToken
             );

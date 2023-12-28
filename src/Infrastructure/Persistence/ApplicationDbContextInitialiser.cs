@@ -1,6 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;

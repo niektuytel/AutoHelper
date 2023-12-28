@@ -68,13 +68,15 @@ public static class ConfigureServices
         //services.AddAuthorization(options =>
         //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
 
-        services.AddTransient<HtmlWeb>();
-        services.AddTransient<WebScraperClient>();
         services.AddTransient<RDWApiClient>();
-        services.AddTransient<GoogleApiClient>();
         services.AddTransient<IVehicleService, VehicleService>();
+        services.AddTransient<IVehicleTimelineService, VehicleTimelineService>();
         services.AddTransient<IGarageService, GarageService>();
         services.AddTransient<IBlobStorageService, AzureBlobStorageService>();
+        services.AddTransient<HtmlWeb>();
+        services.AddTransient<WebScraperClient>();
+        services.AddTransient<GoogleApiClient>();
+
 
         return services;
     }

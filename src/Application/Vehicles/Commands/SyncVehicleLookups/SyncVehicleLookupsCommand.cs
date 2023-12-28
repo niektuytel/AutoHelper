@@ -2,7 +2,7 @@
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.UpsertVehicleTimelines;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
@@ -12,9 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.Extensions.Logging;
 
-namespace AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
+namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 
-public record UpsertVehicleLookupsCommand : IQueueRequest
+public record SyncVehicleLookupsCommand : IQueueRequest
 {
     public const int InsertAll = -1;
     public const int UpdateAll = -1;
@@ -22,7 +22,7 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
     public const int DefaultStartingRowIndex = 0;
     public const int DefaultEndingRowIndex = -1;
 
-    public UpsertVehicleLookupsCommand(
+    public SyncVehicleLookupsCommand(
         int startRowIndex = DefaultStartingRowIndex,
         int endRowIndex = DefaultEndingRowIndex,
         int maxInsertAmount = InsertAll,
@@ -47,7 +47,7 @@ public record UpsertVehicleLookupsCommand : IQueueRequest
     public IQueueService QueueService { get; set; }
 }
 
-public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleLookupsCommand>
+public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLookupsCommand>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IVehicleService _vehicleService;
@@ -60,16 +60,16 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         _vehicleService = vehicleService;
     }
 
-    public async Task<Unit> Handle(UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(SyncVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
         var totalAmountOfVehicles = await _vehicleService.GetVehicleBasicsWithMOTRequirementCount();
-        _maxInsertAmount = request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll ? totalAmountOfVehicles : Math.Min(request.MaxInsertAmount, totalAmountOfVehicles);
-        _maxUpdateAmount = request.MaxUpdateAmount == UpsertVehicleLookupsCommand.UpdateAll ? totalAmountOfVehicles : Math.Min(request.MaxUpdateAmount, totalAmountOfVehicles);
+        _maxInsertAmount = request.MaxInsertAmount == SyncVehicleLookupsCommand.InsertAll ? totalAmountOfVehicles : Math.Min(request.MaxInsertAmount, totalAmountOfVehicles);
+        _maxUpdateAmount = request.MaxUpdateAmount == SyncVehicleLookupsCommand.UpdateAll ? totalAmountOfVehicles : Math.Min(request.MaxUpdateAmount, totalAmountOfVehicles);
 
         // Offset to start from
         var limit = request.BatchSize;
-        var offset = (request.StartRowIndex > 0) ? (request.StartRowIndex / limit) : 0;
-        var count = (request.StartRowIndex > 0) ? request.StartRowIndex : 0;
+        var offset = request.StartRowIndex > 0 ? request.StartRowIndex / limit : 0;
+        var count = request.StartRowIndex > 0 ? request.StartRowIndex : 0;
 
         // set end row index to total amount of vehicles if not set
         if (request.EndRowIndex <= 0 || request.EndRowIndex >= totalAmountOfVehicles)
@@ -110,13 +110,13 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             request.QueueService.LogInformation(
                 $"[{count}/{request.EndRowIndex}] insert: {vehicleLookupsToInsert.Count} | update: {vehicleLookupsToUpdate.Count} items"
             );
-        } while (count == (limit * offset) || count < request.EndRowIndex);
+        } while (count == limit * offset || count < request.EndRowIndex);
 
         request.QueueService.LogInformation($"Task finished");
         return Unit.Value;
     }
 
-    private (List<VehicleLookupItem> Inserts, List<VehicleLookupItem> Updates) ProcessLookupsAsync(IEnumerable<VehicleBasicsDtoItem> vehicleBatch, IEnumerable<VehicleLookupItem> currentVehicleLookups, UpsertVehicleLookupsCommand request)
+    private (List<VehicleLookupItem> Inserts, List<VehicleLookupItem> Updates) ProcessLookupsAsync(IEnumerable<VehicleBasicsDtoItem> vehicleBatch, IEnumerable<VehicleLookupItem> currentVehicleLookups, SyncVehicleLookupsCommand request)
     {
         var vehicleLookupsToUpdate = new List<VehicleLookupItem>();
         var vehicleLookupsToInsert = new List<VehicleLookupItem>();
@@ -135,28 +135,29 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
 
                 if (onInsert)
                 {
-                    vehicleLookup = CreateVehicleRecord(vehicle);
+                    vehicleLookup = _vehicleService.CreateVehicleRecord(vehicle);
                 }
                 else
                 {
-                    var hasChanges = UpdateVehicleRecord(vehicle, vehicleLookup!, request.UpsertOnlyLastModifiedOlderThan);
+                    var hasChanges = _vehicleService.UpdateVehicleRecord(vehicle, vehicleLookup!, request.UpsertOnlyLastModifiedOlderThan);
                     if (hasChanges == false)
                     {
                         continue;
                     }
                 }
 
-                if (_maxInsertAmount != 0 && onInsert)
+                if (_maxInsertAmount > 0 && onInsert)
                 {
                     vehicleLookupsToInsert.Add(vehicleLookup!);
                     _maxInsertAmount--;
                 }
-                else if (_maxUpdateAmount != 0 && !onInsert)
+                else if (_maxUpdateAmount > 0 && !onInsert)
                 {
                     vehicleLookupsToUpdate.Add(vehicleLookup!);
                     _maxUpdateAmount--;
                 }
-                else if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
+
+                if (_maxInsertAmount == 0 && _maxUpdateAmount == 0)
                 {
                     break;
                 }
@@ -170,11 +171,11 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         return (vehicleLookupsToInsert, vehicleLookupsToUpdate);
     }
 
-    private void LogInformationBasedOnAmount(UpsertVehicleLookupsCommand request)
+    private void LogInformationBasedOnAmount(SyncVehicleLookupsCommand request)
     {
         request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
 
-        if (request.MaxInsertAmount == UpsertVehicleLookupsCommand.InsertAll)
+        if (request.MaxInsertAmount == SyncVehicleLookupsCommand.InsertAll)
         {
             request.QueueService.LogInformation($"Insert all available vehicle lookups");
         }
@@ -183,7 +184,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             request.QueueService.LogInformation($"Insert {_maxInsertAmount} vehicle lookups");
         }
 
-        if (request.MaxUpdateAmount == UpsertVehicleLookupsCommand.UpdateAll)
+        if (request.MaxUpdateAmount == SyncVehicleLookupsCommand.UpdateAll)
         {
             request.QueueService.LogInformation($"Update all available vehicle lookups");
         }
@@ -193,75 +194,24 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
         }
     }
 
-    private bool ShouldStopProcessing(int indexCount, UpsertVehicleLookupsCommand request, CancellationToken cancellationToken)
+    private bool ShouldStopProcessing(int indexCount, SyncVehicleLookupsCommand request, CancellationToken cancellationToken)
     {
-        if(indexCount >= request.EndRowIndex)
+        if (indexCount >= request.EndRowIndex)
         {
             return true;
         }
 
-        return (HasReachedInsertLimit(request) && HasReachedUpdateLimit(request)) || cancellationToken.IsCancellationRequested;
+        return HasReachedInsertLimit(request) && HasReachedUpdateLimit(request) || cancellationToken.IsCancellationRequested;
     }
 
-    private bool HasReachedInsertLimit(UpsertVehicleLookupsCommand request)
+    private bool HasReachedInsertLimit(SyncVehicleLookupsCommand request)
     {
-        return (request.MaxInsertAmount > 0 && _maxInsertAmount <= 0) || (request.MaxInsertAmount == -1 && _maxInsertAmount == 0);
+        return request.MaxInsertAmount > 0 && _maxInsertAmount <= 0 || request.MaxInsertAmount == -1 && _maxInsertAmount <= 0;
     }
 
-    private bool HasReachedUpdateLimit(UpsertVehicleLookupsCommand request)
+    private bool HasReachedUpdateLimit(SyncVehicleLookupsCommand request)
     {
-        return (request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0) || (request.MaxUpdateAmount == -1 && _maxUpdateAmount == 0);
-    }
-
-
-    public static bool UpdateVehicleRecord(VehicleBasicsDtoItem? vehicle, VehicleLookupItem vehicleLookup, DateTime upsertOnlyLastModifiedOlderThan)
-    {
-        bool somethingChanged = HasChangesRecord(vehicleLookup, vehicle, upsertOnlyLastModifiedOlderThan);
-        if (!somethingChanged)
-        {
-            return false;
-        }
-
-        // Update vehicleLookup details
-        vehicleLookup.DateOfMOTExpiry = vehicle.MOTExpiryDateDt;
-        vehicleLookup.DateOfAscription = vehicle.RegistrationDateDt;
-        vehicleLookup.LastModified = DateTime.UtcNow;
-        vehicleLookup.LastModifiedBy = $"system";
-
-        return true;
-    }
-
-    private static bool HasChangesRecord(VehicleLookupItem vehicleLookup, VehicleBasicsDtoItem vehicle, DateTime upsertOnlyLastModifiedOlderThan)
-    {
-
-        var sameExpirationDate = vehicleLookup.DateOfMOTExpiry == vehicle.MOTExpiryDateDt;
-        var sameRegistrationDate = vehicleLookup.DateOfAscription == vehicle.RegistrationDateDt;
-        if (vehicleLookup!.LastModified >= upsertOnlyLastModifiedOlderThan)
-        {
-            return false;
-        }
-        else if (sameExpirationDate && sameRegistrationDate)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static VehicleLookupItem CreateVehicleRecord(VehicleBasicsDtoItem vehicle)
-    {
-        var vehicleLookup = new VehicleLookupItem
-        {
-            LicensePlate = vehicle.LicensePlate,
-            DateOfMOTExpiry = vehicle.MOTExpiryDateDt,
-            DateOfAscription = vehicle.RegistrationDateDt,
-            Created = DateTime.UtcNow,
-            CreatedBy = $"system",
-            LastModified = DateTime.UtcNow,
-            LastModifiedBy = $"system"
-        };
-
-        return vehicleLookup;
+        return request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0 || request.MaxUpdateAmount == -1 && _maxUpdateAmount <= 0;
     }
 
 }
