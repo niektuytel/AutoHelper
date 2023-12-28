@@ -5,7 +5,7 @@ using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
-namespace AutoHelper.Hangfire.WebUI.Services;
+namespace AutoHelper.Hangfire.Dashboard;
 
 public class CurrentUserService : ICurrentUserService
 {

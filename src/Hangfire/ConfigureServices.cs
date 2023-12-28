@@ -113,9 +113,9 @@ public static class ConfigureServices
         }
     }
 
-    public static void UseHangfireDashboardInstance(this WebApplication app)
+    public static void UseHangfireDashboardInstance(this WebApplication app, string matchPath = "/hangfire")
     {
-        app.UseHangfireDashboard("", new DashboardOptions()
+        app.UseHangfireDashboard(matchPath, new DashboardOptions()
         {
             Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) },
             DisplayStorageConnectionString = false,

@@ -4,12 +4,12 @@ using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles.Commands.UpsertVehicleLookups;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Hangfire.WebUI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Common.Interfaces;
+using AutoHelper.Hangfire.Dashboard;
 
 internal static class Program
 {
@@ -42,7 +42,7 @@ internal static class Program
 
         using var scope = app.Services.CreateScope();
         app.UseHangfireServices(scope);
-        app.UseHangfireDashboardInstance();
+        app.UseHangfireDashboardInstance(matchPath: "");
 
         app.Run();
     }

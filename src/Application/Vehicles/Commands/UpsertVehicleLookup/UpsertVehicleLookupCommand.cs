@@ -42,17 +42,68 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             return "Vehicle does not exist";
         }
 
-        // remove existing lookup
-        var dbVehicle = _dbContext.VehicleLookups.FirstOrDefault(v => v.LicensePlate == request.LicensePlate);
-        if (dbVehicle != null)
+        var vehicleLookup = _dbContext.VehicleLookups.FirstOrDefault(v => v.LicensePlate == vehicle.LicensePlate);
+        var onInsert = vehicleLookup == null;
+
+        if (onInsert)
         {
-            _dbContext.VehicleLookups.Remove(dbVehicle);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            vehicleLookup = CreateVehicleRecord(vehicle);
+        }
+        else
+        {
+            var hasChanges = UpdateVehicleRecord(vehicle, vehicleLookup!);
+            if (hasChanges == false)
+            {
+                return "Vehicle has no changed";
+            }
         }
 
+        if (onInsert)
+        {
+            _dbContext.VehicleLookups.Add(vehicleLookup!);
+        }
+        else
+        {
+            _dbContext.VehicleLookups.Update(vehicleLookup!);
+        }
 
-        // create new lookup
-        dbVehicle = new VehicleLookupItem
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return $"Done processing license:{request.LicensePlate}";
+    }
+
+    public static bool UpdateVehicleRecord(VehicleBasicsDtoItem? vehicle, VehicleLookupItem vehicleLookup)
+    {
+        bool somethingChanged = HasChangesRecord(vehicleLookup, vehicle);
+        if (!somethingChanged)
+        {
+            return false;
+        }
+
+        // Update vehicleLookup details
+        vehicleLookup.DateOfMOTExpiry = vehicle.MOTExpiryDateDt;
+        vehicleLookup.DateOfAscription = vehicle.RegistrationDateDt;
+        vehicleLookup.LastModified = DateTime.UtcNow;
+        vehicleLookup.LastModifiedBy = $"system";
+
+        return true;
+    }
+
+    private static bool HasChangesRecord(VehicleLookupItem vehicleLookup, VehicleBasicsDtoItem vehicle)
+    {
+        var sameExpirationDate = vehicleLookup.DateOfMOTExpiry == vehicle.MOTExpiryDateDt;
+        var sameRegistrationDate = vehicleLookup.DateOfAscription == vehicle.RegistrationDateDt;
+        if (sameExpirationDate && sameRegistrationDate)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static VehicleLookupItem CreateVehicleRecord(VehicleBasicsDtoItem vehicle)
+    {
+        var vehicleLookup = new VehicleLookupItem
         {
             LicensePlate = vehicle.LicensePlate,
             DateOfMOTExpiry = vehicle.MOTExpiryDateDt,
@@ -63,10 +114,8 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<UpsertVehicleL
             LastModifiedBy = $"system"
         };
 
-        _dbContext.VehicleLookups.Add(dbVehicle);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
-        return $"Done processing license:{request.LicensePlate}";
+        return vehicleLookup;
     }
+
 
 }
