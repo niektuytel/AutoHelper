@@ -72,8 +72,6 @@ export default ({ }: IProps) => {
     }
 
     const imageUrl = `${process.env.REACT_APP_GARAGE_IMAGES_BLOB_URL}/${garageLookup?.image}`;
-    console.log(imageUrl);
-
     const showConversation = garageLookup?.conversationContactEmail !== null || garageLookup?.conversationContactWhatsappNumber !== null;
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
