@@ -97,7 +97,7 @@ internal class GarageService : IGarageService
         return !company.GetFormattedAddress().Equals(garage.Address, StringComparison.OrdinalIgnoreCase);
     }
 
-    private async Task<GarageLookupItem> CreateLookup(RDWCompany company)
+    private async Task<GarageLookupItem?> CreateLookup(RDWCompany company)
     {
         var identifier = company.Volgnummer.ToString();
         var name = company.Naambedrijf.ToPascalCase();
@@ -117,11 +117,18 @@ internal class GarageService : IGarageService
         };
 
         garage = await SetInformationFromGoogle(garage);
+
+        // Does not exist on google, or is not been seen as active. (ignore it)
+        if (garage == null)
+        {
+            return null;
+        }
+
         garage = await SetInformationFromWebScraper(garage);
         return garage;
     }
 
-    private async Task<GarageLookupItem> UpdateLookup(RDWCompany company, GarageLookupItem garage)
+    private async Task<GarageLookupItem?> UpdateLookup(RDWCompany company, GarageLookupItem garage)
     {
         var name = company.Naambedrijf.ToPascalCase();
         var address = company.GetFormattedAddress();
@@ -131,9 +138,16 @@ internal class GarageService : IGarageService
         garage.Address = address;
         garage.City = city;
 
-        garage = await SetInformationFromGoogle(garage);
-        garage = await SetInformationFromWebScraper(garage);
-        return garage;
+        var updatedGarage = await SetInformationFromGoogle(garage);
+
+        // Does not exist on google, or is not been seen as active. (ignore it)
+        if (updatedGarage == null)
+        {
+            return null;
+        }
+
+        updatedGarage = await SetInformationFromWebScraper(updatedGarage);
+        return updatedGarage;
     }
 
     public async Task<(
@@ -174,23 +188,31 @@ internal class GarageService : IGarageService
         return service;
     }
 
-    private async Task<GarageLookupItem> SetInformationFromGoogle(GarageLookupItem item)
+    /// <returns>
+    /// return null when the garage is not found on google maps, or is not active.
+    /// </returns>
+    private async Task<GarageLookupItem?> SetInformationFromGoogle(GarageLookupItem item)
     {
         // Get place id from the given name, address and city
         var placeId = await _googleApiClient.SearchPlaceIdFromTextQuery($"{item.Name} in {item.Address}, {item.City}");
         if (placeId == null)
         {
-            return item;
+            return null;
         }
 
         // Get details from the given place id
         var placeDetailsJson = await _googleApiClient.GetPlaceDetailsFromPlaceId(placeId);
         if (placeDetailsJson == null)
         {
-            throw new Exception("Error fetching data from Google Maps API");
+            return null;
         }
 
         var details = JsonSerializer.Deserialize<GoogleApiDetailPlaceItem>(placeDetailsJson)!;
+        if (details?.result?.business_status?.ToUpper() != "OPERATIONAL")
+        {
+            return null;
+        }
+
         var reference = details.result.photos?[0].photo_reference;
         if (!string.IsNullOrEmpty(reference))
         {
@@ -206,6 +228,7 @@ internal class GarageService : IGarageService
             }
         }
 
+        item.Name = details.result.name;
         item.Status = details.result.business_status;
         item.DaysOfWeek = details.result.opening_hours?.weekday_text;
         item.PhoneNumber = details.result.formatted_phone_number;
@@ -219,8 +242,6 @@ internal class GarageService : IGarageService
         item.Website = details.result.website;
         item.Rating = details.result.rating;
         item.UserRatingsTotal = details.result.user_ratings_total;
-
-        // TODO: Get opening hours from website
 
         return item;
     }

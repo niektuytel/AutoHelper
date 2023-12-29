@@ -81,7 +81,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleT
         int numberOfBatches = CalculateNumberOfBatches(request.BatchSize, totalVehicleRecords);
         for (int i = 0; i < numberOfBatches; i++)
         {
-            var start = request.StartRowIndex + i * request.BatchSize;
+            var start = request.StartRowIndex + (i * request.BatchSize);
             if (ShouldStopProcessing(start, request, cancellationToken))
             {
                 break;
@@ -141,7 +141,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleT
 
     private int CalculateNumberOfBatches(int batchSize, int totalRecords)
     {
-        return totalRecords / batchSize + (totalRecords % batchSize > 0 ? 1 : 0);
+        return (totalRecords / batchSize) + (totalRecords % batchSize > 0 ? 1 : 0);
     }
 
     private async Task<(List<VehicleTimelineItem> InsertTimelineItems, List<VehicleTimelineItem> UpdateTimelineItems)> ProcessVehicleBatchAsync(Dictionary<string, VehicleLookupItem> batch, SyncVehicleTimelinesCommand request, CancellationToken cancellationToken)

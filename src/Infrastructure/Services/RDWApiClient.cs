@@ -455,7 +455,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Service,
                     VehicleType = VehicleType.Any,
-                    Title = "Voertuig Slopen",
+                    Title = "Voertuig slopen",
                     Description = "Veilig ontmantelen en recyclen van oude en beschadigde voertuigen."
                 });
                 break;
@@ -473,7 +473,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Motorcycle,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
@@ -482,7 +482,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.LightCar,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
@@ -491,7 +491,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Taxi,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
@@ -503,7 +503,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.HeavyCar,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
@@ -512,7 +512,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Bus,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
@@ -521,7 +521,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Truck,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true,
                     ExpectedNextOdometerReadingIsRequired = true
@@ -533,7 +533,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Tractor,
-                    Title = "APK keuring",
+                    Title = "APK keuren",
                     Description = "Een wettelijk verplichte keuring om de verkeersveiligheid, milieuaspecten en registratie van uw voertuig te controleren en te waarborgen.",
                     ExpectedNextDateIsRequired = true
                 });
@@ -561,7 +561,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Service,
                     VehicleType = VehicleType.Any,
-                    Title = "Gas Installatie Onderhoud",
+                    Title = "Gas installatie onderhoud",
                     Description = "RDW Gecertificeerd voor onderhoud en reparatie van voertuig gasinstallaties."
                 });
                 break;
@@ -571,7 +571,7 @@ internal partial class RDWApiClient
                 {
                     Type = GarageServiceType.Inspection,
                     VehicleType = VehicleType.Taxi,
-                    Title = "Taxi Computer Onderhoud",
+                    Title = "Taxi computer onderhoud",
                     Description = "RDW Gecertificeerd voor onderhoud en reparatie van gespecialiseerde computersystemen voor taxi's."
                 });
                 break;

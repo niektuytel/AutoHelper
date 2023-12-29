@@ -19,10 +19,7 @@ public class SyncGarageLookupsCommandValidator : AbstractValidator<SyncGarageLoo
         // Validation for EndRowIndex
         RuleFor(command => command.EndRowIndex)
             .GreaterThanOrEqualTo(SyncGarageLookupsCommand.DefaultEndingRowIndex)
-            .WithMessage("End row index must be -1 or greater.")
-            .When(command => command.EndRowIndex != SyncGarageLookupsCommand.DefaultEndingRowIndex)
-            .GreaterThanOrEqualTo(command => command.StartRowIndex)
-            .WithMessage("End row index must be greater than or equal to start row index.");
+            .WithMessage("End row index must be -1 or greater.");
 
         // Validation for MaxInsertAmount
         RuleFor(command => command.MaxInsertAmount)

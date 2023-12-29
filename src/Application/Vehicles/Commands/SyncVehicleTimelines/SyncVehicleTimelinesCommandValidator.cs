@@ -33,5 +33,8 @@ public class SyncVehicleTimelinesCommandValidator : AbstractValidator<SyncVehicl
         RuleFor(command => command.BatchSize)
             .GreaterThan(0)
             .WithMessage("Batch size must be greater than 0.");
+
+        RuleFor(command => command.QueueService)
+            .NotNull().WithMessage("Required to run in a QueueService");
     }
 }

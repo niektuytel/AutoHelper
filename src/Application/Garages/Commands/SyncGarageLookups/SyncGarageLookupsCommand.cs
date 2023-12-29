@@ -76,12 +76,12 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
         int numberOfBatches = CalculateNumberOfBatches(request.BatchSize, totalRecords);
         for (int i = 0; i < numberOfBatches; i++)
         {
-            if (ShouldStopProcessing(request, cancellationToken))
+            var start = request.StartRowIndex + (i * request.BatchSize);
+            if (ShouldStopProcessing(start, request, cancellationToken))
             {
                 break;
             }
 
-            var start = request.StartRowIndex + (i * request.BatchSize);
             var batch = await _garageService.GetRDWCompanies(start, request.BatchSize);
 
             var (garageItemsToInsert, garageItemsToUpdate, garageServicesToInsert, garageServicesToRemove) = await ProcessGarageBatchAsync(batch, request, cancellationToken);
@@ -111,7 +111,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
             );
         }
 
-        var message = $"Operation finished. Inserted: {request.MaxInsertAmount - _maxInsertAmount}, Updated: {request.MaxUpdateAmount - _maxUpdateAmount}";
+        var message = $"Task finished.";
         request.QueueService.LogInformation(message);
         return Unit.Value;
 
@@ -120,11 +120,17 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
     private async Task<int> CalculateTotalRecords(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         int totalRecords = await _garageService.GetRDWCompaniesCount();
+
+        // get only omount from start to end row index
         if (request.EndRowIndex > 0)
         {
             totalRecords = request.EndRowIndex - request.StartRowIndex;
+        }
+        else
+        {
             request.EndRowIndex = totalRecords;
         }
+
         return totalRecords;
     }
 
@@ -196,26 +202,31 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
 
                 var storedGarage = storedGarages.FirstOrDefault(x => x.Identifier == identifier);
                 var (itemToInsert, itemToUpdate) = await _garageService.UpsertLookup(storedGarage, company);
-                if (itemToInsert != null)
+                if (itemToInsert != null || itemToUpdate != null)
                 {
-                    garagesToInsert.Add(itemToInsert);
-                    _maxInsertAmount--;
-                }
-                if (itemToUpdate != null)
-                {
-                    garagesToUpdate.Add(itemToUpdate);
-                    _maxUpdateAmount--;
-                }
+                    if (itemToInsert != null)
+                    {
+                        garagesToInsert.Add(itemToInsert);
+                        _maxInsertAmount--;
+                    }
 
-                // Always check the services as they can change very often
-                var (itemsToInsert, itemsToRemove) = await _garageService.UpsertLookupServices(storedGarage?.Services, rdwServices, identifier);
-                if (itemsToInsert?.Any() == true)
-                {
-                    garageServicesToInsert.AddRange(itemsToInsert);
-                }
-                if (itemsToRemove?.Any() == true)
-                {
-                    garageServicesToRemove.AddRange(itemsToRemove);
+                    if (itemToUpdate != null)
+                    {
+                        garagesToUpdate.Add(itemToUpdate);
+                        _maxUpdateAmount--;
+                    }
+
+                    // Always check the services as they can change very often
+                    var (itemsToInsert, itemsToRemove) = await _garageService.UpsertLookupServices(storedGarage?.Services, rdwServices, identifier);
+                    if (itemsToInsert?.Any() == true)
+                    {
+                        garageServicesToInsert.AddRange(itemsToInsert);
+                    }
+
+                    if (itemsToRemove?.Any() == true)
+                    {
+                        garageServicesToRemove.AddRange(itemsToRemove);
+                    }
                 }
 
                 if (_maxInsertAmount <= 0 && _maxUpdateAmount <= 0)
@@ -232,8 +243,13 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
         return (garagesToInsert, garagesToUpdate, garageServicesToInsert, garageServicesToRemove);
     }
 
-    private bool ShouldStopProcessing(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
+    private bool ShouldStopProcessing(int startIndex, SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
+        if (startIndex >= request.EndRowIndex)
+        {
+            return true;
+        }
+
         return (HasReachedInsertLimit(request) && HasReachedUpdateLimit(request)) || cancellationToken.IsCancellationRequested;
     }
 
@@ -243,8 +259,8 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
     }
 
     private bool HasReachedUpdateLimit(SyncGarageLookupsCommand request)
-        {
-            return (request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0) || (request.MaxUpdateAmount == -1 && _maxUpdateAmount == 0);
-        }
+    {
+        return (request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0) || (request.MaxUpdateAmount == -1 && _maxUpdateAmount == 0);
+    }
 
 }
