@@ -32,7 +32,7 @@ public class AdminAccountController: ApiControllerBase
         [FromQuery] int endRowIndex = -1,
         [FromQuery] int maxInsertAmount = -1,
         [FromQuery] int maxUpdateAmount = 0,
-        [FromQuery] int batchSize = 1000
+        [FromQuery] int batchSize = 100
     )
     {
         var command = new SyncGarageLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);

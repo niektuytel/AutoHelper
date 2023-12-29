@@ -32,7 +32,7 @@ public record SyncGarageLookupsCommand : IQueueRequest
         int endRowIndex = DefaultEndingRowIndex,
         int maxInsertAmount = InsertAll,
         int maxUpdateAmount = UpdateAll,
-        int batchSize = 10000
+        int batchSize = 10
     )
     {
         StartRowIndex = startRowIndex;

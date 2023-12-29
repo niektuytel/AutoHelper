@@ -36,11 +36,7 @@ public static class ConfigureServices
         {
             config.UseSqlServerStorage(hangfireConnection, new SqlServerStorageOptions
             {
-                InvisibilityTimeout = TimeSpan.FromDays(1)//,
-                //SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-                //QueuePollInterval = TimeSpan.Zero,
-                //UseRecommendedIsolationLevel = true,
-                //DisableGlobalLocks = true
+                InvisibilityTimeout = TimeSpan.FromDays(1)
             })
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
             .UseSimpleAssemblyNameTypeSerializer()
@@ -113,10 +109,7 @@ public static class ConfigureServices
     {
         app.UseHangfireDashboard(matchPath, new DashboardOptions()
         {
-            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) },
-            DisplayStorageConnectionString = false,
-            DashboardTitle = "Hangfire Dashboard",
-            StatsPollingInterval = 5000
+            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
         });
     }
 }
