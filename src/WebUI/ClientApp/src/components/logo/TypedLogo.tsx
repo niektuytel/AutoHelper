@@ -7,7 +7,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 export const styles = {
     root: {
         color:"black", 
-        fontFamily:"Dubai light",//"'Nunito', sans-serif",
+        fontFamily: "Dubai, sans-serif",
+        fontWeight: 100,
+        fontStyle: "normal",
         cursor:"pointer",
         marginTop:"5px"
     }

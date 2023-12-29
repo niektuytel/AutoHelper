@@ -16,6 +16,7 @@ public class GarageLookupBriefDto
         GarageId = garageLookupItem.GarageId;
         Identifier = garageLookupItem.Identifier;
         Name = garageLookupItem.Name;
+        ImageThumbnail = garageLookupItem.ImageThumbnail;
         Address = garageLookupItem.Address;
         City = garageLookupItem.City;
         Website = garageLookupItem.Website;
@@ -31,6 +32,8 @@ public class GarageLookupBriefDto
     public string Identifier { get; set; }
 
     public string Name { get; set; }
+
+    public string? ImageThumbnail { get; set; }
 
     public string Address { get; set; }
 

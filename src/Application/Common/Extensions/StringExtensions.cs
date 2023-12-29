@@ -10,7 +10,7 @@ namespace AutoHelper.Application.Common.Extensions;
 
 public static class StringExtensions
 {
-    public static string ToPascalCase(this string str)
+    public static string ToTitleCase(this string str)
     {
         // First, remove any non-alphanumeric characters and convert to lower case
         string cleanStr = Regex.Replace(str, "[^a-zA-Z0-9]", " ").ToLower();
@@ -27,7 +27,7 @@ public static class StringExtensions
             }
         }
 
-        // Combine the words back into a single string
-        return string.Concat(words);
+        // Combine the words back into a single string, with spaces
+        return string.Join(" ", words);
     }
 }

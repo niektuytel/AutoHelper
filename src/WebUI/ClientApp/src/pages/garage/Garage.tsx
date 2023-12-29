@@ -70,7 +70,10 @@ export default ({ }: IProps) => {
     {
         // TODO: handle garage specific page
     }
-    const imageUrl = `http://127.0.0.1:10000/devstoreaccount1/garage-images/${garageLookup?.image}`;
+
+    const imageUrl = `${process.env.REACT_APP_GARAGE_IMAGES_BLOB_URL}/${garageLookup?.image}`;
+    console.log(imageUrl);
+
     const showConversation = garageLookup?.conversationContactEmail !== null || garageLookup?.conversationContactWhatsappNumber !== null;
     return <>
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(-1)} />

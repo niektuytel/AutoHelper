@@ -5,7 +5,7 @@ const CopyRight = () => {
     return <>
         <Box sx={{textAlign:"center"}}>
             <small>
-                ©{new Date().getFullYear()} Copyright: <a href={window.location.href}>{window.location.host}</a> (v1)
+                2023-{new Date().getFullYear()} <a href={window.location.href}>{window.location.host}</a>
             </small>
         </Box>
     </>

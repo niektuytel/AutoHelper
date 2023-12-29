@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -20,6 +20,7 @@ import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnack
 import { useDispatch } from 'react-redux';
 import useVehicleServiceLogs from '../../useVehicleServiceLogs';
 import useGarageServiceTypes from './useGarageServiceTypes';
+import { ServiceLogDrawerContext } from '../../../../context/ServiceLogDrawerContext';
 
 interface IServiceLogDrawerProps {
     licensePlate: string;
@@ -42,7 +43,6 @@ const steps = ['AddMaintenanceLog.Step.Garage.Title', 'AddMaintenanceLog.Step.Ve
 
 export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
-    const [drawerOpen, setDrawerOpen] = useState(false);
     const { addServiceLog } = useVehicleServiceLogs(licensePlate);
     const dispatch = useDispatch();
     const [selectedService, setSelectedService] = useState<GarageServiceDtoItem | undefined>(undefined);
@@ -51,9 +51,16 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogDrawerData>();
     const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
-
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+
+    const context = useContext(ServiceLogDrawerContext);
+
+    if (!context) {
+        throw new Error("DrawerComponent must be used within a DrawerProvider");
+    }
+
+    const { drawerOpen, toggleDrawer } = context;
 
     const handleNext = (data: IServiceLogDrawerData) => {
 
@@ -116,7 +123,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const handleBack = () => {
         if (activeStep === 0)
         {
-            setDrawerOpen(false);
+            toggleDrawer(false);
         }
         else
         {
@@ -156,7 +163,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 setValue('expectedNextOdometerReading', 0);
 
                 addServiceLog(response);
-                setDrawerOpen(false);
+                toggleDrawer(false);
                 setActiveStep(0);
             } catch (error) {
                 console.error('Error:', error);
@@ -178,7 +185,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         <Drawer
             anchor="right"
             open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
+            onClose={() => toggleDrawer(false)}
             sx={{
                 '& .MuiDrawer-paper': {
                     width: isMobile ? '100%' : '600px',
@@ -197,7 +204,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 <Typography variant="h6" component="div">
                     {t("AddMaintenanceLog.Title")}
                 </Typography>
-                <IconButton onClick={() => setDrawerOpen(false)}>
+                <IconButton onClick={() => toggleDrawer(false)}>
                     <CloseIcon />
                 </IconButton>
             </Toolbar>
@@ -257,7 +264,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 borderRadius: 10,
                 zIndex: 1000
             }}
-            onClick={() => setDrawerOpen(true)}
+            onClick={() => toggleDrawer(true)}
             endIcon={<AddIcon />}
         >
             {t("Maintenance")}

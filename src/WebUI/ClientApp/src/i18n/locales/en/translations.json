@@ -218,6 +218,9 @@
   "AddMaintenanceLog.LicensePlate.Label": "Licence plate, e.g. 87-GRN-6",
   "AddMaintenanceLog.LicensePlate.Required": "Required to define an vehicle",
 
+  "ServiceLogsIsEmpty.Title": "Servicelogs are empty",
+  "ServiceLogsIsEmpty.Button": "Click here",
+
 
 
 

@@ -46,7 +46,7 @@ internal class VehicleService : IVehicleService
             .Replace($"{mark} ", "");
             
             //.ToCamelCase()
-        var brandText = $"{mark.ToPascalCase()} ({tradingMark.ToPascalCase()}){fromText}";
+        var brandText = $"{mark.ToTitleCase()} ({tradingMark.ToTitleCase()}){fromText}";
         var mileage = data.GetSafeValue("tellerstandoordeel");
         var response = new VehicleSpecificationsCardItem
         {

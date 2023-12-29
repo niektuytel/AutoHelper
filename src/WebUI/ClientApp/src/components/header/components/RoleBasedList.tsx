@@ -22,6 +22,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import useConfirmationStep from '../../../hooks/useConfirmationStep';
 import useUserRole from '../../../hooks/useUserRole';
 import { use } from 'i18next';
+import { ServiceLogDrawerContext } from '../../../context/ServiceLogDrawerContext';
 
 interface RoleBasedListProps {
     setOnMenu?: (value: boolean) => void;
@@ -35,6 +36,14 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const context = useContext(ServiceLogDrawerContext);
+
+    if (!context) {
+        throw new Error("DrawerComponent must be used within a DrawerProvider");
+    }
+
+    const { toggleDrawer } = context;
+
 
     // update design when index changed
     useEffect(() => {
@@ -45,6 +54,11 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
 
 
     const handleClick2 = () => setOpen(!open);
+
+    const handleClickAddServiceLog = () => {
+        // TODO: issue i have is that i do not have the knowledge of the current vehicle, so i cannot pass it to the service log page
+        toggleDrawer(true);
+    }
 
     const ListItemLink = ({ primary, icon, to, disabled = false }: { primary: string; icon: JSX.Element; to: string, disabled?: boolean }) => (
         <ListItem
@@ -74,19 +88,28 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         return (
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />
-                {/*<ListItemLink primary={t('Add Maintenance')} icon={<AddIcon />} to={`${ROUTES.SELECT_VEHICLE}?open_maintenance_drawer=true`} />*/}
-                <ListItemButton onClick={handleClick2}>
+                <ListItem
+                    button
+                    disabled={false}
+                    onClick={() => { toggleDrawer(true); setOnMenu && setOnMenu(false); }}
+                >
                     <ListItemIcon>
-                        <AccountBoxIcon />
+                        {React.cloneElement(<AddIcon />, { color: 'action' })}
                     </ListItemIcon>
-                    <ListItemText primary={t('account_camelcase')} />
-                    {open ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        <ListItemLink primary={t('overview_camelcase')} icon={<HomeIcon />} to={ROUTES.USER.OVERVIEW} />
-                    </List>
-                </Collapse>
+                    <ListItemText primary={t('AddMaintenanceLog.Title')} />
+                </ListItem>
+                {/*<ListItemButton onClick={handleClick2}>*/}
+                {/*    <ListItemIcon>*/}
+                {/*        <AccountBoxIcon />*/}
+                {/*    </ListItemIcon>*/}
+                {/*    <ListItemText primary={t('account_camelcase')} />*/}
+                {/*    {open ? <ExpandLess /> : <ExpandMore />}*/}
+                {/*</ListItemButton>*/}
+                {/*<Collapse in={open} timeout="auto" unmountOnExit>*/}
+                {/*    <List component="div" disablePadding>*/}
+                {/*        <ListItemLink primary={t('overview_camelcase')} icon={<HomeIcon />} to={ROUTES.USER.OVERVIEW} />*/}
+                {/*    </List>*/}
+                {/*</Collapse>*/}
             </List>
         );
     }

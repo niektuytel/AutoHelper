@@ -56,7 +56,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                 ref={headerRef}
                 sx={(showStaticDrawer && !onMenu) ? { zIndex: (theme) => theme.zIndex.drawer + 1 } : {}}
                 style={{
-                    boxShadow: "none",
+                    boxShadow: `none`,
                     borderBottom: `1px solid ${COLORS.BORDER_GRAY}`,
                     zIndex: 1
                 }}

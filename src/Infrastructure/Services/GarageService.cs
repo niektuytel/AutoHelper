@@ -100,9 +100,9 @@ internal class GarageService : IGarageService
     private async Task<GarageLookupItem?> CreateLookup(RDWCompany company)
     {
         var identifier = company.Volgnummer.ToString();
-        var name = company.Naambedrijf.ToPascalCase();
+        var name = company.Naambedrijf.ToTitleCase();
         var address = company.GetFormattedAddress();
-        var city = company.Plaats.ToPascalCase();
+        var city = company.Plaats.ToTitleCase();
 
         var garage = new GarageLookupItem()
         {
@@ -130,9 +130,9 @@ internal class GarageService : IGarageService
 
     private async Task<GarageLookupItem?> UpdateLookup(RDWCompany company, GarageLookupItem garage)
     {
-        var name = company.Naambedrijf.ToPascalCase();
+        var name = company.Naambedrijf.ToTitleCase();
         var address = company.GetFormattedAddress();
-        var city = company.Plaats.ToPascalCase();
+        var city = company.Plaats.ToTitleCase();
 
         garage.Name = name;
         garage.Address = address;

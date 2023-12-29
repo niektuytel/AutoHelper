@@ -60,6 +60,7 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
         uniqueTypes.add(service.type);
         return isUnique && service.type !== GarageServiceType.Other;
     });
+    const openDays = [...new Set(garage.daysOfWeek?.filter(day => (day.match(/:/g) || []).length === 3) || [])]
 
     return <>
         <Paper
@@ -82,6 +83,16 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
             onMouseLeave={handleMouseLeave}
             onClick={handleClick}
         >
+
+            {/*<img*/}
+            {/*    src={`${process.env.GARAGE_IMAGES_BLOB_URL}/${garage.}`}*/}
+            {/*    alt="Garage"*/}
+            {/*    style={{*/}
+            {/*        width: '100%',*/}
+            {/*        height: '100%',*/}
+            {/*        objectFit: 'cover'*/}
+            {/*    }}*/}
+            {/*/>*/}
             <Box
                 style={{
                     display: "flex",
@@ -126,7 +137,7 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
                     </Typography>
                     <Typography variant="body1" sx={{ color: 'grey.600' }}>
                         <AccessTimeIcon fontSize='small' sx={{ mr: "4px" }} />
-                        {`${[...new Set(garage.daysOfWeek?.filter(day => day.includes(': ')) || [])].map((day, dayIndex) => t(DAYSINWEEKSHORT[dayIndex!]))}`}
+                        {`${openDays.map((day, dayIndex) => t(DAYSINWEEKSHORT[dayIndex!]))}`}
                     </Typography>
                     <Box>
                         {uniqueServices?.map(service => (

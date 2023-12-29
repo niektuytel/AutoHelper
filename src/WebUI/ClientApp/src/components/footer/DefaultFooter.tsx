@@ -5,6 +5,7 @@ import useCookies from "react-cookie/cjs/useCookies";
 import { NL, EN } from "../../i18n/LanguageKeys";
 import TypedLogo from "../logo/TypedLogo";
 import CopyRight from "./components/CopyRight";
+import { COLORS } from "../../constants/colors";
 
 const Footer = () => {
     const [cookies, setCookie] = useCookies(['language']);
@@ -23,7 +24,11 @@ const Footer = () => {
     };
 
     return (
-        <footer style={{ backgroundColor: "#f7f7f7", padding: "10px" }}>
+        <footer style={{
+            backgroundColor: "#f7f7f7",
+            padding: "10px",
+            borderTop: `1px solid ${COLORS.BORDER_GRAY}`
+        }}>
                 <Box ml={4} mr={4}>
                     {/* Use flexbox on the container Grid to center the items */}
                     <Grid container justifyContent="center" alignItems="center" style={{ height: '100%' }}>

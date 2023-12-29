@@ -1,10 +1,12 @@
-﻿import React, { useEffect, useState } from "react";
-import { Paper } from '@mui/material';
+﻿import React, { useContext, useEffect, useState } from "react";
+import { Box, Button, Paper } from '@mui/material';
 
 // own imports
 import useVehicleServiceLogs from "../../useVehicleServiceLogs";
 import VehicleServiceLogItemSkeleton from "./VehicleServiceLogLineSkeleton";
 import VehicleServiceLog from "./VehicleServiceLogLine";
+import { ServiceLogDrawerContext } from "../../../../context/ServiceLogDrawerContext";
+import VehicleServiceLogsIsEmpty from "./VehicleServiceLogsIsEmpty";
 
 interface IProps {
     isMobile: boolean;
@@ -21,7 +23,9 @@ export default ({ isMobile, license_plate }: IProps) => {
                     <VehicleServiceLogItemSkeleton key={`skeleton-${index}`} keyIndex={index} />
                 )
                 :
-                vehicleServiceLogs?.map((logItem, index) => 
+                vehicleServiceLogs?.length === 0 ?
+                    <VehicleServiceLogsIsEmpty />
+                : vehicleServiceLogs?.map((logItem, index) => 
                     <VehicleServiceLog key={`serviceLog-${index}`} keyIndex={index} isMobile={isMobile} license_plate={license_plate} logItem={logItem} />
                 )
             }
