@@ -227,14 +227,14 @@ internal class VehicleTimelineService : IVehicleTimelineService
                 continue;
             }
 
-            var item = CreateServiceLogItem(vehicle.LicensePlate, serviceLog);
+            var item = CreateServiceLogItem(serviceLog);
             itemsToInsert.Add(item);
         }
 
         return itemsToInsert;
     }
 
-    public VehicleTimelineItem CreateServiceLogItem(string licensePlate, VehicleServiceLogItem serviceLog)
+    public VehicleTimelineItem CreateServiceLogItem(VehicleServiceLogItem serviceLog)
     {
         var extraData = new List<Tuple<string, string>>();
         var type = VehicleTimelineType.Service;
@@ -279,7 +279,7 @@ internal class VehicleTimelineService : IVehicleTimelineService
         var timelineItem = new VehicleTimelineItem()
         {
             Id = Guid.NewGuid(),
-            VehicleLicensePlate = licensePlate,
+            VehicleLicensePlate = serviceLog.VehicleLicensePlate,
             VehicleServiceLogId = serviceLog.Id,
             Date = serviceLog.Date.Date,
             Title = title,

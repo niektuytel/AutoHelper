@@ -2,6 +2,7 @@
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.DeleteVehicleTimeline;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
@@ -35,22 +36,19 @@ public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Del
     private readonly IVehicleService _vehicleService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ISender _mediator;
 
-    public DeleteVehicleServiceLogAsGarageCommandHandler(IVehicleService vehicleService, IApplicationDbContext context, IMapper mapper)
+    public DeleteVehicleServiceLogAsGarageCommandHandler(IVehicleService vehicleService, IApplicationDbContext context, IMapper mapper, ISender mediator)
     {
         _vehicleService = vehicleService;
         _context = context;
         _mapper = mapper;
+        _mediator = mediator;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(DeleteVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
-        var timelineEntity = _context.VehicleTimelineItems.FirstOrDefault(x => x.VehicleServiceLogId == request.ServiceLogId);
-        if (timelineEntity != null)
-        {
-            _context.VehicleTimelineItems.Remove(timelineEntity);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        var timelineItem = await _mediator.Send(new DeleteVehicleTimelineCommand(request.ServiceLogId), cancellationToken);
 
         _context.VehicleServiceLogs.Remove(request.ServiceLog);
         await _context.SaveChangesAsync(cancellationToken);

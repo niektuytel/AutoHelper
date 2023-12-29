@@ -10,6 +10,7 @@ using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleTimeline;
 using AutoHelper.Domain;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
@@ -71,12 +72,14 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ISender _mediator;
 
-    public UpdateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper)
+    public UpdateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, ISender mediator)
     {
         _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
+        _mediator = mediator;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(UpdateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
@@ -94,6 +97,12 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         // update entity
         await _context.SaveChangesAsync(cancellationToken);
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
+
+        // This service log is verfied, so ready to go into the timeline
+        if(entity.Status == VehicleServiceLogStatus.VerifiedByGarage)
+        {
+            var timelineItem = await _mediator.Send(new CreateVehicleTimelineCommand(entity), cancellationToken);
+        }
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
     }

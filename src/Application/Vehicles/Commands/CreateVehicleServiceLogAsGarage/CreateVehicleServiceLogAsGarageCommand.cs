@@ -8,6 +8,7 @@ using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleTimeline;
 using AutoHelper.Domain;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
@@ -76,13 +77,15 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly IVehicleTimelineService _vehicleTimelineService;
+    private readonly ISender _mediator;
 
-    public CreateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IVehicleTimelineService vehicleTimelineService)
+    public CreateVehicleServiceLogAsGarageCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IVehicleTimelineService vehicleTimelineService, ISender mediator)
     {
         _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
         _vehicleTimelineService = vehicleTimelineService;
+        _mediator = mediator;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(CreateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
@@ -94,10 +97,8 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        var item = _vehicleTimelineService.CreateServiceLogItem(request.VehicleLicensePlate, entity);
-        _context.VehicleTimelineItems.Add(item);
-        await _context.SaveChangesAsync(cancellationToken);
-        //entity.AddDomainEvent(new SomeDomainEvent(entity));
+        // This service log is verfied, so ready to go into the timeline
+        var timeline = await _mediator.Send(new CreateVehicleTimelineCommand(entity), cancellationToken);
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
     }

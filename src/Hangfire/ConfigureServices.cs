@@ -20,8 +20,6 @@ using Microsoft.Extensions.Hosting;
 using Hangfire.Dashboard;
 using System.Net;
 using Hangfire.Common;
-using Hangfire.Dashboard.Management.v2.Support;
-using Hangfire.Dashboard.Management.v2;
 using Hangfire.SqlServer;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 
@@ -50,7 +48,6 @@ public static class ConfigureServices
             .UseConsole()
             .UseMediatR();
 
-            config.UseManagementPages(typeof(ConfigureServices).Assembly);
         });
 
         builder.Services.AddTransient<IQueueService, HangfireJobService>();
@@ -75,7 +72,6 @@ public static class ConfigureServices
                 nameof(SyncVehicleLookupsCommand).ToLower(),
                 nameof(StartConversationCommand).ToLower(),
             };
-            queues.AddRange(JobsHelper.GetAllQueues());
 
             //options.HeartbeatInterval = TimeSpan.FromSeconds(5);
             options.CancellationCheckInterval = TimeSpan.FromSeconds(5);
@@ -119,7 +115,7 @@ public static class ConfigureServices
         {
             Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) },
             DisplayStorageConnectionString = false,
-            DashboardTitle = "Hangfire Management",
+            DashboardTitle = "Hangfire Dashboard",
             StatsPollingInterval = 5000
         });
     }

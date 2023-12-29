@@ -42,13 +42,20 @@ public class GetVehicleTimelineQueryHandler : IRequestHandler<GetVehicleTimeline
     {
         var query = _context.VehicleTimelineItems
             .AsNoTracking()
-            .Where(x => x.VehicleLicensePlate == request.LicensePlate)
-            .OrderByDescending(x => x.Date)
-            .AsQueryable();
+            .Where(x => x.VehicleLicensePlate == request.LicensePlate);
 
-        if(request.Take > 0)
+        if (request.Take > 0)
         {
-            query = query.Take(request.Take);
+            query = query
+                .OrderByDescending(x => x.Date)
+                .ThenBy(x => x.Type)// Bring MOT succeeded above MOT failed
+                .Take(request.Take);
+        }
+        else
+        {
+            query = query
+                .OrderByDescending(x => x.Date)
+                .ThenBy(x => x.Type);// Bring MOT succeeded above MOT failed
         }
 
         var result = await _mapper

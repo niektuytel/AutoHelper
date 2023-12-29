@@ -6,5 +6,5 @@ namespace AutoHelper.Application.Common.Interfaces;
 public interface IVehicleTimelineService
 {
     Task<List<VehicleTimelineItem>> InsertableTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> defectsBatch, IEnumerable<VehicleInspectionNotificationDtoItem> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions);
-    VehicleTimelineItem CreateServiceLogItem(string licensePlate, VehicleServiceLogItem serviceLog);
+    VehicleTimelineItem CreateServiceLogItem(VehicleServiceLogItem serviceLog);
 }
