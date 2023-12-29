@@ -18,7 +18,5 @@ public class DeleteVehicleTimelineCommandValidator : AbstractValidator<DeleteVeh
     {
         _context = applicationDbContext;
 
-        RuleFor(x => x.ServiceLog.VehicleLicensePlate)
-            .NotEmpty().WithMessage("Vehicle license plate is required.");
     }
 }

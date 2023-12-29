@@ -20,14 +20,14 @@ using Microsoft.Extensions.Logging;
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 
-public record UpsertGarageLookupsCommand : IQueueRequest
+public record SyncGarageLookupsCommand : IQueueRequest
 {
     public const int InsertAll = -1;
     public const int UpdateAll = -1;
     public const int DefaultStartingRowIndex = 0;
     public const int DefaultEndingRowIndex = -1;
 
-    public UpsertGarageLookupsCommand(
+    public SyncGarageLookupsCommand(
         int startRowIndex = DefaultStartingRowIndex,
         int endRowIndex = DefaultEndingRowIndex,
         int maxInsertAmount = InsertAll,
@@ -51,7 +51,7 @@ public record UpsertGarageLookupsCommand : IQueueRequest
     public IQueueService QueueService { get; set; }
 }
 
-public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLookupsCommand>
+public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookupsCommand>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IGarageService _garageService;
@@ -65,7 +65,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
         _garageService = garageService;
     }
 
-    public async Task<Unit> Handle(UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         int totalRecords = await CalculateTotalRecords(request, cancellationToken);
         SetMaxInsertAndUpdateAmounts(request, totalRecords);
@@ -74,66 +74,6 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
         LogInformationBasedOnAmount(request);
 
         int numberOfBatches = CalculateNumberOfBatches(request.BatchSize, totalRecords);
-        await ProcessBatchesAsync(request, numberOfBatches, cancellationToken);
-
-        var message = $"Operation finished. Inserted: {request.MaxInsertAmount - _maxInsertAmount}, Updated: {request.MaxUpdateAmount - _maxUpdateAmount}";
-        request.QueueService.LogInformation(message);
-        return Unit.Value;
-
-    }
-
-    private async Task<int> CalculateTotalRecords(UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
-    {
-        int totalRecords = await _garageService.GetRDWCompaniesCount();
-        if (request.EndRowIndex > 0)
-        {
-            totalRecords = request.EndRowIndex - request.StartRowIndex;
-            request.EndRowIndex = totalRecords;
-        }
-        return totalRecords;
-    }
-
-    private void SetMaxInsertAndUpdateAmounts(UpsertGarageLookupsCommand request, int totalRecords)
-    {
-        _maxInsertAmount = DetermineMaxAmount(request.MaxInsertAmount, totalRecords);
-        _maxUpdateAmount = DetermineMaxAmount(request.MaxUpdateAmount, totalRecords);
-    }
-
-    private int DetermineMaxAmount(int requestedAmount, int totalRecords)
-    {
-        return requestedAmount == UpsertGarageLookupsCommand.InsertAll ? totalRecords : requestedAmount;
-    }
-
-    private void LogInformationBasedOnAmount(UpsertGarageLookupsCommand request)
-    {
-        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
-
-        if (request.MaxInsertAmount == UpsertGarageLookupsCommand.InsertAll)
-        {
-            request.QueueService.LogInformation($"Insert all available garages");
-        }
-        else
-        {
-            request.QueueService.LogInformation($"Insert {_maxInsertAmount} garages");
-        }
-
-        if (request.MaxUpdateAmount == UpsertGarageLookupsCommand.UpdateAll)
-        {
-            request.QueueService.LogInformation($"Update all available garages");
-        }
-        else
-        {
-            request.QueueService.LogInformation($"Update {_maxUpdateAmount} garages");
-        }
-    }
-
-    private int CalculateNumberOfBatches(int batchSize, int totalRecords)
-    {
-        return (totalRecords / batchSize) + (totalRecords % batchSize > 0 ? 1 : 0);
-    }
-
-    private async Task ProcessBatchesAsync(UpsertGarageLookupsCommand request, int numberOfBatches, CancellationToken cancellationToken)
-    {
         for (int i = 0; i < numberOfBatches; i++)
         {
             if (ShouldStopProcessing(request, cancellationToken))
@@ -171,9 +111,63 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
             );
         }
 
+        var message = $"Operation finished. Inserted: {request.MaxInsertAmount - _maxInsertAmount}, Updated: {request.MaxUpdateAmount - _maxUpdateAmount}";
+        request.QueueService.LogInformation(message);
+        return Unit.Value;
+
     }
 
-    private async Task<(List<GarageLookupItem> InsertLookupItems, List<GarageLookupItem> UpdateLookupItems, List<GarageLookupServiceItem> InsertServiceItems, List<GarageLookupServiceItem> RemoveServiceItems)> ProcessGarageBatchAsync(IEnumerable<RDWCompany> batch, UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
+    private async Task<int> CalculateTotalRecords(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
+    {
+        int totalRecords = await _garageService.GetRDWCompaniesCount();
+        if (request.EndRowIndex > 0)
+        {
+            totalRecords = request.EndRowIndex - request.StartRowIndex;
+            request.EndRowIndex = totalRecords;
+        }
+        return totalRecords;
+    }
+
+    private void SetMaxInsertAndUpdateAmounts(SyncGarageLookupsCommand request, int totalRecords)
+    {
+        _maxInsertAmount = DetermineMaxAmount(request.MaxInsertAmount, totalRecords);
+        _maxUpdateAmount = DetermineMaxAmount(request.MaxUpdateAmount, totalRecords);
+    }
+
+    private int DetermineMaxAmount(int requestedAmount, int totalRecords)
+    {
+        return requestedAmount == SyncGarageLookupsCommand.InsertAll ? totalRecords : requestedAmount;
+    }
+
+    private void LogInformationBasedOnAmount(SyncGarageLookupsCommand request)
+    {
+        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
+
+        if (request.MaxInsertAmount == SyncGarageLookupsCommand.InsertAll)
+        {
+            request.QueueService.LogInformation($"Insert all available garages");
+        }
+        else
+        {
+            request.QueueService.LogInformation($"Insert {_maxInsertAmount} garages");
+        }
+
+        if (request.MaxUpdateAmount == SyncGarageLookupsCommand.UpdateAll)
+        {
+            request.QueueService.LogInformation($"Update all available garages");
+        }
+        else
+        {
+            request.QueueService.LogInformation($"Update {_maxUpdateAmount} garages");
+        }
+    }
+
+    private int CalculateNumberOfBatches(int batchSize, int totalRecords)
+    {
+        return (totalRecords / batchSize) + (totalRecords % batchSize > 0 ? 1 : 0);
+    }
+
+    private async Task<(List<GarageLookupItem> InsertLookupItems, List<GarageLookupItem> UpdateLookupItems, List<GarageLookupServiceItem> InsertServiceItems, List<GarageLookupServiceItem> RemoveServiceItems)> ProcessGarageBatchAsync(IEnumerable<RDWCompany> batch, SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         var storedGarages = await _dbContext.GarageLookups
             .AsNoTracking()
@@ -238,17 +232,17 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<UpsertGarageLoo
         return (garagesToInsert, garagesToUpdate, garageServicesToInsert, garageServicesToRemove);
     }
 
-    private bool ShouldStopProcessing(UpsertGarageLookupsCommand request, CancellationToken cancellationToken)
+    private bool ShouldStopProcessing(SyncGarageLookupsCommand request, CancellationToken cancellationToken)
     {
         return (HasReachedInsertLimit(request) && HasReachedUpdateLimit(request)) || cancellationToken.IsCancellationRequested;
     }
 
-    private bool HasReachedInsertLimit(UpsertGarageLookupsCommand request)
+    private bool HasReachedInsertLimit(SyncGarageLookupsCommand request)
     {
         return (request.MaxInsertAmount > 0 && _maxInsertAmount <= 0) || (request.MaxInsertAmount == -1 && _maxInsertAmount == 0);
     }
 
-    private bool HasReachedUpdateLimit(UpsertGarageLookupsCommand request)
+    private bool HasReachedUpdateLimit(SyncGarageLookupsCommand request)
         {
             return (request.MaxUpdateAmount > 0 && _maxUpdateAmount <= 0) || (request.MaxUpdateAmount == -1 && _maxUpdateAmount == 0);
         }

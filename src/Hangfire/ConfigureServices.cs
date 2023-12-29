@@ -68,7 +68,7 @@ public static class ConfigureServices
                 "default",
                 "critical",
                 "long-running",
-                nameof(UpsertGarageLookupsCommand).ToLower(),
+                nameof(SyncGarageLookupsCommand).ToLower(),
                 nameof(SyncVehicleLookupsCommand).ToLower(),
                 nameof(StartConversationCommand).ToLower(),
             };

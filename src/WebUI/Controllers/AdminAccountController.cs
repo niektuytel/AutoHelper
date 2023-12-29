@@ -24,10 +24,10 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [Authorize(Policy = "AdminRole")]
-    [HttpPut($"{nameof(UpsertGarageLookups)}")]
+    [HttpPut($"{nameof(SyncGarageLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string UpsertGarageLookups(
+    public string SyncGarageLookups(
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
         [FromQuery] int maxInsertAmount = -1,
@@ -35,8 +35,8 @@ public class AdminAccountController: ApiControllerBase
         [FromQuery] int batchSize = 1000
     )
     {
-        var command = new UpsertGarageLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);
-        var queue = nameof(UpsertGarageLookupsCommand);
+        var command = new SyncGarageLookupsCommand(startRowIndex, endRowIndex, maxInsertAmount, maxUpdateAmount, batchSize);
+        var queue = nameof(SyncGarageLookupsCommand);
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
         Mediator.Enqueue(_backgroundJobClient, queue, title, command);

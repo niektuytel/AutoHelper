@@ -7,31 +7,31 @@ using FluentValidation;
 
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
-public class UpsertGarageLookupsCommandValidator : AbstractValidator<UpsertGarageLookupsCommand>
+public class SyncGarageLookupsCommandValidator : AbstractValidator<SyncGarageLookupsCommand>
 {
-    public UpsertGarageLookupsCommandValidator()
+    public SyncGarageLookupsCommandValidator()
     {
         // Validation for StartRowIndex
         RuleFor(command => command.StartRowIndex)
-            .GreaterThanOrEqualTo(UpsertGarageLookupsCommand.DefaultStartingRowIndex)
+            .GreaterThanOrEqualTo(SyncGarageLookupsCommand.DefaultStartingRowIndex)
             .WithMessage("Start row index must be greater than or equal to 0.");
 
         // Validation for EndRowIndex
         RuleFor(command => command.EndRowIndex)
-            .GreaterThanOrEqualTo(UpsertGarageLookupsCommand.DefaultEndingRowIndex)
+            .GreaterThanOrEqualTo(SyncGarageLookupsCommand.DefaultEndingRowIndex)
             .WithMessage("End row index must be -1 or greater.")
-            .When(command => command.EndRowIndex != UpsertGarageLookupsCommand.DefaultEndingRowIndex)
+            .When(command => command.EndRowIndex != SyncGarageLookupsCommand.DefaultEndingRowIndex)
             .GreaterThanOrEqualTo(command => command.StartRowIndex)
             .WithMessage("End row index must be greater than or equal to start row index.");
 
         // Validation for MaxInsertAmount
         RuleFor(command => command.MaxInsertAmount)
-            .GreaterThanOrEqualTo(UpsertGarageLookupsCommand.InsertAll)
+            .GreaterThanOrEqualTo(SyncGarageLookupsCommand.InsertAll)
             .WithMessage("Max insert amount must be -1 or greater.");
 
         // Validation for MaxUpdateAmount
         RuleFor(command => command.MaxUpdateAmount)
-            .GreaterThanOrEqualTo(UpsertGarageLookupsCommand.UpdateAll)
+            .GreaterThanOrEqualTo(SyncGarageLookupsCommand.UpdateAll)
             .WithMessage("Max update amount must be -1 or greater.");
 
         // Validation for BatchSize
