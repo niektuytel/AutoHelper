@@ -82,7 +82,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
                 break;
             }
 
-            var batch = await _garageService.GetRDWCompanies(start, request.BatchSize);
+            var batch = await _garageService.GetRDWCompanies(i, request.BatchSize);
 
             var (garageItemsToInsert, garageItemsToUpdate, garageServicesToInsert, garageServicesToRemove) = await ProcessGarageBatchAsync(batch, request, cancellationToken);
 
