@@ -190,17 +190,8 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
             try
             {
                 var identifier = company.Volgnummer.ToString();
-                var rdwServices = _allRDWServices
-                    .Where(y => y.Volgnummer.ToString() == identifier)
-                    .SelectMany(y => y.RelatedServiceItems);
-
-                // garage is useless if it doesn't provide any service
-                if (rdwServices?.Any() != true)
-                {
-                    continue;
-                }
-
                 var storedGarage = storedGarages.FirstOrDefault(x => x.Identifier == identifier);
+
                 var (itemToInsert, itemToUpdate) = await _garageService.UpsertLookup(storedGarage, company);
                 if (itemToInsert != null || itemToUpdate != null)
                 {
@@ -215,6 +206,14 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
                         garagesToUpdate.Add(itemToUpdate);
                         _maxUpdateAmount--;
                     }
+
+                    var rdwServices = _allRDWServices
+                        .Where(y => y.Volgnummer.ToString() == identifier)
+                        .SelectMany(y => y.RelatedServiceItems);
+
+                    // NOTE: we use them as well, we do an sort on the services amount and they will been ignored
+                    // If they like to be more accessable by the user, they have to give information about htere services.
+                    //if (rdwServices?.Any() != true) continue;
 
                     // Always check the services as they can change very often
                     var (itemsToInsert, itemsToRemove) = await _garageService.UpsertLookupServices(storedGarage?.Services, rdwServices, identifier);

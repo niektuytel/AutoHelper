@@ -580,7 +580,6 @@ internal partial class RDWApiClient
         return items;
     }
 
-
     /// <summary>
     /// https://opendata.rdw.nl/resource/hx2c-gt7k.json
     /// </summary>

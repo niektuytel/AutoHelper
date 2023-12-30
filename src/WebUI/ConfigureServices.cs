@@ -181,13 +181,10 @@ public static class ConfigureServices
         });
 
         app.UseEndpoints(endpoints => {
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller}/{action=Index}/{id?}"
-            );
-
-            endpoints.MapFallbackToFile("index.html");
+            endpoints.MapControllers();
         });
+
+        app.MapFallbackToFile("index.html");
         
         return app;
     }
