@@ -138,7 +138,7 @@ public static class ConfigureServices
         else
         {
             app.UseExceptionHandler("/Error");
-            app.UseHsts();
+            //app.UseHsts();
         }
 
         // Initialise and seed database
@@ -180,12 +180,12 @@ public static class ConfigureServices
             settings.DocumentPath = "/swagger/v1/swagger.json";
         });
 
-        app.UseEndpoints(endpoints => {
+        app.UseEndpoints(endpoints =>
+        {
             endpoints.MapControllers();
+            endpoints.MapFallbackToFile("index.html");
         });
 
-        app.MapFallbackToFile("index.html");
-        
         return app;
     }
 
