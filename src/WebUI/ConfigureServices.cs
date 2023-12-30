@@ -130,10 +130,12 @@ public static class ConfigureServices
 
     public static WebApplication UseWebUIServices(this WebApplication app)
     {
+        // API is always accessible via HTTPS
+        app.UseMigrationsEndPoint();
+
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseMigrationsEndPoint();
         }
         else
         {
