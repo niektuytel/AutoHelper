@@ -6,12 +6,12 @@
     "version": "v1"
   },
   "paths": {
-    "/api/AdminAccount/UpsertGarageLookups": {
+    "/api/AdminAccount/SyncGarageLookups": {
       "put": {
         "tags": [
           "AdminAccount"
         ],
-        "operationId": "AdminAccount_UpsertGarageLookups",
+        "operationId": "AdminAccount_SyncGarageLookups",
         "parameters": [
           {
             "name": "startRowIndex",
@@ -61,7 +61,7 @@
             "schema": {
               "type": "integer",
               "format": "int32",
-              "default": 1000
+              "default": 100
             },
             "x-position": 5
           }
@@ -90,12 +90,12 @@
         }
       }
     },
-    "/api/AdminAccount/UpsertVehicleLookup": {
+    "/api/AdminAccount/SyncVehicleLookup": {
       "put": {
         "tags": [
           "AdminAccount"
         ],
-        "operationId": "AdminAccount_UpsertVehicleLookup",
+        "operationId": "AdminAccount_SyncVehicleLookup",
         "parameters": [
           {
             "name": "licensePlate",
@@ -131,12 +131,12 @@
         }
       }
     },
-    "/api/AdminAccount/UpsertVehicleLookups": {
+    "/api/AdminAccount/SyncVehicleLookups": {
       "put": {
         "tags": [
           "AdminAccount"
         ],
-        "operationId": "AdminAccount_UpsertVehicleLookups",
+        "operationId": "AdminAccount_SyncVehicleLookups",
         "parameters": [
           {
             "name": "startRowIndex",
@@ -216,12 +216,12 @@
         }
       }
     },
-    "/api/AdminAccount/UpsertVehicleTimeline": {
+    "/api/AdminAccount/SyncVehicleTimeline": {
       "put": {
         "tags": [
           "AdminAccount"
         ],
-        "operationId": "AdminAccount_UpsertVehicleTimeline",
+        "operationId": "AdminAccount_SyncVehicleTimeline",
         "parameters": [
           {
             "name": "licensePlate",
@@ -257,12 +257,12 @@
         }
       }
     },
-    "/api/AdminAccount/UpsertVehicleTimelines": {
+    "/api/AdminAccount/SyncVehicleTimelines": {
       "put": {
         "tags": [
           "AdminAccount"
         ],
-        "operationId": "AdminAccount_UpsertVehicleTimelines",
+        "operationId": "AdminAccount_SyncVehicleTimelines",
         "parameters": [
           {
             "name": "startRowIndex",
@@ -1891,21 +1891,36 @@
       "StartConversationCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "relatedGarageLookupIdentifier",
+          "relatedVehicleLicensePlate",
+          "relatedServiceTypes",
+          "senderWhatsAppNumberOrEmail",
+          "receiverWhatsAppNumberOrEmail",
+          "conversationType",
+          "messageContent"
+        ],
         "properties": {
           "relatedGarageLookupIdentifier": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "relatedGarage": {
             "$ref": "#/components/schemas/GarageLookupItem"
           },
           "relatedVehicleLicensePlate": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "relatedVehicle": {
             "$ref": "#/components/schemas/VehicleLookupItem"
           },
           "relatedServiceTypes": {
             "type": "array",
+            "minLength": 1,
+            "nullable": false,
             "xml": {
               "wrapped": true
             },
@@ -1921,22 +1936,30 @@
             }
           },
           "senderWhatsAppNumberOrEmail": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "senderContactType": {
             "$ref": "#/components/schemas/ContactType"
           },
           "receiverWhatsAppNumberOrEmail": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "receiverContactType": {
             "$ref": "#/components/schemas/ContactType"
           },
           "conversationType": {
+            "minLength": 1,
+            "nullable": false,
             "$ref": "#/components/schemas/ConversationType"
           },
           "messageContent": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "queueingService": {
             "$ref": "#/components/schemas/IQueueService"
@@ -2953,7 +2976,6 @@
             "additionalProperties": false,
             "required": [
               "vehicleLicensePlate",
-              "vehicleServiceLogId",
               "title",
               "description",
               "date",
@@ -2971,7 +2993,7 @@
               "vehicleServiceLogId": {
                 "type": "string",
                 "format": "guid",
-                "minLength": 1
+                "nullable": true
               },
               "title": {
                 "type": "string",
@@ -3590,9 +3612,16 @@
       "CreateGarageCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "garageLookupIdentifier",
+          "phoneNumber",
+          "emailAddress"
+        ],
         "properties": {
           "garageLookupIdentifier": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "website": {
             "type": "string",
@@ -3600,7 +3629,8 @@
           },
           "phoneNumber": {
             "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           },
           "whatsappNumber": {
             "type": "string",
@@ -3608,7 +3638,8 @@
           },
           "emailAddress": {
             "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           },
           "conversationEmail": {
             "type": "string",
@@ -3626,54 +3657,92 @@
       "GarageLocationDtoItem": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "address",
+          "longitude",
+          "latitude"
+        ],
         "properties": {
           "address": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "city": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
           },
           "longitude": {
             "type": "number",
-            "format": "float"
+            "format": "float",
+            "minLength": 1,
+            "nullable": false
           },
           "latitude": {
             "type": "number",
-            "format": "float"
+            "format": "float",
+            "minLength": 1,
+            "nullable": false
           }
         }
       },
       "CreateGarageServiceCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "description",
+          "expectedNextDateIsRequired",
+          "expectedNextOdometerReadingIsRequired"
+        ],
         "properties": {
           "type": {
+            "minLength": 1,
+            "nullable": false,
             "$ref": "#/components/schemas/GarageServiceType"
           },
           "vehicleType": {
             "$ref": "#/components/schemas/VehicleType"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 1,
+            "nullable": false
           },
           "expectedNextDateIsRequired": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           },
           "expectedNextOdometerReadingIsRequired": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           }
         }
       },
       "UpdateGarageSettingsCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "name",
+          "phoneNumber",
+          "emailAddress",
+          "conversationEmail",
+          "conversationWhatsappNumber"
+        ],
         "properties": {
           "name": {
             "type": "string",
-            "nullable": true
+            "maxLength": 200,
+            "minLength": 1,
+            "nullable": false
           },
           "website": {
             "type": "string",
@@ -3681,7 +3750,8 @@
           },
           "phoneNumber": {
             "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           },
           "whatsappNumber": {
             "type": "string",
@@ -3689,15 +3759,18 @@
           },
           "emailAddress": {
             "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           },
           "conversationEmail": {
             "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           },
           "conversationWhatsappNumber": {
             "type": "string",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           },
           "location": {
             "nullable": true,
@@ -3712,28 +3785,50 @@
       "UpdateGarageServiceCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "vehicleType",
+          "title",
+          "description",
+          "expectedNextDateIsRequired",
+          "expectedNextOdometerReadingIsRequired"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "format": "guid"
+            "format": "guid",
+            "minLength": 1,
+            "nullable": false
           },
           "type": {
+            "minLength": 1,
+            "nullable": false,
             "$ref": "#/components/schemas/GarageServiceType"
           },
           "vehicleType": {
+            "minLength": 1,
+            "nullable": false,
             "$ref": "#/components/schemas/VehicleType"
           },
           "title": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 800,
+            "minLength": 1,
+            "nullable": false
           },
           "expectedNextDateIsRequired": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           },
           "expectedNextOdometerReadingIsRequired": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": false
           }
         }
       },
@@ -3791,6 +3886,10 @@
           },
           "name": {
             "type": "string"
+          },
+          "imageThumbnail": {
+            "type": "string",
+            "nullable": true
           },
           "address": {
             "type": "string"

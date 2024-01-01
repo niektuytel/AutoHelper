@@ -17,20 +17,9 @@ export interface IAdminAccountClient {
      * @param maxUpdateAmount (optional) -1 is all of them
      * @param batchSize (optional) 
      */
-    upsertGarageLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
+    syncGarageLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 
-    upsertVehicleLookup(licensePlate: string | null | undefined): Promise<string>;
-
-    /**
-     * @param startRowIndex (optional) 
-     * @param endRowIndex (optional) -1 means all of them
-     * @param maxInsertAmount (optional) -1 means all of them
-     * @param maxUpdateAmount (optional) -1 means all of them
-     * @param batchSize (optional) 
-     */
-    upsertVehicleLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
-
-    upsertVehicleTimeline(licensePlate: string | null | undefined): Promise<string>;
+    syncVehicleLookup(licensePlate: string | null | undefined): Promise<string>;
 
     /**
      * @param startRowIndex (optional) 
@@ -39,7 +28,18 @@ export interface IAdminAccountClient {
      * @param maxUpdateAmount (optional) -1 means all of them
      * @param batchSize (optional) 
      */
-    upsertVehicleTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
+    syncVehicleLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
+
+    syncVehicleTimeline(licensePlate: string | null | undefined): Promise<string>;
+
+    /**
+     * @param startRowIndex (optional) 
+     * @param endRowIndex (optional) -1 means all of them
+     * @param maxInsertAmount (optional) -1 means all of them
+     * @param maxUpdateAmount (optional) -1 means all of them
+     * @param batchSize (optional) 
+     */
+    syncVehicleTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string>;
 }
 
 export class AdminAccountClient implements IAdminAccountClient {
@@ -59,8 +59,8 @@ export class AdminAccountClient implements IAdminAccountClient {
      * @param maxUpdateAmount (optional) -1 is all of them
      * @param batchSize (optional) 
      */
-    upsertGarageLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/AdminAccount/UpsertGarageLookups?";
+    syncGarageLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/SyncGarageLookups?";
         if (startRowIndex === null)
             throw new Error("The parameter 'startRowIndex' cannot be null.");
         else if (startRowIndex !== undefined)
@@ -91,11 +91,11 @@ export class AdminAccountClient implements IAdminAccountClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertGarageLookups(_response);
+            return this.processSyncGarageLookups(_response);
         });
     }
 
-    protected processUpsertGarageLookups(response: Response): Promise<string> {
+    protected processSyncGarageLookups(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -121,8 +121,8 @@ export class AdminAccountClient implements IAdminAccountClient {
         return Promise.resolve<string>(null as any);
     }
 
-    upsertVehicleLookup(licensePlate: string | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleLookup?";
+    syncVehicleLookup(licensePlate: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/SyncVehicleLookup?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -135,11 +135,11 @@ export class AdminAccountClient implements IAdminAccountClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertVehicleLookup(_response);
+            return this.processSyncVehicleLookup(_response);
         });
     }
 
-    protected processUpsertVehicleLookup(response: Response): Promise<string> {
+    protected processSyncVehicleLookup(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -172,8 +172,8 @@ export class AdminAccountClient implements IAdminAccountClient {
      * @param maxUpdateAmount (optional) -1 means all of them
      * @param batchSize (optional) 
      */
-    upsertVehicleLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleLookups?";
+    syncVehicleLookups(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/SyncVehicleLookups?";
         if (startRowIndex === null)
             throw new Error("The parameter 'startRowIndex' cannot be null.");
         else if (startRowIndex !== undefined)
@@ -204,11 +204,11 @@ export class AdminAccountClient implements IAdminAccountClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertVehicleLookups(_response);
+            return this.processSyncVehicleLookups(_response);
         });
     }
 
-    protected processUpsertVehicleLookups(response: Response): Promise<string> {
+    protected processSyncVehicleLookups(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -234,8 +234,8 @@ export class AdminAccountClient implements IAdminAccountClient {
         return Promise.resolve<string>(null as any);
     }
 
-    upsertVehicleTimeline(licensePlate: string | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleTimeline?";
+    syncVehicleTimeline(licensePlate: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/SyncVehicleTimeline?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -248,11 +248,11 @@ export class AdminAccountClient implements IAdminAccountClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertVehicleTimeline(_response);
+            return this.processSyncVehicleTimeline(_response);
         });
     }
 
-    protected processUpsertVehicleTimeline(response: Response): Promise<string> {
+    protected processSyncVehicleTimeline(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -285,8 +285,8 @@ export class AdminAccountClient implements IAdminAccountClient {
      * @param maxUpdateAmount (optional) -1 means all of them
      * @param batchSize (optional) 
      */
-    upsertVehicleTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/AdminAccount/UpsertVehicleTimelines?";
+    syncVehicleTimelines(startRowIndex: number | undefined, endRowIndex: number | undefined, maxInsertAmount: number | undefined, maxUpdateAmount: number | undefined, batchSize: number | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/AdminAccount/SyncVehicleTimelines?";
         if (startRowIndex === null)
             throw new Error("The parameter 'startRowIndex' cannot be null.");
         else if (startRowIndex !== undefined)
@@ -317,11 +317,11 @@ export class AdminAccountClient implements IAdminAccountClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUpsertVehicleTimelines(_response);
+            return this.processSyncVehicleTimelines(_response);
         });
     }
 
-    protected processUpsertVehicleTimelines(response: Response): Promise<string> {
+    protected processSyncVehicleTimelines(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1991,17 +1991,17 @@ export enum ContactType {
 }
 
 export class StartConversationCommand implements IStartConversationCommand {
-    relatedGarageLookupIdentifier?: string;
+    relatedGarageLookupIdentifier!: string;
     relatedGarage?: GarageLookupItem;
-    relatedVehicleLicensePlate?: string;
+    relatedVehicleLicensePlate!: string;
     relatedVehicle?: VehicleLookupItem;
-    relatedServiceTypes?: GarageServiceType[];
-    senderWhatsAppNumberOrEmail?: string;
+    relatedServiceTypes!: GarageServiceType[];
+    senderWhatsAppNumberOrEmail!: string;
     senderContactType?: ContactType;
-    receiverWhatsAppNumberOrEmail?: string;
+    receiverWhatsAppNumberOrEmail!: string;
     receiverContactType?: ContactType;
-    conversationType?: ConversationType;
-    messageContent?: string;
+    conversationType!: ConversationType;
+    messageContent!: string;
     queueingService?: IQueueService;
 
     constructor(data?: IStartConversationCommand) {
@@ -2010,6 +2010,9 @@ export class StartConversationCommand implements IStartConversationCommand {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.relatedServiceTypes = [];
         }
     }
 
@@ -2064,17 +2067,17 @@ export class StartConversationCommand implements IStartConversationCommand {
 }
 
 export interface IStartConversationCommand {
-    relatedGarageLookupIdentifier?: string;
+    relatedGarageLookupIdentifier: string;
     relatedGarage?: GarageLookupItem;
-    relatedVehicleLicensePlate?: string;
+    relatedVehicleLicensePlate: string;
     relatedVehicle?: VehicleLookupItem;
-    relatedServiceTypes?: GarageServiceType[];
-    senderWhatsAppNumberOrEmail?: string;
+    relatedServiceTypes: GarageServiceType[];
+    senderWhatsAppNumberOrEmail: string;
     senderContactType?: ContactType;
-    receiverWhatsAppNumberOrEmail?: string;
+    receiverWhatsAppNumberOrEmail: string;
     receiverContactType?: ContactType;
-    conversationType?: ConversationType;
-    messageContent?: string;
+    conversationType: ConversationType;
+    messageContent: string;
     queueingService?: IQueueService;
 }
 
@@ -3229,7 +3232,7 @@ export interface IVehicleLookupItem {
 export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineItem {
     vehicleLicensePlate!: string;
     vehicleLookup?: VehicleLookupItem;
-    vehicleServiceLogId!: string;
+    vehicleServiceLogId?: string | undefined;
     title!: string;
     description!: string;
     date!: Date;
@@ -3293,7 +3296,7 @@ export class VehicleTimelineItem extends BaseEntity implements IVehicleTimelineI
 export interface IVehicleTimelineItem extends IBaseEntity {
     vehicleLicensePlate: string;
     vehicleLookup?: VehicleLookupItem;
-    vehicleServiceLogId: string;
+    vehicleServiceLogId?: string | undefined;
     title: string;
     description: string;
     date: Date;
@@ -4041,11 +4044,11 @@ export interface IServiceLogsChartPoint {
 }
 
 export class CreateGarageCommand implements ICreateGarageCommand {
-    garageLookupIdentifier?: string;
+    garageLookupIdentifier!: string;
     website?: string | undefined;
-    phoneNumber?: string | undefined;
+    phoneNumber!: string;
     whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
+    emailAddress!: string;
     conversationEmail?: string | undefined;
     conversationWhatsappNumber?: string | undefined;
     location?: GarageLocationDtoItem;
@@ -4094,21 +4097,21 @@ export class CreateGarageCommand implements ICreateGarageCommand {
 }
 
 export interface ICreateGarageCommand {
-    garageLookupIdentifier?: string;
+    garageLookupIdentifier: string;
     website?: string | undefined;
-    phoneNumber?: string | undefined;
+    phoneNumber: string;
     whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
+    emailAddress: string;
     conversationEmail?: string | undefined;
     conversationWhatsappNumber?: string | undefined;
     location?: GarageLocationDtoItem;
 }
 
 export class GarageLocationDtoItem implements IGarageLocationDtoItem {
-    address?: string;
+    address!: string;
     city?: string;
-    longitude?: number;
-    latitude?: number;
+    longitude!: number;
+    latitude!: number;
 
     constructor(data?: IGarageLocationDtoItem) {
         if (data) {
@@ -4146,19 +4149,19 @@ export class GarageLocationDtoItem implements IGarageLocationDtoItem {
 }
 
 export interface IGarageLocationDtoItem {
-    address?: string;
+    address: string;
     city?: string;
-    longitude?: number;
-    latitude?: number;
+    longitude: number;
+    latitude: number;
 }
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
-    type?: GarageServiceType;
+    type!: GarageServiceType;
     vehicleType?: VehicleType;
-    title?: string;
-    description?: string;
-    expectedNextDateIsRequired?: boolean;
-    expectedNextOdometerReadingIsRequired?: boolean;
+    title!: string;
+    description!: string;
+    expectedNextDateIsRequired!: boolean;
+    expectedNextOdometerReadingIsRequired!: boolean;
 
     constructor(data?: ICreateGarageServiceCommand) {
         if (data) {
@@ -4200,22 +4203,22 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 }
 
 export interface ICreateGarageServiceCommand {
-    type?: GarageServiceType;
+    type: GarageServiceType;
     vehicleType?: VehicleType;
-    title?: string;
-    description?: string;
-    expectedNextDateIsRequired?: boolean;
-    expectedNextOdometerReadingIsRequired?: boolean;
+    title: string;
+    description: string;
+    expectedNextDateIsRequired: boolean;
+    expectedNextOdometerReadingIsRequired: boolean;
 }
 
 export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand {
-    name?: string | undefined;
+    name!: string;
     website?: string | undefined;
-    phoneNumber?: string | undefined;
+    phoneNumber!: string;
     whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
-    conversationEmail?: string | undefined;
-    conversationWhatsappNumber?: string | undefined;
+    emailAddress!: string;
+    conversationEmail!: string;
+    conversationWhatsappNumber!: string;
     location?: GarageLocationDtoItem | undefined;
 
     constructor(data?: IUpdateGarageSettingsCommand) {
@@ -4262,24 +4265,24 @@ export class UpdateGarageSettingsCommand implements IUpdateGarageSettingsCommand
 }
 
 export interface IUpdateGarageSettingsCommand {
-    name?: string | undefined;
+    name: string;
     website?: string | undefined;
-    phoneNumber?: string | undefined;
+    phoneNumber: string;
     whatsappNumber?: string | undefined;
-    emailAddress?: string | undefined;
-    conversationEmail?: string | undefined;
-    conversationWhatsappNumber?: string | undefined;
+    emailAddress: string;
+    conversationEmail: string;
+    conversationWhatsappNumber: string;
     location?: GarageLocationDtoItem | undefined;
 }
 
 export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
-    id?: string;
-    type?: GarageServiceType;
-    vehicleType?: VehicleType;
-    title?: string;
-    description?: string;
-    expectedNextDateIsRequired?: boolean;
-    expectedNextOdometerReadingIsRequired?: boolean;
+    id!: string;
+    type!: GarageServiceType;
+    vehicleType!: VehicleType;
+    title!: string;
+    description!: string;
+    expectedNextDateIsRequired!: boolean;
+    expectedNextOdometerReadingIsRequired!: boolean;
 
     constructor(data?: IUpdateGarageServiceCommand) {
         if (data) {
@@ -4323,13 +4326,13 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
 }
 
 export interface IUpdateGarageServiceCommand {
-    id?: string;
-    type?: GarageServiceType;
-    vehicleType?: VehicleType;
-    title?: string;
-    description?: string;
-    expectedNextDateIsRequired?: boolean;
-    expectedNextOdometerReadingIsRequired?: boolean;
+    id: string;
+    type: GarageServiceType;
+    vehicleType: VehicleType;
+    title: string;
+    description: string;
+    expectedNextDateIsRequired: boolean;
+    expectedNextOdometerReadingIsRequired: boolean;
 }
 
 export class PaginatedListOfGarageLookupBriefDto implements IPaginatedListOfGarageLookupBriefDto {
@@ -4400,6 +4403,7 @@ export class GarageLookupBriefDto implements IGarageLookupBriefDto {
     garageId?: string | undefined;
     identifier?: string;
     name?: string;
+    imageThumbnail?: string | undefined;
     address?: string;
     city?: string;
     website?: string | undefined;
@@ -4423,6 +4427,7 @@ export class GarageLookupBriefDto implements IGarageLookupBriefDto {
             this.garageId = _data["garageId"];
             this.identifier = _data["identifier"];
             this.name = _data["name"];
+            this.imageThumbnail = _data["imageThumbnail"];
             this.address = _data["address"];
             this.city = _data["city"];
             this.website = _data["website"];
@@ -4454,6 +4459,7 @@ export class GarageLookupBriefDto implements IGarageLookupBriefDto {
         data["garageId"] = this.garageId;
         data["identifier"] = this.identifier;
         data["name"] = this.name;
+        data["imageThumbnail"] = this.imageThumbnail;
         data["address"] = this.address;
         data["city"] = this.city;
         data["website"] = this.website;
@@ -4478,6 +4484,7 @@ export interface IGarageLookupBriefDto {
     garageId?: string | undefined;
     identifier?: string;
     name?: string;
+    imageThumbnail?: string | undefined;
     address?: string;
     city?: string;
     website?: string | undefined;

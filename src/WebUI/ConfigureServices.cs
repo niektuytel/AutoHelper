@@ -140,7 +140,7 @@ public static class ConfigureServices
         else
         {
             app.UseExceptionHandler("/Error");
-            //app.UseHsts();
+            app.UseHsts();
         }
 
         // Initialise and seed database

@@ -62,43 +62,55 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
     });
     const openDays = [...new Set(garage.daysOfWeek?.filter(day => (day.match(/:/g) || []).length === 3) || [])]
 
+    const imageUrl = `${process.env.REACT_APP_GARAGE_IMAGES_BLOB_URL}/${garage.imageThumbnail}`;
     return <>
+
         <Paper
             variant="outlined"
             sx={{
                 mb: 1,
                 cursor: 'pointer',
-                backgroundColor: isHovered ? 'grey.100' : 'white'
-            }}
-            style={{
+                backgroundColor: isHovered ? 'grey.100' : 'white',
                 display: "flex",
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 alignItems: "center",
-                padding: "10px",
                 width: "100%",
                 borderBottom: "1px solid #ccc"
             }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onClick={handleClick}
         >
-
-            {/*<img*/}
-            {/*    src={`${process.env.GARAGE_IMAGES_BLOB_URL}/${garage.}`}*/}
-            {/*    alt="Garage"*/}
-            {/*    style={{*/}
-            {/*        width: '100%',*/}
-            {/*        height: '100%',*/}
-            {/*        objectFit: 'cover'*/}
-            {/*    }}*/}
-            {/*/>*/}
+            <Box
+                sx={{
+                    display: "flex",
+                    width: "100%",
+                    height: "auto",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                    maxWidth: "150px",
+                }}
+            >
+                <img
+                    src={imageUrl}
+                    alt="Garage"
+                    style={{
+                        maxHeight: '100%',
+                        maxWidth: '100%',
+                        objectFit: 'contain',
+                        margin: 'auto',
+                    }}
+                />
+            </Box>
             <Box
                 style={{
                     display: "flex",
                     flexDirection: "row",
                     width: "100%",
-                    alignItems: "center"
+                    alignItems: "center",
+                    padding: "10px"
                 }}
             >
                 <Box

@@ -79,23 +79,14 @@ export default ({ }: IProps) => {
             <Box pt={1} pb={2}>
                 <Paper
                     style={{
+                        backgroundImage: `url(${imageUrl})`,
                         backgroundSize: 'cover',
-                        backgroundPosition: 'left center',
+                        backgroundPosition: 'left center', // This line changed
                         backgroundRepeat: 'no-repeat',
                         minWidth: '100%',
                         minHeight: '400px'
                     }}
-                >
-                    <img
-                        src={imageUrl}
-                        alt="Garage"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover'
-                        }}
-                    />
-                </Paper>
+                />
             </Box>
             <Grid container spacing={1}>
                 <Grid item xs={12} md={8} pr={isMobile ? 0 : 2}>
