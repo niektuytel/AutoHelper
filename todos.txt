@@ -1,6 +1,10 @@
 <h1>AutoHelper: BUGS</h1>
 - Login does all automatic choose previous logged in account, we need to decide which account we want to use
 - Use Bicep for ARM templates
+- Required to use 'ASPNETCORE_ENVIRONMENT': 'Development' in configurations to run 
+and get access to swagger + api endpoints, otherwise it does not work
+- 
+
 
 <h1>AutoHelper: THINKS ABOUT</h1>
 - 

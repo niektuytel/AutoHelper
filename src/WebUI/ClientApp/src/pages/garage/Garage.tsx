@@ -77,16 +77,18 @@ export default ({ }: IProps) => {
         <Header garageLookupIsLoading={loading} garageLookup={garageLookup} showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
         <Container sx={{ mb: 5 }}>
             <Box pt={1} pb={2}>
-                <Paper
-                    style={{
-                        backgroundImage: `url(${imageUrl})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'left center', // This line changed
-                        backgroundRepeat: 'no-repeat',
-                        minWidth: '100%',
-                        minHeight: '400px'
-                    }}
-                />
+                {garageLookup?.image && 
+                    <Paper
+                        style={{
+                            backgroundImage: `url(${imageUrl})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'left center', // This line changed
+                            backgroundRepeat: 'no-repeat',
+                            minWidth: '100%',
+                            minHeight: '400px'
+                        }}
+                    />
+                }
             </Box>
             <Grid container spacing={1}>
                 <Grid item xs={12} md={8} pr={isMobile ? 0 : 2}>

@@ -131,10 +131,10 @@ public static class ConfigureServices
     public static WebApplication UseWebUIServices(this WebApplication app)
     {
         // API is always accessible via HTTPS
-        app.UseMigrationsEndPoint();
 
         if (app.Environment.IsDevelopment())
         {
+            app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
         }
         else
@@ -178,8 +178,10 @@ public static class ConfigureServices
                     { "audience", app.Configuration["OAuth0:Audience"] },
                 }
             };
+
             settings.Path = "/swagger";
             settings.DocumentPath = "/swagger/v1/swagger.json";
+            settings.SwaggerRoutes.Add(new SwaggerUi3Route("v1", "/swagger/v1/swagger.json"));
         });
 
         app.UseEndpoints(endpoints =>
