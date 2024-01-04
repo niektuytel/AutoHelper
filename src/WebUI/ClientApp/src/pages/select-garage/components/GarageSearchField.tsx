@@ -1,87 +1,58 @@
-﻿import React, { useEffect, useState } from "react";
-import { Box, Container, InputAdornment, TextField, IconButton, Button, Hidden, ListItem, List, useTheme, useMediaQuery, Autocomplete, CircularProgress, Chip, Skeleton } from "@mui/material";
-import { Paper, Typography, Grid, ButtonBase } from '@mui/material';
+﻿import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+import { Box, InputAdornment, TextField, IconButton, CircularProgress, Chip } from "@mui/material";
+import { Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
 
 // own imports
-import { GarageLookupDtoItem, GarageClient, GarageServiceType, PaginatedListOfGarageLookupBriefDto } from "../../../app/web-api-client";
-import useGarageServiceTypes from "../../garage-account/servicelogs/useGarageServiceTypes";
+import { GarageLookupDtoItem, GarageServiceType } from "../../../app/web-api-client";
 
 
+function useDebounce(value: any, delay: number) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+}
 
 interface IProps
 {
-    license_plate: string,
-    latitude: number,
-    longitude: number,
-    in_km_range: number,
-    page_size: number,
-    onSearchExecuted: (data: PaginatedListOfGarageLookupBriefDto) => void;
+    loading: boolean;
+    items: GarageLookupDtoItem[];
 }
 
-export default ({ license_plate, latitude, longitude, in_km_range, page_size, onSearchExecuted }: IProps) => {
-    const navigate = useNavigate();
-    const theme = useTheme();
-    const location = useLocation();
-    const queryParams = new URLSearchParams(window.location.search);
+export default ({ loading, items }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
-
+    const [searchParams, setSearchParams] = useSearchParams();
+    const queryParams = new URLSearchParams(window.location.search);
+    const [value, setValue] = useState(queryParams.get("input") || "");
+    const [filters, setFilters] = useState<string[]>(queryParams.get("filters")?.split(",") || []);
     const [isFocused, setIsFocused] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [value, setValue] = useState("");
-    const [suggestions, setSuggestions] = React.useState<readonly GarageLookupDtoItem[]>([]);
-    const useGarageClient = new GarageClient(process.env.PUBLIC_URL);
 
-    const [filters, setFilters] = useState<string[]>([]);
+    // Debounce for input value
+    const debouncedValue = useDebounce(value, 500);
+
     useEffect(() => {
-        if (queryParams.has("filters")) {
-            const filters = queryParams.get("filters")?.split(",");
-            setFilters(filters || []);
-        }
-        
-    }, [window.location.search]);
-
-    const fetchGaragesData = async (autocomplete: string, filterValues: string[]): Promise<PaginatedListOfGarageLookupBriefDto> => {
-        try {
-            const response = await useGarageClient.searchLookups(
-                license_plate,
-                latitude,
-                longitude,
-                in_km_range,
-                1,
-                page_size,
-                autocomplete,
-                filterValues
-            );
-            return response;
-        } catch (response: any) {
-            throw response;
-        }
-    }
+        // Update the URL
+        setSearchParams({ input: value, filters: filters.join(",") });
+    }, [debouncedValue, filters, setSearchParams]);
 
     const handleInput = async (e: any) => {
-        setIsLoading(true);
-
         setValue(e.target.value);
-        var data = await fetchGaragesData(e.target.value, filters);
-        setSuggestions(data?.items ? data?.items : []);
-
-        // Overwrite the cached data with the new data
-        if (data?.items && data?.items?.length > 0)
-        {
-            // Trigger the callback to notify the parent about the executed search
-            onSearchExecuted(data);
-        }
-
-        setIsLoading(false);
     }
 
     const handleChipClick = async (filterKey: string) => {
-        setIsLoading(true);
-
         var filterValues = filters;
         if (filters.includes(filterKey)) {
             filterValues = filterValues.filter(f => f !== filterKey);
@@ -89,29 +60,11 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
             filterValues = [...filterValues, filterKey];
         }
 
-        // Refetch the data
-        const data = await fetchGaragesData(value, filterValues);
-        setSuggestions(data?.items ? data?.items : []);
         setFilters(filterValues);
-
-        // Overwrite the cached data with the new data
-        if (data?.items && data?.items?.length > 0) {
-            // Trigger the callback to notify the parent about the executed search
-            onSearchExecuted(data);
-        }
-
-        // Update the URI with the filters
-        const filtersRecord: Record<string, string> = {};
-        filtersRecord["filters"] = filterValues.join(",");
-        const newQueryParams = new URLSearchParams(filtersRecord);
-        navigate(`${window.location.pathname}?${newQueryParams.toString()}`, { state: { from: location } });
-
-        setIsLoading(false);
     };
 
     const handleClearInput = () => {
         setValue("");
-        setSuggestions([]);
     };
 
     return <>
@@ -130,11 +83,11 @@ export default ({ license_plate, latitude, longitude, in_km_range, page_size, on
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            {isLoading ? (
+                            {loading ? (
                                 <CircularProgress size={20} sx={{ mr: 2 }} />
                             ) : (
                                 <>
-                                    {value.length > 0 && (suggestions.length === 0 && isFocused) &&
+                                    {value.length > 0 && (items.length === 0 && isFocused) &&
                                         <Typography variant="body2" color="textSecondary" sx={{ mr: 1 }} >
                                                 {t('No results')}
                                         </Typography>

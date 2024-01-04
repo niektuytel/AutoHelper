@@ -49,7 +49,7 @@ function useGarageSearch(
     };
 
     const { isLoading, isError } = useQuery(
-        ['fetchGaragesData', licensePlate, latitude, longitude, pageNumber], // unique query key
+        ['fetchGaragesData', licensePlate, latitude, longitude, pageNumber, autoCompleteGarageName, filters], // unique query key
         () => fetchGaragesData(licensePlate, latitude, longitude, inMeterRange, pageNumber, pageSize, autoCompleteGarageName, filters),
         {
             enabled: true,

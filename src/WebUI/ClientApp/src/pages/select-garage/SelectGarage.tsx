@@ -1,14 +1,12 @@
-﻿import React, { useEffect, useState } from "react";
-import { Box, Button, Container, Pagination, Paper, Skeleton, Typography } from "@mui/material";
+﻿import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import { Box, Button, Container, Pagination, Paper, Skeleton, Typography } from "@mui/material";
 
 // local
 import useGarageSearch from "./useGarageSearch";
 import { COLORS } from "../../constants/colors";
 import GarageListItem from "./components/GarageListItem";
-import { PaginatedListOfGarageLookupBriefDto } from "../../app/web-api-client";
 import GarageSearchField from "./components/GarageSearchField";
 
 
@@ -23,19 +21,10 @@ export default ({ }: IProps) => {
     const { license_plate, lat, lng } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const queryParams = new URLSearchParams(window.location.search);
-    const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize, queryParams.get("input") || "", queryParams.get("filters")?.split(",") || []);
+    const { loading, garages } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize, queryParams.get("input") || "", queryParams.get("filters")?.split(",") || []);
 
     const handlePageChange = (event:any, value:number) => {
         setCurrentPage(value);
-
-        const input = queryParams.get("input") || "";
-        const filters = queryParams.get("filters")?.split(",") || [];
-        fetchGarages(license_plate!, Number(lat!), Number(lng!), inMeterRange, value, pageSize, input, filters);
-    };
-
-    const handleSearchExecuted = (data: PaginatedListOfGarageLookupBriefDto) => {
-        // Assuming setGaragesData is what you named the updater function
-        setGaragesData(data);
     };
 
     return <>
@@ -57,14 +46,7 @@ export default ({ }: IProps) => {
                             elevation={2}
                             sx={{ p: 1, width: "initial", position: "relative" }}
                         >
-                            <GarageSearchField
-                                license_plate={license_plate!}
-                                latitude={Number(lat!)}
-                                longitude={Number(lng!)}
-                                in_km_range={inMeterRange}
-                                page_size={pageSize}
-                                onSearchExecuted={handleSearchExecuted}
-                            />
+                            <GarageSearchField loading={loading} items={garages?.items || []}/>
                         </Paper>
                     </Box>
                     <Box sx={{ minHeight: "70vh", ml: 1, mr: 1, mt:1 }}>

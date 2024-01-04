@@ -62,7 +62,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
 
     public async Task<PaginatedList<GarageLookupBriefDto>> Handle(GetGarageLookupsQuery request, CancellationToken cancellationToken)
     {
-        // Contains location, days of week, services
+        // contains location, days of week, services
         var queryable = _context.GarageLookups
             .AsNoTracking()
             .Include(x => x.Services)
@@ -89,10 +89,10 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
             .Select(item => new GarageLookupBriefDto(item, item.Location!.Distance(userLocation), _mapper))
             .ToList();
 
-        // Update the services for each garage
+        // in-memory getting related services
         foreach (var item in pageRecords)
         {
-            item.Services = UpdateGarageServices(item);
+            item.Services = GetRelatedServices(item);
         }
 
         var pagedResults = new PaginatedList<GarageLookupBriefDto>(
@@ -138,18 +138,14 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         return queryable;
     }
 
-
-    // TODO: BUG, What if filter is defined we Get the services from the database after de filtering option is applied
-    private IEnumerable<GarageServiceDtoItem> UpdateGarageServices(GarageLookupBriefDto request)
+    private IEnumerable<GarageServiceDtoItem> GetRelatedServices(GarageLookupBriefDto request)
     {
         if (request.GarageId != null)
         {
-            var entities = _context.GarageServices
-                .Where(x => x.GarageId == request.GarageId);
+            var entities = _context.GarageServices.Where(x => x.GarageId == request.GarageId);
             return _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
         }
 
         return request.Services;
     }
-
 }
