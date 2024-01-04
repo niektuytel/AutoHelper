@@ -60,8 +60,8 @@ export default ({ garage, licensePlate, lat, lng }: IProps) => {
         uniqueTypes.add(service.type);
         return isUnique && service.type !== GarageServiceType.Other;
     });
-    const openDays = [...new Set(garage.daysOfWeek?.filter(day => (day.match(/:/g) || []).length === 3) || [])]
 
+    const openDays = [...new Set(garage.daysOfWeek?.filter(day => (day.match(/–/g) || []).length > 0) || [])]
     const imageUrl = `${process.env.REACT_APP_GARAGE_IMAGES_BLOB_URL}/${garage.imageThumbnail}`;
     return <>
 

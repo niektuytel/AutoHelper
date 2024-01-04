@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
-using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageLookups;
 
@@ -72,13 +62,14 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
 
     public async Task<PaginatedList<GarageLookupBriefDto>> Handle(GetGarageLookupsQuery request, CancellationToken cancellationToken)
     {
+        // Contains location, days of week, services
         var queryable = _context.GarageLookups
             .AsNoTracking()
             .Include(x => x.Services)
-            .Where(x => x.Location != null
-                        && !string.IsNullOrEmpty(x.DaysOfWeekString)
-                        && (!string.IsNullOrEmpty(x.Website))
-            );
+            .Where(x => x.Location != null)
+            .Where(x => EF.Functions.Like(x.DaysOfWeekString, "%–%"))
+            .Where(x => x.Services.Any())
+        ;
 
         queryable = WhenHasRelatedGarageName(queryable, request.AutoCompleteOnGarageName);
         queryable = await WhenHasSelectedFilters(queryable, request.Filters);
