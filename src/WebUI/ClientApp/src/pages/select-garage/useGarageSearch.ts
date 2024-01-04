@@ -12,7 +12,9 @@ function useGarageSearch(
     longitude: number,
     inMeterRange: number,
     pageNumber: number,
-    pageSize: number
+    pageSize: number,
+    autoCompleteGarageName: string | null = null,
+    filters: string[] | null = null
 ) {
     const garageSearchClient = new GarageClient(process.env.PUBLIC_URL);
 
@@ -48,7 +50,7 @@ function useGarageSearch(
 
     const { isLoading, isError } = useQuery(
         ['fetchGaragesData', licensePlate, latitude, longitude, pageNumber], // unique query key
-        () => fetchGaragesData(licensePlate, latitude, longitude, inMeterRange, pageNumber, pageSize),
+        () => fetchGaragesData(licensePlate, latitude, longitude, inMeterRange, pageNumber, pageSize, autoCompleteGarageName, filters),
         {
             enabled: true,
             retry: 1,

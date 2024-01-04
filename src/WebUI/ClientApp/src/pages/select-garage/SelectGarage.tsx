@@ -22,11 +22,15 @@ export default ({ }: IProps) => {
     const { t } = useTranslation();
     const { license_plate, lat, lng } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
-    const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize);
+    const queryParams = new URLSearchParams(window.location.search);
+    const { loading, garages, fetchGarages, setGaragesData } = useGarageSearch(license_plate!, Number(lat!), Number(lng!), inMeterRange, currentPage, pageSize, queryParams.get("input") || "", queryParams.get("filters")?.split(",") || []);
 
     const handlePageChange = (event:any, value:number) => {
         setCurrentPage(value);
-        fetchGarages(license_plate!, Number(lat!), Number(lng!), inMeterRange, value, pageSize, null, null);
+
+        const input = queryParams.get("input") || "";
+        const filters = queryParams.get("filters")?.split(",") || [];
+        fetchGarages(license_plate!, Number(lat!), Number(lng!), inMeterRange, value, pageSize, input, filters);
     };
 
     const handleSearchExecuted = (data: PaginatedListOfGarageLookupBriefDto) => {
