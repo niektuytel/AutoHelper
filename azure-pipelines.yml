@@ -1,48 +1,50 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
-
 trigger:
-- main
-
+  - main
+  
 pool: Default
-
 
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-
-steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
   
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-    appType: 'webAppLinux'
-    WebAppName: 'autohelper-webui'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    RuntimeStack: 'DOTNETCORE|7.0'
-    StartupCommand: 'dotnet AutoHelper.WebUI.dll'
+steps:
+  - task: NuGetToolInstaller@1
+  
+  - task: NuGetCommand@2
+    inputs:
+      restoreSolution: '$(solution)'
+  
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Install Node.js'
+  
+  - task: VSBuild@1
+    inputs:
+      solution: '$(solution)'
+      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+  
+  - task: VSTest@2
+    inputs:
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+  
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
+  
+  - task: AzureRmWebAppDeployment@4
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+      appType: 'webAppLinux'
+      WebAppName: 'autohelper-webui'
+      packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+      RuntimeStack: 'DOTNETCORE|7.0'
+      StartupCommand: 'dotnet AutoHelper.WebUI.dll'
+  
