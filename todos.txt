@@ -3,7 +3,7 @@
 - Use Bicep for ARM templates
 - Required to use 'ASPNETCORE_ENVIRONMENT': 'Development' in configurations to run 
 and get access to swagger + api endpoints, otherwise it does not work
-- 
+- If the garage image changed, the old image is still in the blob storage, we need to delete it (+ the tumbnail)
 
 
 <h1>AutoHelper: THINKS ABOUT</h1>
