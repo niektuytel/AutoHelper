@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, InputAdornment, TextField, IconButton, CircularProgress, Chip } from "@mui/material";
 import { Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -34,22 +34,15 @@ interface IProps
 
 export default ({ loading, items }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const queryParams = new URLSearchParams(window.location.search);
-    const [value, setValue] = useState(queryParams.get("input") || "");
-    const [filters, setFilters] = useState<string[]>(queryParams.get("filters")?.split(",") || []);
+    const [value, setValue] = useState(searchParams.get("input") || "");
+    const [filters, setFilters] = useState<string[]>(searchParams.get("filters")?.split(",") || []);
     const [isFocused, setIsFocused] = useState(false);
-
-    // Debounce for input value
-    const debouncedValue = useDebounce(value, 500);
-
-    useEffect(() => {
-        // Update the URL
-        setSearchParams({ input: value, filters: filters.join(",") });
-    }, [debouncedValue, filters, setSearchParams]);
 
     const handleInput = async (e: any) => {
         setValue(e.target.value);
+        setSearchParams({ input: e.target.value, filters: filters.join(",") });
     }
 
     const handleChipClick = async (filterKey: string) => {
@@ -61,6 +54,7 @@ export default ({ loading, items }: IProps) => {
         }
 
         setFilters(filterValues);
+        setSearchParams({ input: value, filters: filterValues.join(",") });
     };
 
     const handleClearInput = () => {

@@ -62,7 +62,6 @@ export default () => {
         );
     }
 
-
     return <>
         <ThemeProvider theme={theme}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
