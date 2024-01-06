@@ -31,14 +31,50 @@ public static class ConfigureServices
     {
         services.AddDatabaseDeveloperPageExceptionFilter()
                 .AddHttpContextAccessor()
-                .AddAuthenticationServices(configuration)
-                .AddAuthorizationServices()
                 .AddControllerServices(configuration)
                 .AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-        services.AddAuthentication()
-            .AddIdentityServerJwt();
+
+        var audience = configuration["OAuth0:Audience"];
+
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddIdentityServerJwt()
+            .AddJwtBearer(options =>
+            {
+                options.Authority = configuration["OAuth0:Domain"];
+                options.Audience = audience;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("read:admin-messages", policy =>
+            {
+                policy.Requirements.Add(new RbacRequirement("read:admin-messages"));
+            });
+
+            // Add a new policy for the Garage role
+            options.AddPolicy("AdminRole", policy => {
+                policy.RequireRole("Admin");
+            });
+
+            options.AddPolicy("GarageRole", policy => {
+                policy.RequireRole("Admin", "Garage");
+            });
+        });
+
+        services.AddSingleton<IAuthorizationHandler, RbacHandler>();
+
 
         return services;
     }
@@ -86,44 +122,6 @@ public static class ConfigureServices
                 TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
             });
         });
-
-        return services;
-    }
-
-    private static IServiceCollection AddAuthenticationServices(this IServiceCollection services, IConfiguration configuration)
-    {
-        var audience = configuration["OAuth0:Audience"];
-
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.Authority = configuration["OAuth0:Domain"];
-                    options.Audience = audience;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true
-                    };
-                });
-
-        return services;
-    }
-
-    private static IServiceCollection AddAuthorizationServices(this IServiceCollection services)
-    {
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("read:admin-messages", policy =>
-            {
-                policy.Requirements.Add(new RbacRequirement("read:admin-messages"));
-            });
-
-            // Add a new policy for the Garage role
-            options.AddPolicy("AdminRole", policy => policy.RequireRole("Admin"));
-            options.AddPolicy("GarageRole", policy => policy.RequireRole("Admin", "Garage"));
-        });
-
-        services.AddSingleton<IAuthorizationHandler, RbacHandler>();
 
         return services;
     }
