@@ -2,14 +2,8 @@
 import { Navigate } from "react-router-dom";
 
 export default () => {
-    const { isLoading, error } = useAuth0();
+    const { error } = useAuth0();
 
-    // if (isLoading) {
-    //     return <div>Loading...</div>;
-    // }
-
-    // return <Navigate to="/" />;
-    
     if (error) {
       return (
         <div>

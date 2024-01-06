@@ -1,6 +1,9 @@
 import { Auth0Provider, AppState } from "@auth0/auth0-react";
 import React, { PropsWithChildren } from "react";
+import { set } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import useConfirmationStep from "./hooks/useConfirmationStep";
+import useUserRole from "./hooks/useUserRole";
 
 interface Auth0ProviderWithNavigateProps {
   children: React.ReactNode;
@@ -10,6 +13,8 @@ export const Auth0ProviderWithNavigate = ({
   children,
 }: PropsWithChildren<Auth0ProviderWithNavigateProps>): JSX.Element | null => {
     const navigate = useNavigate();
+    const { userRole } = useUserRole();
+    const { setConfigurationIndex } = useConfirmationStep();
 
     const domain = process.env.REACT_APP_AUTH0_DOMAIN;
     const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
@@ -17,6 +22,10 @@ export const Auth0ProviderWithNavigate = ({
     const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
 
     const onRedirectCallback = (appState?: AppState) => {
+        if (appState?.error) {
+            setConfigurationIndex(0, userRole);
+        } 
+
         navigate(appState?.returnTo || window.location.pathname);
     };
 

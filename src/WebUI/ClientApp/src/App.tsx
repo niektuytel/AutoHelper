@@ -25,6 +25,8 @@ import Garage from './pages/garage/Garage';
 import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
 import HomePage from './pages/home/HomePage';
 import { ServiceLogDrawerProvider } from './context/ServiceLogDrawerContext';
+import useConfirmationStep from './hooks/useConfirmationStep';
+import useUserRole from './hooks/useUserRole';
 
 export default () => {
     const location = useLocation();
@@ -33,19 +35,6 @@ export default () => {
     const showStaticDrawer = matches && location.pathname.startsWith('/garage');
 
     const GarageRouteContent = ({ children }: { children: React.ReactNode }) => {
-        const userRole = localStorage.getItem('userRole');
-        const confirmationStepIndex = Number(localStorage.getItem('confirmationStepIndex'));
-
-        // redirect when user is on confirmation step 1
-        useEffect(() => {
-            if (userRole === ROLES.GARAGE) {
-                if (location.pathname != ROUTES.GARAGE_ACCOUNT.SETTINGS && confirmationStepIndex == 1) {
-                    console.log("Confirmation is in step 1, we need more information. (redirecting to the settings page)")
-                    navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS);
-                }
-            }
-        }, [navigate, userRole, confirmationStepIndex]);
-
         return (
             <Box display="flex" sx={{ marginBottom: "75px", borderBottom: `1px solid ${COLORS.BORDER_GRAY}` }}>
                 {showStaticDrawer && (
@@ -72,7 +61,7 @@ export default () => {
                                 <Header showStaticDrawer={showStaticDrawer} />
                                 <AuthCallback />
                             </>
-                        } />{/*TODO: Maybe able to remove???*/}
+                        } />
                         <Route path="*" element={
                             <>
                                 <Header showStaticDrawer={showStaticDrawer} />
