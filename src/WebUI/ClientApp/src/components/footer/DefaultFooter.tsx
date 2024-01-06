@@ -44,6 +44,7 @@ const Footer = () => {
                                 <MenuItem value={NL}>{t("dutch")}</MenuItem>
                                 <MenuItem value={EN}>{t("english")}</MenuItem>
                             </Select>
+                            TEST
                         </Grid>
                     </Grid>
                 </Box>
