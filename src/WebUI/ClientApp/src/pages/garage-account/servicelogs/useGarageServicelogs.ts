@@ -8,37 +8,24 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { BadRequestResponse, FileParameter, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
-import { GetGarageAccountClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 function useGarageServiceLogs(onResponse: (data: any) => void) {
-    const { userRole } = useUserRole()
-    const { setConfigurationIndex } = useConfirmationStep();
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageAccountClient(accessToken);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const location = useLocation();
     const { t } = useTranslation();
+    const garageClient = GetGarageAccountClient();
+    const handleApiRequest = useHandleApiRequest<VehicleServiceLogAsGarageDtoItem[]>();
 
     const fetchGarageServiceLogsData = async () => {
-        try {
-            const response = await garageClient.getServiceLogs(null);
+        const response = await handleApiRequest(
+            async () => await garageClient.getServiceLogs(null),
+            t("GarageClient.404.Message")
+        );
 
-            return response;
-        } catch (response: any) {
-            // redirect + enable garage register page
-            if (response.status === 404) {
-                setConfigurationIndex(0, userRole);
-                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS, { state: { from: location } });
-                return;
-            }
-
-            throw response;
-        }
+        return response;
     }
 
     const { data: garageServiceLogs, isLoading, isError } = useQuery(
@@ -164,7 +151,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             dispatch(showOnSuccess("Garage service log is been updated!"));
 
             // Update the garageSettings in the cache after updating
-            const updatedGarageServices = garageServiceLogs?.map((service) => {
+            const updatedGarageServices = garageServiceLogs?.map((service: any) => {
                 if (service.id === response.id) {
                     return response;
                 } else {
@@ -206,7 +193,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             dispatch(showOnSuccess("Garage service log is been deleted!"));
 
             // Delete the garageSettings in the cache after updating
-            const updatedGarageServices = garageServiceLogs?.filter((service) => service.id !== response.id);
+            const updatedGarageServices = garageServiceLogs?.filter((service: any) => service.id !== response.id);
             queryClient.setQueryData(['garageServiceLogs'], updatedGarageServices);
             console.log(updatedGarageServices);
 

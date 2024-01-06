@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
-import { GetGarageAccountClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
@@ -18,49 +18,25 @@ import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
     const { userRole } = useUserRole()
-    const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageAccountClient(accessToken);
-
-
-    const initialGarageSettings = new GarageSettingsDtoItem({
-        name: "",
-        address: "",
-        city: "",
-        image: "",
-        imageThumbnail: "",
-        phoneNumber: "",
-        whatsappNumber: "",
-        emailAddress: "",
-        conversationContactEmail: "",
-        conversationContactWhatsappNumber: ""
-    });
+    const { setConfigurationIndex } = useConfirmationStep();
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const garageClient = GetGarageAccountClient();
+    const handleApiRequest = useHandleApiRequest<GarageSettingsDtoItem>();
 
     const fetchGarageData = async () => {
-        try {
-            if (configurationIndex == 0) {
-                dispatch(showOnError(t("Garage is not been found")));
-                return initialGarageSettings;
-            }
+        const response = await handleApiRequest(
+            async () => {
+                const result = await garageClient.getSettings();
+                setConfigurationIndex(2, userRole);
+                return result;
+            },
+            t("GarageClient.404.Message")
+        );
 
-            const response = await garageClient.getSettings();
-            setConfigurationIndex(2, userRole);
-            return response;
-        } catch (response: any) {
-            if (response.status === 404) {
-                // Enable garage register page
-                dispatch(showOnError(t("Garage is not been found")));
-                setConfigurationIndex(1, userRole);
-                return initialGarageSettings;
-            }
-
-            throw response;
-        }
+        return response;
     }
 
     const { data: garageSettings, isLoading, isError } = useQuery(
@@ -74,6 +50,8 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
             staleTime: 60 * 60 * 1000, // 1 hour
 
             onSuccess: (data: any) => {
+                if(data == null) return;
+
                 reset({
                     name: data.name,
                     address: data.address ? `${data.address}, ${data.city}` : '',

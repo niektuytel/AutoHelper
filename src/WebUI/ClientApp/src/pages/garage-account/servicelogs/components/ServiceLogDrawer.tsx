@@ -52,10 +52,6 @@ export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps)
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageAccountClient(accessToken);
     const { control, handleSubmit, formState: { errors }, reset, setError, setValue } = useForm<IServiceLogDrawerData>();
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);

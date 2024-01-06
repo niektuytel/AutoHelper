@@ -1,42 +1,29 @@
 ﻿import { useLocation, useNavigate } from "react-router";
 import { useQuery } from "react-query";
 import { useTranslation } from "react-i18next";
-import { useAuth0 } from "@auth0/auth0-react";
 
 //own imports
-import { ROUTES } from "../../../constants/routes";
-import { GetGarageAccountClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
-import useConfirmationStep from "../../../hooks/useConfirmationStep";
+import { GarageOverviewDtoItem } from "../../../app/web-api-client";
 
 export default () => {
-    const { userRole } = useUserRole()
-    const { setConfigurationIndex } = useConfirmationStep();
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageAccountClient(accessToken);
-    const navigate = useNavigate();
-    const location = useLocation();
     const { t } = useTranslation();
+    const { userRole } = useUserRole()
+    const garageClient = GetGarageAccountClient();
+    const handleApiRequest = useHandleApiRequest<GarageOverviewDtoItem>();
 
     const fetchGarageOverview = async () => {
-        try {
-            const response = await garageClient.getOverview();
-            return response;
-        } catch (response: any) {
-            // redirect + enable garage register page
-            if (response.status === 404) {
-                setConfigurationIndex(0, userRole);
-                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS, { state: { from: location } });
-                return;
-            }
+        const response = await handleApiRequest(
+            async () => await garageClient.getOverview(),
+            t("GarageClient.404.Message")
+        );
 
-            throw response;
-        }
+        return response;
     }
 
     const { data: garageOverview, isLoading, isError } = useQuery(
-        ['garageOverview'],
+        ['garageOverview', userRole],
         fetchGarageOverview,
         {
             enabled: true,

@@ -1,22 +1,23 @@
 ﻿import { useQuery, useQueryClient } from "react-query";
 import { useState, useEffect } from "react";
-import { GarageClient } from "../../../app/web-api-client";
+import { GarageClient, GarageServiceDtoItem } from "../../../app/web-api-client";
 import { useAuth0 } from "@auth0/auth0-react";
-import { GetGarageAccountClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
+import { useTranslation } from "react-i18next";
 
 export default (license: string) => {
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageAccountClient(accessToken);
+    const { t } = useTranslation();
     const [licensePlate, setLicensePlate] = useState(license);
+    const garageClient = GetGarageAccountClient();
+    const handleApiRequest = useHandleApiRequest<GarageServiceDtoItem[]>();
 
     const fetchGarageServiceTypes = async () => {
-        try {
-            const response = await garageClient.getServices(licensePlate);
-            return response;
-        } catch (response: any) {
-            throw response;
-        }
+        const response = await handleApiRequest(
+            async () => await garageClient.getServices(licensePlate),
+            t("GarageClient.404.Message")
+        );
+
+        return response;
     }
 
     const { data: garageServiceTypes, isLoading, isError, refetch } = useQuery(

@@ -4,41 +4,32 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, UpdateGarageServiceCommand } from "../../../app/web-api-client";
+import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, GarageServiceDtoItem, UpdateGarageServiceCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { useAuth0 } from "@auth0/auth0-react";
-import { GetGarageAccountClient } from "../../../app/GarageClient";
+import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
 import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 export default (onResponse: (data: any) => void) => {
     const { userRole } = useUserRole()
     const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-    const garageClient = GetGarageAccountClient(accessToken);
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+    const garageClient = GetGarageAccountClient();
+    const handleApiRequest = useHandleApiRequest<GarageServiceDtoItem[]>();
 
     const fetchGarageServicesData = async () => {
-        try {
-            const response = await garageClient.getServices(undefined);
+        const response = await handleApiRequest(
+            async () => await garageClient.getServices(undefined),
+            t("GarageClient.404.Message")
+        );
 
-            return response;
-        } catch (response: any) {
-            // redirect + enable garage register page
-            if (response.status === 404) {
-                setConfigurationIndex(1, userRole);
-                navigate(ROUTES.GARAGE_ACCOUNT.SETTINGS, { state: { from: location } });
-                return;
-            }
-
-            throw response;
-        }
+        return response;
     }
 
     const { data: garageServices, isLoading, isError } = useQuery(

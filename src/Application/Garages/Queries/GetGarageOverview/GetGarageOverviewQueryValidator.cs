@@ -1,7 +1,9 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
+using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +31,12 @@ public class GetGarageOverviewQueryValidator : AbstractValidator<GetGarageOvervi
             .Include(x => x.Services)
             .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(GarageItem), userId ?? "");
+        }
+
         command.Garage = entity;
-        return command.Garage != null;
+        return true;
     }
 }

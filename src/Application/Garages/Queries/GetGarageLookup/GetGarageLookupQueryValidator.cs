@@ -1,5 +1,7 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Exceptions;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
+using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +29,12 @@ public class GetGarageLookupQueryValidator : AbstractValidator<GetGarageLookupQu
             .Include(x => x.Services)
             .FirstOrDefaultAsync(x => x.Identifier == identifier, cancellationToken);
 
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(GarageLookupItem), identifier ?? "");
+        }
+
         command.GarageLookup = entity;
-        return command.GarageLookup != null;
+        return true;
     }
 }
