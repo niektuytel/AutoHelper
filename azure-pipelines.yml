@@ -64,9 +64,8 @@ steps:
       deployToSlotOrASE: true
       ResourceGroupName: 'AutoHelper'
       SlotName: 'production'
-      packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+      packageForLinux: '$(System.DefaultWorkingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
       RuntimeStack: 'DOTNETCORE|7.0'
-      StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
 
   # - task: AzureRmWebAppDeployment@4
   #   inputs:
@@ -77,6 +76,7 @@ steps:
   #     packageForLinux: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
   #     RuntimeStack: 'DOTNETCORE|7.0'
   #     StartupCommand: '
+      # StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
   
   
   
