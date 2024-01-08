@@ -38,25 +38,37 @@ steps:
       ArtifactName: 'drop'
       publishLocation: 'Container'
   
-  - task: AzureRmWebAppDeployment@4
-    inputs:
-      ConnectionType: 'AzureRM'
-      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-      appType: 'webAppLinux'
-      WebAppName: 'autohelper-webui'
-      packageForLinux: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.WebUI.zip'
-      RuntimeStack: 'DOTNETCORE|7.0'
-      StartupCommand: 'dotnet AutoHelper.WebUI.dll'
-
+  # - task: AzureRmWebAppDeployment@4
+  #   inputs:
+  #     ConnectionType: 'AzureRM'
+  #     azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+  #     appType: 'webAppLinux'
+  #     WebAppName: 'autohelper-webui'
+  #     packageForLinux: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.WebUI.zip'
+  #     RuntimeStack: 'DOTNETCORE|7.0'
+  #     StartupCommand: 'dotnet AutoHelper.WebUI.dll'
   - task: AzureRmWebAppDeployment@4
     inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
       appType: 'webAppLinux'
       WebAppName: 'autohelper-hangfire'
-      packageForLinux: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
+      deployToSlotOrASE: true
+      ResourceGroupName: 'AutoHelper'
+      SlotName: 'production'
+      packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
       RuntimeStack: 'DOTNETCORE|7.0'
       StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
+
+  # - task: AzureRmWebAppDeployment@4
+  #   inputs:
+  #     ConnectionType: 'AzureRM'
+  #     azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+  #     appType: 'webAppLinux'
+  #     WebAppName: 'autohelper-hangfire'
+  #     packageForLinux: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
+  #     RuntimeStack: 'DOTNETCORE|7.0'
+  #     StartupCommand: '
   
   
   
