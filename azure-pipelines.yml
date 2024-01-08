@@ -35,30 +35,31 @@ steps:
     displayName: 'Publish'
     inputs:
       command: 'publish'
-      publishWebProjects: false
-      projects: '**/*.csproj'
+      publishWebProjects: true
       arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
       zipAfterPublish: false
 
-  - task: PublishBuildArtifacts@1
-    name: 'PublishBuildArtifacts'
-    displayName: 'Publish build artifacts'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'AzureTestProject'
-      publishLocation: 'Container'
-
-  # - task: AzureRmWebAppDeployment@4
+  # Create Artifacts 
+  # - task: PublishBuildArtifacts@1
+  #   name: 'PublishBuildArtifacts'
+  #   displayName: 'Publish build artifacts'
   #   inputs:
-  #     ConnectionType: 'AzureRM'
-  #     azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-  #     appType: 'webAppLinux'
-  #     WebAppName: 'autohelper-hangfire'
-  #     deployToSlotOrASE: true
-  #     ResourceGroupName: 'AutoHelper'
-  #     SlotName: 'production'
-  #     packageForLinux: '$(build.artifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
-  #     RuntimeStack: 'DOTNETCORE|7.0'
+  #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #     ArtifactName: 'AzureTestProject'
+  #     publishLocation: 'Container'
+
+  - task: AzureRmWebAppDeployment@4
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+      appType: 'webAppLinux'
+      WebAppName: 'autohelper-hangfire'
+      deployToSlotOrASE: true
+      ResourceGroupName: 'AutoHelper'
+      SlotName: 'production'
+      packageForLinux: '$(build.artifactStagingDirectory)'
+      RuntimeStack: 'DOTNETCORE|7.0'
+      StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
 
   # - task: AzureRmWebAppDeployment@4
   #   inputs:
