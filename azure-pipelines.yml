@@ -54,7 +54,7 @@ steps:
       azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
       appType: 'webAppLinux'
       WebAppName: 'autohelper-hangfire'
-      packageForLinux: '$(System.DefaultWorkingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
+      packageForLinux: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
       RuntimeStack: 'DOTNETCORE|7.0'
       StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
   
