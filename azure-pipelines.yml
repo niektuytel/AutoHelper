@@ -23,9 +23,6 @@ steps:
     inputs:
       versionSpec: '18.x'
 
-  - script: dotnet build --configuration $(buildConfiguration)
-    displayName: 'dotnet build $(buildConfiguration)'
-
   - task: DotNetCoreCLI@2
     name: 'Tests'
     displayName: 'Run tests'
@@ -34,22 +31,22 @@ steps:
       projects: '$(solution)'
       arguments: '--configuration $(BuildConfiguration)'
 
-  # - task: DotNetCoreCLI@2
-  #   name: 'Publish'
-  #   displayName: 'Publish'
-  #   inputs:
-  #     command: 'publish'
-  #     publishWebProjects: true
-  #     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-  #     zipAfterPublish: false
-
-  - task: PublishBuildArtifacts@1
-    name: 'PublishBuildArtifacts'
-    displayName: 'Create Artifacts'
+  - script: dotnet build --configuration $(buildConfiguration)
+    displayName: 'dotnet build $(buildConfiguration)'
+    
+  # publish an artifact called drop
+  - task: PublishPipelineArtifact@1
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'LatestArtifact'
-      publishLocation: 'Container'
+      targetPath: '$(Build.ArtifactStagingDirectory)' 
+      artifactName: drop
+      
+    # download the artifact drop from the previous job
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: 'current'
+      artifact: 'drop'
+      path: '$(Pipeline.Workspace)'
+
 
   - task: AzureWebApp@1
     inputs:
@@ -59,9 +56,8 @@ steps:
       deployToSlotOrASE: true
       resourceGroupName: 'AutoHelper'
       slotName: 'production'
-      package: '$(build.artifactStagingDirectory)'
+      package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
       runtimeStack: 'DOTNETCORE|7.0'
-      startUpCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
 
   # - task: AzureRmWebAppDeployment@4
   #   inputs:
