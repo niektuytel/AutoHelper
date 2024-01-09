@@ -38,13 +38,13 @@ steps:
       arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
       zipAfterPublish: false
 
-  # - task: PublishBuildArtifacts@1
-  #   name: 'PublishBuildArtifacts'
-  #   displayName: 'Create Artifacts'
-  #   inputs:
-  #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #     ArtifactName: 'AzureTestProject'
-  #     publishLocation: 'Container'
+  - task: PublishBuildArtifacts@1
+    name: 'PublishBuildArtifacts'
+    displayName: 'Create Artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'Latest Deploy'
+      publishLocation: 'Container'
 
   - task: AzureRmWebAppDeployment@4
     inputs:
