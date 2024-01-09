@@ -1,5 +1,5 @@
 ﻿import React, { useState, useRef, useCallback } from 'react';
-import { Button, CircularProgress, Menu, MenuItem, styled, IconButton } from "@mui/material";
+import { Button, CircularProgress, Menu, MenuItem, styled, IconButton, Skeleton } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import GarageIcon from '@mui/icons-material/Garage';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
@@ -93,11 +93,17 @@ export default ({ asIcon }:IProps) => {
 
         handleClose();
     }, [loginWithRedirect, handleClose, location]);
+
+
     const handleLogout = useCallback(() => {
         logout({ logoutParams: { returnTo: window.location.origin } });
+
+        setUserRole("");
+
+        handleClose();
     }, [logout]);
 
-    if (isLoading) return <CircularProgress color="secondary" />;
+    if (isLoading) return <Skeleton variant='rounded' width="100px" height="100%" />;
 
     if (asIcon) return <LogoutButtonIcon onLogout={handleLogout} />;
 
@@ -107,7 +113,7 @@ export default ({ asIcon }:IProps) => {
                 variant="contained"
                 fullWidth
                 onClick={handleLogout}
-                style={{ backgroundColor: 'black' }}
+                sx={{ height: "100%" }}
             >
                 Logout
             </Button>

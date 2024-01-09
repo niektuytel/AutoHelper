@@ -30,6 +30,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         const response = await handleApiRequest(
             async () => {
                 const result = await garageClient.getSettings();
+
                 setConfigurationIndex(2, userRole);
                 return result;
             },
@@ -65,18 +66,23 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
                     conversationContactWhatsappNumber: data.conversationContactWhatsappNumber,
                     website: data.website
                 });
+
+                // Enable garage overview + services pages
+                setConfigurationIndex(2, userRole);
             }
         }
     );
 
     const createMutation = useMutation(garageClient.createGarage.bind(garageClient), {
         onSuccess: (response) => {
-            // Enable garage overview + services pages
-            setConfigurationIndex(2, userRole)
             dispatch(showOnSuccess("Garage has been created!"));
 
             // Update the garageSettings in the cache after creating
             queryClient.setQueryData(['garageSettings'], response);
+
+            // Enable garage overview + services pages
+            setConfigurationIndex(2, userRole);
+            navigate(ROUTES.GARAGE_ACCOUNT.SERVICES);
         },
         onError: (response) => {
             console.error('Error:', response);
@@ -94,6 +100,9 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
 
             // Update the garageSettings in the cache after updating
             queryClient.setQueryData(['garageSettings'], response);
+
+            // Enable garage overview + services pages
+            setConfigurationIndex(2, userRole);
         },
         onError: (response) => {
             console.error('Error:', response);
@@ -172,7 +181,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
                 imageThumbnail: garageSettings.imageThumbnail,
                 emailAddress: garageSettings.emailAddress,
                 phoneNumber: garageSettings.phoneNumber,
-                whatsappNumber: garageSettings.whatsAppNumber,
+                whatsappNumber: garageSettings.whatsappNumber,
                 address: garageSettings.address ? `${garageSettings.address}, ${garageSettings.city}` : '',
                 city: garageSettings.city,
                 website: garageSettings.website,

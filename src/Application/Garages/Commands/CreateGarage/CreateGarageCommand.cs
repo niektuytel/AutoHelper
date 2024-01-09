@@ -84,23 +84,27 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
         await _context.SaveChangesAsync(cancellationToken);
 
         // Insert all lookup services
-        foreach (var lookupService in request.GarageLookup.Services)
+        if(request.GarageLookup.Services?.Any() == true)
         {
-            var service = new GarageServiceItem
+            foreach (var lookupService in request.GarageLookup.Services)
             {
-                UserId = request.UserId!,
-                GarageId = entity.Id,
-                Type = lookupService.Type,
-                VehicleType = lookupService.VehicleType,
-                Title = lookupService.Title,
-                Description = lookupService.Description,
-                ExpectedNextDateIsRequired = lookupService.ExpectedNextDateIsRequired,
-                ExpectedNextOdometerReadingIsRequired = lookupService.ExpectedNextOdometerReadingIsRequired
-            };
+                var service = new GarageServiceItem
+                {
+                    UserId = request.UserId!,
+                    GarageId = entity.Id,
+                    Type = lookupService.Type,
+                    VehicleType = lookupService.VehicleType,
+                    Title = lookupService.Title,
+                    Description = lookupService.Description,
+                    ExpectedNextDateIsRequired = lookupService.ExpectedNextDateIsRequired,
+                    ExpectedNextOdometerReadingIsRequired = lookupService.ExpectedNextOdometerReadingIsRequired
+                };
 
-            _context.GarageServices.Add(service);
+                _context.GarageServices.Add(service);
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
-        await _context.SaveChangesAsync(cancellationToken);
 
         // If you wish to use domain events, then you can add them here:
         // entity.AddDomainEvent(new SomeDomainEvent(entity));

@@ -202,6 +202,7 @@
   "AddMaintenanceLog.PhoneOrEmail.Required": "Please provide either a phone number or an email address",
   "AddMaintenanceLog.GarageLookup.Requried": "Select the garage.",
   "AddMaintenanceLog.ServiceType.Label": "Service type",
+  "AddMaintenanceLog.ServiceType.Required": "Select service that happend on the vehicle",
   "AddMaintenanceLog.ServiceDescription.Label": "Description",
   "AddMaintenanceLog.Attachments.Label": "Attachments",
   "AddMaintenanceLog.Date.Required": "When did this happen?",

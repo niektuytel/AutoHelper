@@ -17,6 +17,8 @@ using AutoHelper.Application.Garages.Queries.GetGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Infrastructure.Common.Interfaces;
+using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Application.Garages.Queries.GetGarageLookupCards;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -99,8 +101,10 @@ public class GarageController : ApiControllerBase
     [HttpGet($"{nameof(GetServices)}/{{identifier}}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceDtoItem>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<GarageServiceDtoItem>> GetServices([FromRoute] string identifier, [FromQuery] string? licensePlate = null)
-    {
+    public async Task<IEnumerable<GarageServiceDtoItem>> GetServices(
+        [FromRoute] string identifier, 
+        [FromQuery] string? licensePlate = null
+    ) {
         var query = new GetGarageServicesAsVehicleQuery(identifier, licensePlate);
         return await Mediator.Send(query);
     }

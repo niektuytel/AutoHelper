@@ -97,7 +97,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                                 </StyledIconButton>
                             }
                             {showStaticDrawer ?
-                                <Box sx={{ maxWidth: "100px", float:"right" }}>
+                                <Box sx={{ float:"right", height:"100%" }}>
                                     <LoginButton />
                                 </Box>
                                 :

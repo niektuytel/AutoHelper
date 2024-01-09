@@ -44,9 +44,9 @@ const SearchGarage = memo(({ value, onChange, error }: ISearchGarageProps) => {
             freeSolo
             options={options}
             value={value || ''}
-            getOptionLabel={(option: any) => option?.name || ''}
+            getOptionLabel={(option: any) => (option?.name && option?.city) ? `${option?.name}, ${option?.city}` : ''}
             onInputChange={(event, newInputValue) => {
-                const garageLookup = options.find(option => option.name === newInputValue);
+                const garageLookup = options.find(option => `${option?.name}, ${option?.city}` === newInputValue);
                 if (garageLookup) {
                     onChange(garageLookup);
                 }

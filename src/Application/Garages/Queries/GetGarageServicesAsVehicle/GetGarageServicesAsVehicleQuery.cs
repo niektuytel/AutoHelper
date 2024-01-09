@@ -9,6 +9,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,18 +18,21 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 
 public record GetGarageServicesAsVehicleQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
-    public GetGarageServicesAsVehicleQuery(string garageLookupIdentifier, string? licensePlate=null)
+    public GetGarageServicesAsVehicleQuery(string garageLookupIdentifier, string licensePlate)
     {
-        LicensePlate = licensePlate;
         GarageLookupIdentifier = garageLookupIdentifier;
+        LicensePlate = licensePlate;
     }
 
-    public string? LicensePlate { get; internal set; }
+    public string LicensePlate { get; internal set; }
 
     public string GarageLookupIdentifier { get; internal set; }
 
     [JsonIgnore]
     public GarageLookupItem? GarageLookup { get; internal set; }
+
+    [JsonIgnore]
+    public VehicleType? VehicleType { get; internal set; }
 }
 
 public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAsVehicleQuery, IEnumerable<GarageServiceDtoItem>>
@@ -44,12 +48,11 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAs
 
     public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesAsVehicleQuery request, CancellationToken cancellationToken)
     {
-        // TODO: get services on vehicle type, to reduce response size
-
         IEnumerable<GarageServiceDtoItem> result;
         if (request.GarageLookup!.GarageId != null)
         {
             var entities = _context.GarageServices
+                .Where(x => request.VehicleType == null || x.VehicleType == request.VehicleType)
                 .Where(x => x.GarageId == request.GarageLookup.GarageId);
 
             result = _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();
@@ -57,6 +60,7 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesAs
         else
         {
             var entities = _context.GarageLookupServices
+                .Where(x => request.VehicleType == null || x.VehicleType == request.VehicleType)
                 .Where(x => x.GarageLookupIdentifier == request.GarageLookupIdentifier);
 
             result = _mapper.Map<IEnumerable<GarageServiceDtoItem>>(entities) ?? new List<GarageServiceDtoItem>();

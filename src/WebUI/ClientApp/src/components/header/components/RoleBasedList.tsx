@@ -32,6 +32,7 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     const { userRole } = useUserRole()
     const { configurationIndex } = useConfirmationStep();
     const [prevIndex, setPrevIndex] = useState(configurationIndex || 0);
+    const [shouldRender, setShouldRender] = useState(true);
     const [open, setOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
@@ -44,14 +45,15 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
 
     const { toggleDrawer } = context;
 
-
-    // update design when index changed
     useEffect(() => {
-        if (prevIndex != configurationIndex) {
+        // Your existing logic
+        if (prevIndex !== configurationIndex) {
             setPrevIndex(configurationIndex);
         }
-    }, [configurationIndex]);
 
+        // Toggle the shouldRender state to force a re-render
+        setShouldRender(prev => !prev);
+    }, [configurationIndex, prevIndex]); // Dependency on prevIndex
 
     const handleClick2 = () => setOpen(!open);
 

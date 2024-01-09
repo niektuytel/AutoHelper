@@ -1,9 +1,11 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.Text.Json.Serialization;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +37,7 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupBriefDt
         PageSize = pageSize;
     }
 
-    public string LicensePlate { get; private set; }
+    public string LicensePlate { get; internal set; }
     public float Latitude { get; private set; }
     public float Longitude { get; private set; }
     public int InMeterRange { get; private set; }
@@ -43,6 +45,9 @@ public record GetGarageLookupsQuery : IRequest<PaginatedList<GarageLookupBriefDt
     public string[]? Filters { get; private set; }
     public int PageNumber { get; private set; }
     public int PageSize { get; private set; }
+
+    [JsonIgnore]
+    public VehicleType? VehicleType { get; internal set; }
 }
 
 public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQuery, PaginatedList<GarageLookupBriefDto>>
@@ -66,6 +71,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         var queryable = _context.GarageLookups
             .AsNoTracking()
             .Include(x => x.Services)
+            .Where(x => x.Services.Any(a => a.VehicleType == request.VehicleType))
             .Where(x => x.Location != null)
             .Where(x => EF.Functions.Like(x.DaysOfWeekString, "%–%"))
             .Where(x => x.Services.Any())

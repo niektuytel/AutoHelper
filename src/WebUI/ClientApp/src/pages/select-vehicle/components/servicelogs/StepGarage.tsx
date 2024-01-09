@@ -1,6 +1,6 @@
 ﻿import React, { ChangeEvent, useState } from 'react';
 import { Controller } from 'react-hook-form';
-import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Chip, Button, CircularProgress } from '@mui/material';
+import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Chip, Button, CircularProgress, FormHelperText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
@@ -11,6 +11,8 @@ import useGarageServiceTypes from './useGarageServiceTypes';
 
 interface IProps {
     control: any;
+    setValue: any;
+    loading: boolean;
     garageServiceTypes: GarageServiceDtoItem[] | undefined;
     triggerFetch: (garageId: string) => void;
     selectedService: GarageServiceDtoItem | undefined;
@@ -19,7 +21,7 @@ interface IProps {
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService, setSelectedService, file, setFile }: IProps) => {
+const GarageStep = ({ control, setValue, loading, garageServiceTypes, triggerFetch, selectedService, setSelectedService, file, setFile }: IProps) => {
     const { t } = useTranslation();
 
     const handleServiceChange = (event: any) => {
@@ -38,7 +40,6 @@ const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService
         setFile(null);
     };
 
-
     return <>
         <Box flexGrow={1} p={1}>
             <Controller
@@ -53,8 +54,9 @@ const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService
                             setSelectedService(undefined);
 
                             field.onChange(value)
-                            if (value.identifier) {
+                            if (value?.identifier) {
                                 triggerFetch(value.identifier!);
+                                setValue('title', '');
                             }
                         }}
                         error={error}
@@ -65,8 +67,13 @@ const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService
                 name="title"
                 control={control}
                 defaultValue={selectedService?.title || ""}
-                render={({ field }) => (
-                    <FormControl fullWidth sx={{ mb: 2, mt: 2 }} size='small'>
+                render={({ field, fieldState: { error } }) => (
+                    <FormControl
+                        fullWidth
+                        error={!!error} // Set error state on FormControl
+                        sx={{ mb: 2, mt: 2 }}
+                        size='small'
+                    >
                         <InputLabel id="service-type-label">
                             {t("AddMaintenanceLog.ServiceType.Label")}
                         </InputLabel>
@@ -78,6 +85,8 @@ const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService
                                 field.onChange(e);
                                 handleServiceChange(e);
                             }}
+                            disabled={!garageServiceTypes || garageServiceTypes.length === 0 || loading}
+                            style={(garageServiceTypes && garageServiceTypes.length > 0) ? {} : { color: 'grey', backgroundColor: '#f0f0f0' }}
                         >
                             {garageServiceTypes?.map((service, index) => service.title &&
                                 <MenuItem key={service.id} value={service.title}>
@@ -85,9 +94,13 @@ const GarageStep = ({ control, garageServiceTypes, triggerFetch, selectedService
                                 </MenuItem>
                             )}
                         </Select>
+                        <FormHelperText>
+                            {error ? error.message : null}
+                        </FormHelperText>
                     </FormControl>
                 )}
             />
+
             <Controller
                 name="description"
                 control={control}

@@ -13,7 +13,9 @@ steps:
   
   - task: NuGetCommand@2
     inputs:
-      restoreSolution: '$(solution)'
+        command: 'restore'
+        restoreSolution: '$(solution)'
+        feedsToUse: 'select'
   
   - task: NodeTool@0
     inputs:

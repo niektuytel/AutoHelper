@@ -205,6 +205,7 @@
   "AddMaintenanceLog.PhoneOrEmail.Required": "Geef alstublieft een telefoonnummer of e-mailadres op",
   "AddMaintenanceLog.GarageLookup.Requried": "Selecteer een garage",
   "AddMaintenanceLog.ServiceType.Label": "Soort onderhoud",
+  "AddMaintenanceLog.ServiceType.Required": "Welke onderhoud is er uitgevoerd?",
   "AddMaintenanceLog.ServiceDescription.Label": "Omschrijving",
   "AddMaintenanceLog.Attachments.Label": "Bijlage",
   "AddMaintenanceLog.Date.Required": "Wanneer is dit gebeurd?",

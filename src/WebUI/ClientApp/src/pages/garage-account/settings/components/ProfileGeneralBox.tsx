@@ -161,15 +161,22 @@ export default ({ control, setFormValue, defaultLocation, notFound }: LocationSe
 
         // Contact
         setFormValue("phoneNumber", value.phoneNumber);
-        setFormValue("whatsAppNumber", value.whatsappNumber);
+        setFormValue("whatsappNumber", value.whatsappNumber);
         setFormValue("email", value.emailAddress);
 
-        if (value.conversationContactEmail !== undefined) {
-            setFormValue("conversationEmail", value);
-            setFormValue("conversationWhatsAppNumber", "");
-        } else if (value.conversationContactWhatsappNumber !== undefined) {
+        if (value?.conversationContactEmail) {
+            setFormValue("conversationEmail", value?.conversationContactEmail);
+        }
+        else {
             setFormValue("conversationEmail", "");
-            setFormValue("conversationWhatsAppNumber", value);
+        }
+
+        if (value?.conversationContactWhatsappNumber) {
+            setFormValue("conversationWhatsappNumber", value?.conversationContactWhatsappNumber);
+        }
+        else
+        {
+            setFormValue("conversationWhatsappNumber", "");
         }
     }
 

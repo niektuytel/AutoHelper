@@ -1,9 +1,11 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
+using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
@@ -11,10 +13,12 @@ namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 public class GetGarageServicesAsVehicleQueryValidator : AbstractValidator<GetGarageServicesAsVehicleQuery>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IVehicleService _vehicleService;
 
-    public GetGarageServicesAsVehicleQueryValidator(IApplicationDbContext context)
+    public GetGarageServicesAsVehicleQueryValidator(IApplicationDbContext context, IVehicleService vehicleService)
     {
         _context = context;
+        _vehicleService = vehicleService;
 
         // Custom rule for processing and validating LicensePlate
         RuleFor(x => x.LicensePlate)
@@ -44,7 +48,9 @@ public class GetGarageServicesAsVehicleQueryValidator : AbstractValidator<GetGar
                     // Update the license plate in the context if it passes validation
                     context.InstanceToValidate.LicensePlate = processedLicensePlate;
                 }
-            });
+            })
+            .MustAsync(BeValidAndExistingVehicleType)
+            .WithMessage("No vehicle lookup found for this Licenseplate."); ;
 
         RuleFor(v => v.GarageLookupIdentifier)
             .NotEmpty()
@@ -65,6 +71,18 @@ public class GetGarageServicesAsVehicleQueryValidator : AbstractValidator<GetGar
         }
 
         command.GarageLookup = entity;
+        return true;
+    }
+
+    private async Task<bool> BeValidAndExistingVehicleType(GetGarageServicesAsVehicleQuery command, string licensePlate, CancellationToken cancellationToken)
+    {
+        var entity = await _vehicleService.GetVehicleByLicensePlateAsync(licensePlate);
+        if (entity == null)
+        {
+            throw new NotFoundException(nameof(VehicleSpecificationsCardItem), licensePlate ?? "");
+        }
+
+        command.VehicleType = entity.Type;
         return true;
     }
 }

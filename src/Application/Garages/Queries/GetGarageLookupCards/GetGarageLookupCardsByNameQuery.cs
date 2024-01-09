@@ -6,7 +6,7 @@ using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Garages.Queries.GetGarageLookups;
+namespace AutoHelper.Application.Garages.Queries.GetGarageLookupCards;
 public class GetGarageLookupCardsByNameQuery : IRequest<GarageLookupSimplefiedDto[]>
 {
     public GetGarageLookupCardsByNameQuery(string name, int maxSize = 10)
@@ -36,7 +36,8 @@ public class GetGarageLookupCardsByNameQueryHandler : IRequestHandler<GetGarageL
             .AsNoTracking()
             .Where(g => g.Name.ToLower().Contains(request.Name.ToLower()))
             .Take(request.MaxSize)
-            .Select(g => new GarageLookupSimplefiedDto() {
+            .Select(g => new GarageLookupSimplefiedDto()
+            {
                 Identifier = g.Identifier,
                 Name = g.Name,
                 City = g.City,

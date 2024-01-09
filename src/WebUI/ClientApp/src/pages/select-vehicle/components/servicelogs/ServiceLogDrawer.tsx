@@ -29,6 +29,7 @@ interface IServiceLogDrawerProps {
 interface IServiceLogDrawerData {
     garageLookup: GarageLookupSimplefiedDto;
     garageService: GarageServiceDtoItem;
+    title: string;
     description: string;
     date: Date | null;
     expectedNextDate: Date | null;
@@ -67,6 +68,18 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
         let hasError = false;
 
         if (activeStep === 0) {
+
+            // Validate Garage
+            if (!data.garageLookup) {
+                setError('garageLookup', { type: 'manual', message: t('AddMaintenanceLog.Garage.Required') });
+                hasError = true;
+            }
+
+            // Validate Garage Service
+            if (!data.title) {
+                setError('title', { type: 'manual', message: t('AddMaintenanceLog.ServiceType.Required') });
+                hasError = true;
+            }
 
             // Validate Description for 'Other' Type
             if (selectedService && selectedService.type === GarageServiceType.Other && !data.description?.trim()) {
@@ -222,6 +235,8 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
                     {activeStep === 0 && <StepGarage
                         control={control}
+                        setValue={setValue}
+                        loading={loading}
                         garageServiceTypes={garageServiceTypes}
                         triggerFetch={triggerFetch}
                         selectedService={selectedService}
@@ -253,24 +268,24 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 </form>
             </Box>
         </Drawer>
-        <Button
-            variant="contained"
-            color="primary"
-            sx={{
-                position: 'fixed',
-                p: 2,
-                bottom: 16,
-                right: 16,
-                borderRadius: 10,
-                zIndex: 1000
-            }}
-            onClick={() => toggleDrawer(true)}
-            endIcon={<AddIcon />}
-        >
-            {t("Maintenance")}
-        </Button>
-    </>
-    ;
+    </>;
+
+    //<Button
+    //    variant="contained"
+    //    color="primary"
+    //    sx={{
+    //        position: 'fixed',
+    //        p: 2,
+    //        bottom: 16,
+    //        right: 16,
+    //        borderRadius: 10,
+    //        zIndex: 1000
+    //    }}
+    //    onClick={() => toggleDrawer(true)}
+    //    endIcon={<AddIcon />}
+    //>
+    //    {t("Maintenance")}
+    //</Button>
 };
 
 
