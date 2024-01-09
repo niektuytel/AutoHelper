@@ -34,22 +34,22 @@ steps:
       projects: '$(solution)'
       arguments: '--configuration $(BuildConfiguration)'
 
-  - task: DotNetCoreCLI@2
-    name: 'Publish'
-    displayName: 'Publish'
-    inputs:
-      command: 'publish'
-      publishWebProjects: true
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-      zipAfterPublish: false
-
-  # - task: PublishBuildArtifacts@1
-  #   name: 'PublishBuildArtifacts'
-  #   displayName: 'Create Artifacts'
+  # - task: DotNetCoreCLI@2
+  #   name: 'Publish'
+  #   displayName: 'Publish'
   #   inputs:
-  #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #     ArtifactName: 'AzureTestProject'
-  #     publishLocation: 'Container'
+  #     command: 'publish'
+  #     publishWebProjects: true
+  #     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+  #     zipAfterPublish: false
+
+  - task: PublishBuildArtifacts@1
+    name: 'PublishBuildArtifacts'
+    displayName: 'Create Artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'LatestArtifact'
+      publishLocation: 'Container'
 
   - task: AzureWebApp@1
     inputs:
