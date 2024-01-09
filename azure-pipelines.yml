@@ -22,6 +22,9 @@ steps:
     inputs:
       versionSpec: '18.x'
 
+  - script: dotnet build --configuration $(buildConfiguration)
+    displayName: 'dotnet build $(buildConfiguration)'
+
   - task: DotNetCoreCLI@2
     name: 'Tests'
     displayName: 'Run tests'
@@ -32,33 +35,42 @@ steps:
 
   - task: DotNetCoreCLI@2
     name: 'Publish'
-    displayName: 'Publish'
     inputs:
       command: 'publish'
       publishWebProjects: true
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-      zipAfterPublish: false
 
-  - task: PublishBuildArtifacts@1
-    name: 'PublishBuildArtifacts'
-    displayName: 'Create Artifacts'
+  - task: AzureWebApp@1
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      ArtifactName: 'Latest Deploy'
-      publishLocation: 'Container'
-
-  - task: AzureRmWebAppDeployment@4
-    inputs:
-      ConnectionType: 'AzureRM'
       azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
       appType: 'webAppLinux'
-      WebAppName: 'autohelper-hangfire'
+      appName: 'autohelper-hangfire'
       deployToSlotOrASE: true
-      ResourceGroupName: 'AutoHelper'
-      SlotName: 'production'
-      packageForLinux: '$(build.artifactStagingDirectory)'
-      RuntimeStack: 'DOTNETCORE|7.0'
-      StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
+      resourceGroupName: 'AutoHelper'
+      slotName: 'production'
+      package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+      runtimeStack: 'DOTNETCORE|7.0'
+      startUpCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
+
+  # - task: PublishBuildArtifacts@1
+  #   name: 'PublishBuildArtifacts'
+  #   displayName: 'Create Artifacts'
+  #   inputs:
+  #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+  #     ArtifactName: 'Latest Deploy'
+  #     publishLocation: 'Container'
+
+  # - task: AzureRmWebAppDeployment@4
+  #   inputs:
+  #     ConnectionType: 'AzureRM'
+  #     azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+  #     appType: 'webAppLinux'
+  #     WebAppName: 'autohelper-hangfire'
+  #     deployToSlotOrASE: true
+  #     ResourceGroupName: 'AutoHelper'
+  #     SlotName: 'production'
+  #     packageForLinux: '$(build.artifactStagingDirectory)'
+  #     RuntimeStack: 'DOTNETCORE|7.0'
+  #     StartupCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
 
   # - task: AzureRmWebAppDeployment@4
   #   inputs:
