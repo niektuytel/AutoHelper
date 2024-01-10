@@ -34,6 +34,14 @@ steps:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
+  - task: PublishBuildArtifacts@1
+    name: 'PublishBuildArtifacts'
+    displayName: 'Create Artifacts'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'Latest Deploy'
+      publishLocation: 'Container'
+
   - task: AzureWebApp@1
     inputs:
       azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
@@ -116,15 +124,6 @@ steps:
   
   
   
-  
-  # - task: PublishBuildArtifacts@1
-  #   name: 'PublishBuildArtifacts'
-  #   displayName: 'Create Artifacts'
-  #   inputs:
-  #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-  #     ArtifactName: 'Latest Deploy'
-  #     publishLocation: 'Container'
-
   # - task: AzureRmWebAppDeployment@4
   #   inputs:
   #     ConnectionType: 'AzureRM'
