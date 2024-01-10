@@ -41,7 +41,7 @@ steps:
     name: 'PublishBuildArtifacts'
     displayName: 'Publish Artifacts to Pipeline'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      PathtoPublish: '$(System.DefaultWorkingDirectory)'
       ArtifactName: 'Latest Deploy'
       publishLocation: 'Container'
 
