@@ -16,13 +16,15 @@ steps:
       versionSpec: '18.x'
 
   - task: NuGetToolInstaller@1
-    displayName: 'Install NuGet'
+    displayName: 'NuGet Installer'
 
   - task: NuGetCommand@2
+    displayName: 'NuGet Restore Packages'
     inputs:
       restoreSolution: '$(solution)'
 
   - task: VSBuild@1
+    displayName: 'Build Solution'
     inputs:
       solution: '$(solution)'
       msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:OutDir="$(build.artifactStagingDirectory)\\"'
@@ -30,31 +32,21 @@ steps:
       configuration: '$(buildConfiguration)'
 
   - task: VSTest@2
+    displayName: 'Run Unit Tests'
     inputs:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
 
   - task: PublishBuildArtifacts@1
     name: 'PublishBuildArtifacts'
-    displayName: 'Create Artifacts'
+    displayName: 'Publish Artifacts to Pipeline'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'Latest Deploy'
       publishLocation: 'Container'
 
   - task: AzureWebApp@1
-    inputs:
-      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-      appType: 'webAppLinux'
-      appName: 'autohelper-hangfire'
-      deployToSlotOrASE: true
-      resourceGroupName: 'AutoHelper'
-      slotName: 'production'
-      package: '$(Build.ArtifactStagingDirectory)'
-      runtimeStack: 'DOTNETCORE|7.0'
-      startUpCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
-
-  - task: AzureWebApp@1
+    displayName: 'Deploy Web UI to Azure Web App'
     inputs:
       azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
       appType: 'webAppLinux'
@@ -66,3 +58,15 @@ steps:
       runtimeStack: 'DOTNETCORE|7.0'
       startUpCommand: 'dotnet AutoHelper.WebUI.dll'
   
+  - task: AzureWebApp@1
+    displayName: 'Deploy Hangfire Dashboard to Azure Web App'
+    inputs:
+      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+      appType: 'webAppLinux'
+      appName: 'autohelper-hangfire'
+      deployToSlotOrASE: true
+      resourceGroupName: 'AutoHelper'
+      slotName: 'production'
+      package: '$(Build.ArtifactStagingDirectory)'
+      runtimeStack: 'DOTNETCORE|7.0'
+      startUpCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
