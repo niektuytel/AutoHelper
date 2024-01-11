@@ -42,38 +42,44 @@ steps:
     projects: '**/*.csproj'
   displayName: 'Restore .NET Core Projects'
 
-# Build and publish AutoHelper.WebUI
 - task: DotNetCoreCLI@2
+  displayName: 'Build WebUI'
   inputs:
     command: 'build'
     projects: '**/AutoHelper.WebUI.csproj'
     arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build AutoHelper.WebUI'
 
 - task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    projects: '**/AutoHelper.WebUI.csproj'
-    publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
-  displayName: 'Publish AutoHelper.WebUI for Linux'
-
-# Build and publish AutoHelper.Hangfire.Dashboard
-- task: DotNetCoreCLI@2
-  displayName: 'Build AutoHelper.Hangfire.Dashboard'
+  displayName: 'Build Hangfire'
   inputs:
     command: 'build'
     projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
+# Publish AutoHelper.WebUI
 - task: DotNetCoreCLI@2
-  displayName: 'Publish AutoHelper.Hangfire.Dashboard for Linux'
+  displayName: 'Publish AutoHelper.WebUI'
+  inputs:
+    command: 'publish'
+    projects: '**/AutoHelper.WebUI.csproj'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
+
+# Publish AutoHelper.Hangfire.Dashboard
+- task: DotNetCoreCLI@2
+  displayName: 'Publish AutoHelper.Hangfire.Dashboard'
   inputs:
     command: 'publish'
     projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
     publishWebProjects: true
     arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
 
+# Upload Artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+  displayName: 'Upload Artifacts to Drop'
 - task: PublishBuildArtifacts@1
   displayName: 'Upload Artifacts to Drop'
   inputs:
