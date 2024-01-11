@@ -350,7 +350,9 @@ export class AdminAccountClient implements IAdminAccountClient {
 
 export interface IConversationClient {
 
-    startConversations(selectedServices: SelectedServices): Promise<string>;
+    receiveEmailMessage(message: EmailMessage): Promise<string>;
+
+    startConversation(selectedServices: SelectedServices): Promise<string>;
 
     enqueueConversation(command: StartConversationCommand): Promise<string>;
 }
@@ -365,8 +367,62 @@ export class ConversationClient implements IConversationClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    startConversations(selectedServices: SelectedServices): Promise<string> {
-        let url_ = this.baseUrl + "/api/Conversation/StartConversations";
+    receiveEmailMessage(message: EmailMessage): Promise<string> {
+        let url_ = this.baseUrl + "/api/Conversation/ReceiveEmailMessage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(message);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processReceiveEmailMessage(_response);
+        });
+    }
+
+    protected processReceiveEmailMessage(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result404 = resultData404 !== undefined ? resultData404 : <any>null;
+    
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    startConversation(selectedServices: SelectedServices): Promise<string> {
+        let url_ = this.baseUrl + "/api/Conversation/StartConversation";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(selectedServices);
@@ -381,11 +437,11 @@ export class ConversationClient implements IConversationClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processStartConversations(_response);
+            return this.processStartConversation(_response);
         });
     }
 
-    protected processStartConversations(response: Response): Promise<string> {
+    protected processStartConversation(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1838,6 +1894,50 @@ export interface IBadRequestResponse {
     title?: string;
     status?: number;
     errors?: { [key: string]: string; };
+}
+
+export class EmailMessage implements IEmailMessage {
+    from?: string;
+    subject?: string;
+    content?: string;
+
+    constructor(data?: IEmailMessage) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.from = _data["from"];
+            this.subject = _data["subject"];
+            this.content = _data["content"];
+        }
+    }
+
+    static fromJS(data: any): EmailMessage {
+        data = typeof data === 'object' ? data : {};
+        let result = new EmailMessage();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["from"] = this.from;
+        data["subject"] = this.subject;
+        data["content"] = this.content;
+        return data;
+    }
+}
+
+export interface IEmailMessage {
+    from?: string;
+    subject?: string;
+    content?: string;
 }
 
 export class SelectedServices implements ISelectedServices {

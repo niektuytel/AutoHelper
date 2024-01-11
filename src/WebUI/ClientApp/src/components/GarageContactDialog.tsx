@@ -53,11 +53,11 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
     const [loading, setLoading] = useState<boolean>(false);
     const conversationClient = new ConversationClient(process.env.PUBLIC_URL);
 
-    const startConversations = async (command: SelectedServices) => {
+    const startConversation = async (command: SelectedServices) => {
         setLoading(true);
         try {
             console.log(command);
-            const response = await conversationClient.startConversations(command);
+            const response = await conversationClient.startConversation(command);
 
             setLoading(false);
             return response;
@@ -105,7 +105,7 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                 messageContent: message,
                 services: services
             });
-            var response = await startConversations(conversations);
+            var response = await startConversation(conversations);
         }
         else {
             const enumValue = convertToEnumValue(messageType);
@@ -122,7 +122,7 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                 messageContent: message,
                 services: services
             });
-            var response = await startConversations(conversations);
+            var response = await startConversation(conversations);
         }
 
         if (services.length === 0) {

@@ -3,6 +3,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.StartConversation;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Infrastructure.Common.Interfaces;
+using AutoHelper.Messaging.Models;
 using AutoHelper.WebUI.Models;
 using GoogleApi.Entities.Search.Common;
 using Hangfire;
@@ -25,10 +26,75 @@ public class ConversationController : ApiControllerBase
         _backgroundJobClient = backgroundJobClient;
     }
 
-    [HttpPost($"{nameof(StartConversations)}")]
+    [HttpPost($"{nameof(ReceiveEmailMessage)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<string[]> StartConversations([FromBody] SelectedServices selectedServices, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
+    public IActionResult ReceiveEmailMessage([FromBody] EmailMessage message)
+    {
+        // TODO: Validate message:
+        // valid conversation ID?
+        // - then add message to conversation
+        // - create response message(with, to, cc, subject, content)
+        // - then return 200 OK with response message
+        // otherwise throw 404 error
+
+
+
+
+
+        //var vehicles = selectedServices.Services
+        //    .Select(item => new {
+        //        LicensePlate = item.VehicleLicensePlate,
+        //        Latitude = item.VehicleLatitude,
+        //        Longitude = item.VehicleLongitude
+        //    })
+        //    .Distinct();
+
+        //string[] jobNames = { "" };
+        //foreach (var vehicle in vehicles)
+        //{
+        //    var garages = selectedServices.Services
+        //        .Where(item => item.VehicleLicensePlate == vehicle.LicensePlate);
+
+        //    foreach (var garage in garages)
+        //    {
+        //        //var services = selectedServices.Services
+        //        //    .Where(item => 
+        //        //        item.VehicleLicensePlate == vehicle.LicensePlate && 
+        //        //        item.RelatedGarageLookupIdentifier == garage.RelatedGarageLookupIdentifier
+        //        //    )
+        //        //    .Select(item => item.RelatedServiceType)
+        //        //    .ToArray();
+
+        //        throw new NotImplementedException("Missing service of garage");
+
+        //        var command = new StartConversationCommand(
+        //            garage.RelatedGarageLookupIdentifier,
+        //            vehicle.LicensePlate,
+        //            null,
+        //            selectedServices.SenderPhoneNumber,
+        //            garage.GarageContactIdentifier,
+        //            selectedServices.MessageType,
+        //            selectedServices.MessageContent
+        //        );
+
+        //        var jobName = EnqueueConversation(command);
+        //        jobNames.Append(jobName);
+        //    }
+        //}
+
+
+        //return jobNames;
+
+        return Ok();
+    }
+
+
+    [HttpPost($"{nameof(StartConversation)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<string[]> StartConversation([FromBody] SelectedServices selectedServices, CancellationToken cancellationToken)
     {
         var vehicles = selectedServices.Services
             .Select(item => new { 

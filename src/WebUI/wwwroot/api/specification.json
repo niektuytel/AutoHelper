@@ -342,12 +342,65 @@
         }
       }
     },
-    "/api/Conversation/StartConversations": {
+    "/api/Conversation/ReceiveEmailMessage": {
       "post": {
         "tags": [
           "Conversation"
         ],
-        "operationId": "Conversation_StartConversations",
+        "operationId": "Conversation_ReceiveEmailMessage",
+        "requestBody": {
+          "x-name": "message",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailMessage"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Conversation/StartConversation": {
+      "post": {
+        "tags": [
+          "Conversation"
+        ],
+        "operationId": "Conversation_StartConversation",
         "requestBody": {
           "x-name": "selectedServices",
           "content": {
@@ -1770,6 +1823,21 @@
             "additionalProperties": {
               "type": "string"
             }
+          }
+        }
+      },
+      "EmailMessage": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
           }
         }
       },
