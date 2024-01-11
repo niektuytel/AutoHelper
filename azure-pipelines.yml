@@ -5,13 +5,12 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  projectName: 'TechnologyLeads.EcoSystem.Pellerex'
+  projectName: 'AutoHelper.WebUI'
   buildConfiguration: 'Release'
   major: 1
   minor: 5
   patch: $[counter(variables['minor'], 0)] #this will reset when we bump minor
   NugetVersion: $(major).$(minor).$(patch)
-  feed: 'EcoSystem/EcoSystem.Latest'
 
 steps:
 - task: UseDotNet@2
@@ -44,7 +43,7 @@ steps:
     command: 'restore'
     projects: '**/*.csproj'
     feedsToUse: 'select'
-    vstsFeed: $(feed) # A series of numbers and letters
+    vstsFeed: '0be7cf9c-ffb0-43e4-802a-91da680fb433'
     arguments: '--no-cache --force'
   displayName: 'Restore'
 
