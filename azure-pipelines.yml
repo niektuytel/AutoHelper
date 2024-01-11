@@ -55,8 +55,8 @@ steps:
     command: 'publish'
     projects: '**/AutoHelper.WebUI.csproj'
     publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) -r win-x86 --self-contained --output $(Build.ArtifactStagingDirectory)'
-  displayName: 'Publish Web Project'
+    arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)'
+  displayName: 'Publish WebUI for Linux'
 
 - task: PublishBuildArtifacts@1
   inputs:
