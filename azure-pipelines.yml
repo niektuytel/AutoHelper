@@ -8,66 +8,73 @@ variables:
   projectName: 'AutoHelper.WebUI'
   buildConfiguration: 'Release'
   major: 1
-  minor: 5
-  patch: $[counter(variables['minor'], 0)] #this will reset when we bump minor
+  minor: 1
+  patch: $[counter(variables['minor'], 0)] # Resets when 'minor' is bumped
   NugetVersion: $(major).$(minor).$(patch)
 
 steps:
 - task: UseDotNet@2
   inputs:
-    version: 7.x
-  displayName: 'Use .NET Core sdk 7.x'
+    version: '7.x'
+  displayName: 'Use .NET Core SDK 7.x'
 
 - task: NodeTool@0
-  displayName: 'Install Node.js'
   inputs:
     versionSpec: '18.x'
+  displayName: 'Install Node.js'
 
 - task: NuGetToolInstaller@1
-  displayName: 'NuGet Installer'
+  displayName: 'Install NuGet'
 
 - task: NuGetCommand@2
-  displayName: 'NuGet Restore Packages'
   inputs:
-    restoreSolution: '$(solution)'
+    restoreSolution: '**/*.sln' # Adjust to point to your solution file
+  displayName: 'Restore NuGet Packages'
 
 - task: PowerShell@2
-  displayName: Clean
   inputs:
     targetType: 'inline'
-    script: |
-      dotnet nuget locals all --clear
+    script: 'dotnet nuget locals all --clear'
+  displayName: 'Clear NuGet Cache'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
-    feedsToUse: 'select'
-    vstsFeed: '0be7cf9c-ffb0-43e4-802a-91da680fb433'
-    arguments: '--no-cache --force'
-  displayName: 'Restore'
+  displayName: 'Restore .NET Core Projects'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
-  displayName: 'dotnet build $(buildConfiguration)'
-  
+  displayName: 'Build .NET Core Projects'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    projects: '$(targetWebProject)'
+    projects: '**/YourWebProject.csproj' # Specify your web project
     publishWebProjects: true
     arguments: '--configuration $(buildConfiguration) -r win-x86 --self-contained --output $(Build.ArtifactStagingDirectory)'
-  displayName: 'Publish $(buildConfiguration)'
+  displayName: 'Publish Web Project'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: '$(projectName)' 
-  displayName: "Upload Artifacts"
-  
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+  displayName: 'Upload Artifacts to Drop'
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: '<Your Azure Subscription ID>'
+    appType: 'webAppLinux' # Ensure this aligns with your Azure Web App configuration
+    appName: 'autohelper-webui'
+    resourceGroupName: 'AutoHelper'
+    slotName: 'production'
+    package: '$(Build.ArtifactStagingDirectory)/**/*.zip' # Ensure this points to the correct zip file
+    runtimeStack: 'DOTNETCORE|7.0'
+  displayName: 'Deploy to Azure Web App'
+
   
 # steps:
 
