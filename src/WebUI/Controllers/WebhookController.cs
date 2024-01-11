@@ -61,7 +61,7 @@ public class WebhookController : ApiControllerBase
 
     // Required step for configuring webhook to WhatsApp Cloud API
     // Make sure the verifytoken matches with the hubverifytoken returned from whatsapp.
-    [HttpPost(nameof(ConfigureWhatsAppMessageWebhook))]
+    [HttpGet(nameof(ConfigureWhatsAppMessageWebhook))]
     public ActionResult<string> ConfigureWhatsAppMessageWebhook(
         [FromQuery(Name = "hub.mode")] string hubMode,                                                        
         [FromQuery(Name = "hub.challenge")] int hubChallenge,
