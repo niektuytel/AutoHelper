@@ -30,6 +30,7 @@ jobs:
 
   - job: RestoreAndBuild
     displayName: 'Restore and Build Projects'
+    dependsOn: Setup
     steps:
       - task: NuGetCommand@2
         displayName: 'NuGet Restore'
@@ -64,6 +65,7 @@ jobs:
       
   - job: Publish
     displayName: 'Publish Projects'
+    dependsOn: RestoreAndBuild
     steps:
       - task: DotNetCoreCLI@2
         displayName: 'Publish WebUI'
@@ -74,12 +76,6 @@ jobs:
           arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/AutoHelper.WebUI'
           modifyOutputPath: false
 
-      - task: PowerShell@2
-        displayName: 'Rename WebUI Zip File'
-        inputs:
-          targetType: 'inline'
-          script: 'Compress-Archive -Path "$(Build.ArtifactStagingDirectory)/AutoHelper.WebUI/*" -DestinationPath "$(Build.ArtifactStagingDirectory)/AutoHelper.WebUI.zip"'
-
       - task: DotNetCoreCLI@2
         displayName: 'Publish Hangfire'
         inputs:
@@ -87,12 +83,6 @@ jobs:
           publishWebProjects: false
           projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
           arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/AutoHelper.Hangfire.Dashboard'
-
-      - task: PowerShell@2
-        displayName: 'Rename Hangfire Zip File'
-        inputs:
-          targetType: 'inline'
-          script: 'Compress-Archive -Path "$(Build.ArtifactStagingDirectory)/AutoHelper.Hangfire.Dashboard/*" -DestinationPath "$(Build.ArtifactStagingDirectory)/AutoHelper.Hangfire.Dashboard.zip"'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Upload Artifacts'
@@ -102,6 +92,7 @@ jobs:
 
   - job: Deploy
     displayName: 'Deploy to Azure'
+    dependsOn: Publish
     steps:
       - task: AzureWebApp@1
         displayName: 'Deploy to autohelper.nl'
