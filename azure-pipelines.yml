@@ -11,109 +11,115 @@ variables:
   patch: $[counter(variables['minor'], 0)] # Resets when 'minor' is bumped
   NugetVersion: $(major).$(minor).$(patch)
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    version: '7.x'
-  displayName: 'Use .NET Core SDK 7.x'
+jobs:
+  - job: Setup
+    displayName: 'Setup Environment'
+    steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core SDK 7.x'
+        inputs:
+          version: '7.x'
+  
+      - task: NodeTool@0
+        displayName: 'Install Node.js'
+        inputs:
+          versionSpec: '18.x'
+  
+      - task: NuGetToolInstaller@1
+        displayName: 'Install NuGet'
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+  - job: RestoreAndBuild
+    displayName: 'Restore and Build Projects'
+    steps:
+      - task: NuGetCommand@2
+        displayName: 'NuGet Restore'
+        inputs:
+          restoreSolution: '**/*.sln'
 
-- task: NuGetToolInstaller@1
-  displayName: 'Install NuGet'
+      - task: PowerShell@2
+        displayName: 'NuGet Clear Cache'
+        inputs:
+          targetType: 'inline'
+          script: 'dotnet nuget locals all --clear'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '**/*.sln'
-  displayName: 'Restore NuGet Packages'
+      - task: DotNetCoreCLI@2
+        displayName: '.NET Restore'
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'dotnet nuget locals all --clear'
-  displayName: 'Clear NuGet Cache'
+      - task: DotNetCoreCLI@2
+        displayName: '.NET Build WebUI'
+        inputs:
+          command: 'build'
+          projects: '**/AutoHelper.WebUI.csproj'
+          arguments: '--configuration $(buildConfiguration)'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-  displayName: 'Restore .NET Core Projects'
+      - task: DotNetCoreCLI@2
+        displayName: '.NET Build Hangfire'
+        inputs:
+          command: 'build'
+          projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
+          arguments: '--configuration $(buildConfiguration)'
+      
+  - job: Publish
+    displayName: 'Publish Projects'
+    steps:
+      - task: DotNetCoreCLI@2
+        displayName: 'Publish WebUI'
+        inputs:
+          command: 'publish'
+          projects: '**/AutoHelper.WebUI.csproj'
+          publishWebProjects: true
+          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build WebUI'
-  inputs:
-    command: 'build'
-    projects: '**/AutoHelper.WebUI.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+      - task: PowerShell@2
+        displayName: 'Rename WebUI Zip File'
+        inputs:
+          targetType: 'inline'
+          script: 'Rename-Item -Path "$(Build.ArtifactStagingDirectory)/WebUI/WebUI.zip" -NewName "AutoHelper.WebUI.zip"'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build Hangfire'
-  inputs:
-    command: 'build'
-    projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
-    arguments: '--configuration $(buildConfiguration)'
-# Publish AutoHelper.WebUI
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    projects: '**/AutoHelper.WebUI.csproj'
-    publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
-  displayName: 'Publish AutoHelper.WebUI for Linux'
+      - task: DotNetCoreCLI@2
+        displayName: 'Publish Hangfire'
+        inputs:
+          command: 'publish'
+          projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
+          publishWebProjects: true
+          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
 
-# Rename WebUI zip file
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'Rename-Item -Path "$(Build.ArtifactStagingDirectory)/WebUI/WebUI.zip" -NewName "AutoHelper.WebUI.zip"'
-  displayName: 'Rename WebUI Zip File'
+      - task: PowerShell@2
+        displayName: 'Rename Hangfire Zip File'
+        inputs:
+          targetType: 'inline'
+          script: 'Rename-Item -Path "$(Build.ArtifactStagingDirectory)/Hangfire.Dashboard/WebUI.zip" -NewName "AutoHelper.Hangfire.Dashboard.zip"'
 
-# Publish AutoHelper.Hangfire.Dashboard
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
-    publishWebProjects: true
-    arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
-  displayName: 'Publish AutoHelper.Hangfire.Dashboard for Linux'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Upload Artifacts'
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: 'drop'
 
-# Rename Hangfire Dashboard zip file
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'Rename-Item -Path "$(Build.ArtifactStagingDirectory)/Hangfire.Dashboard/WebUI.zip" -NewName "AutoHelper.Hangfire.Dashboard.zip"'
-  displayName: 'Rename Hangfire Dashboard Zip File'
+  - job: Deploy
+    displayName: 'Deploy to Azure'
+    steps:
+      - task: AzureWebApp@1
+        displayName: 'Deploy to autohelper.nl'
+        inputs:
+          azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+          appType: 'webAppLinux'
+          appName: 'autohelper-webui'
+          resourceGroupName: 'AutoHelper'
+          slotName: 'production'
+          package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.WebUI.zip'
+          runtimeStack: 'DOTNETCORE|7.0'
 
-# Upload Artifacts
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: 'drop'
-  displayName: 'Upload Artifacts to Drop'
-
-# Deploy AutoHelper.WebUI to Azure Web App
-- task: AzureWebApp@1
-  displayName: 'Deploy to autohelper.nl'
-  inputs:
-    azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-    appType: 'webAppLinux'
-    appName: 'autohelper-webui'
-    resourceGroupName: 'AutoHelper'
-    slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.WebUI.zip'
-    runtimeStack: 'DOTNETCORE|7.0'
-
-# Deploy AutoHelper.Hangfire.Dashboard to Azure Web App
-- task: AzureWebApp@1
-  displayName: 'Deploy to hangfire.autohelper.nl'
-  inputs:
-    azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-    appType: 'webAppLinux'
-    appName: 'autohelper-hangfire'
-    resourceGroupName: 'AutoHelper'
-    slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
-    runtimeStack: 'DOTNETCORE|7.0'
+      - task: AzureWebApp@1
+        displayName: 'Deploy to hangfire.autohelper.nl'
+        inputs:
+          azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+          appType: 'webAppLinux'
+          appName: 'autohelper-hangfire'
+          resourceGroupName: 'AutoHelper'
+          slotName: 'production'
+          package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
+          runtimeStack: 'DOTNETCORE|7.0'
