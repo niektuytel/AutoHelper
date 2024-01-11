@@ -28,7 +28,7 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    restoreSolution: '**/*.sln' # Adjust to point to your solution file
+    restoreSolution: '**/*.sln'
   displayName: 'Restore NuGet Packages'
 
 - task: PowerShell@2
@@ -53,7 +53,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    projects: '**/YourWebProject.csproj' # Specify your web project
+    projects: '**/AutoHelper.WebUI.csproj'
     publishWebProjects: true
     arguments: '--configuration $(buildConfiguration) -r win-x86 --self-contained --output $(Build.ArtifactStagingDirectory)'
   displayName: 'Publish Web Project'
@@ -66,12 +66,12 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: '<Your Azure Subscription ID>'
-    appType: 'webAppLinux' # Ensure this aligns with your Azure Web App configuration
+    azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+    appType: 'webAppLinux'
     appName: 'autohelper-webui'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/**/*.zip' # Ensure this points to the correct zip file
+    package: '$(Build.ArtifactStagingDirectory)/**/WebUI.zip'
     runtimeStack: 'DOTNETCORE|7.0'
   displayName: 'Deploy to Azure Web App'
 
