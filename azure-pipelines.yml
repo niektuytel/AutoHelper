@@ -55,24 +55,37 @@ steps:
     command: 'build'
     projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
     arguments: '--configuration $(buildConfiguration)'
-
 # Publish AutoHelper.WebUI
 - task: DotNetCoreCLI@2
-  displayName: 'Publish AutoHelper.WebUI'
   inputs:
     command: 'publish'
     projects: '**/AutoHelper.WebUI.csproj'
     publishWebProjects: true
     arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
+  displayName: 'Publish AutoHelper.WebUI for Linux'
+
+# Rename WebUI zip file
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Rename-Item -Path "$(Build.ArtifactStagingDirectory)/WebUI/WebUI.zip" -NewName "AutoHelper.WebUI.zip"'
+  displayName: 'Rename WebUI Zip File'
 
 # Publish AutoHelper.Hangfire.Dashboard
 - task: DotNetCoreCLI@2
-  displayName: 'Publish AutoHelper.Hangfire.Dashboard'
   inputs:
     command: 'publish'
     projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
     publishWebProjects: true
     arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
+  displayName: 'Publish AutoHelper.Hangfire.Dashboard for Linux'
+
+# Rename Hangfire Dashboard zip file
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Rename-Item -Path "$(Build.ArtifactStagingDirectory)/Hangfire.Dashboard/WebUI.zip" -NewName "AutoHelper.Hangfire.Dashboard.zip"'
+  displayName: 'Rename Hangfire Dashboard Zip File'
 
 # Upload Artifacts
 - task: PublishBuildArtifacts@1
@@ -90,7 +103,7 @@ steps:
     appName: 'autohelper-webui'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/**/WebUI.zip'
+    package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.WebUI.zip'
     runtimeStack: 'DOTNETCORE|7.0'
 
 # Deploy AutoHelper.Hangfire.Dashboard to Azure Web App
@@ -102,5 +115,5 @@ steps:
     appName: 'autohelper-hangfire'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/**/Hangfire.Dashboard.zip'
+    package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
     runtimeStack: 'DOTNETCORE|7.0'
