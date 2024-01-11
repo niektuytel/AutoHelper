@@ -94,6 +94,8 @@ jobs:
     displayName: 'Deploy to Azure'
     dependsOn: Publish
     steps:
+      - download: current
+        artifact: drop
       - task: AzureWebApp@1
         displayName: 'Deploy to autohelper.nl'
         inputs:
@@ -113,5 +115,5 @@ jobs:
           appName: 'autohelper-hangfire'
           resourceGroupName: 'AutoHelper'
           slotName: 'production'
-          package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.Hangfire.Dashboard.zip'
+          package: '$(Build.ArtifactStagingDirectory)/**/Hangfire.Dashboard.zip'
           runtimeStack: 'DOTNETCORE|7.0'
