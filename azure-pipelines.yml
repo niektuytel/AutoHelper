@@ -5,68 +5,117 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
+  projectName: 'TechnologyLeads.EcoSystem.Pellerex'
   buildConfiguration: 'Release'
-  
+  major: 1
+  minor: 5
+  patch: $[counter(variables['minor'], 0)] #this will reset when we bump minor
+  NugetVersion: $(major).$(minor).$(patch)
+  feed: 'EcoSystem/EcoSystem.Latest'
+
 steps:
-  - task: NodeTool@0
-    displayName: 'Install Node.js'
-    inputs:
-      versionSpec: '18.x'
+- task: UseDotNet@2
+  inputs:
+    version: 7.x
+  displayName: 'Use .NET Core sdk 7.x'
 
-  - task: NuGetToolInstaller@1
-    displayName: 'NuGet Installer'
+- task: NodeTool@0
+  displayName: 'Install Node.js'
+  inputs:
+    versionSpec: '18.x'
 
-  - task: NuGetCommand@2
-    displayName: 'NuGet Restore Packages'
-    inputs:
-      restoreSolution: '$(solution)'
+- task: NuGetToolInstaller@1
+  displayName: 'NuGet Installer'
 
-  - task: VSBuild@1
-    displayName: 'Build Solution'
-    inputs:
-      solution: '$(solution)'
-      msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:OutDir="$(build.artifactStagingDirectory)\\"'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
+- task: NuGetCommand@2
+  displayName: 'NuGet Restore Packages'
+  inputs:
+    restoreSolution: '$(solution)'
 
-  - task: VSTest@2
-    displayName: 'Run Unit Tests'
-    inputs:
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
+- task: PowerShell@2
+  displayName: Clean
+  inputs:
+    targetType: 'inline'
+    script: |
+      dotnet nuget locals all --clear
 
-  - task: PublishBuildArtifacts@1
-    name: 'PublishBuildArtifacts'
-    displayName: 'Publish Artifacts to Pipeline'
-    inputs:
-      PathtoPublish: '$(System.DefaultWorkingDirectory)'
-      ArtifactName: 'Latest Deploy'
-      publishLocation: 'Container'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: $(feed) # A series of numbers and letters
+    arguments: '--no-cache --force'
+  displayName: 'Restore'
 
-  - task: AzureWebApp@1
-    displayName: 'Deploy Web UI to Azure Web App'
-    inputs:
-      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-      appType: 'webAppLinux'
-      appName: 'autohelper-webui'
-      deployToSlotOrASE: true
-      resourceGroupName: 'AutoHelper'
-      slotName: 'production'
-      package: '$(Build.ArtifactStagingDirectory)'
-      runtimeStack: 'DOTNETCORE|7.0'
-      startUpCommand: 'dotnet AutoHelper.WebUI.dll'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+  displayName: 'dotnet build $(buildConfiguration)'
   
-  - task: AzureWebApp@1
-    displayName: 'Deploy Hangfire Dashboard to Azure Web App'
-    inputs:
-      azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-      appType: 'webAppLinux'
-      appName: 'autohelper-hangfire'
-      deployToSlotOrASE: true
-      resourceGroupName: 'AutoHelper'
-      slotName: 'production'
-      package: '$(Build.ArtifactStagingDirectory)'
-      runtimeStack: 'DOTNETCORE|7.0'
-      startUpCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    projects: '$(targetWebProject)'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) -r win-x86 --self-contained --output $(Build.ArtifactStagingDirectory)'
+  displayName: 'Publish $(buildConfiguration)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+    artifactName: '$(projectName)' 
+  displayName: "Upload Artifacts"
+  
+  
+# steps:
+
+#   - task: VSBuild@1
+#     displayName: 'Build Solution'
+#     inputs:
+#       solution: '$(solution)'
+#       msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:OutDir="$(build.artifactStagingDirectory)\\"'
+#       platform: '$(buildPlatform)'
+#       configuration: '$(buildConfiguration)'
+
+#   - task: VSTest@2
+#     displayName: 'Run Unit Tests'
+#     inputs:
+#       platform: '$(buildPlatform)'
+#       configuration: '$(buildConfiguration)'
+
+#   - task: PublishBuildArtifacts@1
+#     name: 'PublishBuildArtifacts'
+#     displayName: 'Publish Artifacts to Pipeline'
+#     inputs:
+#       PathtoPublish: '$(System.DefaultWorkingDirectory)'
+#       ArtifactName: 'Latest Deploy'
+#       publishLocation: 'Container'
+
+  # - task: AzureWebApp@1
+  #   displayName: 'Deploy Web UI to Azure Web App'
+  #   inputs:
+  #     azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+  #     appType: 'webAppLinux'
+  #     appName: 'autohelper-webui'
+  #     deployToSlotOrASE: true
+  #     resourceGroupName: 'AutoHelper'
+  #     slotName: 'production'
+  #     package: '$(Build.ArtifactStagingDirectory)'
+  #     runtimeStack: 'DOTNETCORE|7.0'
+  #     startUpCommand: 'dotnet AutoHelper.WebUI.dll'
+  
+  # - task: AzureWebApp@1
+  #   displayName: 'Deploy Hangfire Dashboard to Azure Web App'
+  #   inputs:
+  #     azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
+  #     appType: 'webAppLinux'
+  #     appName: 'autohelper-hangfire'
+  #     deployToSlotOrASE: true
+  #     resourceGroupName: 'AutoHelper'
+  #     slotName: 'production'
+  #     package: '$(Build.ArtifactStagingDirectory)'
+  #     runtimeStack: 'DOTNETCORE|7.0'
+  #     startUpCommand: 'dotnet AutoHelper.Hangfire.Dashboard.dll'
