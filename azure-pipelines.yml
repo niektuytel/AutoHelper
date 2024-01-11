@@ -80,11 +80,6 @@ steps:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: 'drop'
   displayName: 'Upload Artifacts to Drop'
-- task: PublishBuildArtifacts@1
-  displayName: 'Upload Artifacts to Drop'
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: 'drop'
 
 # Deploy AutoHelper.WebUI to Azure Web App
 - task: AzureWebApp@1
@@ -95,7 +90,7 @@ steps:
     appName: 'autohelper-webui'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/WebUI'
+    package: '$(Build.ArtifactStagingDirectory)/**/WebUI.zip'
     runtimeStack: 'DOTNETCORE|7.0'
 
 # Deploy AutoHelper.Hangfire.Dashboard to Azure Web App
@@ -107,5 +102,5 @@ steps:
     appName: 'autohelper-hangfire'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
+    package: '$(Build.ArtifactStagingDirectory)/**/Hangfire.Dashboard.zip'
     runtimeStack: 'DOTNETCORE|7.0'
