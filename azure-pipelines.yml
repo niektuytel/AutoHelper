@@ -5,7 +5,6 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  projectName: 'AutoHelper.WebUI'
   buildConfiguration: 'Release'
   major: 1
   minor: 1
@@ -61,25 +60,25 @@ steps:
 
 # Build and publish AutoHelper.Hangfire.Dashboard
 - task: DotNetCoreCLI@2
+  displayName: 'Build AutoHelper.Hangfire.Dashboard'
   inputs:
     command: 'build'
     projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
     arguments: '--configuration $(buildConfiguration)'
-  displayName: 'Build AutoHelper.Hangfire.Dashboard'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Publish AutoHelper.Hangfire.Dashboard for Linux'
   inputs:
     command: 'publish'
     projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
     publishWebProjects: true
     arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
-  displayName: 'Publish AutoHelper.Hangfire.Dashboard for Linux'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Upload Artifacts to Drop'
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: 'drop'
-  displayName: 'Upload Artifacts to Drop'
 
 # Deploy AutoHelper.WebUI to Azure Web App
 - task: AzureWebApp@1
@@ -90,7 +89,7 @@ steps:
     appName: 'autohelper-webui'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/**/WebUI.zip'
+    package: '$(Build.ArtifactStagingDirectory)/WebUI'
     runtimeStack: 'DOTNETCORE|7.0'
 
 # Deploy AutoHelper.Hangfire.Dashboard to Azure Web App
@@ -102,5 +101,5 @@ steps:
     appName: 'autohelper-hangfire'
     resourceGroupName: 'AutoHelper'
     slotName: 'production'
-    package: '$(Build.ArtifactStagingDirectory)/Hangfire.Dashboard.zip'
+    package: '$(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
     runtimeStack: 'DOTNETCORE|7.0'
