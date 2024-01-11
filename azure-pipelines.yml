@@ -104,7 +104,7 @@ jobs:
           appName: 'autohelper-webui'
           resourceGroupName: 'AutoHelper'
           slotName: 'production'
-          package: '$(Build.ArtifactStagingDirectory)/**/AutoHelper.WebUI.zip'
+          package: '$(Pipeline.Workspace)/**/AutoHelper.WebUI.zip'
           runtimeStack: 'DOTNETCORE|7.0'
 
       - task: AzureWebApp@1
@@ -115,5 +115,5 @@ jobs:
           appName: 'autohelper-hangfire'
           resourceGroupName: 'AutoHelper'
           slotName: 'production'
-          package: '$(Build.ArtifactStagingDirectory)/**/Hangfire.Dashboard.zip'
+          package: '$(Pipeline.Workspace)/**/Hangfire.Dashboard.zip'
           runtimeStack: 'DOTNETCORE|7.0'
