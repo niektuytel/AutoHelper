@@ -21,8 +21,8 @@ public class SelectedService
 
     public string VehicleLatitude { get; set; }
 
-    public string? GarageContactIdentifier { get; set; }
+    //public string? GarageContactIdentifier { get; set; }
 
-    public ContactType? GarageContactType { get; set; }
+    //public ContactType? GarageContactType { get; set; }
 
 }

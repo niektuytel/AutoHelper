@@ -20,17 +20,11 @@ import {
     Select,
     MenuItem,
 } from "@mui/material";
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
-import LiveHelpIcon from '@mui/icons-material/LiveHelp';
-import QuestionMark from '@mui/icons-material/QuestionMark';
 import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import EuroIcon from '@mui/icons-material/Euro';
 import { GarageServiceDtoItem, GarageServiceType, SelectedService, VehicleType } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
-import { getDefaultGarageServicesInfo } from "../../garage-account/defaultGarageService";
 
 // own imports
 
@@ -69,8 +63,7 @@ export default ({ service, showConversationActions, selectedItem, setSelectedIte
                         <IconButton
                             onClick={(e) => {
                                 e.stopPropagation();
-                                //hasQuestionItem(serviceType);
-                                // TODO: open conversation chat
+                                hasQuestionItem(service);
                             }}
                         >
                             <HelpCenterOutlinedIcon />
@@ -79,13 +72,11 @@ export default ({ service, showConversationActions, selectedItem, setSelectedIte
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                // TODO: open conversation chat
-                                //const selectedService: SelectedService = new SelectedService({
-                                //    relatedServiceType: serviceType,
-                                //    relatedServiceTypeTitle: service.title
-                                //});
+                                const selectedService = new SelectedService({
+                                    garageServiceId: service.id,
+                                });
 
-                                //addCartItem(selectedService);
+                                addCartItem(selectedService);
                             }}
                         >
                             <AddIcon sx={{ color: "black"}} />

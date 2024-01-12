@@ -3,7 +3,7 @@ import { Cookies } from 'react-cookie';
 import { SelectedService } from '../../app/web-api-client';
 
 const cookies = new Cookies();
-const initialState: SelectedService[] = [];
+//const initialState: SelectedService[] = [];
 
 const getServicesFromCookie = (): SelectedService[] => {
     const services = cookies.get('storedServices');
@@ -25,11 +25,8 @@ const storedServicesSlice = createSlice({
         },
         removeService: (state, action: PayloadAction<SelectedService>) => {
             const serviceToRemove = action.payload;
-            const newState = state.filter((service) =>
-                service.relatedGarageLookupIdentifier !== serviceToRemove.relatedGarageLookupIdentifier //||
-                //service.relatedServiceType !== serviceToRemove.relatedServiceType
-            );
-            //TODO: set services on cookie
+            const newState = state.filter((service) => service.garageServiceId !== serviceToRemove.garageServiceId);
+
             setServicesToCookie(newState);
             return newState;
         },

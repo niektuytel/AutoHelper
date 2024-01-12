@@ -44,26 +44,22 @@ export default ({ }: IProps) => {
         setDialogOpen(true);
     };
 
-    // TODO: implement when using converstations
     const tryAddCartItem = (service: SelectedService) => {
-        //service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
-        //service.relatedGarageLookupName = garageLookup?.name;
+        if (services.some(item => item.garageServiceId === service.garageServiceId))
+        {
+            dispatch(showOnError(t("Cart item already exist")));
+            return;
+        }
 
-        //if (services.some(item => (
-        //    item.relatedGarageLookupIdentifier === service.relatedGarageLookupIdentifier &&
-        //    item.relatedServiceType === service.relatedServiceType
-        //))) {
-        //    dispatch(showOnError(t("Cart item already exist")));
-        //    return;
-        //}
+        service.relatedGarageLookupIdentifier = garageLookup?.identifier!;
+        service.relatedGarageLookupName = garageLookup?.name;
+        service.conversationContactEmail = garageLookup?.conversationContactEmail;
+        service.conversationContactWhatsappNumber = garageLookup?.conversationContactWhatsappNumber;
+        service.vehicleLicensePlate = licensePlate!;
+        service.vehicleLongitude = lng!;
+        service.vehicleLatitude = lat!;
 
-        //service.conversationContactEmail = garageLookup?.conversationContactEmail;
-        //service.conversationContactWhatsappNumber = garageLookup?.conversationContactWhatsappNumber;
-        //service.vehicleLicensePlate = licensePlate!;
-        //service.vehicleLatitude = lat!;
-        //service.vehicleLongitude = lng!;
-
-        //dispatch(addService(service));
+        dispatch(addService(service));
     }
 
     if (!loading && garageLookup?.garageId)
@@ -129,21 +125,20 @@ export default ({ }: IProps) => {
             </Grid>
         </Container>
     </>;
-
-    //{garageLookup && relatedServiceTypes &&
-    //    <GarageContactDialog
-    //        services={[new SelectedService({
-    //            relatedServiceType: relatedServiceTypes![0],
-    //            relatedGarageLookupIdentifier: garageLookup?.identifier!,
-    //            relatedGarageLookupName: garageLookup?.name,
-    //            conversationContactEmail: garageLookup?.conversationContactEmail,
-    //            conversationContactWhatsappNumber: garageLookup?.conversationContactWhatsappNumber,
-    //            vehicleLicensePlate: licensePlate!,
-    //            vehicleLatitude: lat!,
-    //            vehicleLongitude: lng!
-    //        })]}
-    //        open={dialogOpen}
-    //        onClose={() => setDialogOpen(false)}
-    //    />
-    //}
+    {garageLookup && relatedServiceTypes &&
+        <GarageContactDialog
+            services={[new SelectedService({
+                relatedServiceType: relatedServiceTypes![0],
+                relatedGarageLookupIdentifier: garageLookup?.identifier!,
+                relatedGarageLookupName: garageLookup?.name,
+                conversationContactEmail: garageLookup?.conversationContactEmail,
+                conversationContactWhatsappNumber: garageLookup?.conversationContactWhatsappNumber,
+                vehicleLicensePlate: licensePlate!,
+                vehicleLatitude: lat!,
+                vehicleLongitude: lng!
+            })]}
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+        />
+    }
 }
