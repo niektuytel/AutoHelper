@@ -123,52 +123,31 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
     // TODO: Refactor this to a service into the MessageService
     private async Task SendEmail(SendMessageCommand request, bool sendToGarage, string senderContactName)
     {
-        // https://developer.microsoft.com/en-us/graph/graph-explorer
-
-        var client = new SmtpClient("smtp.autohelper.nl", 587)
+        if (sendToGarage)
         {
-            Credentials = new NetworkCredential("contact@autohelper.com", "Auto1337!"),
-            EnableSsl = true
-        };
+            var licensePlate = request.ConversationMessage!.Conversation.RelatedVehicleLookup.LicensePlate;
+            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
+            if (vehicleInfo == null)
+            {
+                throw new InvalidDataException($"Vehicle not found: {licensePlate}");
+            }
 
-        var mailMessage = new MailMessage
+            await _mailingService.SendVehicleRelatedEmailAsync(
+                request.ConversationMessage.ReceiverContactIdentifier,
+                request.ConversationMessage.ConversationId,
+                vehicleInfo,
+                request.ConversationMessage.MessageContent
+            );
+        }
+        else
         {
-            From = new MailAddress("contact@autohelper.com"),
-            Subject = "Subject Here",
-            Body = "Your Email Template Here",
-            IsBodyHtml = true
-        };
-        mailMessage.To.Add("ntuijtel@gmail.com");
-
-        client.Send(mailMessage);
-
-
-
-        //if (sendToGarage)
-        //{
-        //    var licensePlate = conversation.RelatedVehicleLookup.LicensePlate;
-        //    var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
-        //    if (vehicleInfo == null)
-        //    {
-        //        throw new InvalidDataException($"Vehicle not found: {licensePlate}");
-        //    }
-
-        //    await _mailingService.SendVehicleRelatedEmailAsync(
-        //        request.ReceiverContactIdentifier,
-        //        request.ConversationId,
-        //        vehicleInfo,
-        //        request.MessageContent
-        //    );
-        //}
-        //else
-        //{
-        //    await _mailingService.SendBasicMailAsync(
-        //        request.ReceiverContactIdentifier,
-        //        request.ConversationId,
-        //        senderContactName,
-        //        request.MessageContent
-        //    );
-        //}
+            await _mailingService.SendBasicMailAsync(
+                request.ConversationMessage!.ReceiverContactIdentifier,
+                request.ConversationMessage.ConversationId,
+                senderContactName,
+                request.ConversationMessage.MessageContent
+            );
+        }
     }
 
     // TODO: Refactor this to a service into the MessageService

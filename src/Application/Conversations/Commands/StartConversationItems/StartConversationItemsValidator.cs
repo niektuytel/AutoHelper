@@ -32,7 +32,8 @@ public class StartConversationItemsValidator : AbstractValidator<StartConversati
             .AsNoTracking()
             .Include(x => x.Messages)
             .Where(x => conversations.Any(y => y == x.Id))
-            .AsEnumerable();
+            .ToList();
+
 
         command.ConversationItems = entities;
         return entities?.Any() == true;

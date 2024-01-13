@@ -29,7 +29,11 @@ public class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
     private async Task<bool> BeValidAndExistingMessage(SendMessageCommand command, Guid messageId, CancellationToken cancellationToken)
     {
         var entity = _context.ConversationMessages
+            .AsNoTracking()
             .Include(x => x.Conversation)
+            .ThenInclude(x => x.RelatedGarage)
+            .Include(x => x.Conversation)
+            .ThenInclude(x => x.RelatedVehicleLookup)
             .FirstOrDefault(x => x.Id == messageId);
 
         command.ConversationMessage = entity;

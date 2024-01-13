@@ -32,10 +32,7 @@ public class VehicleLookupItem
 
     [Required]
     public List<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();
-
-    [Required]
-    public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
-
+    
     [Required]
     public ICollection<VehicleServiceLogItem> ServiceLogs { get; set; } = new List<VehicleServiceLogItem>();
 

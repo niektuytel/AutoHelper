@@ -82,11 +82,17 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
             .WithMany(g => g.Services)
             .HasForeignKey(e => e.GarageId);
 
-        builder.Entity<ConversationItem>()
-            .HasOne(e => e.RelatedVehicleLookup)
-            .WithMany(g => g.Conversations)
-            .HasForeignKey(e => e.VehicleLicensePlate)
-            .OnDelete(DeleteBehavior.NoAction);
+        //builder.Entity<ConversationItem>()
+        //    .HasOne(e => e.RelatedVehicleLookup)
+        //    .WithOne(g => g.LicensePlate)
+        //    .HasForeignKey(e => e.VehicleLicensePlate)
+        //    .OnDelete(DeleteBehavior.NoAction);
+
+        //builder.Entity<ConversationMessageItem>()
+        //    .HasOne(e => e.Conversation)
+        //    .WithMany(g => g.Messages)
+        //    .HasForeignKey(e => e.ConversationId)
+        //    .OnDelete(DeleteBehavior.NoAction);
 
     }
 

@@ -29,7 +29,7 @@ public record StartConversationItemsCommand: IQueueRequest<Unit>
     public List<Guid> ConversationIds { get; set; }
 
     [JsonIgnore]
-    internal IEnumerable<ConversationItem> ConversationItems { get; set; } = null!;
+    internal List<ConversationItem> ConversationItems { get; set; } = null!;
 
     [JsonIgnore]
     public IQueueService QueueingService { get; set; } = null!;
