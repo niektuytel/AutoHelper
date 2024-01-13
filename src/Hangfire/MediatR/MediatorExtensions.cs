@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using Hangfire;
 using Hangfire.Server;

@@ -46,7 +46,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const [selectedService, setSelectedService] = useState<UpdateGarageServiceCommand | undefined>(service);
+    const [selectedService, setVehicleService] = useState<UpdateGarageServiceCommand | undefined>(service);
     const [dialogMode, setDialogMode] = useState<'create' | 'edit'>('create');
 
     const defaultAvailableServices = getAllGarageServiceTypes(t);
@@ -87,7 +87,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         if (!service) return;
 
         const prevService = selectedService;
-        setSelectedService(service);
+        setVehicleService(service);
 
         const item = watch();
         const propertiesToUpdate: ServiceProperty[] = ['type', 'vehicleType', 'title', 'description'];

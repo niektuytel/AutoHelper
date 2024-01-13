@@ -23,7 +23,7 @@ import {
 import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
-import { GarageServiceDtoItem, GarageServiceType, SelectedService, VehicleType } from "../../../app/web-api-client";
+import { GarageServiceDtoItem, GarageServiceType, VehicleService, VehicleType } from "../../../app/web-api-client";
 import { COLORS } from "../../../constants/colors";
 
 // own imports
@@ -33,7 +33,7 @@ interface IProps {
     showConversationActions: boolean;
     selectedItem: any | null;
     setSelectedItem: (serviceType: any) => void;
-    addCartItem: (selectedService: SelectedService) => void;
+    addCartItem: (selectedService: VehicleService) => void;
     hasQuestionItem: (serviceType: GarageServiceDtoItem) => void;
 }
 
@@ -72,9 +72,9 @@ export default ({ service, showConversationActions, selectedItem, setSelectedIte
                             onClick={(e) => {
                                 e.stopPropagation();
 
-                                const selectedService = new SelectedService({
-                                    garageServiceId: service.id,
-                                });
+                                const selectedService = new VehicleService();
+                                selectedService.garageServiceId = service.id!;
+                                selectedService.garageServiceTitle = service.title
 
                                 addCartItem(selectedService);
                             }}

@@ -46,8 +46,6 @@ public class GetGarageServicesQueryHandler : IRequestHandler<GetGarageServicesQu
 
     public async Task<IEnumerable<GarageServiceDtoItem>> Handle(GetGarageServicesQuery request, CancellationToken cancellationToken)
     {
-        // TODO: get services on vehicle type, to reduce response size
-
         var entities = _context.GarageServices
             .Where(x => x.GarageId == request.Garage!.Id);
 

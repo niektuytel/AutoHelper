@@ -46,7 +46,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const { addServiceLog } = useVehicleServiceLogs(licensePlate);
     const dispatch = useDispatch();
-    const [selectedService, setSelectedService] = useState<GarageServiceDtoItem | undefined>(undefined);
+    const [selectedService, setVehicleService] = useState<GarageServiceDtoItem | undefined>(undefined);
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -240,7 +240,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                         garageServiceTypes={garageServiceTypes}
                         triggerFetch={triggerFetch}
                         selectedService={selectedService}
-                        setSelectedService={setSelectedService}
+                        setVehicleService={setVehicleService}
                         file={file}
                         setFile={setFile}
                     />}

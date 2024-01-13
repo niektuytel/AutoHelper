@@ -1,11 +1,10 @@
 ﻿using System.Text;
+using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.StartConversation;
+using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
+using AutoHelper.Application.Conversations.Commands.ReceiveEmailMessage;
+using AutoHelper.Application.Conversations.Commands.StartConversationItems;
 using AutoHelper.Hangfire.MediatR;
-using AutoHelper.Infrastructure.Common.Interfaces;
-using AutoHelper.Messaging.Models;
-using AutoHelper.WebUI.Models;
-using GoogleApi.Entities.Search.Common;
 using Hangfire;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
@@ -15,141 +14,37 @@ namespace AutoHelper.WebUI.Controllers;
 
 public class ConversationController : ApiControllerBase
 {
-    private readonly ICurrentUserService _currentUser;
-    private readonly IIdentityService _identityService;
     private readonly IBackgroundJobClient _backgroundJobClient;
 
-    public ConversationController(ICurrentUserService currentUser, IIdentityService identityService, IBackgroundJobClient backgroundJobClient)
+    public ConversationController(IBackgroundJobClient backgroundJobClient)
     {
-        _currentUser = currentUser;
-        _identityService = identityService;
         _backgroundJobClient = backgroundJobClient;
+    }
+
+    [HttpPost($"{nameof(StartGarageConversation)}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> StartGarageConversation([FromBody] CreateGarageConversationItemsCommand command, CancellationToken cancellationToken)
+    {
+        var conversations = await Mediator.Send(command, cancellationToken);
+        var conversationIds = conversations.Select(x => x.Id).ToList();
+
+        var queue = nameof(StartConversationItemsCommand);
+        var title = $"[{command.UserEmailAddress ?? command.UserWhatsappNumber}]: {command.MessageType.ToString()}";
+        var startConversationItemsCommand = new StartConversationItemsCommand(conversationIds);
+        Mediator.Enqueue(_backgroundJobClient, queue, title, startConversationItemsCommand);
+
+        return Ok();
     }
 
     [HttpPost($"{nameof(ReceiveEmailMessage)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
-    public IActionResult ReceiveEmailMessage([FromBody] EmailMessage message)
+    public async Task<string> ReceiveEmailMessage([FromBody] ReceiveEmailMessageCommand message, CancellationToken cancellationToken)
     {
-        // TODO: Validate message:
-        // valid conversation ID?
-        // - then add message to conversation
-        // - create response message(with, to, cc, subject, content)
-        // - then return 200 OK with response message
-        // otherwise throw 404 error
-
-
-
-
-
-        //var vehicles = selectedServices.Services
-        //    .Select(item => new {
-        //        LicensePlate = item.VehicleLicensePlate,
-        //        Latitude = item.VehicleLatitude,
-        //        Longitude = item.VehicleLongitude
-        //    })
-        //    .Distinct();
-
-        //string[] jobNames = { "" };
-        //foreach (var vehicle in vehicles)
-        //{
-        //    var garages = selectedServices.Services
-        //        .Where(item => item.VehicleLicensePlate == vehicle.LicensePlate);
-
-        //    foreach (var garage in garages)
-        //    {
-        //        //var services = selectedServices.Services
-        //        //    .Where(item => 
-        //        //        item.VehicleLicensePlate == vehicle.LicensePlate && 
-        //        //        item.RelatedGarageLookupIdentifier == garage.RelatedGarageLookupIdentifier
-        //        //    )
-        //        //    .Select(item => item.RelatedServiceType)
-        //        //    .ToArray();
-
-        //        throw new NotImplementedException("Missing service of garage");
-
-        //        var command = new StartConversationCommand(
-        //            garage.RelatedGarageLookupIdentifier,
-        //            vehicle.LicensePlate,
-        //            null,
-        //            selectedServices.SenderPhoneNumber,
-        //            garage.GarageContactIdentifier,
-        //            selectedServices.MessageType,
-        //            selectedServices.MessageContent
-        //        );
-
-        //        var jobName = EnqueueConversation(command);
-        //        jobNames.Append(jobName);
-        //    }
-        //}
-
-
-        //return jobNames;
-
-        return Ok();
+        var result = await Mediator.Send(message, cancellationToken);
+        return result;
     }
 
-
-    [HttpPost($"{nameof(StartConversation)}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<string[]> StartConversation([FromBody] SelectedServices selectedServices, CancellationToken cancellationToken)
-    {
-        var vehicles = selectedServices.Services
-            .Select(item => new { 
-                LicensePlate = item.VehicleLicensePlate,
-                Latitude = item.VehicleLatitude,
-                Longitude = item.VehicleLongitude
-            })
-            .Distinct();
-
-        string[] jobNames = { "" };
-        foreach (var vehicle in vehicles)
-        {
-            var garages = selectedServices.Services
-                .Where(item => item.VehicleLicensePlate == vehicle.LicensePlate);
-
-            foreach (var garage in garages)
-            {
-                //var services = selectedServices.Services
-                //    .Where(item => 
-                //        item.VehicleLicensePlate == vehicle.LicensePlate && 
-                //        item.RelatedGarageLookupIdentifier == garage.RelatedGarageLookupIdentifier
-                //    )
-                //    .Select(item => item.RelatedServiceType)
-                //    .ToArray();
-
-                throw new NotImplementedException("Missing service of garage");
-
-                var command = new StartConversationCommand(
-                    garage.RelatedGarageLookupIdentifier,
-                    vehicle.LicensePlate,
-                    null,
-                    selectedServices.SenderPhoneNumber,
-                    garage.GarageContactIdentifier,
-                    selectedServices.MessageType,
-                    selectedServices.MessageContent
-                );
-
-                var jobName = EnqueueConversation(command);
-                jobNames.Append(jobName);
-            }
-        }
-
-
-        return jobNames;
-    }
-
-    [HttpPost($"{nameof(EnqueueConversation)}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public string EnqueueConversation([FromBody] StartConversationCommand command)
-    {
-        var queue = nameof(StartConversationCommand);
-        var title = $"{command.SenderWhatsAppNumberOrEmail.ToLower()} to {command.ReceiverWhatsAppNumberOrEmail.ToLower()} about {command.RelatedVehicle.LicensePlate}";
-
-        Mediator.Enqueue(_backgroundJobClient, queue, title, command, isRecursive: true);
-        return queue;
-    }
 }

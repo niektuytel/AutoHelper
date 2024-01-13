@@ -16,19 +16,19 @@ interface IProps {
     garageServiceTypes: GarageServiceDtoItem[] | undefined;
     triggerFetch: (garageId: string) => void;
     selectedService: GarageServiceDtoItem | undefined;
-    setSelectedService: (service: GarageServiceDtoItem | undefined) => void;
+    setVehicleService: (service: GarageServiceDtoItem | undefined) => void;
     file: File | null;
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ control, setValue, loading, garageServiceTypes, triggerFetch, selectedService, setSelectedService, file, setFile }: IProps) => {
+const GarageStep = ({ control, setValue, loading, garageServiceTypes, triggerFetch, selectedService, setVehicleService, file, setFile }: IProps) => {
     const { t } = useTranslation();
 
     const handleServiceChange = (event: any) => {
         if (!garageServiceTypes) return;
 
         const selectedService = garageServiceTypes.find(service => service.title === event.target.value);
-        setSelectedService(selectedService); // Update the state directly
+        setVehicleService(selectedService); // Update the state directly
     };
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +51,7 @@ const GarageStep = ({ control, setValue, loading, garageServiceTypes, triggerFet
                         value={field.value}
                         onChange={(value) => {
                             // remove selected service
-                            setSelectedService(undefined);
+                            setVehicleService(undefined);
 
                             field.onChange(value)
                             if (value?.identifier) {

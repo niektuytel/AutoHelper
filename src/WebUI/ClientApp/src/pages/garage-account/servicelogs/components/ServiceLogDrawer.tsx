@@ -48,7 +48,7 @@ const steps = ['AddMaintenanceLog.Step.Vehicle.Title', 'AddMaintenanceLog.Step.C
 export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps) => {
     const { t } = useTranslation(["translations", "serviceTypes"]);
     const dispatch = useDispatch();
-    const [selectedService, setSelectedService] = useState<GarageServiceDtoItem | undefined>(undefined);
+    const [selectedService, setVehicleService] = useState<GarageServiceDtoItem | undefined>(undefined);
     const [file, setFile] = useState<File | null>(null);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -180,7 +180,7 @@ export default ({ mode, item, drawerOpen, toggleDrawer, handleService }: IProps)
             <form onSubmit={handleSubmit(handleNext)} style={{ display: "contents" }}>
                 {activeStep === 0 && <StepVehicle
                     licensePlate={item?.vehicleLicensePlate || ""}
-                    setSelectedService={setSelectedService}
+                    setVehicleService={setVehicleService}
                     control={control}
                     file={file}
                     setFile={setFile}

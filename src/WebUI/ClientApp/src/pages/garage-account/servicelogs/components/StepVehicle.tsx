@@ -11,13 +11,13 @@ import { GarageServiceDtoItem } from '../../../../app/web-api-client';
 
 interface IProps {
     licensePlate: string;
-    setSelectedService: (service: GarageServiceDtoItem | undefined) => void;
+    setVehicleService: (service: GarageServiceDtoItem | undefined) => void;
     control: any;
     file: File | null;
     setFile: (file: File | null) => void;
 }
 
-const GarageStep = ({ licensePlate, setSelectedService, control, file, setFile }: IProps) => {
+const GarageStep = ({ licensePlate, setVehicleService, control, file, setFile }: IProps) => {
     const { t } = useTranslation();
     const { loading, isError, garageServiceTypes, triggerFetch } = useGarageServiceTypes(licensePlate);
 
@@ -47,7 +47,7 @@ const GarageStep = ({ licensePlate, setSelectedService, control, file, setFile }
 
         const selectedService = garageServiceTypes!.find(service => service.title === event.target.value);
         if (selectedService) {
-            setSelectedService(selectedService);
+            setVehicleService(selectedService);
         }
     };
 

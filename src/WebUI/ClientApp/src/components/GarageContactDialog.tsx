@@ -7,7 +7,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { EnumValues } from 'enum-values';
 
 // custom imports
-import { ConversationType, GarageServiceType, ConversationClient, SelectedService, SelectedServices } from '../app/web-api-client';
+import { ConversationType, GarageServiceType, ConversationClient, VehicleService, CreateGarageConversationItemsCommand } from '../app/web-api-client';
 import { showOnSuccess } from '../redux/slices/statusSnackbarSlice';
 
 const isValidEmail = (input: string): boolean => {
@@ -34,7 +34,7 @@ interface FormInput {
 
 interface QuestionDialogProps {
     requestQuote?: boolean;
-    services: SelectedService[];
+    services: VehicleService[];
     open: boolean;
     onClose: () => void;
 }
@@ -53,11 +53,11 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
     const [loading, setLoading] = useState<boolean>(false);
     const conversationClient = new ConversationClient(process.env.PUBLIC_URL);
 
-    const startConversation = async (command: SelectedServices) => {
+    const startGarageConversation = async (command: CreateGarageConversationItemsCommand) => {
         setLoading(true);
         try {
             console.log(command);
-            const response = await conversationClient.startConversation(command);
+            const response = await conversationClient.startGarageConversation(command);
 
             setLoading(false);
             return response;
@@ -97,15 +97,14 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
         if (requestQuote) {
             const enumValue = ConversationType.RequestAQuote;
 
-            var conversations = new SelectedServices({
-                senderEmailAddress: senderEmailAddress,
-                senderPhoneNumber: senderPhoneNumber,
-                senderWhatsappNumber: senderWhatsappNumber,
+            var conversations = new CreateGarageConversationItemsCommand({
+                userWhatsappNumber: senderWhatsappNumber || "",
+                userEmailAddress: senderEmailAddress || "",
                 messageType: enumValue,
                 messageContent: message,
                 services: services
             });
-            var response = await startConversation(conversations);
+            var response = await startGarageConversation(conversations);
         }
         else {
             const enumValue = convertToEnumValue(messageType);
@@ -114,15 +113,14 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                 return; // Exit early if invalid messageType
             }
 
-            var conversations = new SelectedServices({
-                senderEmailAddress: senderEmailAddress,
-                senderPhoneNumber: senderPhoneNumber,
-                senderWhatsappNumber: senderWhatsappNumber,
+            var conversations = new CreateGarageConversationItemsCommand({
+                userWhatsappNumber: senderWhatsappNumber || "",
+                userEmailAddress: senderEmailAddress || "",
                 messageType: enumValue,
                 messageContent: message,
                 services: services
             });
-            var response = await startConversation(conversations);
+            var response = await startGarageConversation(conversations);
         }
 
         if (services.length === 0) {
@@ -175,7 +173,15 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                         <TextField
                             fullWidth
                             label="To:"
-                            value={[...new Set(services?.map(x => x.garageContactIdentifier))].join(' & ')}
+                            value={[...new Set(services?.map(x => {
+                                if (x.conversationEmailAddress) {
+                                    return x.conversationEmailAddress;
+                                }
+
+                                if (x.conversationWhatsappNumber) {
+                                    return x.conversationWhatsappNumber;
+                                }
+                            }))].join(' & ')}
                             disabled
                             sx={requestQuote ? {} : { marginBottom: 2 }}
                         />

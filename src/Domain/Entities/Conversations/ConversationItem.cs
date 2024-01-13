@@ -30,27 +30,31 @@ public class ConversationItem : BaseAuditableEntity
     public GarageLookupItem RelatedGarage { get; set; } = null!;
 
     [NotMapped]
-    public GarageServiceType[] RelatedServiceTypes
+    public Guid[] RelatedServiceIds
     {
         get
         {
-            if (RelatedServiceTypesString == null)
+            if (RelatedServiceIdsString == null)
             {
-                return new GarageServiceType[0];
+                return Array.Empty<Guid>();
             }
-            return RelatedServiceTypesString
+
+            return RelatedServiceIdsString
                 .Split(';')
-                .Select(x => (GarageServiceType)int.Parse(x))
+                .Select(Guid.Parse)
                 .ToArray();
         }
         set
         {
-            RelatedServiceTypesString = value == null ? "" : string.Join(";", value.Select(v => ((int)v).ToString()));
+            RelatedServiceIdsString = (value == null) ? 
+                "" 
+                : 
+                string.Join(";", value.Select(v => v.ToString()));
         }
     }
 
     [Required]
-    public string RelatedServiceTypesString { get; set; } = "";
+    public string RelatedServiceIdsString { get; set; } = "";
 
     [Required]
     public ConversationType ConversationType { get; set; }

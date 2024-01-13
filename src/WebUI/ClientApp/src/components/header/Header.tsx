@@ -20,7 +20,7 @@ import { COLORS } from "../../constants/colors";
 import { useNavigate, useParams } from "react-router";
 import HeaderLicensePlateSearch from "./components/HeaderLicensePlateSearch";
 import { ROUTES } from "../../constants/routes";
-import { GarageLookupDtoItem, SelectedService } from "../../app/web-api-client";
+import { GarageLookupDtoItem, VehicleService } from "../../app/web-api-client";
 import { getServices, removeService } from "../../redux/slices/storedServicesSlice";
 import SelectedServicesCard from "./components/SelectedServicesCard";
 
@@ -37,7 +37,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [onMenu, setOnMenu] = useState(false);
     const [isCardVisible, setIsCardVisible] = useState(false);
-    const services: SelectedService[] = useSelector((state: any) => state.storedServices);
+    const services: VehicleService[] = useSelector((state: any) => state.storedServices);
     const headerRef = React.useRef<HTMLDivElement | null>(null);
     const [headerHeight, setHeaderHeight] = useState(75);
 

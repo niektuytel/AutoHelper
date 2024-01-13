@@ -1,0 +1,12 @@
+<html>
+    <body>
+        Hi @Model.FirstName @Model.LastName,
+
+        Here are your orders:
+        @foreach (var order in Model.Orders)
+        {
+            Order ID @order.Id Quantity : @order.Qty
+            <strong>@order.Price</strong>
+        }
+    </body>
+</html>

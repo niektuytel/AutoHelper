@@ -342,6 +342,41 @@
         }
       }
     },
+    "/api/Conversation/StartGarageConversation": {
+      "post": {
+        "tags": [
+          "Conversation"
+        ],
+        "operationId": "Conversation_StartGarageConversation",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageConversationItemsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Conversation/ReceiveEmailMessage": {
       "post": {
         "tags": [
@@ -353,7 +388,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmailMessage"
+                "$ref": "#/components/schemas/ReceiveEmailMessageCommand"
               }
             }
           },
@@ -388,90 +423,6 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Conversation/StartConversation": {
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_StartConversation",
-        "requestBody": {
-          "x-name": "selectedServices",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SelectedServices"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Conversation/EnqueueConversation": {
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_EnqueueConversation",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartConversationCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
                 }
               }
             }
@@ -1719,7 +1670,7 @@
       }
     },
     "/api/Webhook/ConfigureWhatsAppMessageWebhook": {
-      "post": {
+      "get": {
         "tags": [
           "Webhook"
         ],
@@ -1826,55 +1777,46 @@
           }
         }
       },
-      "EmailMessage": {
+      "CreateGarageConversationItemsCommand": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "messageContent",
+          "services"
+        ],
         "properties": {
-          "from": {
-            "type": "string"
-          },
-          "subject": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string"
-          }
-        }
-      },
-      "SelectedServices": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "senderPhoneNumber": {
+          "userWhatsappNumber": {
             "type": "string",
+            "pattern": "^\\+?[0-9]{10,15}$",
             "nullable": true
           },
-          "senderWhatsappNumber": {
+          "userEmailAddress": {
             "type": "string",
-            "nullable": true
-          },
-          "senderEmailAddress": {
-            "type": "string",
+            "pattern": "^[^@]+@[^@]+$",
             "nullable": true
           },
           "messageType": {
             "$ref": "#/components/schemas/ConversationType"
           },
           "messageContent": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "services": {
             "type": "array",
+            "minLength": 1,
+            "nullable": false,
             "xml": {
               "wrapped": true
             },
             "items": {
               "xml": {
-                "name": "SelectedService"
+                "name": "VehicleService"
               },
               "oneOf": [
                 {
-                  "$ref": "#/components/schemas/SelectedService"
+                  "$ref": "#/components/schemas/VehicleService"
                 }
               ]
             }
@@ -1899,1565 +1841,79 @@
           4
         ]
       },
-      "SelectedService": {
+      "VehicleService": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "garageServiceId",
+          "relatedGarageLookupIdentifier",
+          "relatedGarageLookupName",
+          "vehicleLicensePlate",
+          "vehicleLongitude",
+          "vehicleLatitude"
+        ],
         "properties": {
           "garageServiceId": {
             "type": "string",
-            "format": "guid"
+            "format": "guid",
+            "minLength": 1,
+            "nullable": false
+          },
+          "garageServiceTitle": {
+            "type": "string",
+            "nullable": true
           },
           "relatedGarageLookupIdentifier": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "relatedGarageLookupName": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
-          "conversationContactEmail": {
-            "type": "string"
+          "conversationEmailAddress": {
+            "type": "string",
+            "pattern": "^[^@]+@[^@]+$",
+            "nullable": true
           },
-          "conversationContactWhatsappNumber": {
-            "type": "string"
+          "conversationWhatsappNumber": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]{10,15}$",
+            "nullable": true
           },
           "vehicleLicensePlate": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "vehicleLongitude": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
           },
           "vehicleLatitude": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          }
+        }
+      },
+      "ReceiveEmailMessageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": {
             "type": "string"
           },
-          "garageContactIdentifier": {
-            "type": "string",
-            "nullable": true
-          },
-          "garageContactType": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ContactType"
-              }
-            ]
-          }
-        }
-      },
-      "ContactType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Email",
-          "WhatsApp",
-          "PhoneNumber"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
-      },
-      "StartConversationCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "relatedGarageLookupIdentifier",
-          "relatedVehicleLicensePlate",
-          "relatedServiceTypes",
-          "senderWhatsAppNumberOrEmail",
-          "receiverWhatsAppNumberOrEmail",
-          "conversationType",
-          "messageContent"
-        ],
-        "properties": {
-          "relatedGarageLookupIdentifier": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "relatedGarage": {
-            "$ref": "#/components/schemas/GarageLookupItem"
-          },
-          "relatedVehicleLicensePlate": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "relatedVehicle": {
-            "$ref": "#/components/schemas/VehicleLookupItem"
-          },
-          "relatedServiceTypes": {
-            "type": "array",
-            "minLength": 1,
-            "nullable": false,
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "GarageServiceType"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/GarageServiceType"
-                }
-              ]
-            }
-          },
-          "senderWhatsAppNumberOrEmail": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "senderContactType": {
-            "$ref": "#/components/schemas/ContactType"
-          },
-          "receiverWhatsAppNumberOrEmail": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "receiverContactType": {
-            "$ref": "#/components/schemas/ContactType"
-          },
-          "conversationType": {
-            "minLength": 1,
-            "nullable": false,
-            "$ref": "#/components/schemas/ConversationType"
-          },
-          "messageContent": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "queueingService": {
-            "$ref": "#/components/schemas/IQueueService"
-          }
-        }
-      },
-      "GarageLookupItem": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "identifier",
-          "name",
-          "address",
-          "city",
-          "created",
-          "lastModified"
-        ],
-        "properties": {
-          "identifier": {
-            "type": "string",
-            "minLength": 1
-          },
-          "garageId": {
-            "type": "string",
-            "format": "guid",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "minLength": 1
-          },
-          "address": {
-            "type": "string",
-            "minLength": 1
-          },
-          "city": {
-            "type": "string",
-            "minLength": 1
-          },
-          "location": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Geometry"
-              }
-            ]
-          },
-          "image": {
-            "type": "string",
-            "nullable": true
-          },
-          "imageThumbnail": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "phoneNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "whatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "emailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "conversationContactEmail": {
-            "type": "string",
-            "nullable": true
-          },
-          "conversationContactWhatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "daysOfWeek": {
-            "type": "array",
-            "nullable": true,
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "type": "string",
-              "xml": {
-                "name": "string"
-              }
-            }
-          },
-          "daysOfWeekString": {
+          "subject": {
             "type": "string"
           },
-          "website": {
-            "type": "string",
-            "nullable": true
-          },
-          "rating": {
-            "type": "number",
-            "format": "float",
-            "nullable": true
-          },
-          "userRatingsTotal": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "services": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "GarageLookupServiceItem"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/GarageLookupServiceItem"
-                }
-              ]
-            }
-          },
-          "created": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "createdBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastModified": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "lastModifiedBy": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "Geometry": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "factory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/GeometryFactory"
-              }
-            ]
-          },
-          "userData": {
-            "nullable": true
-          },
-          "srid": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "precisionModel": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PrecisionModel"
-              }
-            ]
-          },
-          "numGeometries": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "isSimple": {
-            "type": "boolean"
-          },
-          "isValid": {
-            "type": "boolean"
-          },
-          "area": {
-            "type": "number",
-            "format": "double"
-          },
-          "length": {
-            "type": "number",
-            "format": "double"
-          },
-          "centroid": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Point"
-              }
-            ]
-          },
-          "interiorPoint": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Point"
-              }
-            ]
-          },
-          "pointOnSurface": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Point"
-              }
-            ]
-          },
-          "envelope": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Geometry"
-              }
-            ]
-          },
-          "envelopeInternal": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Envelope"
-              }
-            ]
-          },
-          "isRectangle": {
-            "type": "boolean"
-          }
-        }
-      },
-      "GeometryFactory": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "precisionModel": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PrecisionModel"
-              }
-            ]
-          },
-          "coordinateSequenceFactory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CoordinateSequenceFactory"
-              }
-            ]
-          },
-          "srid": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "geometryServices": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/NtsGeometryServices"
-              }
-            ]
-          }
-        }
-      },
-      "PrecisionModel": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "isFloating": {
-            "type": "boolean"
-          },
-          "maximumSignificantDigits": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "scale": {
-            "type": "number",
-            "format": "double"
-          },
-          "gridSize": {
-            "type": "number",
-            "format": "double"
-          },
-          "precisionModelType": {
-            "$ref": "#/components/schemas/PrecisionModels"
-          }
-        }
-      },
-      "PrecisionModels": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Floating",
-          "FloatingSingle",
-          "Fixed"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
-      },
-      "CoordinateSequenceFactory": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "ordinates": {
-            "$ref": "#/components/schemas/Ordinates"
-          }
-        }
-      },
-      "Ordinates": {
-        "type": "integer",
-        "description": "",
-        "x-enumFlags": true,
-        "x-enumNames": [
-          "None",
-          "X",
-          "Spatial1",
-          "Y",
-          "Spatial2",
-          "XY",
-          "Spatial3",
-          "Z",
-          "XYZ",
-          "Spatial4",
-          "Spatial5",
-          "Spatial6",
-          "Spatial7",
-          "Spatial8",
-          "Spatial9",
-          "Spatial10",
-          "Spatial11",
-          "Spatial12",
-          "Spatial13",
-          "Spatial14",
-          "Spatial15",
-          "Spatial16",
-          "AllSpatialOrdinates",
-          "Measure1",
-          "M",
-          "XYM",
-          "XYZM",
-          "Measure2",
-          "Measure3",
-          "Measure4",
-          "Measure5",
-          "Measure6",
-          "Measure7",
-          "Measure8",
-          "Measure9",
-          "Measure10",
-          "Measure11",
-          "Measure12",
-          "Measure13",
-          "Measure14",
-          "Measure15",
-          "Measure16",
-          "AllMeasureOrdinates",
-          "AllOrdinates"
-        ],
-        "enum": [
-          0,
-          1,
-          1,
-          2,
-          2,
-          3,
-          4,
-          4,
-          7,
-          8,
-          16,
-          32,
-          64,
-          128,
-          256,
-          512,
-          1024,
-          2048,
-          4096,
-          8192,
-          16384,
-          32768,
-          65535,
-          65536,
-          65536,
-          65539,
-          65543,
-          131072,
-          262144,
-          524288,
-          1048576,
-          2097152,
-          4194304,
-          8388608,
-          16777216,
-          33554432,
-          67108864,
-          134217728,
-          268435456,
-          536870912,
-          1073741824,
-          -2147483648,
-          -65536,
-          -1
-        ]
-      },
-      "NtsGeometryServices": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "geometryOverlay": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/GeometryOverlay"
-              }
-            ]
-          },
-          "coordinateEqualityComparer": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CoordinateEqualityComparer"
-              }
-            ]
-          },
-          "defaultSRID": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "defaultCoordinateSequenceFactory": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CoordinateSequenceFactory"
-              }
-            ]
-          },
-          "defaultPrecisionModel": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PrecisionModel"
-              }
-            ]
-          }
-        }
-      },
-      "GeometryOverlay": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
-      "CoordinateEqualityComparer": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/EqualityComparerOfCoordinate"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false
-          }
-        ]
-      },
-      "EqualityComparerOfCoordinate": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
-      "Point": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Geometry"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "coordinateSequence": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/CoordinateSequence"
-                  }
-                ]
-              },
-              "coordinates": {
-                "type": "array",
-                "nullable": true,
-                "xml": {
-                  "wrapped": true
-                },
-                "items": {
-                  "xml": {
-                    "name": "Coordinate"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/Coordinate"
-                    }
-                  ]
-                }
-              },
-              "numPoints": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "isEmpty": {
-                "type": "boolean"
-              },
-              "dimension": {
-                "$ref": "#/components/schemas/Dimension"
-              },
-              "boundaryDimension": {
-                "$ref": "#/components/schemas/Dimension"
-              },
-              "x": {
-                "type": "number",
-                "format": "double"
-              },
-              "y": {
-                "type": "number",
-                "format": "double"
-              },
-              "coordinate": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Coordinate"
-                  }
-                ]
-              },
-              "geometryType": {
-                "type": "string",
-                "nullable": true
-              },
-              "ogcGeometryType": {
-                "$ref": "#/components/schemas/OgcGeometryType"
-              },
-              "boundary": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/Geometry"
-                  }
-                ]
-              },
-              "z": {
-                "type": "number",
-                "format": "double"
-              },
-              "m": {
-                "type": "number",
-                "format": "double"
-              }
-            }
-          }
-        ]
-      },
-      "CoordinateSequence": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "dimension": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "measures": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "spatial": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "ordinates": {
-            "$ref": "#/components/schemas/Ordinates"
-          },
-          "hasZ": {
-            "type": "boolean"
-          },
-          "hasM": {
-            "type": "boolean"
-          },
-          "zOrdinateIndex": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "mOrdinateIndex": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "first": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Coordinate"
-              }
-            ]
-          },
-          "last": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Coordinate"
-              }
-            ]
-          },
-          "count": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "Coordinate": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "x": {
-            "type": "number",
-            "format": "double"
-          },
-          "y": {
-            "type": "number",
-            "format": "double"
-          },
-          "z": {
-            "type": "number",
-            "format": "double"
-          },
-          "m": {
-            "type": "number",
-            "format": "double"
-          },
-          "coordinateValue": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Coordinate"
-              }
-            ]
-          },
-          "isValid": {
-            "type": "boolean"
-          }
-        }
-      },
-      "Dimension": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "P",
-          "Point",
-          "Curve",
-          "L",
-          "A",
-          "Surface",
-          "Collapse",
-          "Dontcare",
-          "True",
-          "Unknown",
-          "False"
-        ],
-        "enum": [
-          0,
-          0,
-          1,
-          1,
-          2,
-          2,
-          3,
-          -3,
-          -2,
-          -1,
-          -1
-        ]
-      },
-      "OgcGeometryType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Point",
-          "LineString",
-          "Polygon",
-          "MultiPoint",
-          "MultiLineString",
-          "MultiPolygon",
-          "GeometryCollection",
-          "CircularString",
-          "CompoundCurve",
-          "CurvePolygon",
-          "MultiCurve",
-          "MultiSurface",
-          "Curve",
-          "Surface",
-          "PolyhedralSurface",
-          "TIN"
-        ],
-        "enum": [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11,
-          12,
-          13,
-          14,
-          15,
-          16
-        ]
-      },
-      "Envelope": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "isNull": {
-            "type": "boolean"
-          },
-          "width": {
-            "type": "number",
-            "format": "double"
-          },
-          "height": {
-            "type": "number",
-            "format": "double"
-          },
-          "diameter": {
-            "type": "number",
-            "format": "double"
-          },
-          "minX": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxX": {
-            "type": "number",
-            "format": "double"
-          },
-          "minY": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxY": {
-            "type": "number",
-            "format": "double"
-          },
-          "area": {
-            "type": "number",
-            "format": "double"
-          },
-          "minExtent": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxExtent": {
-            "type": "number",
-            "format": "double"
-          },
-          "centre": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/Coordinate"
-              }
-            ]
-          }
-        }
-      },
-      "GarageLookupServiceItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "garageLookupIdentifier",
-              "type",
-              "vehicleType"
-            ],
-            "properties": {
-              "garageLookupIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "garageLookup": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/GarageLookupItem"
-                  }
-                ]
-              },
-              "type": {
-                "$ref": "#/components/schemas/GarageServiceType"
-              },
-              "vehicleType": {
-                "$ref": "#/components/schemas/VehicleType"
-              },
-              "title": {
-                "type": "string",
-                "nullable": true
-              },
-              "description": {
-                "type": "string",
-                "nullable": true
-              },
-              "expectedNextDateIsRequired": {
-                "type": "boolean"
-              },
-              "expectedNextOdometerReadingIsRequired": {
-                "type": "boolean"
-              }
-            }
-          }
-        ]
-      },
-      "GarageServiceType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "Service",
-          "Repair",
-          "Inspection"
-        ],
-        "enum": [
-          0,
-          10,
-          20,
-          30
-        ]
-      },
-      "VehicleType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Any",
-          "LightCar",
-          "HeavyCar",
-          "Taxi",
-          "Bus",
-          "Truck",
-          "Motorcycle",
-          "Tractor",
-          "Trailer",
-          "Caravan"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9
-        ]
-      },
-      "BaseEntity": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "guid"
-          },
-          "domainEvents": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "BaseEvent"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/BaseEvent"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "BaseEvent": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
-      },
-      "VehicleLookupItem": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "licensePlate",
-          "dateOfMOTExpiry",
-          "dateOfAscription",
-          "created",
-          "lastModified",
-          "timeline",
-          "conversations",
-          "serviceLogs"
-        ],
-        "properties": {
-          "licensePlate": {
-            "type": "string",
-            "minLength": 1
-          },
-          "dateOfMOTExpiry": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "dateOfAscription": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "created": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "createdBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastModified": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "lastModifiedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "timeline": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "VehicleTimelineItem"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/VehicleTimelineItem"
-                }
-              ]
-            }
-          },
-          "conversations": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "ConversationItem"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/ConversationItem"
-                }
-              ]
-            }
-          },
-          "serviceLogs": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "VehicleServiceLogItem"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/VehicleServiceLogItem"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "VehicleTimelineItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "vehicleLicensePlate",
-              "title",
-              "description",
-              "date",
-              "type",
-              "priority"
-            ],
-            "properties": {
-              "vehicleLicensePlate": {
-                "type": "string",
-                "minLength": 1
-              },
-              "vehicleLookup": {
-                "$ref": "#/components/schemas/VehicleLookupItem"
-              },
-              "vehicleServiceLogId": {
-                "type": "string",
-                "format": "guid",
-                "nullable": true
-              },
-              "title": {
-                "type": "string",
-                "minLength": 1
-              },
-              "description": {
-                "type": "string",
-                "minLength": 1
-              },
-              "date": {
-                "type": "string",
-                "format": "date-time",
-                "minLength": 1
-              },
-              "type": {
-                "$ref": "#/components/schemas/VehicleTimelineType"
-              },
-              "priority": {
-                "$ref": "#/components/schemas/VehicleTimelinePriority"
-              },
-              "extraDataTableJson": {
-                "type": "string"
-              },
-              "extraData": {
-                "type": "array",
-                "xml": {
-                  "wrapped": true
-                },
-                "items": {
-                  "xml": {
-                    "name": "Tuple`2"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/TupleOfStringAndString"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        ]
-      },
-      "VehicleTimelineType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Unknown",
-          "Service",
-          "Repair",
-          "Inspection",
-          "SucceededMOT",
-          "FailedMOT",
-          "OwnerChange"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          400,
-          401,
-          402
-        ]
-      },
-      "VehicleTimelinePriority": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Low",
-          "Medium",
-          "High"
-        ],
-        "enum": [
-          1,
-          2,
-          3
-        ]
-      },
-      "TupleOfStringAndString": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "item1": {
-            "type": "string"
-          },
-          "item2": {
+          "body": {
             "type": "string"
           }
         }
-      },
-      "ConversationItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "vehicleLicensePlate",
-              "garageLookupIdentifier",
-              "relatedServiceTypesString",
-              "conversationType"
-            ],
-            "properties": {
-              "priority": {
-                "$ref": "#/components/schemas/PriorityLevel"
-              },
-              "vehicleLicensePlate": {
-                "type": "string",
-                "minLength": 1
-              },
-              "relatedVehicleLookup": {
-                "$ref": "#/components/schemas/VehicleLookupItem"
-              },
-              "garageLookupIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "relatedGarage": {
-                "$ref": "#/components/schemas/GarageLookupItem"
-              },
-              "relatedServiceTypes": {
-                "type": "array",
-                "xml": {
-                  "wrapped": true
-                },
-                "items": {
-                  "xml": {
-                    "name": "GarageServiceType"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/GarageServiceType"
-                    }
-                  ]
-                }
-              },
-              "relatedServiceTypesString": {
-                "type": "string",
-                "minLength": 1
-              },
-              "conversationType": {
-                "$ref": "#/components/schemas/ConversationType"
-              },
-              "messages": {
-                "type": "array",
-                "xml": {
-                  "wrapped": true
-                },
-                "items": {
-                  "xml": {
-                    "name": "ConversationMessageItem"
-                  },
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ConversationMessageItem"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        ]
-      },
-      "PriorityLevel": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "None",
-          "Low",
-          "Medium",
-          "High"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "ConversationMessageItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "conversationId",
-              "senderContactType",
-              "senderContactIdentifier",
-              "receiverContactType",
-              "receiverContactIdentifier",
-              "status",
-              "messageContent"
-            ],
-            "properties": {
-              "conversationId": {
-                "type": "string",
-                "format": "guid",
-                "minLength": 1
-              },
-              "conversation": {
-                "$ref": "#/components/schemas/ConversationItem"
-              },
-              "senderContactType": {
-                "$ref": "#/components/schemas/ContactType"
-              },
-              "senderContactIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "receiverContactType": {
-                "$ref": "#/components/schemas/ContactType"
-              },
-              "receiverContactIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "status": {
-                "$ref": "#/components/schemas/MessageStatus"
-              },
-              "messageContent": {
-                "type": "string",
-                "minLength": 1
-              },
-              "errorMessage": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "MessageStatus": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Pending",
-          "Sent",
-          "Delivered",
-          "Failed"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3
-        ]
-      },
-      "BaseAuditableEntity": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseEntity"
-          },
-          {
-            "type": "object",
-            "x-abstract": true,
-            "additionalProperties": false,
-            "properties": {
-              "created": {
-                "type": "string",
-                "format": "date-time"
-              },
-              "createdBy": {
-                "type": "string",
-                "nullable": true
-              },
-              "lastModified": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "lastModifiedBy": {
-                "type": "string",
-                "nullable": true
-              }
-            }
-          }
-        ]
-      },
-      "VehicleServiceLogItem": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/BaseAuditableEntity"
-          },
-          {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "vehicleLicensePlate",
-              "garageLookupIdentifier",
-              "type",
-              "date",
-              "odometerReading",
-              "status",
-              "reporterName"
-            ],
-            "properties": {
-              "vehicleLicensePlate": {
-                "type": "string",
-                "minLength": 1
-              },
-              "vehicleLookup": {
-                "$ref": "#/components/schemas/VehicleLookupItem"
-              },
-              "garageLookupIdentifier": {
-                "type": "string",
-                "minLength": 1
-              },
-              "garageLookup": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/GarageLookupItem"
-                  }
-                ]
-              },
-              "type": {
-                "$ref": "#/components/schemas/GarageServiceType"
-              },
-              "title": {
-                "type": "string",
-                "nullable": true
-              },
-              "description": {
-                "type": "string",
-                "nullable": true
-              },
-              "attachedFile": {
-                "type": "string",
-                "nullable": true
-              },
-              "notes": {
-                "type": "string"
-              },
-              "date": {
-                "type": "string",
-                "format": "date-time",
-                "minLength": 1
-              },
-              "expectedNextDate": {
-                "type": "string",
-                "format": "date-time",
-                "nullable": true
-              },
-              "odometerReading": {
-                "type": "integer",
-                "format": "int32"
-              },
-              "expectedNextOdometerReading": {
-                "type": "integer",
-                "format": "int32",
-                "nullable": true
-              },
-              "status": {
-                "$ref": "#/components/schemas/VehicleServiceLogStatus"
-              },
-              "reporterName": {
-                "type": "string",
-                "minLength": 1
-              },
-              "reporterPhoneNumber": {
-                "type": "string",
-                "nullable": true
-              },
-              "reporterEmailAddress": {
-                "type": "string",
-                "nullable": true
-              },
-              "metaData": {
-                "type": "string"
-              }
-            }
-          }
-        ]
-      },
-      "VehicleServiceLogStatus": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "NotVerified",
-          "VerifiedByGarage"
-        ],
-        "enum": [
-          0,
-          1
-        ]
-      },
-      "IQueueService": {
-        "type": "object",
-        "x-abstract": true,
-        "additionalProperties": false
       },
       "GarageSettingsDtoItem": {
         "type": "object",
@@ -3537,6 +1993,50 @@
           }
         }
       },
+      "GarageServiceType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Service",
+          "Repair",
+          "Inspection"
+        ],
+        "enum": [
+          0,
+          10,
+          20,
+          30
+        ]
+      },
+      "VehicleType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Any",
+          "LightCar",
+          "HeavyCar",
+          "Taxi",
+          "Bus",
+          "Truck",
+          "Motorcycle",
+          "Tractor",
+          "Trailer",
+          "Caravan"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
       "VehicleServiceLogAsGarageDtoItem": {
         "type": "object",
         "additionalProperties": false,
@@ -3592,6 +2092,18 @@
             "type": "string"
           }
         }
+      },
+      "VehicleServiceLogStatus": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "NotVerified",
+          "VerifiedByGarage"
+        ],
+        "enum": [
+          0,
+          1
+        ]
       },
       "GarageOverviewDtoItem": {
         "type": "object",
@@ -4304,6 +2816,40 @@
                 }
               ]
             }
+          }
+        }
+      },
+      "VehicleTimelineType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Unknown",
+          "Service",
+          "Repair",
+          "Inspection",
+          "SucceededMOT",
+          "FailedMOT",
+          "OwnerChange"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          400,
+          401,
+          402
+        ]
+      },
+      "TupleOfStringAndString": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "item1": {
+            "type": "string"
+          },
+          "item2": {
+            "type": "string"
           }
         }
       }

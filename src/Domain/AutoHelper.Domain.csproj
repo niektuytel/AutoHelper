@@ -11,18 +11,23 @@
     <ItemGroup>
       <Compile Remove="Entities\Deprecated\**" />
       <Compile Remove="Entities\Garages\_Unused\**" />
+      <Compile Remove="Events\**" />
+      <Compile Remove="Exceptions\**" />
       <EmbeddedResource Remove="Entities\Deprecated\**" />
       <EmbeddedResource Remove="Entities\Garages\_Unused\**" />
+      <EmbeddedResource Remove="Events\**" />
+      <EmbeddedResource Remove="Exceptions\**" />
       <EntityDeploy Remove="Entities\Garages\_Unused\**" />
+      <EntityDeploy Remove="Events\**" />
+      <EntityDeploy Remove="Exceptions\**" />
       <None Remove="Entities\Deprecated\**" />
       <None Remove="Entities\Garages\_Unused\**" />
+      <None Remove="Events\**" />
+      <None Remove="Exceptions\**" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="Entities\Garages\GarageBankingDetailsItem.cs" />
-      <Compile Remove="Events\TodoItemCompletedEvent.cs" />
-      <Compile Remove="Events\TodoItemCreatedEvent.cs" />
-      <Compile Remove="Events\TodoItemDeletedEvent.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,11 +35,6 @@
       <PackageReference Include="MediatR" Version="11.1.0" />
       <PackageReference Include="NetTopologySuite" Version="2.5.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Events\" />
-      <Folder Include="Exceptions\" />
     </ItemGroup>
 
 </Project>

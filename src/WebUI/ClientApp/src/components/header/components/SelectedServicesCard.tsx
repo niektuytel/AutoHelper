@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 // own imports
 import { ROUTES } from "../../../constants/routes";
-import { SelectedService } from "../../../app/web-api-client";
+import { VehicleService } from "../../../app/web-api-client";
 import { removeService } from "../../../redux/slices/storedServicesSlice";
 import GarageContactDialog from "../../GarageContactDialog";
 
@@ -32,7 +32,7 @@ export function useOutsideClick<T extends HTMLElement = HTMLElement>(
 
 interface IProps {
     isCardVisible: boolean;
-    services: SelectedService[];
+    services: VehicleService[];
     onClose: () => void;
 }
 
@@ -46,11 +46,11 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [requestQuote, setRequestQuote] = useState(false);
 
-    const handleServiceClick = (service: SelectedService) => {
+    const handleServiceClick = (service: VehicleService) => {
         navigate(`${ROUTES.GARAGE}/${service.relatedGarageLookupIdentifier}?licensePlate=${service.vehicleLicensePlate}&lat=${service.vehicleLatitude}&lng=${service.vehicleLongitude}`, { state: { from: location } });
     };
 
-    const handleServiceRemove = (event: React.MouseEvent<HTMLButtonElement>, service: SelectedService) => {
+    const handleServiceRemove = (event: React.MouseEvent<HTMLButtonElement>, service: VehicleService) => {
         event.stopPropagation();
 
         if (services.length == 1) {
@@ -88,39 +88,38 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
                     />
                     <CardContent>
                         <List dense>
-                            {/* TODO: implement de services as well*/}
-                            {/*{services.map((service, index) => (*/}
-                            {/*    <React.Fragment key={`${service.relatedGarageLookupIdentifier};${service.relatedServiceType}`}>*/}
-                            {/*        {index > 0 && <Divider component="li" />}*/}
-                            {/*        <ListItem*/}
-                            {/*            onClick={() => handleServiceClick(service)}*/}
-                            {/*            secondaryAction={*/}
-                            {/*                <IconButton onClick={(e: any) => handleServiceRemove(e, service)} edge="end" aria-label="delete">*/}
-                            {/*                    <DeleteIcon />*/}
-                            {/*                </IconButton>*/}
-                            {/*            }*/}
-                            {/*            sx={{*/}
-                            {/*                '&:hover': {*/}
-                            {/*                    backgroundColor: 'rgba(0, 0, 0, 0.04)', // Or any other color*/}
-                            {/*                    cursor: 'pointer',*/}
-                            {/*                },*/}
-                            {/*            }}*/}
-                            {/*        >*/}
-                            {/*            <ListItemText*/}
-                            {/*                primary={*/}
-                            {/*                    <Typography variant="subtitle1" noWrap>*/}
-                            {/*                        {service.relatedServiceTypeTitle}*/}
-                            {/*                    </Typography>*/}
-                            {/*                }*/}
-                            {/*                secondary={*/}
-                            {/*                    <Typography variant="body2" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>*/}
-                            {/*                        {service.relatedGarageLookupName} {t("for")} {service.vehicleLicensePlate}*/}
-                            {/*                    </Typography>*/}
-                            {/*                }*/}
-                            {/*            />*/}
-                            {/*        </ListItem>*/}
-                            {/*    </React.Fragment>*/}
-                            {/*))}*/}
+                            {services.map((service, index) => (
+                                <React.Fragment key={`${service.garageServiceId}`}>
+                                    {index > 0 && <Divider component="li" />}
+                                    <ListItem
+                                        onClick={() => handleServiceClick(service)}
+                                        secondaryAction={
+                                            <IconButton onClick={(e: any) => handleServiceRemove(e, service)} edge="end" aria-label="delete">
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        }
+                                        sx={{
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(0, 0, 0, 0.04)', // Or any other color
+                                                cursor: 'pointer',
+                                            },
+                                        }}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="subtitle1" noWrap>
+                                                    {service.garageServiceTitle}
+                                                </Typography>
+                                            }
+                                            secondary={
+                                                <Typography variant="body2" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {service.relatedGarageLookupName} {t("for")} {service.vehicleLicensePlate}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItem>
+                                </React.Fragment>
+                            ))}
                         </List>
                         <Button variant="outlined" fullWidth sx={{ marginTop: 1 }} onClick={handleAskQuestionClick}>
                             {t("Ask question")}

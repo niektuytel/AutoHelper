@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 // custom imports
 import { showOnError } from '../../../../redux/slices/statusSnackbarSlice';
 import SearchGarageLookup from './SearchGarageLookup';
-import { ContactType, GarageLookupDtoItem } from '../../../../app/web-api-client';
+import { GarageLookupDtoItem } from '../../../../app/web-api-client';
 
 interface LocationSectionProps {
     control: any;
