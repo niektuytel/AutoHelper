@@ -1,24 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RazorLangVersion>3.0</RazorLangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\BlazorComponent1.cs" />
     <Compile Remove="Services\SparkpostService.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.10.3" />
+    <Content Remove="Services\BlazorComponent1.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorTemplater" Version="1.5.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Graph" Version="5.38.0" />
-    <PackageReference Include="Microsoft.Office.Interop.Outlook" Version="15.0.4797.1004" />
-    <PackageReference Include="RazorEngine" Version="3.10.0" />
-    <PackageReference Include="SparkPost.DotNetCore" Version="1.0.0" />
     <PackageReference Include="WhatsappBusiness.CloudApi" Version="1.0.23" />
   </ItemGroup>
 

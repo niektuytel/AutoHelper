@@ -9,7 +9,7 @@ namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IMailingService
 {
-    Task SendConfirmationEmailAsync(string receiverContactIdentifier, Guid conversationId, string senderContactName);
-    Task SendBasicMailAsync(string receiverContactIdentifier, Guid conversationId, string senderContactName, string messageContent);
-    Task SendVehicleRelatedEmailAsync(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicleInfo, string messageContent);
+    Task SendMessageConfirmation(string receiverContactIdentifier, Guid conversationId, string senderContactName);
+    Task SendMessage(string receiverContactIdentifier, Guid conversationId, string senderContactName, string messageContent);
+    Task SendMessageWithVehicle(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicleInfo, string messageContent);
 }

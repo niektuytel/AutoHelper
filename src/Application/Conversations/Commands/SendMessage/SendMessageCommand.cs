@@ -94,7 +94,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         switch (request.ConversationMessage!.SenderContactType)
         {
             case ContactType.Email:
-                await _mailingService.SendConfirmationEmailAsync(request.ConversationMessage.SenderContactIdentifier, request.ConversationMessage.ConversationId, senderContactName);
+                await _mailingService.SendMessageConfirmation(request.ConversationMessage.SenderContactIdentifier, request.ConversationMessage.ConversationId, senderContactName);
                 break;
             case ContactType.WhatsApp:
                 await _whatsappService.SendConfirmationMessageAsync(request.ConversationMessage.SenderContactIdentifier, request.ConversationMessage.ConversationId, senderContactName);
@@ -132,7 +132,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
                 throw new InvalidDataException($"Vehicle not found: {licensePlate}");
             }
 
-            await _mailingService.SendVehicleRelatedEmailAsync(
+            await _mailingService.SendMessageWithVehicle(
                 request.ConversationMessage.ReceiverContactIdentifier,
                 request.ConversationMessage.ConversationId,
                 vehicleInfo,
@@ -141,7 +141,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         }
         else
         {
-            await _mailingService.SendBasicMailAsync(
+            await _mailingService.SendMessage(
                 request.ConversationMessage!.ReceiverContactIdentifier,
                 request.ConversationMessage.ConversationId,
                 senderContactName,

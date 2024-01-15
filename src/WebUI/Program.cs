@@ -14,6 +14,7 @@ using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddRazorPages();
 
 builder.Services.AddMessagingServices(builder.Configuration);
 builder.AddHangfireServices();
@@ -25,6 +26,8 @@ var app = builder.Build();
 
 // Use service
 using var scope = app.Services.CreateScope();
+app.MapRazorPages();
+
 app.UseHangfireServices(scope);
 app.UseWebUIServices();
 

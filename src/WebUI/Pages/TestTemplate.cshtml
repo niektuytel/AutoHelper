@@ -1,0 +1,11 @@
+@page
+@using AutoHelper.Messaging.Templates;
+@model TestTemplateModel
+
+<h2>Hi @Model.Identifier,</h2>
+<p>Here is the vehicle information you requested:</p>
+<p>License plate: @Model.LicensePlate</p>
+<p>Brand: @Model.Brand</p>
+<p>Model: @Model.Model</p>
+<p>Message: @Model.Content</p>
+<p>ConversationId: @Model.ConversationId</p>

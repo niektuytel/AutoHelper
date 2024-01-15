@@ -16,6 +16,8 @@ internal static class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddRazorPages();
+
         builder.Services.AddMessagingServices(builder.Configuration);
         builder.AddHangfireServices();
         builder.AddHangfireServerInstance();
@@ -23,9 +25,10 @@ internal static class Program
         builder.Services.AddInfrastructureServices(builder.Configuration);
 
         builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
-        builder.Services.AddRazorPages();
 
         var app = builder.Build();
+        app.MapRazorPages();
+
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
