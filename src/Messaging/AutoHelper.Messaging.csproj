@@ -8,15 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\BlazorComponent1.cs" />
-    <Compile Remove="Services\SparkpostService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Services\BlazorComponent1.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BlazorTemplater" Version="1.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.15" />

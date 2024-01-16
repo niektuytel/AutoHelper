@@ -19,22 +19,26 @@ public class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
     {
         _context = context;
 
-        RuleFor(x => x.ConversationMessageId)
-            .NotEmpty().WithMessage("Conversation message ID is required.")
+        RuleFor(x => x)
             .MustAsync(BeValidAndExistingMessage)
             .WithMessage("Invalid or non-existent conversation message.");
 
     }
 
-    private async Task<bool> BeValidAndExistingMessage(SendMessageCommand command, Guid messageId, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingMessage(SendMessageCommand command, CancellationToken cancellationToken)
     {
+        if (command.ConversationMessageId == null)
+        {
+            return command.ConversationMessage != null;
+        }
+
         var entity = _context.ConversationMessages
             .AsNoTracking()
             .Include(x => x.Conversation)
             .ThenInclude(x => x.RelatedGarage)
             .Include(x => x.Conversation)
             .ThenInclude(x => x.RelatedVehicleLookup)
-            .FirstOrDefault(x => x.Id == messageId);
+            .FirstOrDefault(x => x.Id == command.ConversationMessageId);
 
         command.ConversationMessage = entity;
         return entity != null;

@@ -342,34 +342,51 @@
         }
       }
     },
-    "/api/Conversation/StartGarageConversation": {
-      "post": {
+    "/api/Conversation/ConfigureWhatsappWebhook": {
+      "get": {
         "tags": [
           "Conversation"
         ],
-        "operationId": "Conversation_StartGarageConversation",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateGarageConversationItemsCommand"
-              }
-            }
+        "operationId": "Conversation_ConfigureWhatsappWebhook",
+        "parameters": [
+          {
+            "name": "hub.mode",
+            "x-originalName": "hubMode",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
           },
-          "required": true,
-          "x-position": 1
-        },
+          {
+            "name": "hub.challenge",
+            "x-originalName": "hubChallenge",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "hub.verify_token",
+            "x-originalName": "hubVerifyToken",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
         "responses": {
           "200": {
-            "description": ""
-          },
-          "400": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
+                  "type": "string"
                 }
               }
             }
@@ -388,7 +405,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ReceiveEmailMessageCommand"
+                "$ref": "#/components/schemas/ReceiveMessageCommand"
               }
             }
           },
@@ -423,6 +440,92 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Conversation/ReceiveWhatsappMessage": {
+      "post": {
+        "tags": [
+          "Conversation"
+        ],
+        "operationId": "Conversation_ReceiveWhatsappMessage",
+        "requestBody": {
+          "x-name": "message",
+          "content": {
+            "application/json": {
+              "schema": {}
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Conversation/StartGarageConversation": {
+      "post": {
+        "tags": [
+          "Conversation"
+        ],
+        "operationId": "Conversation_StartGarageConversation",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageConversationItemsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
                 }
               }
             }
@@ -1777,6 +1880,18 @@
           }
         }
       },
+      "ReceiveMessageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
       "CreateGarageConversationItemsCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1895,21 +2010,6 @@
             "type": "string",
             "minLength": 1,
             "nullable": false
-          }
-        }
-      },
-      "ReceiveEmailMessageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "from": {
-            "type": "string"
-          },
-          "subject": {
-            "type": "string"
-          },
-          "body": {
-            "type": "string"
           }
         }
       },

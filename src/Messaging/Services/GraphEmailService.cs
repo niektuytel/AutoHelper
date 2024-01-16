@@ -190,7 +190,6 @@ internal class GraphEmailService : IMailingService
     private async Task<string> GetAccessToken()
     {
         const string cacheKey = "GraphAccessToken";
-
         if (_memoryCache.TryGetValue(cacheKey, out string? accessToken) && !string.IsNullOrEmpty(accessToken))
         {
             return accessToken;

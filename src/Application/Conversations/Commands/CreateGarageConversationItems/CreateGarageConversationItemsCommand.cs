@@ -16,6 +16,8 @@ using Hangfire;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Conversations.Commands.SendMessage;
 using System.Text.Json.Serialization;
+using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
+using System.Threading;
 
 namespace AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
 
@@ -35,10 +37,12 @@ public record CreateGarageConversationItemsCommand : IRequest<IEnumerable<Conver
 public class CreateGarageConversationBatchCommandHandler : IRequestHandler<CreateGarageConversationItemsCommand, IEnumerable<ConversationItem>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ISender _mediator;
 
-    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context)
+    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context, ISender mediator)
     {
         _context = context;
+        _mediator = mediator;
     }
 
     public async Task<IEnumerable<ConversationItem>> Handle(CreateGarageConversationItemsCommand request, CancellationToken cancellationToken)
@@ -68,7 +72,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
                     serviceIds
                 );
 
-                CreateConversationMessage(conversation.Id, request, garage);
+                await CreateConversationMessage(conversation, request, garage, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 conversations.Add(conversation);
@@ -78,12 +82,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         return conversations.AsEnumerable();
     }
 
-    private ConversationItem CreateConversation(
-        ConversationType conversationType, 
-        string licensePlate, 
-        string garageIdentifier, 
-        IEnumerable<Guid> serviceIds
-    ) {
+    private ConversationItem CreateConversation(ConversationType conversationType, string licensePlate, string garageIdentifier, IEnumerable<Guid> serviceIds) {
         var conversation = new ConversationItem
         {
             GarageLookupIdentifier = garageIdentifier!,
@@ -99,7 +98,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         return conversation;
     }
 
-    private ConversationMessageItem CreateConversationMessage(Guid conversationId, CreateGarageConversationItemsCommand request, VehicleService garage)
+    private async Task<ConversationMessageItem> CreateConversationMessage(ConversationItem conversation, CreateGarageConversationItemsCommand request, VehicleService garage, CancellationToken token)
     {
         var senderIdentifier = request.UserEmailAddress ?? "";
         if (string.IsNullOrWhiteSpace(senderIdentifier))
@@ -107,30 +106,21 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
             senderIdentifier = request.UserWhatsappNumber;
         };
         
-
         var receiverIdentifier = garage.ConversationEmailAddress;
         if (string.IsNullOrWhiteSpace(senderIdentifier))
         {
             receiverIdentifier = garage.ConversationWhatsappNumber;
         }
 
-        var senderType = senderIdentifier.GetContactType();
-        var receiverType = receiverIdentifier.GetContactType();
-        var message = new ConversationMessageItem
+        var command = new CreateConversationMessageCommand()
         {
-            ConversationId = conversationId,
-            SenderContactType = senderType,
-            SenderContactIdentifier = senderIdentifier,
-            ReceiverContactType = receiverType,
-            ReceiverContactIdentifier = receiverIdentifier,
-            Status = MessageStatus.Pending,
-            MessageContent = request.MessageContent
+            Conversation = conversation,
+            SenderIdentifier = senderIdentifier!,
+            ReceiverIdentifier = receiverIdentifier!,
+            Message = request.MessageContent
         };
 
-        // If you wish to use domain events, then you can add them here:
-        // entity.AddDomainEvent(new SomeDomainEvent(entity));
-
-        _context.ConversationMessages.Add(message);
+        var message = await _mediator.Send(command, token);
         return message;
     }
 

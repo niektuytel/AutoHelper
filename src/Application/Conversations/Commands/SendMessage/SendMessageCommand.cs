@@ -17,7 +17,12 @@ public record SendMessageCommand : IRequest<string>
         ConversationMessageId = conversationMessageId;
     }
 
-    public Guid ConversationMessageId { get; private set; }
+    public SendMessageCommand(ConversationMessageItem message)
+    {
+        ConversationMessage = message;
+    }
+
+    public Guid? ConversationMessageId { get; private set; } = null;
 
     [JsonIgnore]
     internal ConversationMessageItem? ConversationMessage { get; set; }
@@ -53,7 +58,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         var senderContactName = GetSenderContactName(request.ConversationMessage!.Conversation, sendToGarage);
         if (sendToGarage)
         {
-            var licensePlate = request.ConversationMessage!.Conversation.RelatedVehicleLookup.LicensePlate;
+            var licensePlate = request.ConversationMessage!.Conversation.VehicleLicensePlate;
             var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
             if (vehicleInfo == null)
             {
@@ -105,7 +110,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
     {
         if (sendingMessageToGarage)
         {
-            return conversation.RelatedVehicleLookup.LicensePlate;
+            return conversation.VehicleLicensePlate;
         }
 
         return conversation.RelatedGarage.Name;

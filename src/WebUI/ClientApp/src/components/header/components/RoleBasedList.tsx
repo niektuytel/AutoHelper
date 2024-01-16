@@ -38,6 +38,7 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const context = useContext(ServiceLogDrawerContext);
+    const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
 
     if (!context) {
         throw new Error("DrawerComponent must be used within a DrawerProvider");
@@ -76,18 +77,8 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         </ListItem>
     );
 
-    if (userRole == ROLES.GARAGE) {
-        return (
-            <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
-                <ListItemLink disabled={configurationIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
-                <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
-                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
-            </List>
-        );
-    }
-    else if (userRole == ROLES.USER) {
-        return (
+    if (!isAuthenticated) {
+        return <>
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />
                 <ListItem
@@ -100,26 +91,40 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
                     </ListItemIcon>
                     <ListItemText primary={t('AddMaintenanceLog.Title')} />
                 </ListItem>
-                {/*<ListItemButton onClick={handleClick2}>*/}
-                {/*    <ListItemIcon>*/}
-                {/*        <AccountBoxIcon />*/}
-                {/*    </ListItemIcon>*/}
-                {/*    <ListItemText primary={t('account_camelcase')} />*/}
-                {/*    {open ? <ExpandLess /> : <ExpandMore />}*/}
-                {/*</ListItemButton>*/}
-                {/*<Collapse in={open} timeout="auto" unmountOnExit>*/}
-                {/*    <List component="div" disablePadding>*/}
-                {/*        <ListItemLink primary={t('overview_camelcase')} icon={<HomeIcon />} to={ROUTES.USER.OVERVIEW} />*/}
-                {/*    </List>*/}
-                {/*</Collapse>*/}
             </List>
-        );
+
+            {/*<ListItemButton onClick={handleClick2}>*/}
+            {/*    <ListItemIcon>*/}
+            {/*        <AccountBoxIcon />*/}
+            {/*    </ListItemIcon>*/}
+            {/*    <ListItemText primary={t('account_camelcase')} />*/}
+            {/*    {open ? <ExpandLess /> : <ExpandMore />}*/}
+            {/*</ListItemButton>*/}
+            {/*<Collapse in={open} timeout="auto" unmountOnExit>*/}
+            {/*    <List component="div" disablePadding>*/}
+            {/*        <ListItemLink primary={t('overview_camelcase')} icon={<HomeIcon />} to={ROUTES.USER.OVERVIEW} />*/}
+            {/*    </List>*/}
+            {/*</Collapse>*/}
+        </>;
     }
-    else {
-        return (
+
+    if (userRole == ROLES.GARAGE)
+    {
+        return <>
+            <List component="nav" sx={{ width: "250px" }}>
+                <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
+                <ListItemLink disabled={configurationIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
+                <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
+                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
+            </List>
+        </>;
+    }
+    else
+    {
+        return <>
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />
             </List>
-        );
+        </>;
     }
 };

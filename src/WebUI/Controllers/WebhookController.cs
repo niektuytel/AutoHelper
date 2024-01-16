@@ -21,6 +21,7 @@ using WhatsappBusiness.CloudApi.Webhook;
 namespace AutoHelper.WebUI.Controllers;
 
 // TODO: How to test this controller?
+[Obsolete("This controller is not used anymore. Please use ConversationController instead.")]
 public class WebhookController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
