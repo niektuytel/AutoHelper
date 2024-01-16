@@ -28,67 +28,9 @@ internal class WhatsappService : IWhatsappService
     }
 
     /// <summary>
-    /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=837399274834029
-    /// </summary>
-    public async Task SendConfirmationMessageAsync(string phoneNumber, Guid conversationId, string fromContactName)
-    {
-        var phoneNumberId = GetPhoneNumberId(phoneNumber);
-        var template = new TextTemplateMessageRequest
-        {
-            To = phoneNumberId,
-            Template = new TextMessageTemplate
-            {
-                Name = "send_message_with_confirmation",
-                Language = new TextMessageLanguage
-                {
-                    Code = LanguageCode.Dutch
-                },
-                Components = new List<TextMessageComponent>
-                {
-                    new TextMessageComponent
-                    {
-                        Type = "Header",
-                        Parameters = new List<TextMessageParameter>
-                        {
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = fromContactName
-                            }
-                        }
-                    },
-                    new TextMessageComponent
-                    {
-                        Type = "Body",
-                        Parameters = new List<TextMessageParameter>
-                        {
-                            new TextMessageParameter
-                            {
-                                Type = "text",
-                                Text = conversationId.ToString().Split('-')[0]
-                            }
-                        }
-                    }
-                }
-            }
-        };
-
-        try
-        {
-            var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
-        }
-        catch (WhatsappBusinessCloudAPIException ex)
-        {
-            // TODO: Handle with ILogger or on hangfire
-            Console.WriteLine(ex.Message);
-            throw;
-        }
-    }
-
-    /// <summary>
     /// https://business.facebook.com/wa/manage/template-details/?business_id=656542846083352&waba_id=107289168858080&id=859328899233016&date_range=last_30_days
     /// </summary>
-    public async Task SendBasicMessageAsync(string phoneNumber, Guid conversationId, string fromContactName, string content)
+    public async Task SendMessage(string phoneNumber, Guid conversationId, string fromContactName, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
         var template = new TextTemplateMessageRequest
@@ -151,7 +93,7 @@ internal class WhatsappService : IWhatsappService
     /// <summary>
     /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=2664948603645930
     /// </summary>
-    public async Task SendVehicleRelatedMessageAsync(string phoneNumber, Guid conversationId, VehicleTechnicalDtoItem vehicle, string content)
+    public async Task SendMessageWithVehicle(string phoneNumber, Guid conversationId, VehicleTechnicalDtoItem vehicle, string content)
     {
         var phoneNumberId = GetPhoneNumberId(phoneNumber);
         var template = new TextTemplateMessageRequest
@@ -220,6 +162,64 @@ internal class WhatsappService : IWhatsappService
                             },
                         }
                     },
+                }
+            }
+        };
+
+        try
+        {
+            var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+        }
+        catch (WhatsappBusinessCloudAPIException ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=837399274834029
+    /// </summary>
+    public async Task SendMessageConfirmation(string phoneNumber, Guid conversationId, string fromContactName)
+    {
+        var phoneNumberId = GetPhoneNumberId(phoneNumber);
+        var template = new TextTemplateMessageRequest
+        {
+            To = phoneNumberId,
+            Template = new TextMessageTemplate
+            {
+                Name = "send_message_with_confirmation",
+                Language = new TextMessageLanguage
+                {
+                    Code = LanguageCode.Dutch
+                },
+                Components = new List<TextMessageComponent>
+                {
+                    new TextMessageComponent
+                    {
+                        Type = "Header",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = fromContactName
+                            }
+                        }
+                    },
+                    new TextMessageComponent
+                    {
+                        Type = "Body",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = conversationId.ToString().Split('-')[0]
+                            }
+                        }
+                    }
                 }
             }
         };

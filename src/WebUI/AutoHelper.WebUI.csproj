@@ -58,15 +58,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Pages\TestTemplate.cshtml.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Remove="Pages\TestTemplate.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="ClientApp\public\background\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Include="Pages\TestTemplate.cshtml" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

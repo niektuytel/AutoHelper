@@ -134,7 +134,15 @@ export default ({ isCardVisible, services, onClose }: IProps) => {
                 requestQuote={requestQuote}
                 services={services}
                 open={dialogOpen}
-                onClose={() => setDialogOpen(false)}
+                onClose={(removeAllService) => {
+                    if (removeAllService) {
+                        for (const service of services) {
+                            dispatch(removeService(service));
+                        }
+                    }
+
+                    setDialogOpen(false);
+                }}
             />
         </>
     );

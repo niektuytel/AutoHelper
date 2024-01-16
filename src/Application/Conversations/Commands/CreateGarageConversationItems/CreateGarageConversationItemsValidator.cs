@@ -15,17 +15,25 @@ public class CreateGarageConversationItemsValidator : AbstractValidator<CreateGa
 {
     public CreateGarageConversationItemsValidator(IApplicationDbContext context)
     {
-        RuleFor(x => x.UserEmailAddress)
-            .Must((command, mail) => !string.IsNullOrEmpty(mail) || !string.IsNullOrEmpty(command.UserWhatsappNumber))
-            .WithMessage("Either WhatsApp number or email address is required")
-            .EmailAddress()
-            .WithMessage("Invalid email address format");
+        // Rule to ensure either Email or WhatsApp number is provided
+        RuleFor(x => x)
+            .Must(x => !string.IsNullOrEmpty(x.UserEmailAddress) || !string.IsNullOrEmpty(x.UserWhatsappNumber))
+            .WithMessage("Either WhatsApp number or email address is required");
 
-        RuleFor(x => x.UserWhatsappNumber)
-            .Must((command, number) => !string.IsNullOrEmpty(number) || !string.IsNullOrEmpty(command.UserEmailAddress))
-            .WithMessage("Either WhatsApp number or email address is required")
-            .Matches(@"^\+?[0-9]{10,15}$").When(x => !string.IsNullOrEmpty(x.UserWhatsappNumber))
-            .WithMessage("Invalid WhatsApp number format");
+        // Separate rules for Email and WhatsApp number to validate format only if they are provided
+        When(x => !string.IsNullOrEmpty(x.UserEmailAddress), () =>
+        {
+            RuleFor(x => x.UserEmailAddress)
+                .EmailAddress()
+                .WithMessage("Invalid email address format");
+        });
+
+        When(x => !string.IsNullOrEmpty(x.UserWhatsappNumber), () =>
+        {
+            RuleFor(x => x.UserWhatsappNumber)
+                .Matches(@"^\+?[0-9]{10,15}$")
+                .WithMessage("Invalid WhatsApp number format");
+        });
 
         RuleFor(x => x.MessageContent)
             .NotEmpty().WithMessage("Message content cannot be empty");

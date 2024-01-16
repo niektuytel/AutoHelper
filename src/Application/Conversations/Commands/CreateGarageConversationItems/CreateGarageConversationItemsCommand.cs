@@ -101,10 +101,20 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
 
     private ConversationMessageItem CreateConversationMessage(Guid conversationId, CreateGarageConversationItemsCommand request, VehicleService garage)
     {
-        var senderIdentifier = request.UserEmailAddress ?? request.UserWhatsappNumber ?? "";
-        var senderType = senderIdentifier.GetContactType();
+        var senderIdentifier = request.UserEmailAddress ?? "";
+        if (string.IsNullOrWhiteSpace(senderIdentifier))
+        {
+            senderIdentifier = request.UserWhatsappNumber;
+        };
+        
 
-        var receiverIdentifier = garage.ConversationEmailAddress ?? garage.ConversationWhatsappNumber ?? "";
+        var receiverIdentifier = garage.ConversationEmailAddress;
+        if (string.IsNullOrWhiteSpace(senderIdentifier))
+        {
+            receiverIdentifier = garage.ConversationWhatsappNumber;
+        }
+
+        var senderType = senderIdentifier.GetContactType();
         var receiverType = receiverIdentifier.GetContactType();
         var message = new ConversationMessageItem
         {

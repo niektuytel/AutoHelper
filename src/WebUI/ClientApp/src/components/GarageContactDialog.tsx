@@ -36,7 +36,7 @@ interface QuestionDialogProps {
     requestQuote?: boolean;
     services: VehicleService[];
     open: boolean;
-    onClose: () => void;
+    onClose: (removeAllService: boolean) => void;
 }
 
 export default ({ requestQuote = false, services, open, onClose }: QuestionDialogProps) => {
@@ -81,6 +81,17 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
         let senderPhoneNumber: string | undefined;
         let senderWhatsappNumber: string | undefined;
         let senderEmailAddress: string | undefined;
+        const mappedServices: VehicleService[] = services.map((x: any) => new VehicleService({
+            garageServiceId: x.garageServiceId,
+            garageServiceTitle: x.garageServiceTitle,
+            relatedGarageLookupIdentifier: x.relatedGarageLookupIdentifier,
+            relatedGarageLookupName: x.relatedGarageLookupName,
+            conversationEmailAddress: x.conversationEmailAddress,
+            conversationWhatsappNumber: x.conversationWhatsappNumber,
+            vehicleLicensePlate: x.vehicleLicensePlate,
+            vehicleLongitude: x.vehicleLongitude,
+            vehicleLatitude: x.vehicleLatitude,
+        }));
 
         // Check the type of whatsappOrEmail and set corresponding values
         if (isValidPhoneNumber(whatsappOrEmail)) {
@@ -96,14 +107,14 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
         // Check if the request a quote is selected
         if (requestQuote) {
             const enumValue = ConversationType.RequestAQuote;
-
             var conversations = new CreateGarageConversationItemsCommand({
                 userWhatsappNumber: senderWhatsappNumber || "",
                 userEmailAddress: senderEmailAddress || "",
                 messageType: enumValue,
-                messageContent: message,
-                services: services
+                messageContent: t("ConversationType.RequestAQuote.SampleMessage"),
+                services: mappedServices
             });
+
             var response = await startGarageConversation(conversations);
         }
         else {
@@ -118,8 +129,9 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                 userEmailAddress: senderEmailAddress || "",
                 messageType: enumValue,
                 messageContent: message,
-                services: services
+                services: mappedServices
             });
+
             var response = await startGarageConversation(conversations);
         }
 
@@ -129,11 +141,11 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
             dispatch(showOnSuccess(t("Conversations.Started")));
         }
 
-        onClose();
+        onClose(true);
     }
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={() => onClose(false)}>
             <DialogTitle>
                 {requestQuote ? t("Request a quote") : t("Ask a Question")}{` ${t("by")}`}
                 <Tooltip title={requestQuote ? t("Request a quote.Tooltip") : t("Ask a Question.Tooltip")}>
@@ -227,7 +239,7 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
                 }
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} style={{ textTransform: 'capitalize' }}>{t("Cancel")}</Button>
+                <Button onClick={() => onClose(false)} style={{ textTransform: 'capitalize' }}>{t("Cancel")}</Button>
                 <Button variant={"outlined"} onClick={handleSubmit(onSubmit)} style={{ textTransform: 'capitalize' }}>{t("Send")}</Button>
             </DialogActions>
         </Dialog>

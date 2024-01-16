@@ -6,5 +6,7 @@ public class GraphEmailAddress
 {
     [JsonPropertyName("address")]
     public string Address { get; set; } = null!;
-    public string Name { get; internal set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
 }

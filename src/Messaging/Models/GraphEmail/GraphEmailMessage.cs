@@ -10,7 +10,10 @@ public class GraphEmailMessage
     [JsonPropertyName("body")]
     public GraphEmailBody Body { get; set; } = null!;
 
+    [JsonPropertyName("from")]
+    public GraphEmailFrom From { get; set; } = null!;
+
     [JsonPropertyName("toRecipients")]
     public GraphEmailRecipient[] ToRecipients { get; set; } = null!;
-    public GraphEmailAddress From { get; internal set; }
+
 }

@@ -46,62 +46,53 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
 
     public async Task<string> Handle(SendMessageCommand request, CancellationToken cancellationToken)
     {
+        var senderService = GetMessagingService(request, fromSender: true);
+        var receiverService = GetMessagingService(request, fromSender: false);
+
         var sendToGarage = DetermineRecipientIsGarage(request);
         var senderContactName = GetSenderContactName(request.ConversationMessage!.Conversation, sendToGarage);
+        if (sendToGarage)
+        {
+            var licensePlate = request.ConversationMessage!.Conversation.RelatedVehicleLookup.LicensePlate;
+            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
+            if (vehicleInfo == null)
+            {
+                throw new InvalidDataException($"Vehicle not found: {licensePlate}");
+            }
 
-        await SendMessage(request, sendToGarage, senderContactName);
-        await SendMessageReceiptToSender(request, senderContactName);
+            await senderService.SendMessageWithVehicle(
+                request.ConversationMessage.ReceiverContactIdentifier,
+                request.ConversationMessage.ConversationId,
+                vehicleInfo,
+                request.ConversationMessage.MessageContent
+            );
+        }
+        else
+        {
+            await senderService.SendMessage(
+                request.ConversationMessage!.ReceiverContactIdentifier,
+                request.ConversationMessage.ConversationId,
+                senderContactName,
+                request.ConversationMessage.MessageContent
+            );
+        }
+
+        await receiverService.SendMessageConfirmation(
+            request.ConversationMessage.SenderContactIdentifier, 
+            request.ConversationMessage.ConversationId, 
+            senderContactName
+        );
 
         await UpdateDatabaseMessage(request, cancellationToken);
-
         return $"Message sended to: {request.ConversationMessage!.ReceiverContactIdentifier}";
     }
 
     private async Task UpdateDatabaseMessage(SendMessageCommand request, CancellationToken cancellationToken)
     {
-        var message = new ConversationMessageItem
-        {
-            ConversationId = request.ConversationMessage!.Conversation!.Id,
-            SenderContactType = request.ConversationMessage!.SenderContactType,
-            SenderContactIdentifier = request.ConversationMessage!.SenderContactIdentifier,
-            ReceiverContactType = request.ConversationMessage!.ReceiverContactType,
-            ReceiverContactIdentifier = request.ConversationMessage!.ReceiverContactIdentifier,
-            Status = MessageStatus.Sent,
-            MessageContent = request.ConversationMessage!.MessageContent,
-        };
+        request.ConversationMessage!.Status = MessageStatus.Delivered;
 
-        _context.ConversationMessages.Add(message);
+        _context.ConversationMessages.Update(request.ConversationMessage);
         await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    private async Task SendMessage(SendMessageCommand request, bool sendToGarage, string senderContactName)
-    {
-        switch (request.ConversationMessage!.ReceiverContactType)
-        {
-            case ContactType.Email:
-                await SendEmail(request, sendToGarage, senderContactName);
-                break;
-            case ContactType.WhatsApp:
-                await SendWhatsappMessage(request, sendToGarage, senderContactName);
-                break;
-            default:
-                throw new InvalidOperationException($"Invalid contact type: {request.ConversationMessage!.ReceiverContactType}");
-        }
-    }
-
-    private async Task SendMessageReceiptToSender(SendMessageCommand request, string senderContactName)
-    {
-        switch (request.ConversationMessage!.SenderContactType)
-        {
-            case ContactType.Email:
-                await _mailingService.SendMessageConfirmation(request.ConversationMessage.SenderContactIdentifier, request.ConversationMessage.ConversationId, senderContactName);
-                break;
-            case ContactType.WhatsApp:
-                await _whatsappService.SendConfirmationMessageAsync(request.ConversationMessage.SenderContactIdentifier, request.ConversationMessage.ConversationId, senderContactName);
-                break;
-            default:
-                throw new InvalidOperationException($"Invalid contact type: {request.ConversationMessage.ReceiverContactType}");
-        }
     }
 
     private static bool DetermineRecipientIsGarage(SendMessageCommand request)
@@ -120,64 +111,18 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         return conversation.RelatedGarage.Name;
     }
     
-    // TODO: Refactor this to a service into the MessageService
-    private async Task SendEmail(SendMessageCommand request, bool sendToGarage, string senderContactName)
+    private IMessagingService GetMessagingService(SendMessageCommand request, bool fromSender)
     {
-        if (sendToGarage)
-        {
-            var licensePlate = request.ConversationMessage!.Conversation.RelatedVehicleLookup.LicensePlate;
-            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
-            if (vehicleInfo == null)
-            {
-                throw new InvalidDataException($"Vehicle not found: {licensePlate}");
-            }
+        var contactType = fromSender ? 
+            request.ConversationMessage!.SenderContactType 
+            : 
+            request.ConversationMessage!.ReceiverContactType;
 
-            await _mailingService.SendMessageWithVehicle(
-                request.ConversationMessage.ReceiverContactIdentifier,
-                request.ConversationMessage.ConversationId,
-                vehicleInfo,
-                request.ConversationMessage.MessageContent
-            );
-        }
-        else
+        return contactType switch
         {
-            await _mailingService.SendMessage(
-                request.ConversationMessage!.ReceiverContactIdentifier,
-                request.ConversationMessage.ConversationId,
-                senderContactName,
-                request.ConversationMessage.MessageContent
-            );
-        }
+            ContactType.Email => _mailingService,
+            ContactType.WhatsApp => _whatsappService,
+            _ => throw new InvalidOperationException($"Invalid contact type: {request.ConversationMessage!.ReceiverContactType}"),
+        };
     }
-
-    // TODO: Refactor this to a service into the MessageService
-    private async Task SendWhatsappMessage(SendMessageCommand request, bool sendToGarage, string senderContactName)
-    {
-        if (sendToGarage)
-        {
-            var licensePlate = request.ConversationMessage!.Conversation.RelatedVehicleLookup.LicensePlate;
-            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
-            if (vehicleInfo == null)
-            {
-                throw new InvalidDataException($"Vehicle not found: {licensePlate}");
-            }
-
-            await _whatsappService.SendVehicleRelatedMessageAsync(
-                request.ConversationMessage!.ReceiverContactIdentifier,
-                request.ConversationMessage!.ConversationId,
-                vehicleInfo,
-                request.ConversationMessage!.MessageContent
-            );
-        }
-        else
-        {
-            await _whatsappService.SendBasicMessageAsync(
-                request.ConversationMessage!.ReceiverContactIdentifier,
-                request.ConversationMessage!.ConversationId,
-                senderContactName,
-                request.ConversationMessage!.MessageContent
-            );
-        }
-    }
-
 }

@@ -25,7 +25,9 @@ const rootReducer = combineReducers({
 export const store = configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(routerMiddleware)
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }).concat(routerMiddleware)
 });
 
 export const history = createReduxHistory(store) as any;

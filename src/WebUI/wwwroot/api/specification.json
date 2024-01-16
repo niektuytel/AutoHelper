@@ -1787,12 +1787,10 @@
         "properties": {
           "userWhatsappNumber": {
             "type": "string",
-            "pattern": "^\\+?[0-9]{10,15}$",
             "nullable": true
           },
           "userEmailAddress": {
             "type": "string",
-            "pattern": "^[^@]+@[^@]+$",
             "nullable": true
           },
           "messageType": {

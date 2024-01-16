@@ -17,13 +17,13 @@ namespace AutoHelper.Messaging.Services;
 internal class GraphEmailService : IMailingService
 {
     private readonly SemaphoreSlim _tokenRefreshSemaphore = new SemaphoreSlim(1, 1);
-    private const int ExpirationBufferTime = 60; // 60 seconds buffer
+    private const int ExpirationBufferTime = 60;
     private const int MaxRetryAttempts = 3;
-    private const int RetryDelayMilliseconds = 1000; // 1 second
+    private const int RetryDelayMilliseconds = 1000;
 
     private readonly IMemoryCache _memoryCache;
     private readonly IConfiguration _configuration;
-    private readonly HttpClient client = new HttpClient();
+    private readonly HttpClient _httpClient;
 
     private readonly bool _isDevelopment;
     private readonly string _userId;
@@ -32,10 +32,11 @@ internal class GraphEmailService : IMailingService
     private readonly string _clientSecret;
     private readonly string _testEmailAddress;
 
-    public GraphEmailService(IMemoryCache memoryCache, IConfiguration configuration)
+    public GraphEmailService(IMemoryCache memoryCache, IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
-        _memoryCache = memoryCache;
+        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _httpClient = httpClientFactory.CreateClient(nameof(GraphEmailService));
 
         _isDevelopment = _configuration["Environment"] == "Development";
         _userId = _configuration["GraphMicrosoft:UserId"]!;
@@ -43,6 +44,147 @@ internal class GraphEmailService : IMailingService
         _clientId = _configuration["GraphMicrosoft:ClientId"]!;
         _clientSecret = _configuration["GraphMicrosoft:ClientSecret"]!;
         _testEmailAddress = _configuration["GraphMicrosoft:TestEmailAddress"]!;
+    }
+
+    public async Task SendMessage(string receiverIdentifier, Guid conversationId, string senderName, string message)
+    {
+        string html = new ComponentRenderer<Templates.Message>()
+            .Set(c => c.Content, message)
+            .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
+            .Render();
+
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Een bericht van {senderName}",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = GetSafeEmailAddress(receiverIdentifier)
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
+    public async Task SendMessageWithVehicle(string receiverIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicle, string message)
+    {
+        string html = new ComponentRenderer<MessageWithVehicle>()
+            .Set(c => c.LicensePlate, vehicle.LicensePlate)
+            .Set(c => c.Content, message)
+            .Set(c => c.FuelType, vehicle.FuelType)
+            .Set(c => c.Model, $"{vehicle.Brand} {vehicle.Model}({vehicle.YearOfFirstAdmission})")// Dacia Sandero (2008)
+            .Set(c => c.MOT, vehicle.MOTExpiryDate)
+            .Set(c => c.NAP, vehicle.Mileage)
+            .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
+            .Render();
+
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Een vraag namens {vehicle.LicensePlate}",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[] 
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress 
+                        { 
+                            Address = GetSafeEmailAddress(receiverIdentifier) 
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
+    public async Task SendMessageConfirmation(string receiverIdentifier, Guid conversationId, string senderName)
+    {
+        string html = new ComponentRenderer<MessageConfirmation>()
+            .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
+            .Render();
+
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Bericht is verstuurd naar {senderName}",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = GetSafeEmailAddress(receiverIdentifier)
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
+    /// <summary>
+    /// In development mode, all emails are sent to a test email address. 
+    /// to prevent spamming real users.
+    /// </summary>
+    private string GetSafeEmailAddress(string address)
+    {
+        if (_isDevelopment)
+        {
+            return _testEmailAddress;
+        }
+
+        return address;
     }
 
     private async Task<string> GetAccessToken()
@@ -95,7 +237,7 @@ internal class GraphEmailService : IMailingService
                     ["grant_type"] = "client_credentials"
                 });
 
-                var response = await client.PostAsync(tokenEndpoint, content);
+                var response = await _httpClient.PostAsync(tokenEndpoint, content);
                 var responseString = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
                 {
@@ -125,144 +267,12 @@ internal class GraphEmailService : IMailingService
         requestMessage.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         requestMessage.Content = new StringContent(emailJson, System.Text.Encoding.UTF8, "application/json");
 
-        var response = await client.SendAsync(requestMessage);
+        var response = await _httpClient.SendAsync(requestMessage);
         var responseString = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException($"Failed to send email: {responseString}");
         }
-    }
-
-    public async Task SendMessage(string receiverContactIdentifier, Guid conversationId, string senderContactName, string message)
-    {
-        string html = new ComponentRenderer<MessageWithVehicle>()
-            .Set(c => c.Content, message)
-            .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
-            .Render();
-
-        var email = new GraphEmail
-        {
-            Message = new GraphEmailMessage
-            {
-                Subject = $"Een bericht van {senderContactName}",
-                Body = new GraphEmailBody
-                {
-                    ContentType = "HTML",
-                    Content = html
-                },
-                From = new GraphEmailAddress
-                {
-                    Name = "AutoHelper",
-                    Address = _userId
-                },
-                ToRecipients = new GraphEmailRecipient[]
-                {
-                    new GraphEmailRecipient()
-                    {
-                        EmailAddress = new GraphEmailAddress
-                        {
-                            Address = GetSafeEmailAddress(receiverContactIdentifier)
-                        }
-                    }
-                }
-            }
-        };
-
-        await SendEmail(email);
-    }
-
-    public async Task SendMessageWithVehicle(string receiverContactIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicle, string message)
-    {
-        string html = new ComponentRenderer<MessageWithVehicle>()
-            .Set(c => c.LicensePlate, vehicle.LicensePlate)
-            .Set(c => c.Content, message)
-            .Set(c => c.FuelType, vehicle.FuelType)
-            .Set(c => c.Model, $"{vehicle.Brand} {vehicle.Model}({vehicle.YearOfFirstAdmission})")// Dacia Sandero (2008)
-            .Set(c => c.MOT, vehicle.MOTExpiryDate)
-            .Set(c => c.NAP, vehicle.Mileage)
-            .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
-            .Render();
-
-        var email = new GraphEmail
-        {
-            Message = new GraphEmailMessage
-            {
-                Subject = $"Een vraag namens {vehicle.LicensePlate}",
-                Body = new GraphEmailBody
-                {
-                    ContentType = "HTML",
-                    Content = html
-                },
-                From = new GraphEmailAddress
-                {
-                    Name = "AutoHelper",
-                    Address = _userId
-                },
-                ToRecipients = new GraphEmailRecipient[] 
-                {
-                    new GraphEmailRecipient()
-                    {
-                        EmailAddress = new GraphEmailAddress 
-                        { 
-                            Address = GetSafeEmailAddress(receiverContactIdentifier) 
-                        }
-                    }
-                }
-            }
-        };
-
-        await SendEmail(email);
-    }
-
-    public async Task SendMessageConfirmation(string receiverContactIdentifier, Guid conversationId, string receiverContactName)
-    {
-        string html = new ComponentRenderer<MessageWithVehicle>()
-            .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
-            .Render();
-
-        var email = new GraphEmail
-        {
-            Message = new GraphEmailMessage
-            {
-                Subject = $"Bericht is verstuurd naar {receiverContactName}",
-                Body = new GraphEmailBody
-                {
-                    ContentType = "HTML",
-                    Content = html
-                },
-                From = new GraphEmailAddress
-                {
-                    Name = "AutoHelper",
-                    Address = _userId
-                },
-                ToRecipients = new GraphEmailRecipient[]
-                {
-                    new GraphEmailRecipient()
-                    {
-                        EmailAddress = new GraphEmailAddress
-                        {
-                            Address = GetSafeEmailAddress(receiverContactIdentifier)
-                        }
-                    }
-                }
-            }
-        };
-
-        await SendEmail(email);
-    }
-
-    /// <summary>
-    /// In development mode, all emails are sent to a test email address. 
-    /// to prevent spamming real users.
-    /// </summary>
-    private string GetSafeEmailAddress(string address)
-    {
-        if (_isDevelopment)
-        {
-            return _testEmailAddress;
-        }
-
-        return address;
     }
 
 }
