@@ -82,11 +82,15 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
             );
         }
 
-        await receiverService.SendMessageConfirmation(
-            request.ConversationMessage.SenderContactIdentifier, 
-            request.ConversationMessage.ConversationId, 
-            senderContactName
-        );
+        var oneMessageInconversation = request.ConversationMessage.Conversation.Messages.Count == 1;
+        if (oneMessageInconversation)
+        {
+            await receiverService.SendMessageConfirmation(
+                request.ConversationMessage.SenderContactIdentifier, 
+                request.ConversationMessage.ConversationId, 
+                senderContactName
+            );
+        }
 
         await UpdateDatabaseMessage(request, cancellationToken);
         return $"Message sended to: {request.ConversationMessage!.ReceiverContactIdentifier}";
