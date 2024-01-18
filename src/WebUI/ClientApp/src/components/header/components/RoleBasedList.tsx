@@ -9,10 +9,12 @@ import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ServicelogsIcon from '@mui/icons-material/Notes';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import MyVehiclesIcon from '@mui/icons-material/Doorbell';
+import MyMaintenanceIcon from '@mui/icons-material/ManageHistory';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import HomeIcon from '@mui/icons-material/Home';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // custom imports
 import { ROUTES } from '../../../constants/routes';
@@ -30,6 +32,7 @@ interface RoleBasedListProps {
 
 export default ({ setOnMenu }: RoleBasedListProps) => {
     const { userRole } = useUserRole()
+    const { license_plate } = useParams<{ license_plate: string }>();
     const { configurationIndex } = useConfirmationStep();
     const [prevIndex, setPrevIndex] = useState(configurationIndex || 0);
     const [shouldRender, setShouldRender] = useState(true);
@@ -56,13 +59,6 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         setShouldRender(prev => !prev);
     }, [configurationIndex, prevIndex]); // Dependency on prevIndex
 
-    const handleClick2 = () => setOpen(!open);
-
-    const handleClickAddServiceLog = () => {
-        // TODO: issue i have is that i do not have the knowledge of the current vehicle, so i cannot pass it to the service log page
-        toggleDrawer(true);
-    }
-
     const ListItemLink = ({ primary, icon, to, disabled = false }: { primary: string; icon: JSX.Element; to: string, disabled?: boolean }) => (
         <ListItem
             button
@@ -81,30 +77,9 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
         return <>
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />
-                <ListItem
-                    button
-                    disabled={false}
-                    onClick={() => { toggleDrawer(true); setOnMenu && setOnMenu(false); }}
-                >
-                    <ListItemIcon>
-                        {React.cloneElement(<AddIcon />, { color: 'action' })}
-                    </ListItemIcon>
-                    <ListItemText primary={t('AddMaintenanceLog.Title')} />
-                </ListItem>
+                <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.SELECT_VEHICLE} disabled={true} />
+                <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={license_plate ? `${ROUTES.SELECT_VEHICLE}/${license_plate}#service_logs` : ROUTES.SELECT_VEHICLE} />
             </List>
-
-            {/*<ListItemButton onClick={handleClick2}>*/}
-            {/*    <ListItemIcon>*/}
-            {/*        <AccountBoxIcon />*/}
-            {/*    </ListItemIcon>*/}
-            {/*    <ListItemText primary={t('account_camelcase')} />*/}
-            {/*    {open ? <ExpandLess /> : <ExpandMore />}*/}
-            {/*</ListItemButton>*/}
-            {/*<Collapse in={open} timeout="auto" unmountOnExit>*/}
-            {/*    <List component="div" disablePadding>*/}
-            {/*        <ListItemLink primary={t('overview_camelcase')} icon={<HomeIcon />} to={ROUTES.USER.OVERVIEW} />*/}
-            {/*    </List>*/}
-            {/*</Collapse>*/}
         </>;
     }
 
@@ -112,6 +87,7 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     {
         return <>
             <List component="nav" sx={{ width: "250px" }}>
+                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.SELECT_VEHICLE} />
                 <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
                 <ListItemLink disabled={configurationIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
                 <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />

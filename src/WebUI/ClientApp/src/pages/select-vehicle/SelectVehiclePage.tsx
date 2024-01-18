@@ -6,9 +6,9 @@ import { useParams } from "react-router-dom";
 import { Box, Grid, Hidden, Typography } from "@mui/material";
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import TimelineIcon from '@mui/icons-material/History';
+import MyMaintenanceIcon from '@mui/icons-material/ManageHistory';
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
-import ServicelogsIcon from '@mui/icons-material/Notes';
+import TimelineIcon from '@mui/icons-material/Notes';
 
 // own imports
 import SearchLocation from './components/SearchLocation';
@@ -22,7 +22,7 @@ import ServiceLogDrawer from "./components/servicelogs/ServiceLogDrawer";
 
 const tabsConfig = [
     { hash: "#mot_history", label: 'Tijdlijn', icon: <TimelineIcon fontSize='medium' /> },
-    { hash: "#service_logs", label: 'Maintenance logs', icon: <ServicelogsIcon fontSize='medium' /> },
+    { hash: "#service_logs", label: 'Maintenance logs', icon: <MyMaintenanceIcon fontSize='medium' /> },
     { hash: "#information", label: 'Information', icon: <DirectionsCarFilledIcon fontSize='medium' /> },
 ];
 
