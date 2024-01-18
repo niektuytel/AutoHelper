@@ -8,6 +8,7 @@ using AutoHelper.Messaging.Models.GraphEmail;
 using BlazorTemplater;
 using AutoHelper.Messaging.Templates;
 using WhatsappBusiness.CloudApi.Response;
+using RazorEngine.Text;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -46,6 +47,42 @@ internal class GraphEmailService : IMailingService
         _testEmailAddress = _configuration["GraphMicrosoft:TestEmailAddress"]!;
     }
 
+    public async Task SendMessageRaw(string receiverIdentifier, Guid conversationId, string senderName, string message)
+    {
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Een bericht van {senderName}",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = message
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = receiverIdentifier
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
     public async Task SendMessage(string receiverIdentifier, Guid conversationId, string senderName, string message)
     {
         string html = new ComponentRenderer<Templates.Message>()
@@ -77,7 +114,7 @@ internal class GraphEmailService : IMailingService
                     {
                         EmailAddress = new GraphEmailAddress
                         {
-                            Address = GetSafeEmailAddress(receiverIdentifier)
+                            Address = receiverIdentifier
                         }
                     }
                 }
@@ -123,7 +160,7 @@ internal class GraphEmailService : IMailingService
                     {
                         EmailAddress = new GraphEmailAddress 
                         { 
-                            Address = GetSafeEmailAddress(receiverIdentifier) 
+                            Address = receiverIdentifier
                         }
                     }
                 }
@@ -133,7 +170,7 @@ internal class GraphEmailService : IMailingService
         await SendEmail(email);
     }
 
-    public async Task SendMessageConfirmation(string receiverIdentifier, Guid conversationId, string senderName)
+    public async Task SendMessageConfirmation(string senderIdentifier, Guid conversationId, string receiverName)
     {
         string html = new ComponentRenderer<MessageConfirmation>()
             .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
@@ -143,7 +180,7 @@ internal class GraphEmailService : IMailingService
         {
             Message = new GraphEmailMessage
             {
-                Subject = $"Bericht is verstuurd naar {senderName}",
+                Subject = $"Bericht is verstuurd naar {receiverName}",
                 Body = new GraphEmailBody
                 {
                     ContentType = "HTML",
@@ -163,7 +200,7 @@ internal class GraphEmailService : IMailingService
                     {
                         EmailAddress = new GraphEmailAddress
                         {
-                            Address = GetSafeEmailAddress(receiverIdentifier)
+                            Address = senderIdentifier
                         }
                     }
                 }
@@ -171,20 +208,6 @@ internal class GraphEmailService : IMailingService
         };
 
         await SendEmail(email);
-    }
-
-    /// <summary>
-    /// In development mode, all emails are sent to a test email address. 
-    /// to prevent spamming real users.
-    /// </summary>
-    private string GetSafeEmailAddress(string address)
-    {
-        if (_isDevelopment)
-        {
-            return _testEmailAddress;
-        }
-
-        return address;
     }
 
     private async Task<string> GetAccessToken()

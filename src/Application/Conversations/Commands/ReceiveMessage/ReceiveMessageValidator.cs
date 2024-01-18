@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.StartConversationItems;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using MediatR;
@@ -41,6 +40,7 @@ public class ReceiveMessageValidator : AbstractValidator<ReceiveMessageCommand>
                 .AsNoTracking()
                 .Include(x => x.RelatedGarage)
                 .Include(x => x.RelatedVehicleLookup)
+                .Include(x => x.Messages)
                 .FirstOrDefault(cm => cm.Id.ToString().StartsWith(idValue));
 
             command.Conversation = entity;

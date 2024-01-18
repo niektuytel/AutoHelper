@@ -4,11 +4,12 @@ using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
 using AutoHelper.Application.Conversations.Commands.SendMessage;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Conversations.Enums;
+using AutoHelper.Messaging.Interfaces;
 using MediatR;
 
 namespace AutoHelper.Application.Conversations.Commands.ReceiveMessage;
 
-public class ReceiveMessageCommand : IRequest<string?>
+public class ReceiveMessageCommand : IRequest<ConversationMessageItem>
 {
     public string From { get; set; } = string.Empty;
     public string Body { get; set; } = string.Empty;
@@ -21,31 +22,31 @@ public class ReceiveMessageCommand : IRequest<string?>
 
     [JsonIgnore]
     internal ConversationItem? Conversation { get; set; } = null!;
+
+
 }
 
-public class ReceiveMessageCommandHandler : IRequestHandler<ReceiveMessageCommand, string?>
+public class ReceiveMessageCommandHandler : IRequestHandler<ReceiveMessageCommand, ConversationMessageItem>
 {
     private readonly ISender _mediator;
+    private readonly IEmailHelper _emailHelper;
 
-    public ReceiveMessageCommandHandler(ISender mediator)
+    public ReceiveMessageCommandHandler(ISender mediator, IEmailHelper emailHelper)
     {
         _mediator = mediator;
+        _emailHelper = emailHelper;
     }
 
-    public async Task<string?> Handle(ReceiveMessageCommand request, CancellationToken cancellationToken)
+    public async Task<ConversationMessageItem?> Handle(ReceiveMessageCommand request, CancellationToken cancellationToken)
     {
-        var createMessage = new CreateConversationMessageCommand()
+        var createMessage = new CreateConversationMessageCommand(request.Conversation!)
         {
-            Conversation = request.Conversation,
             SenderIdentifier = request.SenderContactIdentifier,
             ReceiverIdentifier = request.ReceiverIdentifier,
             Message = request.Body
         };
 
         var message = await _mediator.Send(createMessage, cancellationToken);
-        var sendMessage = new SendMessageCommand(message);
-
-        var result = await _mediator.Send(sendMessage, cancellationToken);
-        return result;
+        return message;
     }
 }

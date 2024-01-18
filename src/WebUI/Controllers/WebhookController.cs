@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Text;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.StartConversationItems;
 using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Infrastructure.Common.Interfaces;
 using HtmlAgilityPack;

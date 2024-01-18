@@ -21,6 +21,16 @@ namespace AutoHelper.Application.Conversations.Commands.CreateConversationMessag
 
 public record CreateConversationMessageCommand : IRequest<ConversationMessageItem>
 {
+    public CreateConversationMessageCommand(Guid conversationId)
+    {
+        ConversationId = conversationId;
+    }
+
+    public CreateConversationMessageCommand(ConversationItem conversation)
+    {
+        Conversation = conversation;
+    }
+
     public Guid? ConversationId { get; set; } = null;
 
     /// <summary>
@@ -63,6 +73,8 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         _context.ConversationMessages.Add(message);
+        await _context.SaveChangesAsync(cancellationToken);
+
         return message;
     }
 

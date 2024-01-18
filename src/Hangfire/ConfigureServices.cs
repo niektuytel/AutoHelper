@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Conversations.Commands.StartConversationItems;
 using AutoHelper.Application.Vehicles.Commands;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
@@ -23,6 +22,7 @@ using Hangfire.Common;
 using Hangfire.SqlServer;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
+using AutoHelper.Application.Conversations.Commands.SendMessage;
 
 namespace AutoHelper.Hangfire;
 
@@ -67,7 +67,7 @@ public static class ConfigureServices
                 "long-running",
                 nameof(SyncGarageLookupsCommand).ToLower(),
                 nameof(SyncVehicleLookupsCommand).ToLower(),
-                nameof(StartConversationItemsCommand).ToLower(),
+                nameof(SendMessageCommand).ToLower(),
             };
 
             //options.HeartbeatInterval = TimeSpan.FromSeconds(5);

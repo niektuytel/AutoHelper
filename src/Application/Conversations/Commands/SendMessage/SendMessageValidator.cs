@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Conversations.Commands.SendMessage;
 
-public class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
+public class SendMessageValidator : AbstractValidator<SendMessageCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public SendMessageCommandValidator(IApplicationDbContext context)
+    public SendMessageValidator(IApplicationDbContext context)
     {
         _context = context;
 
@@ -27,20 +27,19 @@ public class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
 
     private async Task<bool> BeValidAndExistingMessage(SendMessageCommand command, CancellationToken cancellationToken)
     {
-        if (command.ConversationMessageId == null)
+        if (command.Message == null && command.MessageId != default)
         {
-            return command.ConversationMessage != null;
+            var entity = _context.ConversationMessages
+                .AsNoTracking()
+                .Include(x => x.Conversation)
+                .ThenInclude(x => x.RelatedGarage)
+                .Include(x => x.Conversation)
+                .ThenInclude(x => x.RelatedVehicleLookup)
+                .FirstOrDefault(x => x.Id == command.MessageId);
+
+            command.Message = entity;
         }
 
-        var entity = _context.ConversationMessages
-            .AsNoTracking()
-            .Include(x => x.Conversation)
-            .ThenInclude(x => x.RelatedGarage)
-            .Include(x => x.Conversation)
-            .ThenInclude(x => x.RelatedVehicleLookup)
-            .FirstOrDefault(x => x.Id == command.ConversationMessageId);
-
-        command.ConversationMessage = entity;
-        return entity != null;
+        return command.Message != null;
     }
 }

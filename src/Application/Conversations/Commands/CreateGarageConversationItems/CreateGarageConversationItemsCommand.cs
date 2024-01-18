@@ -112,9 +112,8 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
             receiverIdentifier = garage.ConversationWhatsappNumber;
         }
 
-        var command = new CreateConversationMessageCommand()
+        var command = new CreateConversationMessageCommand(conversation)
         {
-            Conversation = conversation,
             SenderIdentifier = senderIdentifier!,
             ReceiverIdentifier = receiverIdentifier!,
             Message = request.MessageContent
