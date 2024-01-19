@@ -64,8 +64,8 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
             button
             disabled={disabled}
             onClick={() => { navigate(to, { state: { from: location } }); setOnMenu && setOnMenu(false); }}
-            style={location.pathname === to ? { backgroundColor: '#e0e0e0' } : {}}
         >
+            {/*style={location.pathname === to ? { backgroundColor: '#e0e0e0' } : {}}*/}
             <ListItemIcon style={location.pathname === to ? { color: 'black' } : {}}>
                 {React.cloneElement(icon, { color: location.pathname === to ? 'black' : 'action' })}
             </ListItemIcon>
