@@ -54,4 +54,8 @@
         <ProjectReference Include="..\Domain\AutoHelper.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Conversations\Commands\CreateNotificationMessage\" />
+    </ItemGroup>
+
 </Project>
