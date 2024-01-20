@@ -106,9 +106,9 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleT
                 await _dbContext.BulkUpdateAsync(vehicleTimelineItemsToUpdate, cancellationToken);
             }
 
-            request.QueueService.LogInformation(
-                $"[{start + request.BatchSize}/{request.EndRowIndex}] insert: {vehicleTimelineItemsToInsert.Count} | update: {vehicleTimelineItemsToUpdate.Count} items"
-            );
+            var line = $"[{start + request.BatchSize}/{request.EndRowIndex}] insert: {vehicleTimelineItemsToInsert.Count} | update: {vehicleTimelineItemsToUpdate.Count} items";
+            request.QueueService.LogInformation(line, inProgressBar: true);
+
         }
 
         var message = $"Task finished.";

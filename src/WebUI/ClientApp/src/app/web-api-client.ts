@@ -350,11 +350,17 @@ export class AdminAccountClient implements IAdminAccountClient {
 
 export interface IConversationClient {
 
-    configureWhatsappWebhook(hubMode: string | null | undefined, hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string>;
+    receiveEmailMessage(message: ReceiveEmailMessageCommand): Promise<string>;
 
-    receiveEmailMessage(message: ReceiveMessageCommand): Promise<string>;
+    receiveWhatsappMessageGET(hubMode: string | null | undefined, hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string>;
 
-    receiveWhatsappMessage(message: any): Promise<string>;
+    /**
+     * We only accept text messages for now:
+    For more information about the webhook, please refer to the documentation: https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound
+    And our github client: https://github.com/gabrieldwight/Whatsapp-Business-Cloud-Api-Net?tab=readme-ov-file
+     * @param body (optional) 
+     */
+    receiveWhatsappMessagePOST(body: TextMessageReceived | undefined): Promise<string>;
 
     startGarageConversation(command: CreateGarageConversationItemsCommand): Promise<string>;
 }
@@ -369,50 +375,7 @@ export class ConversationClient implements IConversationClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    configureWhatsappWebhook(hubMode: string | null | undefined, hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Conversation/ConfigureWhatsappWebhook?";
-        if (hubMode !== undefined && hubMode !== null)
-            url_ += "hub.mode=" + encodeURIComponent("" + hubMode) + "&";
-        if (hubChallenge === null)
-            throw new Error("The parameter 'hubChallenge' cannot be null.");
-        else if (hubChallenge !== undefined)
-            url_ += "hub.challenge=" + encodeURIComponent("" + hubChallenge) + "&";
-        if (hubVerifyToken !== undefined && hubVerifyToken !== null)
-            url_ += "hub.verify_token=" + encodeURIComponent("" + hubVerifyToken) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processConfigureWhatsappWebhook(_response);
-        });
-    }
-
-    protected processConfigureWhatsappWebhook(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    receiveEmailMessage(message: ReceiveMessageCommand): Promise<string> {
+    receiveEmailMessage(message: ReceiveEmailMessageCommand): Promise<string> {
         let url_ = this.baseUrl + "/api/Conversation/ReceiveEmailMessage";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -466,11 +429,60 @@ export class ConversationClient implements IConversationClient {
         return Promise.resolve<string>(null as any);
     }
 
-    receiveWhatsappMessage(message: any): Promise<string> {
+    receiveWhatsappMessageGET(hubMode: string | null | undefined, hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Conversation/ReceiveWhatsappMessage?";
+        if (hubMode !== undefined && hubMode !== null)
+            url_ += "hub.mode=" + encodeURIComponent("" + hubMode) + "&";
+        if (hubChallenge === null)
+            throw new Error("The parameter 'hubChallenge' cannot be null.");
+        else if (hubChallenge !== undefined)
+            url_ += "hub.challenge=" + encodeURIComponent("" + hubChallenge) + "&";
+        if (hubVerifyToken !== undefined && hubVerifyToken !== null)
+            url_ += "hub.verify_token=" + encodeURIComponent("" + hubVerifyToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processReceiveWhatsappMessageGET(_response);
+        });
+    }
+
+    protected processReceiveWhatsappMessageGET(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    /**
+     * We only accept text messages for now:
+    For more information about the webhook, please refer to the documentation: https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound
+    And our github client: https://github.com/gabrieldwight/Whatsapp-Business-Cloud-Api-Net?tab=readme-ov-file
+     * @param body (optional) 
+     */
+    receiveWhatsappMessagePOST(body: TextMessageReceived | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Conversation/ReceiveWhatsappMessage";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(message);
+        const content_ = JSON.stringify(body);
 
         let options_: RequestInit = {
             body: content_,
@@ -482,11 +494,11 @@ export class ConversationClient implements IConversationClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processReceiveWhatsappMessage(_response);
+            return this.processReceiveWhatsappMessagePOST(_response);
         });
     }
 
-    protected processReceiveWhatsappMessage(response: Response): Promise<string> {
+    protected processReceiveWhatsappMessagePOST(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1949,11 +1961,11 @@ export interface IBadRequestResponse {
     errors?: { [key: string]: string; };
 }
 
-export class ReceiveMessageCommand implements IReceiveMessageCommand {
+export class ReceiveEmailMessageCommand implements IReceiveEmailMessageCommand {
     from?: string;
     body?: string;
 
-    constructor(data?: IReceiveMessageCommand) {
+    constructor(data?: IReceiveEmailMessageCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1969,9 +1981,9 @@ export class ReceiveMessageCommand implements IReceiveMessageCommand {
         }
     }
 
-    static fromJS(data: any): ReceiveMessageCommand {
+    static fromJS(data: any): ReceiveEmailMessageCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new ReceiveMessageCommand();
+        let result = new ReceiveEmailMessageCommand();
         result.init(data);
         return result;
     }
@@ -1984,9 +1996,457 @@ export class ReceiveMessageCommand implements IReceiveMessageCommand {
     }
 }
 
-export interface IReceiveMessageCommand {
+export interface IReceiveEmailMessageCommand {
     from?: string;
     body?: string;
+}
+
+export class TextMessageReceived implements ITextMessageReceived {
+    object?: string;
+    entry?: TextMessageEntry[];
+
+    constructor(data?: ITextMessageReceived) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.object = _data["object"];
+            if (Array.isArray(_data["entry"])) {
+                this.entry = [] as any;
+                for (let item of _data["entry"])
+                    this.entry!.push(TextMessageEntry.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): TextMessageReceived {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageReceived();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["object"] = this.object;
+        if (Array.isArray(this.entry)) {
+            data["entry"] = [];
+            for (let item of this.entry)
+                data["entry"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ITextMessageReceived {
+    object?: string;
+    entry?: TextMessageEntry[];
+}
+
+export class TextMessageEntry implements ITextMessageEntry {
+    id?: string;
+    changes?: TextMessageChange[];
+
+    constructor(data?: ITextMessageEntry) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["changes"])) {
+                this.changes = [] as any;
+                for (let item of _data["changes"])
+                    this.changes!.push(TextMessageChange.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): TextMessageEntry {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageEntry();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.changes)) {
+            data["changes"] = [];
+            for (let item of this.changes)
+                data["changes"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ITextMessageEntry {
+    id?: string;
+    changes?: TextMessageChange[];
+}
+
+export class TextMessageChange implements ITextMessageChange {
+    value?: TextMessageValue;
+    field?: string;
+
+    constructor(data?: ITextMessageChange) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.value = _data["value"] ? TextMessageValue.fromJS(_data["value"]) : <any>undefined;
+            this.field = _data["field"];
+        }
+    }
+
+    static fromJS(data: any): TextMessageChange {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageChange();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["value"] = this.value ? this.value.toJSON() : <any>undefined;
+        data["field"] = this.field;
+        return data;
+    }
+}
+
+export interface ITextMessageChange {
+    value?: TextMessageValue;
+    field?: string;
+}
+
+export class TextMessageValue implements ITextMessageValue {
+    messagingProduct?: string;
+    metadata?: TextMessageMetadata;
+    contacts?: TextMessageContact[];
+    messages?: TextMessage[];
+
+    constructor(data?: ITextMessageValue) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.messagingProduct = _data["messagingProduct"];
+            this.metadata = _data["metadata"] ? TextMessageMetadata.fromJS(_data["metadata"]) : <any>undefined;
+            if (Array.isArray(_data["contacts"])) {
+                this.contacts = [] as any;
+                for (let item of _data["contacts"])
+                    this.contacts!.push(TextMessageContact.fromJS(item));
+            }
+            if (Array.isArray(_data["messages"])) {
+                this.messages = [] as any;
+                for (let item of _data["messages"])
+                    this.messages!.push(TextMessage.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): TextMessageValue {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageValue();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["messagingProduct"] = this.messagingProduct;
+        data["metadata"] = this.metadata ? this.metadata.toJSON() : <any>undefined;
+        if (Array.isArray(this.contacts)) {
+            data["contacts"] = [];
+            for (let item of this.contacts)
+                data["contacts"].push(item.toJSON());
+        }
+        if (Array.isArray(this.messages)) {
+            data["messages"] = [];
+            for (let item of this.messages)
+                data["messages"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ITextMessageValue {
+    messagingProduct?: string;
+    metadata?: TextMessageMetadata;
+    contacts?: TextMessageContact[];
+    messages?: TextMessage[];
+}
+
+export class TextMessageMetadata implements ITextMessageMetadata {
+    displayPhoneNumber?: string;
+    phoneNumberId?: string;
+
+    constructor(data?: ITextMessageMetadata) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.displayPhoneNumber = _data["displayPhoneNumber"];
+            this.phoneNumberId = _data["phoneNumberId"];
+        }
+    }
+
+    static fromJS(data: any): TextMessageMetadata {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageMetadata();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["displayPhoneNumber"] = this.displayPhoneNumber;
+        data["phoneNumberId"] = this.phoneNumberId;
+        return data;
+    }
+}
+
+export interface ITextMessageMetadata {
+    displayPhoneNumber?: string;
+    phoneNumberId?: string;
+}
+
+export class TextMessageContact implements ITextMessageContact {
+    profile?: TextMessageProfile;
+    waId?: string;
+
+    constructor(data?: ITextMessageContact) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.profile = _data["profile"] ? TextMessageProfile.fromJS(_data["profile"]) : <any>undefined;
+            this.waId = _data["waId"];
+        }
+    }
+
+    static fromJS(data: any): TextMessageContact {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageContact();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["profile"] = this.profile ? this.profile.toJSON() : <any>undefined;
+        data["waId"] = this.waId;
+        return data;
+    }
+}
+
+export interface ITextMessageContact {
+    profile?: TextMessageProfile;
+    waId?: string;
+}
+
+export class TextMessageProfile implements ITextMessageProfile {
+    name?: string;
+
+    constructor(data?: ITextMessageProfile) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): TextMessageProfile {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageProfile();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface ITextMessageProfile {
+    name?: string;
+}
+
+export class TextMessage implements ITextMessage {
+    from?: string;
+    id?: string;
+    timestamp?: string;
+    text?: TextMessageText;
+    type?: string;
+    context?: TextMessageContext | undefined;
+
+    constructor(data?: ITextMessage) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.from = _data["from"];
+            this.id = _data["id"];
+            this.timestamp = _data["timestamp"];
+            this.text = _data["text"] ? TextMessageText.fromJS(_data["text"]) : <any>undefined;
+            this.type = _data["type"];
+            this.context = _data["context"] ? TextMessageContext.fromJS(_data["context"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): TextMessage {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessage();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["from"] = this.from;
+        data["id"] = this.id;
+        data["timestamp"] = this.timestamp;
+        data["text"] = this.text ? this.text.toJSON() : <any>undefined;
+        data["type"] = this.type;
+        data["context"] = this.context ? this.context.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ITextMessage {
+    from?: string;
+    id?: string;
+    timestamp?: string;
+    text?: TextMessageText;
+    type?: string;
+    context?: TextMessageContext | undefined;
+}
+
+export class TextMessageText implements ITextMessageText {
+    body?: string;
+
+    constructor(data?: ITextMessageText) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.body = _data["body"];
+        }
+    }
+
+    static fromJS(data: any): TextMessageText {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageText();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["body"] = this.body;
+        return data;
+    }
+}
+
+export interface ITextMessageText {
+    body?: string;
+}
+
+export class TextMessageContext implements ITextMessageContext {
+    from?: string;
+    id?: string;
+
+    constructor(data?: ITextMessageContext) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.from = _data["from"];
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): TextMessageContext {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextMessageContext();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["from"] = this.from;
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface ITextMessageContext {
+    from?: string;
+    id?: string;
 }
 
 export class CreateGarageConversationItemsCommand implements ICreateGarageConversationItemsCommand {

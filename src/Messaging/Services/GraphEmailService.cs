@@ -9,6 +9,7 @@ using BlazorTemplater;
 using AutoHelper.Messaging.Templates;
 using WhatsappBusiness.CloudApi.Response;
 using RazorEngine.Text;
+using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -83,10 +84,14 @@ internal class GraphEmailService : IMailingService
         await SendEmail(email);
     }
 
-    public async Task SendMessage(string receiverIdentifier, Guid conversationId, string senderName, string message)
+    public async Task SendMessage(ConversationMessageItem message, string senderName, CancellationToken cancellationToken)
     {
+        var receiverIdentifier = message.ReceiverContactIdentifier;
+        var conversationId = message.ConversationId;
+        var content = message.MessageContent;
+
         string html = new ComponentRenderer<Templates.Message>()
-            .Set(c => c.Content, message)
+            .Set(c => c.Content, content)
             .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
             .Render();
 
@@ -124,11 +129,15 @@ internal class GraphEmailService : IMailingService
         await SendEmail(email);
     }
 
-    public async Task SendMessageWithVehicle(string receiverIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicle, string message)
+    public async Task SendMessageWithVehicle(ConversationMessageItem message, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
     {
+        var receiverIdentifier = message.ReceiverContactIdentifier;
+        var conversationId = message.ConversationId;
+        var content = message.MessageContent;
+
         string html = new ComponentRenderer<MessageWithVehicle>()
             .Set(c => c.LicensePlate, vehicle.LicensePlate)
-            .Set(c => c.Content, message)
+            .Set(c => c.Content, content)
             .Set(c => c.FuelType, vehicle.FuelType)
             .Set(c => c.Model, $"{vehicle.Brand} {vehicle.Model}({vehicle.YearOfFirstAdmission})")// Dacia Sandero (2008)
             .Set(c => c.MOT, vehicle.MOTExpiryDate)
@@ -154,12 +163,12 @@ internal class GraphEmailService : IMailingService
                         Address = _userId
                     }
                 },
-                ToRecipients = new GraphEmailRecipient[] 
+                ToRecipients = new GraphEmailRecipient[]
                 {
                     new GraphEmailRecipient()
                     {
-                        EmailAddress = new GraphEmailAddress 
-                        { 
+                        EmailAddress = new GraphEmailAddress
+                        {
                             Address = receiverIdentifier
                         }
                     }
@@ -169,9 +178,13 @@ internal class GraphEmailService : IMailingService
 
         await SendEmail(email);
     }
-
-    public async Task SendMessageConfirmation(string senderIdentifier, Guid conversationId, string receiverName)
+    
+    public async Task SendMessageConfirmation(ConversationMessageItem message, string receiverName, CancellationToken cancellationToken)
     {
+        var receiverIdentifier = message.SenderContactIdentifier;
+        var conversationId = message.ConversationId;
+        var content = message.MessageContent;
+
         string html = new ComponentRenderer<MessageConfirmation>()
             .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
             .Render();
@@ -200,7 +213,7 @@ internal class GraphEmailService : IMailingService
                     {
                         EmailAddress = new GraphEmailAddress
                         {
-                            Address = senderIdentifier
+                            Address = receiverIdentifier
                         }
                     }
                 }

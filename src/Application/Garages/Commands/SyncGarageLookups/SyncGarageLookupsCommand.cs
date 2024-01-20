@@ -106,9 +106,8 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
                 await _dbContext.BulkRemoveAsync(garageServicesToRemove, cancellationToken);
             }
 
-            request.QueueService.LogInformation(
-                $"[{(start + request.BatchSize)}/{request.EndRowIndex}] insert: {garageItemsToInsert.Count} | update: {garageItemsToUpdate.Count} items"
-            );
+            var line = $"[{(start + request.BatchSize)}/{request.EndRowIndex}] insert: {garageItemsToInsert.Count} | update: {garageItemsToUpdate.Count} items";
+            request.QueueService.LogInformation(line, inProgressBar: true);
         }
 
         var message = $"Task finished.";

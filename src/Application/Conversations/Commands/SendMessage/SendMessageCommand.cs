@@ -9,6 +9,9 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AutoHelper.Application.Conversations.Commands.SendMessage;
 
@@ -45,21 +48,24 @@ public record SendMessageCommand : IQueueRequest<string>
 public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, string>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IWhatsappService _whatsappService;
+    private readonly IWhatsappTemplateService _whatsappService;
     private readonly IMailingService _mailingService;
     private readonly IVehicleService _vehicleService;
+    private readonly IConfiguration _configuration;
 
     public SendMessageCommandHandler(
         IApplicationDbContext context,
-        IWhatsappService whatsappService,
+        IWhatsappTemplateService whatsappService,
         IMailingService mailingService,
-        IVehicleService vehicleService
+        IVehicleService vehicleService,
+        IConfiguration configuration
     )
     {
         _context = context;
         _whatsappService = whatsappService;
         _mailingService = mailingService;
         _vehicleService = vehicleService;
+        _configuration = configuration;
     }
 
     public async Task<string> Handle(SendMessageCommand request, CancellationToken cancellationToken)
@@ -84,20 +90,28 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
                 request.Message,
                 senderContactName,
                 receiverContactName,
-                sendToGarage
+                sendToGarage,
+                cancellationToken
             );
         }
         else
         {
             //// M > M [OK]
-            //await (senderService as IMailingService)!.SendMessageRaw(
+            //await (reiverService as IMailingService)!.SendMessageRaw(
             //    request.Message!.ReceiverContactIdentifier,
             //    request.Message.ConversationId,
             //    senderContactName,
             //    request.Message.MessageContent
             //);
 
-            // M > W []
+            //// M > W [OK]
+            //await (receiverService as IWhatsappService)!.SendMessage(
+            //    request.Message!.ReceiverContactIdentifier,
+            //    request.Message.ConversationId,
+            //    senderContactName,
+            //    request.Message.MessageContent
+            //);
+
             // W > M []
             // W > W []
         }
@@ -114,39 +128,26 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         ConversationMessageItem message,
         string senderContactName,
         string receiverContactName,
-        bool sendToGarage
+        bool sendToGarage,
+        CancellationToken cancellationToken
     ) {
         if (sendToGarage)
         {
             var licensePlate = message!.Conversation.VehicleLicensePlate;
-            var vehicleInfo = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
-            if (vehicleInfo == null)
+            var vehicle = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
+            if (vehicle == null)
             {
                 throw new InvalidDataException($"Vehicle not found: {licensePlate}");
             }
 
-            await senderService.SendMessageWithVehicle(
-                message.ReceiverContactIdentifier,
-                message.ConversationId,
-                vehicleInfo,
-                message.MessageContent
-            );
+            await receiverService.SendMessageWithVehicle(message, vehicle, cancellationToken);
         }
         else
         {
-            await senderService.SendMessage(
-                message!.ReceiverContactIdentifier,
-                message.ConversationId,
-                senderContactName,
-                message.MessageContent
-            );
+            await receiverService.SendMessage(message, senderContactName, cancellationToken);
         }
 
-        await receiverService.SendMessageConfirmation(
-            message!.SenderContactIdentifier,
-            message.ConversationId,
-            receiverContactName
-        );
+        await senderService.SendMessageConfirmation(message, receiverContactName, cancellationToken);
     }
 
     private async Task UpdateDatabaseMessage(SendMessageCommand request, CancellationToken cancellationToken)

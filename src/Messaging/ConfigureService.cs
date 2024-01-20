@@ -26,7 +26,8 @@ public static class ConfigureService
             ?? throw new ArgumentNullException(nameof(whatsAppBusinessApiConfiguration.AccessToken));
 
         services.AddWhatsAppBusinessCloudApiService(whatsAppBusinessApiConfiguration);
-        services.AddScoped<IWhatsappService, WhatsappService>();
+        services.AddScoped<IWhatsappTemplateService, WhatsappTemplateService>();
+        services.AddScoped<IWhatsappResponseService, WhatsappResponseService>();
         services.AddScoped<IMailingService, GraphEmailService>();
 
     }

@@ -4,13 +4,20 @@ using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
 using AutoHelper.Application.Conversations.Commands.SendMessage;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Conversations.Enums;
-using AutoHelper.Messaging.Interfaces;
 using MediatR;
 
 namespace AutoHelper.Application.Conversations.Commands.ReceiveMessage;
 
-public class ReceiveMessageCommand : IRequest<ConversationMessageItem>
+public class ReceiveWhatsappMessageCommand : IRequest<ConversationMessageItem>
 {
+
+    public ReceiveWhatsappMessageCommand()
+    {
+
+    }
+
+    public Guid ConversationId { get; set; }
+    public string WhatsappMessageId { get; set; } = string.Empty;
     public string From { get; set; } = string.Empty;
     public string Body { get; set; } = string.Empty;
 
@@ -23,24 +30,22 @@ public class ReceiveMessageCommand : IRequest<ConversationMessageItem>
     [JsonIgnore]
     internal ConversationItem? Conversation { get; set; } = null!;
 
-
 }
 
-public class ReceiveMessageCommandHandler : IRequestHandler<ReceiveMessageCommand, ConversationMessageItem>
+public class ReceiveWhatsappMessageCommandHandler : IRequestHandler<ReceiveWhatsappMessageCommand, ConversationMessageItem>
 {
     private readonly ISender _mediator;
-    private readonly IEmailHelper _emailHelper;
 
-    public ReceiveMessageCommandHandler(ISender mediator, IEmailHelper emailHelper)
+    public ReceiveWhatsappMessageCommandHandler(ISender mediator)
     {
         _mediator = mediator;
-        _emailHelper = emailHelper;
     }
 
-    public async Task<ConversationMessageItem?> Handle(ReceiveMessageCommand request, CancellationToken cancellationToken)
+    public async Task<ConversationMessageItem?> Handle(ReceiveWhatsappMessageCommand request, CancellationToken cancellationToken)
     {
         var createMessage = new CreateConversationMessageCommand(request.Conversation!)
         {
+            WhatsappMessageId = request.WhatsappMessageId,
             SenderIdentifier = request.SenderContactIdentifier,
             ReceiverIdentifier = request.ReceiverIdentifier,
             Message = request.Body

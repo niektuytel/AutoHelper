@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
-public interface IWhatsappService: IMessagingService
+public interface IWhatsappTemplateService : IMessagingService
 {
 }

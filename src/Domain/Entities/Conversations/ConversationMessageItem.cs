@@ -9,6 +9,11 @@ public class ConversationMessageItem : BaseAuditableEntity
     [Required]
     public Guid ConversationId { get; set; }
 
+    /// <summary>
+    /// Required on Whatsapp to know which message was sent
+    /// </summary>
+    public string? WhatsappMessageId { get; set; } = null!;
+
     [ForeignKey(nameof(ConversationId))]
     public ConversationItem Conversation { get; set; } = null!;
 

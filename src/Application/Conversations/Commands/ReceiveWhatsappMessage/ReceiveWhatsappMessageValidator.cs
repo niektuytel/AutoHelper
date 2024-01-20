@@ -2,19 +2,20 @@
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Conversations.Commands.ReceiveMessage;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.ReceiveMessage;
+namespace AutoHelper.Application.Conversations.Commands.ReceiveWhatsappMessage;
 
 
-public class ReceiveMessageValidator : AbstractValidator<ReceiveMessageCommand>
+public class ReceiveWhatsappMessageValidator : AbstractValidator<ReceiveWhatsappMessageCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public ReceiveMessageValidator(IApplicationDbContext context)
+    public ReceiveWhatsappMessageValidator(IApplicationDbContext context)
     {
         _context = context;
 
@@ -25,7 +26,7 @@ public class ReceiveMessageValidator : AbstractValidator<ReceiveMessageCommand>
             .WithMessage("Invalid 'From' identifier.");
     }
 
-    private bool ContainsValidId(ReceiveMessageCommand command)
+    private bool ContainsValidId(ReceiveWhatsappMessageCommand command)
     {
         var match = Regex.Match(command.Body.ToLower(), @"id:\s*([a-f\d]{8})");
         if (!match.Success)
@@ -50,7 +51,7 @@ public class ReceiveMessageValidator : AbstractValidator<ReceiveMessageCommand>
         return false;
     }
 
-    private bool IsValidFromIdentifier(ReceiveMessageCommand command)
+    private bool IsValidFromIdentifier(ReceiveWhatsappMessageCommand command)
     {
         if (command.Conversation == null)
         {

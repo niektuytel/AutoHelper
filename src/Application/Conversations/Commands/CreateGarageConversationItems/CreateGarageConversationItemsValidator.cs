@@ -67,13 +67,14 @@ public class VehicleServiceValidator : AbstractValidator<VehicleService>
         RuleFor(x => x.RelatedGarageLookupName)
             .NotEmpty().WithMessage("Related garage lookup name is required");
 
-        RuleFor(x => x.ConversationEmailAddress)
-            .EmailAddress().When(x => !string.IsNullOrEmpty(x.ConversationEmailAddress))
-            .WithMessage("Invalid email address format");
+        // When failed will send email to the garage then retry this messages...
+        //RuleFor(x => x.ConversationEmailAddress)
+        //    .EmailAddress().When(x => !string.IsNullOrEmpty(x.ConversationEmailAddress))
+        //    .WithMessage("Invalid email address format");
 
-        RuleFor(x => x.ConversationWhatsappNumber)
-            .Matches(@"^\+?[0-9]{10,15}$").When(x => !string.IsNullOrEmpty(x.ConversationWhatsappNumber))
-            .WithMessage("Invalid WhatsApp number format");
+        //RuleFor(x => x.ConversationWhatsappNumber)
+        //    .Matches(@"^\+?[0-9]{10,15}$").When(x => !string.IsNullOrEmpty(x.ConversationWhatsappNumber))
+        //    .WithMessage("Invalid WhatsApp number format");
 
         RuleFor(x => x.VehicleLicensePlate)
             .NotEmpty().WithMessage("Vehicle license plate is required.")

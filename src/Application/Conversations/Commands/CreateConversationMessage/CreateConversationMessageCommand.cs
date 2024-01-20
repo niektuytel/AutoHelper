@@ -33,6 +33,8 @@ public record CreateConversationMessageCommand : IRequest<ConversationMessageIte
 
     public Guid? ConversationId { get; set; } = null;
 
+    public string? WhatsappMessageId { get; set; } = null;
+
     /// <summary>
     /// Should always been set, even when the  ConversationId is set.
     /// </summary>
@@ -61,6 +63,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         var message = new ConversationMessageItem
         {
             ConversationId = request.Conversation!.Id,
+            WhatsappMessageId = request.WhatsappMessageId,
             SenderContactType = senderType,
             SenderContactIdentifier = request.SenderIdentifier!,
             ReceiverContactType = receiverType,

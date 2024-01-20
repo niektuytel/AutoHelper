@@ -1,7 +1,10 @@
 ﻿using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,16 +15,18 @@ using WhatsappBusiness.CloudApi.Messages.Requests;
 
 namespace AutoHelper.Messaging.Services;
 
-internal class WhatsappService : IWhatsappService
+internal class WhatsappTemplateService : IWhatsappTemplateService
 {
     private readonly IWhatsAppBusinessClient _whatsAppBusinessClient;
+    private readonly IWhatsappResponseService _whatsappResponseService;
     private readonly IConfiguration _configuration;
     private readonly bool _isDevelopment;
     private readonly string _developPhoneNumberId;
 
-    public WhatsappService(IWhatsAppBusinessClient whatsAppBusinessClient, IConfiguration configuration)
+    public WhatsappTemplateService(IWhatsAppBusinessClient whatsAppBusinessClient, IWhatsappResponseService whatsappResponseService, IConfiguration configuration)
     {
         _whatsAppBusinessClient = whatsAppBusinessClient ?? throw new ArgumentNullException(nameof(whatsAppBusinessClient));
+        _whatsappResponseService = whatsappResponseService ?? throw new ArgumentNullException(nameof(whatsappResponseService));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _isDevelopment = _configuration["Environment"] == "Development";
         _developPhoneNumberId = _configuration["WhatsApp:TestPhoneNumberId"]!;
@@ -30,9 +35,15 @@ internal class WhatsappService : IWhatsappService
     /// <summary>
     /// https://business.facebook.com/wa/manage/template-details/?business_id=656542846083352&waba_id=107289168858080&id=859328899233016&date_range=last_30_days
     /// </summary>
-    public async Task SendMessage(string phoneNumber, Guid conversationId, string fromContactName, string content)
+    public async Task SendMessage(ConversationMessageItem message, string fromContactName, CancellationToken cancellationToken)
     {
-        var phoneNumberId = GetPhoneNumberId(phoneNumber);
+        var receiverIdentifier = message.ReceiverContactIdentifier;
+        var conversationId = message.ConversationId;
+        var content = message.MessageContent;
+
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
+        var validatedContent = GetValidContent(content);
+
         var template = new TextTemplateMessageRequest
         {
             To = phoneNumberId,
@@ -64,8 +75,8 @@ internal class WhatsappService : IWhatsappService
                         {
                             new TextMessageParameter
                             {
-                                Type = "text",
-                                Text = content
+                                Type = "TEXT",
+                                Text = validatedContent
                             },
                             new TextMessageParameter
                             {
@@ -81,6 +92,11 @@ internal class WhatsappService : IWhatsappService
         try
         {
             var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            if (results != null)
+            {
+                await _whatsappResponseService.SetMessageIdWhenEmpty(message.Id, results.Messages[0].Id, cancellationToken);
+            }
+            //await _whatsappResponseService.HandleResponse(results, conversationId);
         }
         catch (WhatsappBusinessCloudAPIException ex)
         {
@@ -93,9 +109,13 @@ internal class WhatsappService : IWhatsappService
     /// <summary>
     /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=2664948603645930
     /// </summary>
-    public async Task SendMessageWithVehicle(string phoneNumber, Guid conversationId, VehicleTechnicalDtoItem vehicle, string content)
+    public async Task SendMessageWithVehicle(ConversationMessageItem message, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
     {
-        var phoneNumberId = GetPhoneNumberId(phoneNumber);
+        var receiverIdentifier = message.ReceiverContactIdentifier;
+        var conversationId = message.ConversationId;
+        var content = message.MessageContent;
+
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
         var template = new TextTemplateMessageRequest
         {
             To = phoneNumberId,
@@ -169,6 +189,10 @@ internal class WhatsappService : IWhatsappService
         try
         {
             var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            if (results != null)
+            {
+                await _whatsappResponseService.SetMessageIdWhenEmpty(message.Id, results.Messages[0].Id, cancellationToken);
+            }
         }
         catch (WhatsappBusinessCloudAPIException ex)
         {
@@ -181,9 +205,12 @@ internal class WhatsappService : IWhatsappService
     /// <summary>
     /// https://business.facebook.com/wa/manage/message-templates/?business_id=656542846083352&waba_id=107289168858080&id=837399274834029
     /// </summary>
-    public async Task SendMessageConfirmation(string phoneNumber, Guid conversationId, string fromContactName)
+    public async Task SendMessageConfirmation(ConversationMessageItem message, string fromContactName, CancellationToken cancellationToken)
     {
-        var phoneNumberId = GetPhoneNumberId(phoneNumber);
+        var receiverIdentifier = message.ReceiverContactIdentifier;
+        var conversationId = message.ConversationId;
+
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
         var template = new TextTemplateMessageRequest
         {
             To = phoneNumberId,
@@ -227,6 +254,10 @@ internal class WhatsappService : IWhatsappService
         try
         {
             var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            if (results != null)
+            {
+                await _whatsappResponseService.SetMessageIdWhenEmpty(message.Id, results.Messages[0].Id, cancellationToken);
+            }
         }
         catch (WhatsappBusinessCloudAPIException ex)
         {
@@ -257,6 +288,39 @@ internal class WhatsappService : IWhatsappService
             phoneNumber = "31" + phoneNumber;
 
         return phoneNumber;
+    }
+
+    /// <summary>
+    /// Remove html when message is html
+    /// </summary>
+    private string GetValidContent(string content)
+    {
+        var autohelperEmail = _configuration["GraphMicrosoft:UserId"]?.ToString() ?? "";
+
+        // Regex pattern to extract the content between <div> tags
+        string pattern = @"<div(.*?)>(.*?)<\/div>";
+
+        // Find matches
+        var matches = Regex.Matches(content, pattern, RegexOptions.Singleline);
+
+        var message = string.Empty;
+        foreach (Match match in matches)
+        {
+            if (match.ToString().Contains(autohelperEmail))
+            {
+                break;
+            }
+
+            message += match.ToString();
+        }
+
+        // Replace <br> and <br /> with '   ' as this can mostly respond to an ending of an line
+        message = Regex.Replace(message, @"<br\s?\/?>", "  ");
+
+        // Remove all div tags
+        message = Regex.Replace(message, @"<(.*?)div(.*?)>", "");
+
+        return message;
     }
 
 }

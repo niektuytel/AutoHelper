@@ -107,9 +107,9 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLoo
                 await _dbContext.BulkUpdateAsync(vehicleLookupsToUpdate, cancellationToken);
             }
 
-            request.QueueService.LogInformation(
-                $"[{count}/{request.EndRowIndex}] insert: {vehicleLookupsToInsert.Count} | update: {vehicleLookupsToUpdate.Count} items"
-            );
+            var line = $"[{count}/{request.EndRowIndex}] insert: {vehicleLookupsToInsert.Count} | update: {vehicleLookupsToUpdate.Count} items";
+            request.QueueService.LogInformation(line, inProgressBar: true);
+
         } while (count == limit * offset || count < request.EndRowIndex);
 
         request.QueueService.LogInformation($"Task finished");

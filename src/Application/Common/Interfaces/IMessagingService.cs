@@ -1,10 +1,11 @@
 ﻿using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IMessagingService
 {
-    Task SendMessage(string receiverIdentifier, Guid conversationId, string senderName, string message);
-    Task SendMessageWithVehicle(string receiverIdentifier, Guid conversationId, VehicleTechnicalDtoItem vehicle, string message);
-    Task SendMessageConfirmation(string senderIdentifier, Guid conversationId, string receiverName);
+    Task SendMessage(ConversationMessageItem message, string senderName, CancellationToken cancellationToken);
+    Task SendMessageWithVehicle(ConversationMessageItem message, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken);
+    Task SendMessageConfirmation(ConversationMessageItem message, string receiverName, CancellationToken cancellationToken);
 }
