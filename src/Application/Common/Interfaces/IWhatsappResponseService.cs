@@ -1,13 +1,10 @@
-﻿
-
-using AutoHelper.Application.Common.Enums;
+﻿using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IWhatsappResponseService
 {
-    Task<Guid?> GetConversationId(string messageId);
-    Task SetMessageIdWhenEmpty(Guid conversationMessageId, string messageId, CancellationToken cancellationToken);
-    Task MarkMessageAsRead(string messageId);
-    Task SendErrorMessage(WhatsappMessageErrorType type);
+    Task UpdateMessageId(ConversationMessageItem message, string whatsappMessageId, CancellationToken cancellationToken, bool skipWhenExist = true);
+    Task<Guid?> GetValidatedConversationId(string identifier, string messageId, string? contextMessageId = null);
+    Task MarkMessageAsRead(string whatsappMessageId);
 }

@@ -403,16 +403,6 @@
         "operationId": "Conversation_ReceiveWhatsappMessageGET",
         "parameters": [
           {
-            "name": "hub.mode",
-            "x-originalName": "hubMode",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
             "name": "hub.challenge",
             "x-originalName": "hubChallenge",
             "in": "query",
@@ -420,7 +410,7 @@
               "type": "integer",
               "format": "int32"
             },
-            "x-position": 2
+            "x-position": 1
           },
           {
             "name": "hub.verify_token",
@@ -430,7 +420,7 @@
               "type": "string",
               "nullable": true
             },
-            "x-position": 3
+            "x-position": 2
           }
         ],
         "responses": {
@@ -443,6 +433,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
@@ -450,19 +450,7 @@
         "tags": [
           "Conversation"
         ],
-        "summary": "We only accept text messages for now:\nFor more information about the webhook, please refer to the documentation: https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound\nAnd our github client: https://github.com/gabrieldwight/Whatsapp-Business-Cloud-Api-Net?tab=readme-ov-file",
         "operationId": "Conversation_ReceiveWhatsappMessagePOST",
-        "requestBody": {
-          "x-name": "body",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TextMessageReceived"
-              }
-            }
-          },
-          "x-position": 1
-        },
         "responses": {
           "200": {
             "description": "",
@@ -480,17 +468,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
                 }
               }
             }
@@ -1899,192 +1876,32 @@
           }
         }
       },
-      "TextMessageReceived": {
+      "ProblemDetails": {
         "type": "object",
-        "additionalProperties": false,
+        "additionalProperties": {
+          "nullable": true
+        },
         "properties": {
-          "object": {
-            "type": "string"
-          },
-          "entry": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "TextMessageEntry"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/TextMessageEntry"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "TextMessageEntry": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "changes": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "TextMessageChange"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/TextMessageChange"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "TextMessageChange": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "value": {
-            "$ref": "#/components/schemas/TextMessageValue"
-          },
-          "field": {
-            "type": "string"
-          }
-        }
-      },
-      "TextMessageValue": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "messagingProduct": {
-            "type": "string"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/TextMessageMetadata"
-          },
-          "contacts": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "TextMessageContact"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/TextMessageContact"
-                }
-              ]
-            }
-          },
-          "messages": {
-            "type": "array",
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "TextMessage"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/TextMessage"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "TextMessageMetadata": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "displayPhoneNumber": {
-            "type": "string"
-          },
-          "phoneNumberId": {
-            "type": "string"
-          }
-        }
-      },
-      "TextMessageContact": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "profile": {
-            "$ref": "#/components/schemas/TextMessageProfile"
-          },
-          "waId": {
-            "type": "string"
-          }
-        }
-      },
-      "TextMessageProfile": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "TextMessage": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "from": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "timestamp": {
-            "type": "string"
-          },
-          "text": {
-            "$ref": "#/components/schemas/TextMessageText"
-          },
           "type": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
-          "context": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/TextMessageContext"
-              }
-            ]
-          }
-        }
-      },
-      "TextMessageText": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "body": {
-            "type": "string"
-          }
-        }
-      },
-      "TextMessageContext": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "from": {
-            "type": "string"
+          "title": {
+            "type": "string",
+            "nullable": true
           },
-          "id": {
-            "type": "string"
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

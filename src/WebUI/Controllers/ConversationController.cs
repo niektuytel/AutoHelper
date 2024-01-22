@@ -3,7 +3,6 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading;
-using AutoHelper.Application.Common.Enums;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
@@ -50,25 +49,21 @@ public class ConversationController : ApiControllerBase
     {
         var conversationMessage = await Mediator.Send(message, cancellationToken);
 
-        var queue = nameof(SendMessageCommand);
-        var messageCommand = new SendMessageCommand(conversationMessage);
+        var queue = nameof(SendConversationMessageCommand);
+        var messageCommand = new SendConversationMessageCommand(conversationMessage);
         Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
 
         return $"Conversation-ID: {conversationMessage.ConversationId}";
     }
 
     [HttpGet(nameof(ReceiveWhatsappMessage))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public ActionResult<string> ReceiveWhatsappMessage(
-        [FromQuery(Name = "hub.mode")] string hubMode,
         [FromQuery(Name = "hub.challenge")] int hubChallenge,
         [FromQuery(Name = "hub.verify_token")] string hubVerifyToken
-    )
+    ) 
     {
-        _logger.LogInformation("Results Returned from WhatsApp Server\n");
-        _logger.LogInformation($"hub_mode={hubMode}\n");
-        _logger.LogInformation($"hub_challenge={hubChallenge}\n");
-        _logger.LogInformation($"hub_verify_token={hubVerifyToken}\n");
-
         if (!hubVerifyToken.Equals(VerifyToken))
         {
             return Forbid("VerifyToken doesn't match");
@@ -77,21 +72,27 @@ public class ConversationController : ApiControllerBase
         return Ok(hubChallenge);
     }
 
-    /// <summary>
-    /// We only accept text messages for now:
-    /// For more information about the webhook, please refer to the documentation: https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound
-    /// And our github client: https://github.com/gabrieldwight/Whatsapp-Business-Cloud-Api-Net?tab=readme-ov-file
-    /// </summary>
     [HttpPost(nameof(ReceiveWhatsappMessage))]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ReceiveWhatsappMessage([FromBody] TextMessageReceived? body, CancellationToken cancellationToken) 
+    public async Task<IActionResult> ReceiveWhatsappMessage(CancellationToken cancellationToken)
     {
+        string requestBody;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+        {
+            requestBody = await reader.ReadToEndAsync(cancellationToken);
+        }
+
+        var body = JsonConvert.DeserializeObject<TextMessageReceived>(requestBody);
+        if (body == null)
+        {
+            return Ok(new { Message = "We only accept text messages" });
+        }
+
         var messageType = body?.Entry?[0].Changes?[0].Value?.Messages?[0].Type;
         if (messageType != "text")
         {
-            return BadRequest(new { Message = "We only accept text messages" });
+            return Ok(new { Message = "We only accept text messages with an type text" });
         }
 
         var messages = body!.Entry
@@ -102,35 +103,34 @@ public class ConversationController : ApiControllerBase
         {
             await _whatsappResponseService.MarkMessageAsRead(message.Id);
 
-            if(message.Context == null)
+            var conversationId = await _whatsappResponseService.GetValidatedConversationId(message.From, message.Id, message?.Context?.Id);
+            if (conversationId == null)
             {
-                await _whatsappResponseService.SendErrorMessage(WhatsappMessageErrorType.ContextMessageIdNotFound);
-                return Ok(new { Message = "This message does not have any related context" });
+                return Ok(new { Message = "This message does not contain a valid Referentie-Id" });
             }
-            else
+
+            // get the conversation id from the context, can been nested in the above it
+            var createMessage = new ReceiveWhatsappMessageCommand()
             {
-                var conversationId = await _whatsappResponseService.GetConversationId(message.Context.Id);
-                if (conversationId == null)
-                {
-                    await _whatsappResponseService.SendErrorMessage(WhatsappMessageErrorType.ConversationNotFound);
-                    return Ok(new { Message = "This message does not contain a valid Referentie-Id" });
-                }
+                ConversationId = (Guid)conversationId!,
+                WhatsappMessageId = message!.Id,
+                From = message.From,
+                Body = message.Text.Body,
+            };
 
-                // get the conversation id from the context, can been nested in the above it
-                var createMessage = new ReceiveWhatsappMessageCommand()
-                {
-                    ConversationId = (Guid)conversationId!,
-                    WhatsappMessageId = message.Id,
-                    From = message.From,
-                    Body = message.Text.Body,
-                };
-
+            try
+            {
                 var conversationMessage = await Mediator.Send(createMessage, cancellationToken);
 
-                var queue = nameof(SendMessageCommand);
-                var messageCommand = new SendMessageCommand(conversationMessage);
+                var queue = nameof(SendConversationMessageCommand);
+                var messageCommand = new SendConversationMessageCommand(conversationMessage);
                 Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
             }
+            catch (Exception ex)
+            {
+                return Ok(new { Message = ex.Message });
+            }
+
         }
 
 
@@ -162,8 +162,8 @@ public class ConversationController : ApiControllerBase
                 continue;
             }
 
-            var queue = nameof(SendMessageCommand);
-            var messageCommand = new SendMessageCommand(message.Id);
+            var queue = nameof(SendConversationMessageCommand);
+            var messageCommand = new SendConversationMessageCommand(message.Id);
             Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
         }
 

@@ -50,16 +50,28 @@ public record CreateConversationMessageCommand : IRequest<ConversationMessageIte
 public class CreateGarageConversationBatchCommandHandler : IRequestHandler<CreateConversationMessageCommand, ConversationMessageItem>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IPhoneNumberHelper _phoneNumberHelper;
 
-    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context)
+    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context, IPhoneNumberHelper phoneNumberHelper)
     {
         _context = context;
+        _phoneNumberHelper = phoneNumberHelper;
     }
 
     public async Task<ConversationMessageItem> Handle(CreateConversationMessageCommand request, CancellationToken cancellationToken)
     {
         var senderType = request.SenderIdentifier!.GetContactType();
+        if (senderType == ContactType.WhatsApp)
+        {
+            request.SenderIdentifier = _phoneNumberHelper.GetPhoneNumberId(request.SenderIdentifier!);
+        }
+
         var receiverType = request.ReceiverIdentifier!.GetContactType();
+        if (receiverType == ContactType.WhatsApp)
+        {
+            request.ReceiverIdentifier = _phoneNumberHelper.GetPhoneNumberId(request.ReceiverIdentifier!);
+        }
+        
         var message = new ConversationMessageItem
         {
             ConversationId = request.Conversation!.Id,

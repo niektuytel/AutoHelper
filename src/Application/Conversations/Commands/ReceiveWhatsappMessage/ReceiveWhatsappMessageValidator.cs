@@ -14,10 +14,12 @@ namespace AutoHelper.Application.Conversations.Commands.ReceiveWhatsappMessage;
 public class ReceiveWhatsappMessageValidator : AbstractValidator<ReceiveWhatsappMessageCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IPhoneNumberHelper _phoneNumberHelper;
 
-    public ReceiveWhatsappMessageValidator(IApplicationDbContext context)
+    public ReceiveWhatsappMessageValidator(IApplicationDbContext context, IPhoneNumberHelper phoneNumberHelper)
     {
         _context = context;
+        _phoneNumberHelper = phoneNumberHelper;
 
         RuleFor(command => command)
             .Must(ContainsValidId)
@@ -28,27 +30,20 @@ public class ReceiveWhatsappMessageValidator : AbstractValidator<ReceiveWhatsapp
 
     private bool ContainsValidId(ReceiveWhatsappMessageCommand command)
     {
-        var match = Regex.Match(command.Body.ToLower(), @"id:\s*([a-f\d]{8})");
-        if (!match.Success)
+        if (command.ConversationId == default && command?.Conversation?.Id == null)
         {
             return false;
         }
 
-        var idValue = match.Groups[1].Value;
-        if (!string.IsNullOrEmpty(idValue))
-        {
-            var entity = _context.Conversations
-                .AsNoTracking()
-                .Include(x => x.RelatedGarage)
-                .Include(x => x.RelatedVehicleLookup)
-                .Include(x => x.Messages)
-                .FirstOrDefault(cm => cm.Id.ToString().StartsWith(idValue));
+        var entity = _context.Conversations
+            .AsNoTracking()
+            .Include(x => x.RelatedGarage)
+            .Include(x => x.RelatedVehicleLookup)
+            .Include(x => x.Messages)
+            .FirstOrDefault(cm => cm.Id == command.ConversationId);
 
-            command.Conversation = entity;
-            return entity != null;
-        }
-
-        return false;
+        command.Conversation = entity;
+        return entity != null;
     }
 
     private bool IsValidFromIdentifier(ReceiveWhatsappMessageCommand command)

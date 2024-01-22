@@ -7,6 +7,7 @@ using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Configurations;
 using WhatsappBusiness.CloudApi.Extensions;
 using AutoHelper.Messaging.Models;
+using AutoHelper.Messaging.Helpers;
 
 namespace AutoHelper.Messaging;
 
@@ -28,6 +29,7 @@ public static class ConfigureService
         services.AddWhatsAppBusinessCloudApiService(whatsAppBusinessApiConfiguration);
         services.AddScoped<IWhatsappTemplateService, WhatsappTemplateService>();
         services.AddScoped<IWhatsappResponseService, WhatsappResponseService>();
+        services.AddScoped<IPhoneNumberHelper, PhoneNumberHelper>();
         services.AddScoped<IMailingService, GraphEmailService>();
 
     }

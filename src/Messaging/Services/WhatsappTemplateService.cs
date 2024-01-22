@@ -94,9 +94,8 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
             var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
             if (results != null)
             {
-                await _whatsappResponseService.SetMessageIdWhenEmpty(message.Id, results.Messages[0].Id, cancellationToken);
+                await _whatsappResponseService.UpdateMessageId(message, results.Messages[0].Id, cancellationToken);
             }
-            //await _whatsappResponseService.HandleResponse(results, conversationId);
         }
         catch (WhatsappBusinessCloudAPIException ex)
         {
@@ -191,7 +190,7 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
             var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
             if (results != null)
             {
-                await _whatsappResponseService.SetMessageIdWhenEmpty(message.Id, results.Messages[0].Id, cancellationToken);
+                await _whatsappResponseService.UpdateMessageId(message, results.Messages[0].Id, cancellationToken);
             }
         }
         catch (WhatsappBusinessCloudAPIException ex)
@@ -256,7 +255,7 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
             var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
             if (results != null)
             {
-                await _whatsappResponseService.SetMessageIdWhenEmpty(message.Id, results.Messages[0].Id, cancellationToken);
+                await _whatsappResponseService.UpdateMessageId(message, results.Messages[0].Id, cancellationToken);
             }
         }
         catch (WhatsappBusinessCloudAPIException ex)
@@ -267,7 +266,7 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
         }
     }
 
-    private string GetPhoneNumberId(string phoneNumber)
+    public string GetPhoneNumberId(string phoneNumber)
     {
         if (_isDevelopment)
         {
@@ -302,6 +301,10 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
 
         // Find matches
         var matches = Regex.Matches(content, pattern, RegexOptions.Singleline);
+        if (matches.Count == 0)
+        {
+            return content;
+        }
 
         var message = string.Empty;
         foreach (Match match in matches)
@@ -314,11 +317,38 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
             message += match.ToString();
         }
 
+        // Fix all html encoded spaces
+        message = Regex.Replace(message, @"&nbsp;", " ");
+
         // Replace <br> and <br /> with '   ' as this can mostly respond to an ending of an line
         message = Regex.Replace(message, @"<br\s?\/?>", "  ");
 
         // Remove all div tags
         message = Regex.Replace(message, @"<(.*?)div(.*?)>", "");
+
+        // Remove all span tags
+        message = Regex.Replace(message, @"<(.*?)span(.*?)>", "");
+
+        // Remove all p tags
+        message = Regex.Replace(message, @"<(.*?)p(.*?)>", "");
+
+        // Remove all strong tags
+        message = Regex.Replace(message, @"<(.*?)strong(.*?)>", "");
+
+        // Remove all a tags
+        message = Regex.Replace(message, @"<(.*?)a(.*?)>", "");
+
+        // Remove all li tags
+        message = Regex.Replace(message, @"<(.*?)li(.*?)>", "");
+
+        // Remove all ul tags
+        message = Regex.Replace(message, @"<(.*?)ul(.*?)>", "");
+
+        // Remove all ol tags
+        message = Regex.Replace(message, @"<(.*?)ol(.*?)>", "");
+
+        // Remove all img tags
+        message = Regex.Replace(message, @"<(.*?)img(.*?)>", "");
 
         return message;
     }

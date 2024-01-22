@@ -1,119 +1,134 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Enums;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Exceptions;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Messages.ReplyRequests;
 using WhatsappBusiness.CloudApi.Messages.Requests;
 using WhatsappBusiness.CloudApi.Webhook;
+using TextMessageContext = WhatsappBusiness.CloudApi.Messages.ReplyRequests.TextMessageContext;
 
 namespace AutoHelper.Messaging.Services;
 
+/// <summary>
+/// For more information about the webhook, please refer to the documentation: https://developers.facebook.com/docs/whatsapp/api/webhooks/inbound
+/// And our github client: https://github.com/gabrieldwight/Whatsapp-Business-Cloud-Api-Net?tab=readme-ov-file
+/// </summary>
 internal class WhatsappResponseService : IWhatsappResponseService
 {
     private readonly IApplicationDbContext _context;
     private readonly IWhatsAppBusinessClient _whatsAppBusinessClient;
-    private readonly IConfiguration _configuration;
-    private readonly bool _isDevelopment;
-    private readonly string _developPhoneNumberId;
 
-    public WhatsappResponseService(IApplicationDbContext context, IWhatsAppBusinessClient whatsAppBusinessClient, IConfiguration configuration)
+    public WhatsappResponseService(IApplicationDbContext context, IWhatsAppBusinessClient whatsAppBusinessClient)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _whatsAppBusinessClient = whatsAppBusinessClient ?? throw new ArgumentNullException(nameof(whatsAppBusinessClient));
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
-    public async Task SetMessageIdWhenEmpty(Guid conversationMessageId, string messageId, CancellationToken cancellationToken)
+    /// <summary>
+    /// Update the message id of the conversation message.
+    /// </summary>
+    public async Task UpdateMessageId(ConversationMessageItem message, string messageId, CancellationToken cancellationToken, bool skipWhenExist = true)
     {
-        var entity = _context.ConversationMessages
-            .AsNoTracking()
-            .Where(x => x.Id == conversationMessageId)
-            .FirstOrDefault();
-
-        if (entity == null)
+        if (skipWhenExist && !string.IsNullOrEmpty(message.WhatsappMessageId))
         {
-            throw new Exception($"ConversationMessage with id {conversationMessageId} not found");
+            return;
         }
 
-        if (string.IsNullOrEmpty(entity.WhatsappMessageId))
-        {
-            entity.WhatsappMessageId = messageId;
-            _context.ConversationMessages.Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        message.WhatsappMessageId = messageId;
+        _context.ConversationMessages.Update(message);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Guid?> GetConversationId(string contextMessageId)
+    /// <summary>
+    /// Get the referd conversation id from the message id.
+    /// </summary>
+    public async Task<Guid?> GetValidatedConversationId(string identifier, string messageId, string? contextMessageId = null)
     {
+        if (string.IsNullOrEmpty(contextMessageId))
+        {
+            var message = "Kunt u aangeven naar welke garage u een bericht wilt sturen? Stuur alstublieft uw bericht opnieuw, met een verwijzing naar ons eerdere gesprek, zodat we kunnen begrijpen waar het over gaat.";
+            await SendSimpleMessage(identifier, message, contextMessageId);
+
+            return null;
+        }
+
         var conversationId = await _context.ConversationMessages
             .AsNoTracking()
             .Where(x => x.WhatsappMessageId == contextMessageId)
             .Select(x => x.ConversationId)
             .FirstOrDefaultAsync();
 
-        return conversationId == default ? null : conversationId;
+        if (conversationId == default)
+        {
+            var message = "We kunnen helaas niet opmaken waar uw verwijzing naar verwijst. Bezoek alstublieft https://autohelper.nl om een nieuw gesprek te starten.";
+            await SendSimpleMessage(identifier, message, contextMessageId);
+
+            return null;
+        }
+
+        return conversationId;
     }
 
+    /// <summary>
+    /// Mark the message as read on whatsapp.
+    /// </summary>
     public async Task MarkMessageAsRead(string messageId)
     {
-        var markMessageRequest = new MarkMessageRequest
+        var request = new MarkMessageRequest
         {
             MessageId = messageId,
             Status = "read"
         };
 
-        await _whatsAppBusinessClient.MarkMessageAsReadAsync(markMessageRequest);
+        await _whatsAppBusinessClient.MarkMessageAsReadAsync(request);
     }
 
-    public async Task SendErrorMessage(WhatsappMessageErrorType type)
+    /// <summary>
+    /// Can been used to send a message to the receiver when the receiver did first send a message, otherwise use 
+    /// the WhatsappTemplateService
+    /// </summary>
+    /// <param name="identifier">is the receiver identifier, looks like 31618395668</param>
+    /// <param name="message">Mesage that will been send to the receiver</param>
+    /// <param name="contextMessageId">when giving response on previous sended message</param>
+    private async Task SendSimpleMessage(string identifier, string message, string? contextMessageId = null)
     {
-        // ErrorMessageType.ContextMessageIdNotFound
-        // ERROR: ask if the user can reply on the message to know which garage to talk to
+        try
+        {
+            var request = new TextMessageReplyRequest
+            {
+                To = identifier,
+                Text = new WhatsAppText
+                {
+                    Body = message,
+                    PreviewUrl = false
+                }
+            };
 
-        // ErrorMessageType.ConversationNotFound);
-        // ERROR: this message does not contain a valid Referentie-Id
+            if(!string.IsNullOrEmpty(contextMessageId))
+            {
+                request.Context = new TextMessageContext
+                {
+                    MessageId = contextMessageId
+                };
+            }
 
-        //var markMessageRequest = new MarkMessageRequest
-        //{
-        //    MessageId = messageId,
-        //    Status = "read"
-        //};
-
-        //await _whatsAppBusinessClient.MarkMessageAsReadAsync(markMessageRequest);
+            await _whatsAppBusinessClient.SendTextMessageAsync(request);
+        }
+        catch (WhatsappBusinessCloudAPIException)
+        {
+            throw;
+        }
     }
 
-
-
-    //    try
-    //    {
-
-    //        TextMessageReplyRequest textMessageReplyRequest = new TextMessageReplyRequest();
-    //textMessageReplyRequest.Context = new WhatsappBusiness.CloudApi.Messages.ReplyRequests.TextMessageContext();
-    //        textMessageReplyRequest.Context.MessageId = messages.SingleOrDefault().Id;
-    //        textMessageReplyRequest.To = messages.SingleOrDefault().From;
-    //        textMessageReplyRequest.Text = new WhatsAppText();
-    //textMessageReplyRequest.Text.Body = "Your Message was received. Processing the request shortly";
-    //        textMessageReplyRequest.Text.PreviewUrl = false;
-
-    //        await _whatsAppBusinessClient.SendTextMessageAsync(textMessageReplyRequest);
-    //_logger.LogError(JsonConvert.SerializeObject(messages));
-
-    //        return Ok(new
-    //        {
-    //            Message = "Text Message received"
-    //        });
-    //    }
-    //    catch (WhatsappBusinessCloudAPIException ex)
-    //    {
-    //        return StatusCode((int)HttpStatusCode.InternalServerError, ex);
-    //    }
 }

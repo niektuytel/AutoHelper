@@ -15,19 +15,19 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace AutoHelper.Application.Conversations.Commands.SendMessage;
 
-public record SendMessageCommand : IQueueRequest<string>
+public record SendConversationMessageCommand : IQueueRequest<string>
 {
-    public SendMessageCommand()
+    public SendConversationMessageCommand()
     {
         
     }
 
-    public SendMessageCommand(Guid messageId)
+    public SendConversationMessageCommand(Guid messageId)
     {
         MessageId = messageId;
     }
 
-    public SendMessageCommand(ConversationMessageItem message)
+    public SendConversationMessageCommand(ConversationMessageItem message)
     {
         MessageId = message.Id;
         Message = message;
@@ -45,30 +45,27 @@ public record SendMessageCommand : IQueueRequest<string>
     public IQueueService QueueingService { get; set; } = null!;
 }
 
-public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, string>
+public class SendMessageCommandHandler : IRequestHandler<SendConversationMessageCommand, string>
 {
     private readonly IApplicationDbContext _context;
     private readonly IWhatsappTemplateService _whatsappService;
     private readonly IMailingService _mailingService;
     private readonly IVehicleService _vehicleService;
-    private readonly IConfiguration _configuration;
 
     public SendMessageCommandHandler(
         IApplicationDbContext context,
         IWhatsappTemplateService whatsappService,
         IMailingService mailingService,
-        IVehicleService vehicleService,
-        IConfiguration configuration
+        IVehicleService vehicleService
     )
     {
         _context = context;
         _whatsappService = whatsappService;
         _mailingService = mailingService;
         _vehicleService = vehicleService;
-        _configuration = configuration;
     }
 
-    public async Task<string> Handle(SendMessageCommand request, CancellationToken cancellationToken)
+    public async Task<string> Handle(SendConversationMessageCommand request, CancellationToken cancellationToken)
     {
         var sendToGarage = DetermineRecipientIsGarage(request);
         var senderService = GetMessagingService(request, fromSender: true);
@@ -96,26 +93,12 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         }
         else
         {
-            //// M > M [OK]
-            //await (reiverService as IMailingService)!.SendMessageRaw(
-            //    request.Message!.ReceiverContactIdentifier,
-            //    request.Message.ConversationId,
-            //    senderContactName,
-            //    request.Message.MessageContent
-            //);
-
-            //// M > W [OK]
-            //await (receiverService as IWhatsappService)!.SendMessage(
-            //    request.Message!.ReceiverContactIdentifier,
-            //    request.Message.ConversationId,
-            //    senderContactName,
-            //    request.Message.MessageContent
-            //);
-
-            // W > M []
-            // W > W []
+            await receiverService.SendMessage(
+                request.Message, 
+                senderContactName, 
+                cancellationToken
+            );
         }
-
 
         await UpdateDatabaseMessage(request, cancellationToken);
 
@@ -150,7 +133,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         await senderService.SendMessageConfirmation(message, receiverContactName, cancellationToken);
     }
 
-    private async Task UpdateDatabaseMessage(SendMessageCommand request, CancellationToken cancellationToken)
+    private async Task UpdateDatabaseMessage(SendConversationMessageCommand request, CancellationToken cancellationToken)
     {
         request.Message!.Status = MessageStatus.Delivered;
 
@@ -158,7 +141,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private static bool DetermineRecipientIsGarage(SendMessageCommand request)
+    private static bool DetermineRecipientIsGarage(SendConversationMessageCommand request)
     {
         return request.Message!.ReceiverContactIdentifier == request.Message.Conversation!.RelatedGarage.ConversationContactEmail ||
                request.Message.ReceiverContactIdentifier == request.Message.Conversation.RelatedGarage.ConversationContactWhatsappNumber;
@@ -174,7 +157,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, str
         return conversation.RelatedGarage.Name;
     }
     
-    private IMessagingService GetMessagingService(SendMessageCommand request, bool fromSender)
+    private IMessagingService GetMessagingService(SendConversationMessageCommand request, bool fromSender)
     {
         var contactType = fromSender ? 
             request.Message!.SenderContactType 

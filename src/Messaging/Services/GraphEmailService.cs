@@ -90,6 +90,11 @@ internal class GraphEmailService : IMailingService
         var conversationId = message.ConversationId;
         var content = message.MessageContent;
 
+        // TODO: build html, so it looks like 1 conversation.
+        // now when send an message from Whatsapp to the email
+        // he will send an clean message, this will been handled in gmail as 1 message.
+        // but we want an tree of responses that it looks like an conversation in gmail
+
         string html = new ComponentRenderer<Templates.Message>()
             .Set(c => c.Content, content)
             .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])

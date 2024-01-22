@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Conversations.Commands.SendMessage;
 
-public class SendMessageValidator : AbstractValidator<SendMessageCommand>
+public class SendConversationMessageValidator : AbstractValidator<SendConversationMessageCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public SendMessageValidator(IApplicationDbContext context)
+    public SendConversationMessageValidator(IApplicationDbContext context)
     {
         _context = context;
 
@@ -25,7 +25,7 @@ public class SendMessageValidator : AbstractValidator<SendMessageCommand>
 
     }
 
-    private async Task<bool> BeValidAndExistingMessage(SendMessageCommand command, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingMessage(SendConversationMessageCommand command, CancellationToken cancellationToken)
     {
         if (command.Message == null && command.MessageId != default)
         {

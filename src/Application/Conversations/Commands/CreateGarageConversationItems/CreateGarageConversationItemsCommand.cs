@@ -107,7 +107,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         };
         
         var receiverIdentifier = garage.ConversationEmailAddress;
-        if (string.IsNullOrWhiteSpace(senderIdentifier))
+        if (string.IsNullOrWhiteSpace(receiverIdentifier))
         {
             receiverIdentifier = garage.ConversationWhatsappNumber;
         }

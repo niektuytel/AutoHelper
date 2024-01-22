@@ -67,7 +67,7 @@ public static class ConfigureServices
                 "long-running",
                 nameof(SyncGarageLookupsCommand).ToLower(),
                 nameof(SyncVehicleLookupsCommand).ToLower(),
-                nameof(SendMessageCommand).ToLower(),
+                nameof(SendConversationMessageCommand).ToLower(),
             };
 
             //options.HeartbeatInterval = TimeSpan.FromSeconds(5);
