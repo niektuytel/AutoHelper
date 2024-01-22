@@ -9,7 +9,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.SendMessage;
+namespace AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 
 public class SendConversationMessageValidator : AbstractValidator<SendConversationMessageCommand>
 {

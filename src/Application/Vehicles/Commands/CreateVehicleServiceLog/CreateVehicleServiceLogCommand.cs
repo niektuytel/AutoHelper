@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Application.Conversations.Commands.CreateNotificationMessage;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
@@ -13,6 +14,7 @@ using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Domain;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
@@ -93,6 +95,26 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         _context.VehicleServiceLogs.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
+
+        // Send email to garage owner
+        try
+        {
+            var command = new CreateNotificationCommand(
+                request.VehicleLicensePlate,
+                NotificationType.GarageServiceReviewReminder,
+                request.GarageService!.Garage.Lookup.ConversationContactEmail,
+                request.GarageService.Garage.Lookup.ConversationContactWhatsappNumber
+            );
+
+            var notification = await _sender.Send(command, cancellationToken);
+
+
+        }
+        catch (Exception)
+        {
+            // TODO: Admin should fix this exception
+            throw;
+        }
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }

@@ -14,8 +14,9 @@ using MediatR;
 using AutoHelper.Application.Conversations._DTOs;
 using Hangfire;
 using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Conversations.Commands.SendMessage;
+using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 using System.Text.Json.Serialization;
+using AutoHelper.Domain.Entities;
 
 namespace AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
 
@@ -50,9 +51,9 @@ public record CreateConversationMessageCommand : IRequest<ConversationMessageIte
 public class CreateGarageConversationBatchCommandHandler : IRequestHandler<CreateConversationMessageCommand, ConversationMessageItem>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IPhoneNumberHelper _phoneNumberHelper;
+    private readonly IIdentificationHelper _phoneNumberHelper;
 
-    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context, IPhoneNumberHelper phoneNumberHelper)
+    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context, IIdentificationHelper phoneNumberHelper)
     {
         _context = context;
         _phoneNumberHelper = phoneNumberHelper;

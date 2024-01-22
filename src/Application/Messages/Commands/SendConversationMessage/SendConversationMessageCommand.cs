@@ -12,8 +12,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using static System.Net.Mime.MediaTypeNames;
+using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Conversations.Commands.SendMessage;
+namespace AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 
 public record SendConversationMessageCommand : IQueueRequest<string>
 {

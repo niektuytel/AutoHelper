@@ -14,10 +14,11 @@ using MediatR;
 using AutoHelper.Application.Conversations._DTOs;
 using Hangfire;
 using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Conversations.Commands.SendMessage;
+using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 using System.Text.Json.Serialization;
 using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
 using System.Threading;
+using AutoHelper.Domain.Entities;
 
 namespace AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
 
@@ -37,11 +38,13 @@ public record CreateGarageConversationItemsCommand : IRequest<IEnumerable<Conver
 public class CreateGarageConversationBatchCommandHandler : IRequestHandler<CreateGarageConversationItemsCommand, IEnumerable<ConversationItem>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IIdentificationHelper _identificationHelper;
     private readonly ISender _mediator;
 
-    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context, ISender mediator)
+    public CreateGarageConversationBatchCommandHandler(IApplicationDbContext context, IIdentificationHelper identificationHelper, ISender mediator)
     {
         _context = context;
+        _identificationHelper = identificationHelper;
         _mediator = mediator;
     }
 
@@ -100,17 +103,8 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
 
     private async Task<ConversationMessageItem> CreateConversationMessage(ConversationItem conversation, CreateGarageConversationItemsCommand request, VehicleService garage, CancellationToken token)
     {
-        var senderIdentifier = request.UserEmailAddress ?? "";
-        if (string.IsNullOrWhiteSpace(senderIdentifier))
-        {
-            senderIdentifier = request.UserWhatsappNumber;
-        };
-        
-        var receiverIdentifier = garage.ConversationEmailAddress;
-        if (string.IsNullOrWhiteSpace(receiverIdentifier))
-        {
-            receiverIdentifier = garage.ConversationWhatsappNumber;
-        }
+        var senderIdentifier = _identificationHelper.GetValidIdentifier(request.UserEmailAddress, request.UserWhatsappNumber);
+        var receiverIdentifier = _identificationHelper.GetValidIdentifier(garage.ConversationEmailAddress, garage.ConversationWhatsappNumber);
 
         var command = new CreateConversationMessageCommand(conversation)
         {

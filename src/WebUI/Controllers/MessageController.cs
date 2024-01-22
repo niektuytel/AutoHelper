@@ -8,7 +8,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
 using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
 using AutoHelper.Application.Conversations.Commands.ReceiveMessage;
-using AutoHelper.Application.Conversations.Commands.SendMessage;
+using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 using AutoHelper.Hangfire.MediatR;
 using Azure.Core;
 using Hangfire;
@@ -27,14 +27,14 @@ using WhatsappBusiness.CloudApi.Webhook;
 
 namespace AutoHelper.WebUI.Controllers;
 
-public class ConversationController : ApiControllerBase
+public class MessageController : ApiControllerBase
 {
     const string VerifyToken = "Autohelper";
     private readonly IBackgroundJobClient _backgroundJobClient;
     private readonly IWhatsappResponseService _whatsappResponseService;
-    private readonly ILogger<ConversationController> _logger;
+    private readonly ILogger<MessageController> _logger;
 
-    public ConversationController(IBackgroundJobClient backgroundJobClient, IWhatsappResponseService whatsappResponseService, ILogger<ConversationController> logger)
+    public MessageController(IBackgroundJobClient backgroundJobClient, IWhatsappResponseService whatsappResponseService, ILogger<MessageController> logger)
     {
         _backgroundJobClient = backgroundJobClient;
         _whatsappResponseService = whatsappResponseService;

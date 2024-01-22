@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations._DTOs;
-using AutoHelper.Application.Conversations.Commands.SendMessage;
+using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;

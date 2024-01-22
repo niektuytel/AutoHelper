@@ -22,7 +22,7 @@ using Hangfire.Common;
 using Hangfire.SqlServer;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
-using AutoHelper.Application.Conversations.Commands.SendMessage;
+using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
 
 namespace AutoHelper.Hangfire;
 

@@ -9,13 +9,13 @@ using WhatsappBusiness.CloudApi.Interfaces;
 
 namespace AutoHelper.Messaging.Helpers;
 
-public class PhoneNumberHelper : IPhoneNumberHelper
+public class IdentificationHelper : IIdentificationHelper
 {
     private readonly IConfiguration _configuration;
     private readonly bool _isDevelopment;
     private readonly string _developPhoneNumberId;
 
-    public PhoneNumberHelper(IConfiguration configuration)
+    public IdentificationHelper(IConfiguration configuration)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _isDevelopment = _configuration["Environment"] == "Development";
@@ -45,4 +45,19 @@ public class PhoneNumberHelper : IPhoneNumberHelper
         return phoneNumber;
     }
 
+    public string GetValidIdentifier(string? emailAddress, string? whatsappNumber)
+    {
+        if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(whatsappNumber))
+        {
+            throw new ArgumentException("At least one of the parameters must be filled");
+        }
+
+        var identifier = emailAddress;
+        if (string.IsNullOrWhiteSpace(identifier))
+        {
+            identifier = GetPhoneNumberId(whatsappNumber!);
+        };
+
+        return identifier;
+    }
 }

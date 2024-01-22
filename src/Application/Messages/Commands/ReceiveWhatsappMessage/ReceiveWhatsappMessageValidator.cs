@@ -14,9 +14,9 @@ namespace AutoHelper.Application.Conversations.Commands.ReceiveWhatsappMessage;
 public class ReceiveWhatsappMessageValidator : AbstractValidator<ReceiveWhatsappMessageCommand>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IPhoneNumberHelper _phoneNumberHelper;
+    private readonly IIdentificationHelper _phoneNumberHelper;
 
-    public ReceiveWhatsappMessageValidator(IApplicationDbContext context, IPhoneNumberHelper phoneNumberHelper)
+    public ReceiveWhatsappMessageValidator(IApplicationDbContext context, IIdentificationHelper phoneNumberHelper)
     {
         _context = context;
         _phoneNumberHelper = phoneNumberHelper;

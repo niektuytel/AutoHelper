@@ -1,7 +1,9 @@
 ﻿using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -19,6 +21,7 @@ public interface IApplicationDbContext
     DbSet<GarageLookupItem> GarageLookups { get; }
     DbSet<GarageLookupServiceItem> GarageLookupServices { get; }
 
+    DbSet<NotificationItem> Notifications { get; }
     DbSet<ConversationItem> Conversations { get; }
     DbSet<ConversationMessageItem> ConversationMessages { get; }
 

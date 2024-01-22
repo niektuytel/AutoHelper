@@ -29,7 +29,7 @@ public static class ConfigureService
         services.AddWhatsAppBusinessCloudApiService(whatsAppBusinessApiConfiguration);
         services.AddScoped<IWhatsappTemplateService, WhatsappTemplateService>();
         services.AddScoped<IWhatsappResponseService, WhatsappResponseService>();
-        services.AddScoped<IPhoneNumberHelper, PhoneNumberHelper>();
+        services.AddScoped<IIdentification, PhoneNumberHelper>();
         services.AddScoped<IMailingService, GraphEmailService>();
 
     }

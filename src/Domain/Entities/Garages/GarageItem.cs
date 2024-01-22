@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Domain.Entities.Conversations;
 using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Domain.Entities.Garages;

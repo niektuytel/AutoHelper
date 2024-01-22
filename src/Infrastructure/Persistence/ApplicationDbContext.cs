@@ -5,8 +5,10 @@ using System.Reflection.Emit;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
+using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
+using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Identity;
@@ -47,6 +49,7 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<GarageLookupItem> GarageLookups => Set<GarageLookupItem>();
     public DbSet<GarageLookupServiceItem> GarageLookupServices => Set<GarageLookupServiceItem>();
 
+    public DbSet<NotificationItem> Notifications => Set<NotificationItem>();
     public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
     public DbSet<ConversationMessageItem> ConversationMessages => Set<ConversationMessageItem>();
 
@@ -81,18 +84,6 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
             .HasOne(e => e.Garage)
             .WithMany(g => g.Services)
             .HasForeignKey(e => e.GarageId);
-
-        //builder.Entity<ConversationItem>()
-        //    .HasOne(e => e.RelatedVehicleLookup)
-        //    .WithOne(g => g.LicensePlate)
-        //    .HasForeignKey(e => e.VehicleLicensePlate)
-        //    .OnDelete(DeleteBehavior.NoAction);
-
-        //builder.Entity<ConversationMessageItem>()
-        //    .HasOne(e => e.Conversation)
-        //    .WithMany(g => g.Messages)
-        //    .HasForeignKey(e => e.ConversationId)
-        //    .OnDelete(DeleteBehavior.NoAction);
 
     }
 
