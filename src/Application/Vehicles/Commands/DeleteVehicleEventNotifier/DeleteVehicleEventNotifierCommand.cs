@@ -54,20 +54,13 @@ public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVe
 
     public async Task<NotificationItemDto> Handle(DeleteVehicleEventNotifierCommand request, CancellationToken cancellationToken)
     {
-        var command = new CreateNotificationCommand(
-            request.VehicleLicensePlate,
-            NotificationType.VehicleServiceNotification,
-            request.ReceiverEmailAddress,
-            request.ReceiverWhatsappNumber,
-            request.Cron
-        );
-        var notification = await _sender.Send(command, cancellationToken);
-
-        // Schedule the notification
+        // TODO: STOP THE SCHEDULED NOTIFICATION
         var schuduleCommand = new ScheduleNotificationCommand(notification);
         _sender.Schedule(() => _sender.Send(schuduleCommand, cancellationToken), notification.Cron);
 
+        var result = _context.Notifications.Remove(request.Notification!);
+        await _context.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<NotificationItemDto>(notification);
+        return _mapper.Map<NotificationItemDto>(result);
     }
 }
