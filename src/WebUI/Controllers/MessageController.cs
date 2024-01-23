@@ -7,12 +7,17 @@ using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
 using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
+using AutoHelper.Application.Conversations.Commands.CreateNotificationMessage;
 using AutoHelper.Application.Conversations.Commands.ReceiveMessage;
 using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Hangfire.MediatR;
 using Azure.Core;
+using GoogleApi.Entities.Interfaces;
 using Hangfire;
 using HtmlAgilityPack;
+using IdentityModel;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,7 +46,7 @@ public class MessageController : ApiControllerBase
         _logger = logger;
     }
 
-    [HttpPost($"{nameof(ReceiveEmailMessage)}")]
+    [HttpPost(nameof(ReceiveEmailMessage))]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
@@ -137,7 +142,7 @@ public class MessageController : ApiControllerBase
         return Ok(new { Message = "Handling message" });
     }
 
-    [HttpPost($"{nameof(StartGarageConversation)}")]
+    [HttpPost(nameof(StartGarageConversation))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<string> StartGarageConversation([FromBody] CreateGarageConversationItemsCommand command, CancellationToken cancellationToken)
@@ -170,4 +175,69 @@ public class MessageController : ApiControllerBase
         return $"Conversation-IDs: [{string.Join(", ", conversationIds)}]";
     }
 
+    [HttpDelete(nameof(RemoveServiceReminder))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<string> RemoveServiceReminder([FromBody] CreateConversationMessageCommand command, CancellationToken cancellationToken)
+    {
+
+        // Send email to user to notify that the service log is canceled/deleted
+        try
+        {
+            var command = new CreateNotificationCommand(
+                request.ServiceLog.VehicleLicensePlate,
+                NotificationType.UserServiceReminderDeleted,
+                entity.ReporterEmailAddress,
+                entity.ReporterPhoneNumber
+            );
+
+            var notification = await _sender.Send(command, cancellationToken);
+        }
+        catch (Exception)
+        {
+            // TODO: Admin should fix this exception
+            throw;
+        }
+
+        //var conversationMessage = await Mediator.Send(command, cancellationToken);
+
+        //var queue = nameof(SendConversationMessageCommand);
+        //var messageCommand = new SendConversationMessageCommand(conversationMessage);
+        //Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
+
+        return $"Conversation-ID:";// " {conversationMessage.ConversationId}";
+    }
+
+    [HttpPost(nameof(AddServiceReminder))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<string> AddServiceReminder([FromBody] CreateConversationMessageCommand command, CancellationToken cancellationToken)
+    {
+
+        // Send email to user to notify that the service log is canceled/deleted
+        try
+        {
+            var command = new CreateNotificationCommand(
+                request.ServiceLog.VehicleLicensePlate,
+                NotificationType.UserServiceReminder,
+                entity.ReporterEmailAddress,
+                entity.ReporterPhoneNumber
+            );
+
+            var notification = await _sender.Send(command, cancellationToken);
+        }
+        catch (Exception)
+        {
+            // TODO: Admin should fix this exception
+            throw;
+        }
+
+        //var conversationMessage = await Mediator.Send(command, cancellationToken);
+
+        //var queue = nameof(SendConversationMessageCommand);
+        //var messageCommand = new SendConversationMessageCommand(conversationMessage);
+        //Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
+
+        return $"Conversation-ID:";// " {conversationMessage.ConversationId}";
+    }
 }

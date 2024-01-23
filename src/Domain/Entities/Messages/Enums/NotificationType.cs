@@ -4,7 +4,8 @@ public enum NotificationType
 {
     Other = 0,
     GarageServiceReviewReminder = 1,
-    UserServiceReviewConfirmation = 2,
-    UserServiceReminder = 3,
-    UserServiceReminderDeleted = 4,
+    UserServiceReviewApproved = 2,
+    UserServiceReviewDeclined = 3,
+    UserServiceReminder = 4,
+    UserServiceReminderDeleted = 5,
 }

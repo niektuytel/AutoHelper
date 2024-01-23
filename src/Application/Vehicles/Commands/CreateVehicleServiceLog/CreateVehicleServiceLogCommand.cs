@@ -96,7 +96,7 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        // Send email to garage owner
+        // Send email to garage owner to notify about new service log
         try
         {
             var command = new CreateNotificationCommand(
