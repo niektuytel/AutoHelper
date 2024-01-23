@@ -23,6 +23,13 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using System;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
+using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
+using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
+using AutoHelper.Domain.Entities.Messages.Enums;
+using Azure.Core;
+using MediatR;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
+using AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -93,6 +100,22 @@ public class VehicleController : ApiControllerBase
             };
         }
 
+        return await Mediator.Send(command, cancellationToken);
+    }
+
+    [HttpPost(nameof(CreateServiceEventNotifier))]
+    [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<NotificationItemDto> CreateServiceEventNotifier([FromBody] CreateVehicleEventNotifierCommand command, CancellationToken cancellationToken)
+    {
+        return await Mediator.Send(command, cancellationToken);
+    }
+
+    [HttpDelete(nameof(DeleteServiceEventNotifier))]
+    [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<NotificationItemDto> DeleteServiceEventNotifier([FromBody] DeleteVehicleEventNotifierCommand command, CancellationToken cancellationToken)
+    {
         return await Mediator.Send(command, cancellationToken);
     }
 

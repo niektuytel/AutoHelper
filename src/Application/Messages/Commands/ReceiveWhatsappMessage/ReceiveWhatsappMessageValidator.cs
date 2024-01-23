@@ -2,13 +2,13 @@
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.ReceiveMessage;
+using AutoHelper.Application.Messages.Commands.ReceiveMessage;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.ReceiveWhatsappMessage;
+namespace AutoHelper.Application.Messages.Commands.ReceiveWhatsappMessage;
 
 
 public class ReceiveWhatsappMessageValidator : AbstractValidator<ReceiveWhatsappMessageCommand>

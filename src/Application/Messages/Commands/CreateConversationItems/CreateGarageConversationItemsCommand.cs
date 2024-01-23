@@ -11,16 +11,16 @@ using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Application.Messages._DTOs;
 using Hangfire;
 using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 using System.Text.Json.Serialization;
-using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
+using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
 using System.Threading;
 using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
+namespace AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
 
 public record CreateGarageConversationItemsCommand : IRequest<IEnumerable<ConversationItem>>
 {

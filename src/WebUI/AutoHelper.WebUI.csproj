@@ -58,6 +58,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="Controllers\OidcConfigurationController.cs" />
       <Compile Remove="Pages\TestTemplate.cshtml.cs" />
     </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿using AutoHelper.Application.Conversations._DTOs;
+﻿using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Domain.Entities.Garages;

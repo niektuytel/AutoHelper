@@ -5,11 +5,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
-using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
-using AutoHelper.Application.Conversations.Commands.CreateNotificationMessage;
-using AutoHelper.Application.Conversations.Commands.ReceiveMessage;
-using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
+using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
+using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
+using AutoHelper.Application.Messages.Commands.ReceiveMessage;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
+using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Hangfire.MediatR;
 using Azure.Core;
@@ -175,69 +177,4 @@ public class MessageController : ApiControllerBase
         return $"Conversation-IDs: [{string.Join(", ", conversationIds)}]";
     }
 
-    [HttpDelete(nameof(RemoveServiceReminder))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<string> RemoveServiceReminder([FromBody] CreateConversationMessageCommand command, CancellationToken cancellationToken)
-    {
-
-        // Send email to user to notify that the service log is canceled/deleted
-        try
-        {
-            var command = new CreateNotificationCommand(
-                request.ServiceLog.VehicleLicensePlate,
-                NotificationType.UserServiceReminderDeleted,
-                entity.ReporterEmailAddress,
-                entity.ReporterPhoneNumber
-            );
-
-            var notification = await _sender.Send(command, cancellationToken);
-        }
-        catch (Exception)
-        {
-            // TODO: Admin should fix this exception
-            throw;
-        }
-
-        //var conversationMessage = await Mediator.Send(command, cancellationToken);
-
-        //var queue = nameof(SendConversationMessageCommand);
-        //var messageCommand = new SendConversationMessageCommand(conversationMessage);
-        //Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
-
-        return $"Conversation-ID:";// " {conversationMessage.ConversationId}";
-    }
-
-    [HttpPost(nameof(AddServiceReminder))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<string> AddServiceReminder([FromBody] CreateConversationMessageCommand command, CancellationToken cancellationToken)
-    {
-
-        // Send email to user to notify that the service log is canceled/deleted
-        try
-        {
-            var command = new CreateNotificationCommand(
-                request.ServiceLog.VehicleLicensePlate,
-                NotificationType.UserServiceReminder,
-                entity.ReporterEmailAddress,
-                entity.ReporterPhoneNumber
-            );
-
-            var notification = await _sender.Send(command, cancellationToken);
-        }
-        catch (Exception)
-        {
-            // TODO: Admin should fix this exception
-            throw;
-        }
-
-        //var conversationMessage = await Mediator.Send(command, cancellationToken);
-
-        //var queue = nameof(SendConversationMessageCommand);
-        //var messageCommand = new SendConversationMessageCommand(conversationMessage);
-        //Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
-
-        return $"Conversation-ID:";// " {conversationMessage.ConversationId}";
-    }
 }

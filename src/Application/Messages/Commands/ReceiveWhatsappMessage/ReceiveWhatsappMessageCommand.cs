@@ -1,13 +1,13 @@
 ﻿using System.Net.Mail;
 using System.Text.Json.Serialization;
-using AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
-using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using MediatR;
 
-namespace AutoHelper.Application.Conversations.Commands.ReceiveMessage;
+namespace AutoHelper.Application.Messages.Commands.ReceiveMessage;
 
 public class ReceiveWhatsappMessageCommand : IRequest<ConversationMessageItem>
 {

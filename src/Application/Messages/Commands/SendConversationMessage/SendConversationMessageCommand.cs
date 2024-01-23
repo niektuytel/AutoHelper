@@ -14,7 +14,7 @@ using Microsoft.Extensions.Configuration;
 using static System.Net.Mime.MediaTypeNames;
 using AutoHelper.Domain.Entities;
 
-namespace AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+namespace AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
 public record SendConversationMessageCommand : IQueueRequest<string>
 {

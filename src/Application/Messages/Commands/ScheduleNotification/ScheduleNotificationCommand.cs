@@ -23,47 +23,21 @@ using AutoHelper.Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
+namespace AutoHelper.Application.Messages.Commands.ScheduleNotification;
 
-public record CreateNotificationCommand : IRequest<NotificationItem>
+public record ScheduleNotificationCommand : IRequest<NotificationItem>
 {
 
-    public CreateNotificationCommand()
+    public ScheduleNotificationCommand(NotificationItem notification)
     {
-        
+        Notification = notification;
     }
 
-    public CreateNotificationCommand(
-        string vehicleLicensePlate, 
-        NotificationType type, 
-        string? emailAddress = null,
-        string? whatsappNumber = null,
-        string? cron = null
-    )
-    {
-        VehicleLicensePlate = vehicleLicensePlate;
-        Type = type;
-        ReceiverEmailAddress = emailAddress;
-        ReceiverWhatsappNumber = whatsappNumber;
-        Cron = cron;
-    }
-
-    public string VehicleLicensePlate { get; set; } = null!;
-
-    public NotificationType Type { get; set; }
-
-    public string? Cron { get; set; } = null;
-
-    public string? ReceiverEmailAddress { get; set; } = null;
-
-    public string? ReceiverWhatsappNumber { get; set; } = null;
-
-    [JsonIgnore]
-    public VehicleLookupItem? VehicleLookup { get; set; } = null!;
+    public NotificationItem Notification { get; set; }
 
 }
 
-public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNotificationCommand, NotificationItem>
+public class CreateNotificationMessageCommandHandler : IRequestHandler<ScheduleNotificationCommand, NotificationItem>
 {
     private readonly IApplicationDbContext _context;
     private readonly IIdentificationHelper _identificationHelper;
@@ -74,7 +48,7 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
         _identificationHelper = identificationHelper;
     }
 
-    public async Task<NotificationItem> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
+    public async Task<NotificationItem> Handle(ScheduleNotificationCommand request, CancellationToken cancellationToken)
     {
         var receiverIdentifier = _identificationHelper.GetValidIdentifier(request.ReceiverEmailAddress, request.ReceiverWhatsappNumber);
         var receiverType = receiverIdentifier!.GetContactType();
@@ -84,7 +58,7 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
             Cron = request.Cron,
             Type = request.Type,
             ReceiverContactType = receiverType,
-            ReceiverContactIdentifier = receiverIdentifier, 
+            ReceiverContactIdentifier = receiverIdentifier,
             VehicleLicensePlate = request.VehicleLicensePlate
         };
 

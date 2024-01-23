@@ -1,4 +1,4 @@
-﻿namespace AutoHelper.Application.Conversations._DTOs;
+﻿namespace AutoHelper.Application.Messages._DTOs;
 
 public class VehicleTechnicalDtoItem
 {

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations.Commands.CreateNotificationMessage;
+using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleTimeline;
 using AutoHelper.Domain.Entities.Garages;

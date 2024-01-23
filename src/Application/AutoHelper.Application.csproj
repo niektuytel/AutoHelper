@@ -55,7 +55,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Conversations\Commands\CreateNotificationMessage\" />
+      <Folder Include="Messages\Commands\SendNotificationMessage\" />
     </ItemGroup>
 
 </Project>

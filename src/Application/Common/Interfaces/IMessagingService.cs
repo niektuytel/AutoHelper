@@ -1,4 +1,4 @@
-﻿using AutoHelper.Application.Conversations._DTOs;
+﻿using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Application.Common.Interfaces;

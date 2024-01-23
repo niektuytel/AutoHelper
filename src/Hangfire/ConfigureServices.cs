@@ -21,8 +21,8 @@ using System.Net;
 using Hangfire.Common;
 using Hangfire.SqlServer;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
-using AutoHelper.Application.Conversations.Commands.CreateGarageConversationItems;
-using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
 namespace AutoHelper.Hangfire;
 

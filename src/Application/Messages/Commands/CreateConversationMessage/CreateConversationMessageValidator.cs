@@ -3,14 +3,14 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations._DTOs;
-using AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+using AutoHelper.Application.Messages._DTOs;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.CreateConversationMessage;
+namespace AutoHelper.Application.Messages.Commands.CreateConversationMessage;
 
 public class CreateConversationMessageValidator : AbstractValidator<CreateConversationMessageCommand>
 {

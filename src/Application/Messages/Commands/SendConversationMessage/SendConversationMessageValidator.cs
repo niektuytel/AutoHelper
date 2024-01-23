@@ -2,14 +2,14 @@
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.SendConversationMessage;
+namespace AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
 public class SendConversationMessageValidator : AbstractValidator<SendConversationMessageCommand>
 {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using AutoHelper.Domain.Entities.Vehicles;
 using NetTopologySuite.Geometries;
+using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Domain.Entities.Garages;
 

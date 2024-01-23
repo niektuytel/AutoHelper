@@ -2,7 +2,7 @@
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;

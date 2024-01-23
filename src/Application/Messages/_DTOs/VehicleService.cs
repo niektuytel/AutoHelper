@@ -1,7 +1,7 @@
 ﻿using AutoHelper.Domain.Entities.Conversations.Enums;
 using AutoHelper.Domain.Entities.Garages;
 
-namespace AutoHelper.Application.Conversations._DTOs;
+namespace AutoHelper.Application.Messages._DTOs;
 
 public class VehicleService
 {

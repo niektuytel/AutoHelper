@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
-using AutoHelper.Application.Conversations._DTOs;
+using AutoHelper.Application.Messages._DTOs;
 using System.Text.Json;
 using AutoHelper.Messaging.Models;
 using Microsoft.Extensions.Caching.Memory;

@@ -7,7 +7,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Conversations.Commands.ReceiveMessage;
+namespace AutoHelper.Application.Messages.Commands.ReceiveMessage;
 
 
 public class ReceiveEmailMessageValidator : AbstractValidator<ReceiveEmailMessageCommand>
