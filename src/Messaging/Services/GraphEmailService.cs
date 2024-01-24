@@ -10,6 +10,7 @@ using AutoHelper.Messaging.Templates;
 using WhatsappBusiness.CloudApi.Response;
 using RazorEngine.Text;
 using AutoHelper.Domain.Entities.Conversations;
+using AutoHelper.WebUI.Controllers;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -315,4 +316,8 @@ internal class GraphEmailService : IMailingService
         }
     }
 
+    public Task SendNotificationMessage(NotificationItemDto notification, CancellationToken cancellationToken)
+    {
+        // throw new NotImplementedException();
+    }
 }

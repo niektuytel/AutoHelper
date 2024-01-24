@@ -28,9 +28,12 @@ namespace AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
 
 public record DeleteVehicleEventNotifierCommand : IRequest<NotificationItemDto>
 {
-    public string Identifier { get; set; } = null!;
+    public DeleteVehicleEventNotifierCommand(Guid id)
+    {
+        Id = id;
+    }
 
-    public string VehicleLicensePlate { get; set; } = null!;
+    public Guid Id { get; set; }
 
     [JsonIgnore]
     public NotificationItem? Notification { get; set; } = null!;
@@ -39,25 +42,17 @@ public record DeleteVehicleEventNotifierCommand : IRequest<NotificationItemDto>
 
 public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVehicleEventNotifierCommand, NotificationItemDto>
 {
-    private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly IMediator _sender;
 
-    public DeleteVehicleEventNotifierCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IMediator sender)
+    public DeleteVehicleEventNotifierCommandHandler(IApplicationDbContext context, IMapper mapper)
     {
-        _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
-        _sender = sender;
     }
 
     public async Task<NotificationItemDto> Handle(DeleteVehicleEventNotifierCommand request, CancellationToken cancellationToken)
     {
-        // TODO: STOP THE SCHEDULED NOTIFICATION
-        var schuduleCommand = new ScheduleNotificationCommand(notification);
-        _sender.Schedule(() => _sender.Send(schuduleCommand, cancellationToken), notification.Cron);
-
         var result = _context.Notifications.Remove(request.Notification!);
         await _context.SaveChangesAsync(cancellationToken);
 

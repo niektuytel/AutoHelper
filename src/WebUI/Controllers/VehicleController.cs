@@ -30,6 +30,7 @@ using Azure.Core;
 using MediatR;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -74,7 +75,7 @@ public class VehicleController : ApiControllerBase
     [HttpGet($"{nameof(GetTimeline)}")]
     [ProducesResponseType(typeof(VehicleTimelineDtoItem[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount=5)
+    public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount = 5)
     {
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
@@ -108,15 +109,24 @@ public class VehicleController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<NotificationItemDto> CreateServiceEventNotifier([FromBody] CreateVehicleEventNotifierCommand command, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(command, cancellationToken);
+        var notification = await Mediator.Send(command, cancellationToken);
+
+        // Schedule the notification
+        var schuduleCommand = new SendNotificationMessageCommand(notification);
+        Mediator.StartRecurringJob(notification.Id.ToString(), schuduleCommand, notification.Cron!);
+
+        return notification;
     }
 
-    [HttpDelete(nameof(DeleteServiceEventNotifier))]
+    [HttpDelete($"{nameof(DeleteServiceEventNotifier)}/{{id}}")]
     [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<NotificationItemDto> DeleteServiceEventNotifier([FromBody] DeleteVehicleEventNotifierCommand command, CancellationToken cancellationToken)
+    public async Task<NotificationItemDto> DeleteServiceEventNotifier([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(command, cancellationToken);
+        Mediator.RemoveRecurringJob(id.ToString());
+
+        var notification = await Mediator.Send(new DeleteVehicleEventNotifierCommand(id), cancellationToken);
+        return notification;
     }
 
 }

@@ -21,12 +21,7 @@ public class DeleteVehicleEventNotifierValidator : AbstractValidator<DeleteVehic
 
     private async Task<bool> BeValidAndExistingIdentifier(DeleteVehicleEventNotifierCommand command, CancellationToken cancellationToken)
     {
-        var licensePlate = command.VehicleLicensePlate.ToUpper().Replace("-", "");
-        var entity = await _context.Notifications.FirstOrDefaultAsync(x => 
-            x.ReceiverContactIdentifier == command.Identifier && 
-            x.VehicleLicensePlate == licensePlate, 
-            cancellationToken
-        );
+        var entity = await _context.Notifications.FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 
         command.Notification = entity;
         return entity != null;

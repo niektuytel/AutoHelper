@@ -21,6 +21,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AutoHelper.Application.Messages.Commands.ScheduleNotification;
 using AutoHelper.WebUI.Controllers;
+using Hangfire;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 
@@ -45,9 +46,9 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly IMediator _sender;
+    private readonly ISender _sender;
 
-    public CreateVehicleEventNotifierCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, IMediator sender)
+    public CreateVehicleEventNotifierCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper, ISender sender)
     {
         _blobStorageService = blobStorageService;
         _context = context;
@@ -65,11 +66,6 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
             request.Cron
         );
         var notification = await _sender.Send(command, cancellationToken);
-
-        // Schedule the notification
-        var schuduleCommand = new ScheduleNotificationCommand(notification);
-        _sender.Schedule(() => _sender.Send(schuduleCommand, cancellationToken), notification.Cron);
-
 
         return _mapper.Map<NotificationItemDto>(notification);
     }

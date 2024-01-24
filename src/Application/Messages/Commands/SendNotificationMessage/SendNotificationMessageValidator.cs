@@ -10,13 +10,13 @@ using AutoHelper.Domain.Entities.Conversations.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Messages.Commands.ScheduleNotification;
+namespace AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 
-public class ScheduleNotificationValidator : AbstractValidator<ScheduleNotificationCommand>
+public class SendNotificationMessageValidator : AbstractValidator<SendNotificationMessageCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public ScheduleNotificationValidator(IApplicationDbContext context)
+    public SendNotificationMessageValidator(IApplicationDbContext context)
     {
         _context = context;
 

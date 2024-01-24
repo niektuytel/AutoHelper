@@ -44,16 +44,13 @@ public static class MediatorExtensions
         }
     }
 
-    public static void RecurringJobWeekly(this IMediator mediator, string jobId, IRequest request, bool enabled)
+    public static void StartRecurringJob(this ISender mediator, string jobId, IRequest request, string cron)
     {
-        if (enabled)
-        {
-            RecurringJob.AddOrUpdate<MediatorHangfireBridge>(jobId, bridge => bridge.Send(request, CancellationToken.None), Cron.Weekly);
-        }
-        else
-        {
-            Console.Write($"Recurring jobs [{jobId}] are disabled.");
-            RecurringJob.RemoveIfExists(jobId);
-        }
+        RecurringJob.AddOrUpdate<MediatorHangfireBridge>(jobId, bridge => bridge.Send(request, CancellationToken.None), cron);
+    }
+
+    public static void RemoveRecurringJob(this ISender mediator, string jobId)
+    {
+        RecurringJob.RemoveIfExists(jobId);
     }
 }
