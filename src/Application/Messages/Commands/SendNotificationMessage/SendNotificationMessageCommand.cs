@@ -60,7 +60,6 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
         var receiverService = GetMessagingService(receiverType);
 
         await receiverService.SendNotificationMessage(request.Notification, cancellationToken);
-
         return Unit.Value;
     }
 

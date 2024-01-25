@@ -19,9 +19,13 @@ public class NotificationItemDto : IMapFrom<NotificationItem>
 
     public string JobId { get; set; } = null!;
 
+    public DateTime TriggerDate { get; set; }
+
     public PriorityLevel Priority { get; set; }
 
-    public NotificationType Type { get; set; }
+    public GeneralNotificationType GeneralType { get; set; }
+
+    public VehicleNotificationType VehicleType { get; set; }
 
     public ContactType ReceiverContactType { get; set; }
 
@@ -34,8 +38,10 @@ public class NotificationItemDto : IMapFrom<NotificationItem>
         profile.CreateMap<NotificationItem, NotificationItemDto>()
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
             .ForMember(d => d.JobId, opt => opt.MapFrom(s => s.JobId))
+            .ForMember(d => d.TriggerDate, opt => opt.MapFrom(s => s.TriggerDate))
             .ForMember(d => d.Priority, opt => opt.MapFrom(s => s.Priority))
-            .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
+            .ForMember(d => d.GeneralType, opt => opt.MapFrom(s => s.GeneralType))
+            .ForMember(d => d.VehicleType, opt => opt.MapFrom(s => s.VehicleType))
             .ForMember(d => d.ReceiverContactType, opt => opt.MapFrom(s => s.ReceiverContactType))
             .ForMember(d => d.ReceiverContactIdentifier, opt => opt.MapFrom(s => s.ReceiverContactIdentifier))
             .ForMember(d => d.VehicleLicensePlate, opt => opt.MapFrom(s => s.VehicleLicensePlate));

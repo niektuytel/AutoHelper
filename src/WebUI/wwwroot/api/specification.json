@@ -2974,11 +2974,18 @@
           "jobId": {
             "type": "string"
           },
+          "triggerDate": {
+            "type": "string",
+            "format": "date-time"
+          },
           "priority": {
             "$ref": "#/components/schemas/PriorityLevel"
           },
-          "type": {
-            "$ref": "#/components/schemas/NotificationType"
+          "generalType": {
+            "$ref": "#/components/schemas/GeneralNotificationType"
+          },
+          "vehicleType": {
+            "$ref": "#/components/schemas/VehicleNotificationType"
           },
           "receiverContactType": {
             "$ref": "#/components/schemas/ContactType"
@@ -3007,7 +3014,7 @@
           3
         ]
       },
-      "NotificationType": {
+      "GeneralNotificationType": {
         "type": "integer",
         "description": "",
         "x-enumNames": [
@@ -3023,6 +3030,28 @@
           2,
           3,
           4
+        ]
+      },
+      "VehicleNotificationType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "MOT",
+          "WinterService",
+          "WinterTyreChange",
+          "SummerTyreChange",
+          "SummerCheck",
+          "SummerService"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
         ]
       },
       "ContactType": {

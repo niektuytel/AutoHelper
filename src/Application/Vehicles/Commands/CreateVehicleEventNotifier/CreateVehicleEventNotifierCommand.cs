@@ -23,6 +23,8 @@ using AutoHelper.WebUI.Controllers;
 using Hangfire;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using AutoHelper.Hangfire.Shared.MediatR;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleNextNotification;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 
@@ -58,29 +60,37 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
 
     public async Task<NotificationItemDto> Handle(CreateVehicleEventNotifierCommand request, CancellationToken cancellationToken)
     {
-        var command = new CreateNotificationCommand(
+        // get next notifier
+        var nextNotifierQuery = new GetVehicleNextNotificationQuery(request.VehicleLicensePlate)
+        {
+            Vehicle = request.VehicleLookup // avoid db call
+        };
+        var nextNotifier = await _sender.Send(nextNotifierQuery, cancellationToken);
+
+        // create notification
+        var notificationCommand = new CreateNotificationCommand(
             request.VehicleLicensePlate,
-            NotificationType.VehicleServiceNotification,
+            nextNotifier.TriggerDate,
+            GeneralNotificationType.VehicleServiceNotification,
+            nextNotifier.NotificationType,
             request.ReceiverEmailAddress,
             request.ReceiverWhatsappNumber,
             true
         );
-        var notification = await _sender.Send(command, cancellationToken);
+        var notification = await _sender.Send(notificationCommand, cancellationToken);
 
-        // TODO: reconfigure this + calculate the next date
-        var title = $"{reque TODO st.VehicleLicensePlate}_{NotificationType.VehicleServiceNotification.ToString()}";
-        var dateTime = DateTime.Now.AddMinutes(2);
-
+        // schedule notification
+        var title = $"{request.VehicleLicensePlate}_{GeneralNotificationType.VehicleServiceNotification.ToString()}";
         var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
         var queue = nameof(SendNotificationMessageCommand);
-
-        var jobId = _sender.ScheduleJob(_backgroundJobClient, queue, title, schuduleCommand, dateTime);
-        notification.JobId = jobId;
+        var jobId = _sender.ScheduleJob(_backgroundJobClient, queue, title, schuduleCommand, nextNotifier.TriggerDate);
 
         // update notification with job id
+        notification.JobId = jobId;
         _context.Notifications.Update(notification);
         await _context.SaveChangesAsync(cancellationToken);
 
         return _mapper.Map<NotificationItemDto>(notification);
     }
+
 }

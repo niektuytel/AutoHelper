@@ -28,10 +28,22 @@ public class NotificationItem : BaseAuditableEntity
     public string? JobId { get; set; } = null;
 
     /// <summary>
+    /// When should this notification be triggered
+    /// </summary>
+    [Required]
+    public DateTime TriggerDate { get; set; }
+
+    /// <summary>
     /// What type of notification is this
     /// </summary>
     [Required]
-    public NotificationType Type { get; set; }
+    public GeneralNotificationType GeneralType { get; set; }
+
+    /// <summary>
+    /// What type of notification is this, related to the vehicle point-of-view
+    /// </summary>
+    [Required]
+    public VehicleNotificationType VehicleType { get; set; }
 
     /// <summary>
     /// Type of receiver, can be whatsapp, email, etc

@@ -65,9 +65,9 @@ public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVe
             _sender.DeleteJob(_backgroundJobClient, request.Notification.JobId);
         }
 
-        var result = _context.Notifications.Remove(request.Notification!);
+        _context.Notifications.Remove(request.Notification!);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<NotificationItemDto>(result);
+        return _mapper.Map<NotificationItemDto>(request.Notification);
     }
 }

@@ -300,6 +300,7 @@ internal class VehicleService : IVehicleService
             LicensePlate = vehicle.LicensePlate,
             DateOfMOTExpiry = vehicle.MOTExpiryDateDt,
             DateOfAscription = vehicle.RegistrationDateDt,
+            DateOfBirth = vehicle.DateOfBirthDt,
             Created = DateTime.UtcNow,
             CreatedBy = $"system",
             LastModified = DateTime.UtcNow,

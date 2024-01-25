@@ -3525,8 +3525,10 @@ export interface ITupleOfStringAndString {
 export class NotificationItemDto implements INotificationItemDto {
     id?: string;
     jobId?: string;
+    triggerDate?: Date;
     priority?: PriorityLevel;
-    type?: NotificationType;
+    generalType?: GeneralNotificationType;
+    vehicleType?: VehicleNotificationType;
     receiverContactType?: ContactType;
     receiverContactIdentifier?: string;
     vehicleLicensePlate?: string;
@@ -3544,8 +3546,10 @@ export class NotificationItemDto implements INotificationItemDto {
         if (_data) {
             this.id = _data["id"];
             this.jobId = _data["jobId"];
+            this.triggerDate = _data["triggerDate"] ? new Date(_data["triggerDate"].toString()) : <any>undefined;
             this.priority = _data["priority"];
-            this.type = _data["type"];
+            this.generalType = _data["generalType"];
+            this.vehicleType = _data["vehicleType"];
             this.receiverContactType = _data["receiverContactType"];
             this.receiverContactIdentifier = _data["receiverContactIdentifier"];
             this.vehicleLicensePlate = _data["vehicleLicensePlate"];
@@ -3563,8 +3567,10 @@ export class NotificationItemDto implements INotificationItemDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["jobId"] = this.jobId;
+        data["triggerDate"] = this.triggerDate ? this.triggerDate.toISOString() : <any>undefined;
         data["priority"] = this.priority;
-        data["type"] = this.type;
+        data["generalType"] = this.generalType;
+        data["vehicleType"] = this.vehicleType;
         data["receiverContactType"] = this.receiverContactType;
         data["receiverContactIdentifier"] = this.receiverContactIdentifier;
         data["vehicleLicensePlate"] = this.vehicleLicensePlate;
@@ -3575,8 +3581,10 @@ export class NotificationItemDto implements INotificationItemDto {
 export interface INotificationItemDto {
     id?: string;
     jobId?: string;
+    triggerDate?: Date;
     priority?: PriorityLevel;
-    type?: NotificationType;
+    generalType?: GeneralNotificationType;
+    vehicleType?: VehicleNotificationType;
     receiverContactType?: ContactType;
     receiverContactIdentifier?: string;
     vehicleLicensePlate?: string;
@@ -3589,12 +3597,22 @@ export enum PriorityLevel {
     High = 3,
 }
 
-export enum NotificationType {
+export enum GeneralNotificationType {
     Other = 0,
     GarageServiceReviewReminder = 1,
     VehicleServiceReviewApproved = 2,
     VehicleServiceReviewDeclined = 3,
     VehicleServiceNotification = 4,
+}
+
+export enum VehicleNotificationType {
+    Other = 0,
+    MOT = 1,
+    WinterService = 2,
+    WinterTyreChange = 3,
+    SummerTyreChange = 4,
+    SummerCheck = 5,
+    SummerService = 6,
 }
 
 export enum ContactType {

@@ -35,14 +35,18 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
 
     public CreateNotificationCommand(
         string vehicleLicensePlate, 
-        NotificationType type, 
+        DateTime triggerDate,
+        GeneralNotificationType generalType, 
+        VehicleNotificationType vehicleType = VehicleNotificationType.Other,
         string? emailAddress = null,
         string? whatsappNumber = null,
         bool isRecurring = false
     )
     {
         VehicleLicensePlate = vehicleLicensePlate;
-        Type = type;
+        TriggerDate = triggerDate;
+        GeneralType = generalType;
+        VehicleType = vehicleType;
         ReceiverEmailAddress = emailAddress;
         ReceiverWhatsappNumber = whatsappNumber;
         IsRecurring = isRecurring;
@@ -52,7 +56,11 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
 
     public string VehicleLicensePlate { get; set; } = null!;
 
-    public NotificationType Type { get; set; }
+    public DateTime TriggerDate { get; set; }
+
+    public GeneralNotificationType GeneralType { get; set; }
+
+    public VehicleNotificationType VehicleType { get; set; }
 
     public string? ReceiverEmailAddress { get; set; } = null;
 
@@ -81,7 +89,9 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
 
         var notification = new NotificationItem
         {
-            Type = request.Type,
+            TriggerDate = request.TriggerDate,
+            GeneralType = request.GeneralType,
+            VehicleType = request.VehicleType,
             ReceiverContactType = receiverType,
             ReceiverContactIdentifier = receiverIdentifier, 
             VehicleLicensePlate = request.VehicleLicensePlate
