@@ -25,11 +25,11 @@ using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Hangfire.Shared.MediatR;
 using Hangfire;
 
-namespace AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
+namespace AutoHelper.Application.Messages.Commands.DeleteNotification;
 
-public record DeleteVehicleEventNotifierCommand : IRequest<NotificationItemDto>
+public record DeleteNotificationCommand : IRequest<NotificationItemDto>
 {
-    public DeleteVehicleEventNotifierCommand(Guid id)
+    public DeleteNotificationCommand(Guid id)
     {
         Id = id;
     }
@@ -41,7 +41,7 @@ public record DeleteVehicleEventNotifierCommand : IRequest<NotificationItemDto>
 
 }
 
-public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVehicleEventNotifierCommand, NotificationItemDto>
+public class DeleteNotificationCommandHandler : IRequestHandler<DeleteNotificationCommand, NotificationItemDto>
 {
     private readonly IApplicationDbContext _context;
     private readonly IBackgroundJobClient _backgroundJobClient;
@@ -49,7 +49,7 @@ public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVe
     private readonly IMapper _mapper;
 
 
-    public DeleteVehicleEventNotifierCommandHandler(IApplicationDbContext context, IBackgroundJobClient backgroundJobClient, ISender sender, IMapper mapper)
+    public DeleteNotificationCommandHandler(IApplicationDbContext context, IBackgroundJobClient backgroundJobClient, ISender sender, IMapper mapper)
     {
         _context = context;
         _backgroundJobClient = backgroundJobClient;
@@ -57,7 +57,7 @@ public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVe
         _mapper = mapper;
     }
 
-    public async Task<NotificationItemDto> Handle(DeleteVehicleEventNotifierCommand request, CancellationToken cancellationToken)
+    public async Task<NotificationItemDto> Handle(DeleteNotificationCommand request, CancellationToken cancellationToken)
     {
         // Delete the job if it exists
         if (request.Notification?.JobId != null)

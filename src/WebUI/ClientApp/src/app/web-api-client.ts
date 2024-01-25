@@ -348,6 +348,264 @@ export class AdminAccountClient implements IAdminAccountClient {
     }
 }
 
+export interface ICommunicationClient {
+
+    receiveEmailMessage(message: ReceiveEmailMessageCommand): Promise<string>;
+
+    receiveWhatsappMessageGET(hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string>;
+
+    receiveWhatsappMessagePOST(): Promise<string>;
+
+    startGarageConversation(command: CreateGarageConversationItemsCommand): Promise<string>;
+
+    deleteNotification(id: string): Promise<NotificationItemDto>;
+}
+
+export class CommunicationClient implements ICommunicationClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    receiveEmailMessage(message: ReceiveEmailMessageCommand): Promise<string> {
+        let url_ = this.baseUrl + "/api/Communication/ReceiveEmailMessage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(message);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processReceiveEmailMessage(_response);
+        });
+    }
+
+    protected processReceiveEmailMessage(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result404 = resultData404 !== undefined ? resultData404 : <any>null;
+    
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    receiveWhatsappMessageGET(hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/Communication/ReceiveWhatsappMessage?";
+        if (hubChallenge === null)
+            throw new Error("The parameter 'hubChallenge' cannot be null.");
+        else if (hubChallenge !== undefined)
+            url_ += "hub.challenge=" + encodeURIComponent("" + hubChallenge) + "&";
+        if (hubVerifyToken !== undefined && hubVerifyToken !== null)
+            url_ += "hub.verify_token=" + encodeURIComponent("" + hubVerifyToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processReceiveWhatsappMessageGET(_response);
+        });
+    }
+
+    protected processReceiveWhatsappMessageGET(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result403 = ProblemDetails.fromJS(resultData403);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    receiveWhatsappMessagePOST(): Promise<string> {
+        let url_ = this.baseUrl + "/api/Communication/ReceiveWhatsappMessage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processReceiveWhatsappMessagePOST(_response);
+        });
+    }
+
+    protected processReceiveWhatsappMessagePOST(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    startGarageConversation(command: CreateGarageConversationItemsCommand): Promise<string> {
+        let url_ = this.baseUrl + "/api/Communication/StartGarageConversation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processStartGarageConversation(_response);
+        });
+    }
+
+    protected processStartGarageConversation(response: Response): Promise<string> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<string>(null as any);
+    }
+
+    deleteNotification(id: string): Promise<NotificationItemDto> {
+        let url_ = this.baseUrl + "/api/Communication/DeleteNotification/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteNotification(_response);
+        });
+    }
+
+    protected processDeleteNotification(response: Response): Promise<NotificationItemDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = NotificationItemDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = BadRequestResponse.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<NotificationItemDto>(null as any);
+    }
+}
+
 export interface IGarageAccountClient {
 
     getSettings(): Promise<GarageSettingsDtoItem>;
@@ -1275,218 +1533,6 @@ export class GarageClient implements IGarageClient {
     }
 }
 
-export interface IMessageClient {
-
-    receiveEmailMessage(message: ReceiveEmailMessageCommand): Promise<string>;
-
-    receiveWhatsappMessageGET(hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string>;
-
-    receiveWhatsappMessagePOST(): Promise<string>;
-
-    startGarageConversation(command: CreateGarageConversationItemsCommand): Promise<string>;
-}
-
-export class MessageClient implements IMessageClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    receiveEmailMessage(message: ReceiveEmailMessageCommand): Promise<string> {
-        let url_ = this.baseUrl + "/api/Message/ReceiveEmailMessage";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(message);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processReceiveEmailMessage(_response);
-        });
-    }
-
-    protected processReceiveEmailMessage(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result404 = resultData404 !== undefined ? resultData404 : <any>null;
-    
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    receiveWhatsappMessageGET(hubChallenge: number | undefined, hubVerifyToken: string | null | undefined): Promise<string> {
-        let url_ = this.baseUrl + "/api/Message/ReceiveWhatsappMessage?";
-        if (hubChallenge === null)
-            throw new Error("The parameter 'hubChallenge' cannot be null.");
-        else if (hubChallenge !== undefined)
-            url_ += "hub.challenge=" + encodeURIComponent("" + hubChallenge) + "&";
-        if (hubVerifyToken !== undefined && hubVerifyToken !== null)
-            url_ += "hub.verify_token=" + encodeURIComponent("" + hubVerifyToken) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processReceiveWhatsappMessageGET(_response);
-        });
-    }
-
-    protected processReceiveWhatsappMessageGET(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 403) {
-            return response.text().then((_responseText) => {
-            let result403: any = null;
-            let resultData403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result403 = ProblemDetails.fromJS(resultData403);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result403);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    receiveWhatsappMessagePOST(): Promise<string> {
-        let url_ = this.baseUrl + "/api/Message/ReceiveWhatsappMessage";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "POST",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processReceiveWhatsappMessagePOST(_response);
-        });
-    }
-
-    protected processReceiveWhatsappMessagePOST(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-
-    startGarageConversation(command: CreateGarageConversationItemsCommand): Promise<string> {
-        let url_ = this.baseUrl + "/api/Message/StartGarageConversation";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processStartGarageConversation(_response);
-        });
-    }
-
-    protected processStartGarageConversation(response: Response): Promise<string> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<string>(null as any);
-    }
-}
-
 export interface IVehicleClient {
 
     getSpecificationsCard(licensePlate: string | null | undefined): Promise<VehicleSpecificationsCardItem>;
@@ -1504,8 +1550,6 @@ export interface IVehicleClient {
     createServiceLog(vehicleLicensePlate: string | null | undefined, garageLookupIdentifier: string | null | undefined, garageServiceId: string | null | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, reporterName: string | null | undefined, reporterPhoneNumber: string | null | undefined, reporterEmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
 
     createServiceEventNotifier(command: CreateVehicleEventNotifierCommand): Promise<NotificationItemDto>;
-
-    deleteServiceEventNotifier(id: string): Promise<NotificationItemDto>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1826,50 +1870,6 @@ export class VehicleClient implements IVehicleClient {
         }
         return Promise.resolve<NotificationItemDto>(null as any);
     }
-
-    deleteServiceEventNotifier(id: string): Promise<NotificationItemDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/DeleteServiceEventNotifier/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_: RequestInit = {
-            method: "DELETE",
-            headers: {
-                "Accept": "application/json"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDeleteServiceEventNotifier(_response);
-        });
-    }
-
-    protected processDeleteServiceEventNotifier(response: Response): Promise<NotificationItemDto> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = NotificationItemDto.fromJS(resultData200);
-            return result200;
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<NotificationItemDto>(null as any);
-    }
 }
 
 export class BadRequestResponse implements IBadRequestResponse {
@@ -1930,6 +1930,348 @@ export interface IBadRequestResponse {
     title?: string;
     status?: number;
     errors?: { [key: string]: string; };
+}
+
+export class ReceiveEmailMessageCommand implements IReceiveEmailMessageCommand {
+    from?: string;
+    body?: string;
+
+    constructor(data?: IReceiveEmailMessageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.from = _data["from"];
+            this.body = _data["body"];
+        }
+    }
+
+    static fromJS(data: any): ReceiveEmailMessageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReceiveEmailMessageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["from"] = this.from;
+        data["body"] = this.body;
+        return data;
+    }
+}
+
+export interface IReceiveEmailMessageCommand {
+    from?: string;
+    body?: string;
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+}
+
+export class CreateGarageConversationItemsCommand implements ICreateGarageConversationItemsCommand {
+    userWhatsappNumber?: string | undefined;
+    userEmailAddress?: string | undefined;
+    messageType?: ConversationType;
+    messageContent!: string;
+    services!: VehicleService[];
+
+    constructor(data?: ICreateGarageConversationItemsCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.services = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userWhatsappNumber = _data["userWhatsappNumber"];
+            this.userEmailAddress = _data["userEmailAddress"];
+            this.messageType = _data["messageType"];
+            this.messageContent = _data["messageContent"];
+            if (Array.isArray(_data["services"])) {
+                this.services = [] as any;
+                for (let item of _data["services"])
+                    this.services!.push(VehicleService.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateGarageConversationItemsCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGarageConversationItemsCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userWhatsappNumber"] = this.userWhatsappNumber;
+        data["userEmailAddress"] = this.userEmailAddress;
+        data["messageType"] = this.messageType;
+        data["messageContent"] = this.messageContent;
+        if (Array.isArray(this.services)) {
+            data["services"] = [];
+            for (let item of this.services)
+                data["services"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICreateGarageConversationItemsCommand {
+    userWhatsappNumber?: string | undefined;
+    userEmailAddress?: string | undefined;
+    messageType?: ConversationType;
+    messageContent: string;
+    services: VehicleService[];
+}
+
+export enum ConversationType {
+    Other = 0,
+    Price = 1,
+    Appointment = 2,
+    Technical = 3,
+    RequestAQuote = 4,
+}
+
+export class VehicleService implements IVehicleService {
+    garageServiceId!: string;
+    garageServiceTitle?: string | undefined;
+    relatedGarageLookupIdentifier!: string;
+    relatedGarageLookupName!: string;
+    conversationEmailAddress?: string | undefined;
+    conversationWhatsappNumber?: string | undefined;
+    vehicleLicensePlate!: string;
+    vehicleLongitude!: string;
+    vehicleLatitude!: string;
+
+    constructor(data?: IVehicleService) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.garageServiceId = _data["garageServiceId"];
+            this.garageServiceTitle = _data["garageServiceTitle"];
+            this.relatedGarageLookupIdentifier = _data["relatedGarageLookupIdentifier"];
+            this.relatedGarageLookupName = _data["relatedGarageLookupName"];
+            this.conversationEmailAddress = _data["conversationEmailAddress"];
+            this.conversationWhatsappNumber = _data["conversationWhatsappNumber"];
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
+            this.vehicleLongitude = _data["vehicleLongitude"];
+            this.vehicleLatitude = _data["vehicleLatitude"];
+        }
+    }
+
+    static fromJS(data: any): VehicleService {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleService();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["garageServiceId"] = this.garageServiceId;
+        data["garageServiceTitle"] = this.garageServiceTitle;
+        data["relatedGarageLookupIdentifier"] = this.relatedGarageLookupIdentifier;
+        data["relatedGarageLookupName"] = this.relatedGarageLookupName;
+        data["conversationEmailAddress"] = this.conversationEmailAddress;
+        data["conversationWhatsappNumber"] = this.conversationWhatsappNumber;
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
+        data["vehicleLongitude"] = this.vehicleLongitude;
+        data["vehicleLatitude"] = this.vehicleLatitude;
+        return data;
+    }
+}
+
+export interface IVehicleService {
+    garageServiceId: string;
+    garageServiceTitle?: string | undefined;
+    relatedGarageLookupIdentifier: string;
+    relatedGarageLookupName: string;
+    conversationEmailAddress?: string | undefined;
+    conversationWhatsappNumber?: string | undefined;
+    vehicleLicensePlate: string;
+    vehicleLongitude: string;
+    vehicleLatitude: string;
+}
+
+export class NotificationItemDto implements INotificationItemDto {
+    id?: string;
+    jobId?: string;
+    triggerDate?: Date;
+    priority?: PriorityLevel;
+    generalType?: GeneralNotificationType;
+    vehicleType?: VehicleNotificationType;
+    receiverContactType?: ContactType;
+    receiverContactIdentifier?: string;
+    vehicleLicensePlate?: string;
+
+    constructor(data?: INotificationItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.jobId = _data["jobId"];
+            this.triggerDate = _data["triggerDate"] ? new Date(_data["triggerDate"].toString()) : <any>undefined;
+            this.priority = _data["priority"];
+            this.generalType = _data["generalType"];
+            this.vehicleType = _data["vehicleType"];
+            this.receiverContactType = _data["receiverContactType"];
+            this.receiverContactIdentifier = _data["receiverContactIdentifier"];
+            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
+        }
+    }
+
+    static fromJS(data: any): NotificationItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new NotificationItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["jobId"] = this.jobId;
+        data["triggerDate"] = this.triggerDate ? this.triggerDate.toISOString() : <any>undefined;
+        data["priority"] = this.priority;
+        data["generalType"] = this.generalType;
+        data["vehicleType"] = this.vehicleType;
+        data["receiverContactType"] = this.receiverContactType;
+        data["receiverContactIdentifier"] = this.receiverContactIdentifier;
+        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
+        return data;
+    }
+}
+
+export interface INotificationItemDto {
+    id?: string;
+    jobId?: string;
+    triggerDate?: Date;
+    priority?: PriorityLevel;
+    generalType?: GeneralNotificationType;
+    vehicleType?: VehicleNotificationType;
+    receiverContactType?: ContactType;
+    receiverContactIdentifier?: string;
+    vehicleLicensePlate?: string;
+}
+
+export enum PriorityLevel {
+    None = 0,
+    Low = 1,
+    Medium = 2,
+    High = 3,
+}
+
+export enum GeneralNotificationType {
+    Other = 0,
+    GarageServiceReviewReminder = 1,
+    VehicleServiceReviewApproved = 2,
+    VehicleServiceReviewDeclined = 3,
+    VehicleServiceNotification = 4,
+}
+
+export enum VehicleNotificationType {
+    Other = 0,
+    MOT = 1,
+    WinterService = 2,
+    WinterTyreChange = 3,
+    SummerTyreChange = 4,
+    SummerCheck = 5,
+    SummerService = 6,
+}
+
+export enum ContactType {
+    Email = 0,
+    WhatsApp = 1,
+    PhoneNumber = 2,
 }
 
 export class GarageSettingsDtoItem implements IGarageSettingsDtoItem {
@@ -2917,249 +3259,6 @@ export interface IGarageLookupSimplefiedDto {
     city?: string;
 }
 
-export class ReceiveEmailMessageCommand implements IReceiveEmailMessageCommand {
-    from?: string;
-    body?: string;
-
-    constructor(data?: IReceiveEmailMessageCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.from = _data["from"];
-            this.body = _data["body"];
-        }
-    }
-
-    static fromJS(data: any): ReceiveEmailMessageCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReceiveEmailMessageCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["from"] = this.from;
-        data["body"] = this.body;
-        return data;
-    }
-}
-
-export interface IReceiveEmailMessageCommand {
-    from?: string;
-    body?: string;
-}
-
-export class ProblemDetails implements IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-
-    constructor(data?: IProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            this.detail = _data["detail"];
-            this.instance = _data["instance"];
-        }
-    }
-
-    static fromJS(data: any): ProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        data["detail"] = this.detail;
-        data["instance"] = this.instance;
-        return data;
-    }
-}
-
-export interface IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-}
-
-export class CreateGarageConversationItemsCommand implements ICreateGarageConversationItemsCommand {
-    userWhatsappNumber?: string | undefined;
-    userEmailAddress?: string | undefined;
-    messageType?: ConversationType;
-    messageContent!: string;
-    services!: VehicleService[];
-
-    constructor(data?: ICreateGarageConversationItemsCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.services = [];
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userWhatsappNumber = _data["userWhatsappNumber"];
-            this.userEmailAddress = _data["userEmailAddress"];
-            this.messageType = _data["messageType"];
-            this.messageContent = _data["messageContent"];
-            if (Array.isArray(_data["services"])) {
-                this.services = [] as any;
-                for (let item of _data["services"])
-                    this.services!.push(VehicleService.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): CreateGarageConversationItemsCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateGarageConversationItemsCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userWhatsappNumber"] = this.userWhatsappNumber;
-        data["userEmailAddress"] = this.userEmailAddress;
-        data["messageType"] = this.messageType;
-        data["messageContent"] = this.messageContent;
-        if (Array.isArray(this.services)) {
-            data["services"] = [];
-            for (let item of this.services)
-                data["services"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface ICreateGarageConversationItemsCommand {
-    userWhatsappNumber?: string | undefined;
-    userEmailAddress?: string | undefined;
-    messageType?: ConversationType;
-    messageContent: string;
-    services: VehicleService[];
-}
-
-export enum ConversationType {
-    Other = 0,
-    Price = 1,
-    Appointment = 2,
-    Technical = 3,
-    RequestAQuote = 4,
-}
-
-export class VehicleService implements IVehicleService {
-    garageServiceId!: string;
-    garageServiceTitle?: string | undefined;
-    relatedGarageLookupIdentifier!: string;
-    relatedGarageLookupName!: string;
-    conversationEmailAddress?: string | undefined;
-    conversationWhatsappNumber?: string | undefined;
-    vehicleLicensePlate!: string;
-    vehicleLongitude!: string;
-    vehicleLatitude!: string;
-
-    constructor(data?: IVehicleService) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.garageServiceId = _data["garageServiceId"];
-            this.garageServiceTitle = _data["garageServiceTitle"];
-            this.relatedGarageLookupIdentifier = _data["relatedGarageLookupIdentifier"];
-            this.relatedGarageLookupName = _data["relatedGarageLookupName"];
-            this.conversationEmailAddress = _data["conversationEmailAddress"];
-            this.conversationWhatsappNumber = _data["conversationWhatsappNumber"];
-            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-            this.vehicleLongitude = _data["vehicleLongitude"];
-            this.vehicleLatitude = _data["vehicleLatitude"];
-        }
-    }
-
-    static fromJS(data: any): VehicleService {
-        data = typeof data === 'object' ? data : {};
-        let result = new VehicleService();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["garageServiceId"] = this.garageServiceId;
-        data["garageServiceTitle"] = this.garageServiceTitle;
-        data["relatedGarageLookupIdentifier"] = this.relatedGarageLookupIdentifier;
-        data["relatedGarageLookupName"] = this.relatedGarageLookupName;
-        data["conversationEmailAddress"] = this.conversationEmailAddress;
-        data["conversationWhatsappNumber"] = this.conversationWhatsappNumber;
-        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        data["vehicleLongitude"] = this.vehicleLongitude;
-        data["vehicleLatitude"] = this.vehicleLatitude;
-        return data;
-    }
-}
-
-export interface IVehicleService {
-    garageServiceId: string;
-    garageServiceTitle?: string | undefined;
-    relatedGarageLookupIdentifier: string;
-    relatedGarageLookupName: string;
-    conversationEmailAddress?: string | undefined;
-    conversationWhatsappNumber?: string | undefined;
-    vehicleLicensePlate: string;
-    vehicleLongitude: string;
-    vehicleLatitude: string;
-}
-
 export class VehicleSpecificationsCardItem implements IVehicleSpecificationsCardItem {
     licensePlate?: string;
     type?: VehicleType;
@@ -3520,105 +3619,6 @@ export class TupleOfStringAndString implements ITupleOfStringAndString {
 export interface ITupleOfStringAndString {
     item1?: string;
     item2?: string;
-}
-
-export class NotificationItemDto implements INotificationItemDto {
-    id?: string;
-    jobId?: string;
-    triggerDate?: Date;
-    priority?: PriorityLevel;
-    generalType?: GeneralNotificationType;
-    vehicleType?: VehicleNotificationType;
-    receiverContactType?: ContactType;
-    receiverContactIdentifier?: string;
-    vehicleLicensePlate?: string;
-
-    constructor(data?: INotificationItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.jobId = _data["jobId"];
-            this.triggerDate = _data["triggerDate"] ? new Date(_data["triggerDate"].toString()) : <any>undefined;
-            this.priority = _data["priority"];
-            this.generalType = _data["generalType"];
-            this.vehicleType = _data["vehicleType"];
-            this.receiverContactType = _data["receiverContactType"];
-            this.receiverContactIdentifier = _data["receiverContactIdentifier"];
-            this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-        }
-    }
-
-    static fromJS(data: any): NotificationItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new NotificationItemDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["jobId"] = this.jobId;
-        data["triggerDate"] = this.triggerDate ? this.triggerDate.toISOString() : <any>undefined;
-        data["priority"] = this.priority;
-        data["generalType"] = this.generalType;
-        data["vehicleType"] = this.vehicleType;
-        data["receiverContactType"] = this.receiverContactType;
-        data["receiverContactIdentifier"] = this.receiverContactIdentifier;
-        data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        return data;
-    }
-}
-
-export interface INotificationItemDto {
-    id?: string;
-    jobId?: string;
-    triggerDate?: Date;
-    priority?: PriorityLevel;
-    generalType?: GeneralNotificationType;
-    vehicleType?: VehicleNotificationType;
-    receiverContactType?: ContactType;
-    receiverContactIdentifier?: string;
-    vehicleLicensePlate?: string;
-}
-
-export enum PriorityLevel {
-    None = 0,
-    Low = 1,
-    Medium = 2,
-    High = 3,
-}
-
-export enum GeneralNotificationType {
-    Other = 0,
-    GarageServiceReviewReminder = 1,
-    VehicleServiceReviewApproved = 2,
-    VehicleServiceReviewDeclined = 3,
-    VehicleServiceNotification = 4,
-}
-
-export enum VehicleNotificationType {
-    Other = 0,
-    MOT = 1,
-    WinterService = 2,
-    WinterTyreChange = 3,
-    SummerTyreChange = 4,
-    SummerCheck = 5,
-    SummerService = 6,
-}
-
-export enum ContactType {
-    Email = 0,
-    WhatsApp = 1,
-    PhoneNumber = 2,
 }
 
 export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNotifierCommand {

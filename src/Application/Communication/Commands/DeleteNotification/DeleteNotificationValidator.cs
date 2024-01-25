@@ -3,13 +3,13 @@ using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
+namespace AutoHelper.Application.Messages.Commands.DeleteNotification;
 
-public class DeleteVehicleEventNotifierValidator : AbstractValidator<DeleteVehicleEventNotifierCommand>
+public class DeleteNotificationValidator : AbstractValidator<DeleteNotificationCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public DeleteVehicleEventNotifierValidator(IApplicationDbContext applicationDbContext)
+    public DeleteNotificationValidator(IApplicationDbContext applicationDbContext)
     {
         _context = applicationDbContext;
 
@@ -19,7 +19,7 @@ public class DeleteVehicleEventNotifierValidator : AbstractValidator<DeleteVehic
 
     }
 
-    private async Task<bool> BeValidAndExistingIdentifier(DeleteVehicleEventNotifierCommand command, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingIdentifier(DeleteNotificationCommand command, CancellationToken cancellationToken)
     {
         var entity = await _context.Notifications.FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
 

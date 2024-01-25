@@ -98,7 +98,8 @@ public class CreateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Cre
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         // This service log is verfied, so ready to go into the timeline
-        var timeline = await _mediator.Send(new CreateVehicleTimelineCommand(entity), cancellationToken);
+        var timelineCommand = new CreateVehicleTimelineCommand(entity);
+        _ = await _mediator.Send(timelineCommand, cancellationToken);
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
     }

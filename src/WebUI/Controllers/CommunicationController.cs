@@ -31,17 +31,18 @@ using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Messages.ReplyRequests;
 using WhatsappBusiness.CloudApi.Messages.Requests;
 using WhatsappBusiness.CloudApi.Webhook;
+using AutoHelper.Application.Messages.Commands.DeleteNotification;
 
 namespace AutoHelper.WebUI.Controllers;
 
-public class MessageController : ApiControllerBase
+public class CommunicationController : ApiControllerBase
 {
     const string VerifyToken = "Autohelper";
     private readonly IBackgroundJobClient _backgroundJobClient;
     private readonly IWhatsappResponseService _whatsappResponseService;
-    private readonly ILogger<MessageController> _logger;
+    private readonly ILogger<CommunicationController> _logger;
 
-    public MessageController(IBackgroundJobClient backgroundJobClient, IWhatsappResponseService whatsappResponseService, ILogger<MessageController> logger)
+    public CommunicationController(IBackgroundJobClient backgroundJobClient, IWhatsappResponseService whatsappResponseService, ILogger<CommunicationController> logger)
     {
         _backgroundJobClient = backgroundJobClient;
         _whatsappResponseService = whatsappResponseService;
@@ -175,6 +176,15 @@ public class MessageController : ApiControllerBase
         }
 
         return $"Conversation-IDs: [{string.Join(", ", conversationIds)}]";
+    }
+
+    [HttpDelete($"{nameof(DeleteNotification)}/{{id}}")]
+    [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<NotificationItemDto> DeleteNotification([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var command = new DeleteNotificationCommand(id);
+        return await Mediator.Send(command, cancellationToken);
     }
 
 }

@@ -2,13 +2,18 @@
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleTimeline;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleNextNotification;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.WebUI.Controllers;
+using AutoHelper.Hangfire.Shared.MediatR;
 using AutoMapper;
 using MediatR;
+using Hangfire;
 
 namespace AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
 
@@ -38,42 +43,47 @@ public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Del
     private readonly IVehicleService _vehicleService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
-    private readonly ISender _mediator;
+    private readonly ISender _sender;
+    private readonly IBackgroundJobClient _backgroundJobClient;
 
-    public DeleteVehicleServiceLogAsGarageCommandHandler(IVehicleService vehicleService, IApplicationDbContext context, IMapper mapper, ISender mediator)
+    public DeleteVehicleServiceLogAsGarageCommandHandler(IVehicleService vehicleService, IApplicationDbContext context, IMapper mapper, ISender sender, IBackgroundJobClient backgroundJobClient)
     {
         _vehicleService = vehicleService;
         _context = context;
         _mapper = mapper;
-        _mediator = mediator;
+        _sender = sender;
+        _backgroundJobClient = backgroundJobClient;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(DeleteVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
-        var timelineItem = await _mediator.Send(new DeleteVehicleTimelineCommand(request.ServiceLogId), cancellationToken);
+        var timelineItem = await _sender.Send(new DeleteVehicleTimelineCommand(request.ServiceLogId), cancellationToken);
 
         _context.VehicleServiceLogs.Remove(request.ServiceLog);
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        //// TODO: Send email to user to notify that the service log is canceled/deleted
-        //try
-        //{
-        //    var command = new CreateNotificationCommand(
-        //        request.ServiceLog.VehicleLicensePlate,
-        //        NotificationType.UserServiceReviewDeclined,
-        //        entity.ReporterEmailAddress,
-        //        entity.ReporterPhoneNumber
-        //    );
-
-        //    var notification = await _mediator..Send(command, cancellationToken);
-        //}
-        //catch (Exception)
-        //{
-        //    // TODO: Admin should fix this exception
-        //    throw;
-        //}
+        await SendNotificationToReporter(request.ServiceLog, cancellationToken);
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(request.ServiceLog);
+    }
+
+    private async Task SendNotificationToReporter(VehicleServiceLogItem serviceLog, CancellationToken cancellationToken)
+    {
+        var notificationCommand = new CreateNotificationCommand(
+            serviceLog.VehicleLicensePlate,
+            GeneralNotificationType.VehicleServiceReviewDeclined,
+            VehicleNotificationType.Other,
+            triggerDate: null,
+            emailAddress: serviceLog.ReporterEmailAddress,
+            whatsappNumber: serviceLog.ReporterPhoneNumber
+        );
+        var notification = await _sender.Send(notificationCommand, cancellationToken);
+
+        // schedule notification
+        var queue = nameof(SendNotificationMessageCommand);
+        var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
+        var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
+        _sender.Enqueue(_backgroundJobClient, queue, title, schuduleCommand);
     }
 }

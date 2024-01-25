@@ -35,32 +35,30 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
 
     public CreateNotificationCommand(
         string vehicleLicensePlate, 
-        DateTime triggerDate,
         GeneralNotificationType generalType, 
         VehicleNotificationType vehicleType = VehicleNotificationType.Other,
+        DateTime? triggerDate = null,
         string? emailAddress = null,
-        string? whatsappNumber = null,
-        bool isRecurring = false
+        string? whatsappNumber = null
     )
     {
         VehicleLicensePlate = vehicleLicensePlate;
-        TriggerDate = triggerDate;
         GeneralType = generalType;
         VehicleType = vehicleType;
+        TriggerDate = triggerDate;
         ReceiverEmailAddress = emailAddress;
         ReceiverWhatsappNumber = whatsappNumber;
-        IsRecurring = isRecurring;
     }
 
     public bool IsRecurring { get; set; }
 
     public string VehicleLicensePlate { get; set; } = null!;
 
-    public DateTime TriggerDate { get; set; }
-
     public GeneralNotificationType GeneralType { get; set; }
 
     public VehicleNotificationType VehicleType { get; set; }
+
+    public DateTime? TriggerDate { get; set; }
 
     public string? ReceiverEmailAddress { get; set; } = null;
 
@@ -89,16 +87,16 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
 
         var notification = new NotificationItem
         {
-            TriggerDate = request.TriggerDate,
             GeneralType = request.GeneralType,
             VehicleType = request.VehicleType,
+            TriggerDate = request.TriggerDate,
             ReceiverContactType = receiverType,
             ReceiverContactIdentifier = receiverIdentifier, 
             VehicleLicensePlate = request.VehicleLicensePlate
         };
 
-        // Only store recurring notifications
-        if (request.IsRecurring)
+        // Only store scheduled notifications
+        if (request.TriggerDate != null)
         {
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync(cancellationToken);

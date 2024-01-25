@@ -20,8 +20,6 @@ public class VehicleLookupItem
     [Required]
     public DateTime? DateOfAscription { get; set; }
 
-    public DateTime? DateOfBirth { get; set; } = null;
-
     [Required]
     public DateTime Created { get; set; }
 

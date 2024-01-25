@@ -70,19 +70,18 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
         // create notification
         var notificationCommand = new CreateNotificationCommand(
             request.VehicleLicensePlate,
-            nextNotifier.TriggerDate,
             GeneralNotificationType.VehicleServiceNotification,
             nextNotifier.NotificationType,
+            nextNotifier.TriggerDate,
             request.ReceiverEmailAddress,
-            request.ReceiverWhatsappNumber,
-            true
+            request.ReceiverWhatsappNumber
         );
         var notification = await _sender.Send(notificationCommand, cancellationToken);
 
         // schedule notification
-        var title = $"{request.VehicleLicensePlate}_{GeneralNotificationType.VehicleServiceNotification.ToString()}";
-        var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
         var queue = nameof(SendNotificationMessageCommand);
+        var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
+        var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
         var jobId = _sender.ScheduleJob(_backgroundJobClient, queue, title, schuduleCommand, nextNotifier.TriggerDate);
 
         // update notification with job id

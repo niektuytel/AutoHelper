@@ -31,7 +31,7 @@ public class NotificationItem : BaseAuditableEntity
     /// When should this notification be triggered
     /// </summary>
     [Required]
-    public DateTime TriggerDate { get; set; }
+    public DateTime? TriggerDate { get; set; } = null;
 
     /// <summary>
     /// What type of notification is this

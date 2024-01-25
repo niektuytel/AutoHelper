@@ -19,6 +19,9 @@ using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AutoHelper.Hangfire.Shared.MediatR;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
+using Hangfire;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
@@ -79,12 +82,22 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly ISender _sender;
+    private readonly IBackgroundJobClient _backgroundJobClient;
 
-    public CreateVehicleServiceLogCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IMapper mapper)
+    public CreateVehicleServiceLogCommandHandler(
+        IBlobStorageService blobStorageService, 
+        IApplicationDbContext context, 
+        IMapper mapper, 
+        ISender sender, 
+        IBackgroundJobClient backgroundJobClient
+    )
     {
         _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
+        _sender = sender;
+        _backgroundJobClient = backgroundJobClient;
     }
 
     public async Task<VehicleServiceLogDtoItem> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
@@ -96,25 +109,9 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        //// TODO: Send email to garage owner to notify about new service log
-        //try
-        //{
-        //    var command = new CreateNotificationCommand(
-        //        request.VehicleLicensePlate,
-        //        NotificationType.GarageServiceReviewReminder,
-        //        request.GarageService!.Garage.Lookup.ConversationContactEmail,
-        //        request.GarageService.Garage.Lookup.ConversationContactWhatsappNumber
-        //    );
-
-        //    var notification = await _sender.Send(command, cancellationToken);
-
-
-        //}
-        //catch (Exception)
-        //{
-        //    // TODO: Admin should fix this exception
-        //    throw;
-        //}
+        var emailAddress = request.GarageService!.Garage.Lookup.ConversationContactEmail;
+        var whatappNumber = request.GarageService.Garage.Lookup.ConversationContactWhatsappNumber;
+        await SendNotificationToGarage(request.VehicleLicensePlate, emailAddress, whatappNumber, cancellationToken);
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }
@@ -154,5 +151,24 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
 
             entity.AttachedFile = attachmentBlobName;
         }
+    }
+
+    private async Task SendNotificationToGarage(string licencePlate, string emailAddress, string whatsappNumber, CancellationToken cancellationToken)
+    {
+        var notificationCommand = new CreateNotificationCommand(
+            licencePlate,
+            GeneralNotificationType.GarageServiceReviewReminder,
+            VehicleNotificationType.Other,
+            triggerDate: null,
+            emailAddress: emailAddress,
+            whatsappNumber: whatsappNumber
+        );
+        var notification = await _sender.Send(notificationCommand, cancellationToken);
+
+        // schedule notification
+        var queue = nameof(SendNotificationMessageCommand);
+        var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
+        var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
+        _sender.Enqueue(_backgroundJobClient, queue, title, schuduleCommand);
     }
 }

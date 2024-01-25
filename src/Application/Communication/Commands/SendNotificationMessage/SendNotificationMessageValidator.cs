@@ -32,6 +32,7 @@ public class SendNotificationMessageValidator : AbstractValidator<SendNotificati
         {
             var entity = _context.Notifications
                 .AsNoTracking()
+                .Include(x => x.RelatedVehicleLookup)
                 .FirstOrDefault(x => x.Id == command.NotificationId);
 
             command.Notification = entity;

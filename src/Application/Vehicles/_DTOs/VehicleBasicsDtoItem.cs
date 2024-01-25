@@ -12,7 +12,4 @@ public class VehicleBasicsDtoItem
 
     [JsonProperty("datum_tenaamstelling_dt")]
     public DateTime RegistrationDateDt { get; set; }
-
-    [JsonProperty("datum_eerste_toelating_dt")]
-    public DateTime? DateOfBirthDt { get; set; }
 }

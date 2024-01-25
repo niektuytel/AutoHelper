@@ -609,7 +609,7 @@ internal partial class RDWApiClient
         licensePlate = licensePlate.Replace("-", "").ToUpper();
 
         // Define the categories that require MOT.
-        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt", "datum_eerste_toelating_dt" };
+        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Create a comma-separated list of selected fields.
         string selectedFieldsQuery = selectedFields != null && selectedFields.Length > 0
@@ -636,7 +636,7 @@ internal partial class RDWApiClient
     {
         // Define the categories that require MOT.
         string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
-        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt", "datum_eerste_toelating_dt" };
+        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Construct the $where clause to filter by these categories.
         string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));
@@ -669,7 +669,7 @@ internal partial class RDWApiClient
     {
         // Define the categories that require MOT.
         string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
-        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt", "datum_eerste_toelating_dt" };
+        string[] selectedFields = new string[] { "kenteken", "vervaldatum_apk_dt", "datum_tenaamstelling_dt" };
 
         // Construct the $where clause to filter by these categories.
         string whereClause = string.Join(" OR ", apkRequiredCategories.Select(cat => $"europese_voertuigcategorie='{cat}'"));

@@ -25,7 +25,6 @@ using AutoHelper.Domain.Entities.Messages.Enums;
 using Azure.Core;
 using MediatR;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
-using AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 
 namespace AutoHelper.WebUI.Controllers;
@@ -106,14 +105,6 @@ public class VehicleController : ApiControllerBase
     public async Task<NotificationItemDto> CreateServiceEventNotifier([FromBody] CreateVehicleEventNotifierCommand command, CancellationToken cancellationToken)
     {
         return await Mediator.Send(command, cancellationToken);
-    }
-
-    [HttpDelete($"{nameof(DeleteServiceEventNotifier)}/{{id}}")]
-    [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<NotificationItemDto> DeleteServiceEventNotifier([FromRoute] Guid id, CancellationToken cancellationToken)
-    {
-        return await Mediator.Send(new DeleteVehicleEventNotifierCommand(id), cancellationToken);
     }
 
 }
