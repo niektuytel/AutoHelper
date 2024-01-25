@@ -36,7 +36,9 @@ public class CreateVehicleEventNotifierValidator : AbstractValidator<CreateVehic
         licensePlate = licensePlate.ToUpper().Replace("-", "");
         
         command.VehicleLicensePlate = licensePlate;
-        command.VehicleLookup = await _context.VehicleLookups.FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
+        command.VehicleLookup = await _context.VehicleLookups
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
         
         return command.VehicleLookup != null;
     }

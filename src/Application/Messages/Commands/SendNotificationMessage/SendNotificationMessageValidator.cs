@@ -20,10 +20,24 @@ public class SendNotificationMessageValidator : AbstractValidator<SendNotificati
     {
         _context = context;
 
-        RuleFor(x => x.Notification)
-            .NotEmpty()
-            .WithMessage("Should have valid notification to schedule it");
+        RuleFor(x => x)
+            .MustAsync(BeValidAndExistingNotification)
+            .WithMessage("Invalid or non-existent notification.");
 
+    }
+
+    private async Task<bool> BeValidAndExistingNotification(SendNotificationMessageCommand command, CancellationToken cancellationToken)
+    {
+        if (command.Notification == null && command.NotificationId != default)
+        {
+            var entity = _context.Notifications
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Id == command.NotificationId);
+
+            command.Notification = entity;
+        }
+
+        return command.Notification != null;
     }
 
 }

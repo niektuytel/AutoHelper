@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using static System.Net.Mime.MediaTypeNames;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Hangfire.Shared.Interfaces;
 
 namespace AutoHelper.Application.Messages.Commands.SendConversationMessage;
 

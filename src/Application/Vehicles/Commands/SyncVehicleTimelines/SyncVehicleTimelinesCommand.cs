@@ -8,6 +8,7 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Hangfire.Shared.Interfaces;
 using AutoMapper;
 using Force.DeepCloner;
 using MediatR;
@@ -18,7 +19,7 @@ using Newtonsoft.Json;
 
 namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 
-public record SyncVehicleTimelinesCommand : IQueueRequest
+public record SyncVehicleTimelinesCommand : IQueueRequest<Unit>
 {
     // Constants for special handling cases like 'insert all' or 'update all'.
     public const int InsertAll = -1;
@@ -51,10 +52,12 @@ public record SyncVehicleTimelinesCommand : IQueueRequest
     public int MaxInsertAmount { get; init; }
     public int MaxUpdateAmount { get; init; }
     public int BatchSize { get; init; }
-    public IQueueService QueueService { get; set; }
+
+    [JsonIgnore]
+    public IQueueService QueueingService { get; set; }
 }
 
-public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleTimelinesCommand>
+public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleTimelinesCommand, Unit>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IVehicleService _vehicleService;
@@ -107,12 +110,12 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleT
             }
 
             var line = $"[{start + request.BatchSize}/{request.EndRowIndex}] insert: {vehicleTimelineItemsToInsert.Count} | update: {vehicleTimelineItemsToUpdate.Count} items";
-            request.QueueService.LogInformation(line, inProgressBar: true);
+            request.QueueingService.LogInformation(line, inProgressBar: true);
 
         }
 
         var message = $"Task finished.";
-        request.QueueService.LogInformation(message);
+        request.QueueingService.LogInformation(message);
         return Unit.Value;
     }
 
@@ -182,7 +185,7 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleT
             }
             catch (Exception ex)
             {
-                request.QueueService.LogError($"[{vehicle.Key}]:{ex.Message}");
+                request.QueueingService.LogError($"[{vehicle.Key}]:{ex.Message}");
             }
         }
 
@@ -191,24 +194,24 @@ public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleT
 
     private void LogInformationBasedOnAmount(SyncVehicleTimelinesCommand request)
     {
-        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
+        request.QueueingService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
 
         if (request.MaxInsertAmount == SyncVehicleTimelinesCommand.InsertAll)
         {
-            request.QueueService.LogInformation($"Insert all available vehicle timelines");
+            request.QueueingService.LogInformation($"Insert all available vehicle timelines");
         }
         else
         {
-            request.QueueService.LogInformation($"Insert {_maxInsertAmount} vehicle timelines");
+            request.QueueingService.LogInformation($"Insert {_maxInsertAmount} vehicle timelines");
         }
 
         if (request.MaxUpdateAmount == SyncVehicleTimelinesCommand.UpdateAll)
         {
-            request.QueueService.LogInformation($"Update all available vehicle timelines");
+            request.QueueingService.LogInformation($"Update all available vehicle timelines");
         }
         else
         {
-            request.QueueService.LogInformation($"Update {_maxUpdateAmount} vehicle timelines");
+            request.QueueingService.LogInformation($"Update {_maxUpdateAmount} vehicle timelines");
         }
     }
 

@@ -35,7 +35,7 @@ public class SyncVehicleLookupsCommandValidator : AbstractValidator<SyncVehicleL
             .GreaterThan(0)
             .WithMessage("Batch size must be greater than 0.");
 
-        RuleFor(command => command.QueueService)
+        RuleFor(command => command.QueueingService)
             .NotNull().WithMessage("Required to run in a QueueService");
     }
 }

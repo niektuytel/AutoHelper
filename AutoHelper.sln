@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoHelper.Messaging", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoHelper.Hangfire.Dashboard", "src\Hangfire.Dashboard\AutoHelper.Hangfire.Dashboard.csproj", "{7B3CC73B-5AAB-440B-86C2-224F8E29C26E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoHelper.Hangfire.Shared", "src\AutoHelper.Hangfire.Shared\AutoHelper.Hangfire.Shared.csproj", "{A579435B-9F46-4C88-B6E1-8A41A2F95251}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{7B3CC73B-5AAB-440B-86C2-224F8E29C26E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B3CC73B-5AAB-440B-86C2-224F8E29C26E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B3CC73B-5AAB-440B-86C2-224F8E29C26E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A579435B-9F46-4C88-B6E1-8A41A2F95251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A579435B-9F46-4C88-B6E1-8A41A2F95251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A579435B-9F46-4C88-B6E1-8A41A2F95251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A579435B-9F46-4C88-B6E1-8A41A2F95251}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +104,7 @@ Global
 		{750A2B74-2C17-44C0-B59B-35DF3925020D} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
 		{C65024DF-6905-40A1-A656-1E4BB5F1D4E6} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
 		{7B3CC73B-5AAB-440B-86C2-224F8E29C26E} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
+		{A579435B-9F46-4C88-B6E1-8A41A2F95251} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

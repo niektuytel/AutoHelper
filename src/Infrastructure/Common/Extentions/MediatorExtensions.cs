@@ -1,4 +1,7 @@
 ﻿using AutoHelper.Domain.Common;
+using AutoHelper.Hangfire.Shared.Interfaces;
+using AutoHelper.Hangfire.Shared.MediatR;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,4 +25,5 @@ public static class MediatorExtensions
         foreach (var domainEvent in domainEvents)
             await mediator.Publish(domainEvent);
     }
+
 }

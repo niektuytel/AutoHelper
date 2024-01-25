@@ -8,6 +8,7 @@ using Hangfire.Server;
 using Hangfire.Console;
 using Hangfire.Console.Progress;
 using System;
+using AutoHelper.Hangfire.Shared.Interfaces;
 
 namespace AutoHelper.Hangfire.Services;
 

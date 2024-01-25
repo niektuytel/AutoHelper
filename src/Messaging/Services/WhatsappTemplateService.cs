@@ -5,6 +5,7 @@ using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
+using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.WebUI.Controllers;
 using Microsoft.Extensions.Configuration;
@@ -354,8 +355,8 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
         return message;
     }
 
-    public Task SendNotificationMessage(NotificationItemDto notification, CancellationToken cancellationToken)
+    public Task SendNotificationMessage(NotificationItem notification, CancellationToken cancellationToken)
     {
-        // throw new NotImplementedException();
+         throw new NotImplementedException();
     }
 }

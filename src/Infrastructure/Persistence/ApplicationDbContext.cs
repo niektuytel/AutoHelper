@@ -10,6 +10,7 @@ using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Hangfire.Shared.MediatR;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence.Interceptors;

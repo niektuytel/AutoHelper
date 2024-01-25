@@ -10,10 +10,6 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Hangfire.MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -109,13 +105,7 @@ public class VehicleController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<NotificationItemDto> CreateServiceEventNotifier([FromBody] CreateVehicleEventNotifierCommand command, CancellationToken cancellationToken)
     {
-        var notification = await Mediator.Send(command, cancellationToken);
-
-        // Schedule the notification
-        var schuduleCommand = new SendNotificationMessageCommand(notification);
-        Mediator.StartRecurringJob(notification.Id.ToString(), schuduleCommand, notification.Cron!);
-
-        return notification;
+        return await Mediator.Send(command, cancellationToken);
     }
 
     [HttpDelete($"{nameof(DeleteServiceEventNotifier)}/{{id}}")]
@@ -123,10 +113,7 @@ public class VehicleController : ApiControllerBase
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<NotificationItemDto> DeleteServiceEventNotifier([FromRoute] Guid id, CancellationToken cancellationToken)
     {
-        Mediator.RemoveRecurringJob(id.ToString());
-
-        var notification = await Mediator.Send(new DeleteVehicleEventNotifierCommand(id), cancellationToken);
-        return notification;
+        return await Mediator.Send(new DeleteVehicleEventNotifierCommand(id), cancellationToken);
     }
 
 }

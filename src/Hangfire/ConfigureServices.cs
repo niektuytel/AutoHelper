@@ -13,16 +13,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Serilog;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
-using Microsoft.Extensions.Hosting;
-using Hangfire.Dashboard;
-using System.Net;
-using Hangfire.Common;
-using Hangfire.SqlServer;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
 using AutoHelper.Application.Messages.Commands.SendConversationMessage;
+using AutoHelper.Hangfire.Shared.Interfaces;
+using Microsoft.Extensions.Hosting;
+using Hangfire.SqlServer;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 
 namespace AutoHelper.Hangfire;
 
@@ -67,7 +64,9 @@ public static class ConfigureServices
                 "long-running",
                 nameof(SyncGarageLookupsCommand).ToLower(),
                 nameof(SyncVehicleLookupsCommand).ToLower(),
+
                 nameof(SendConversationMessageCommand).ToLower(),
+                nameof(SendNotificationMessageCommand).ToLower(),
             };
 
             //options.HeartbeatInterval = TimeSpan.FromSeconds(5);

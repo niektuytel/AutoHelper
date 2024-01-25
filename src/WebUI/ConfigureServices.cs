@@ -3,7 +3,6 @@ using App.Authorization;
 using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire;
-using AutoHelper.Hangfire.MediatR;
 using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Services;

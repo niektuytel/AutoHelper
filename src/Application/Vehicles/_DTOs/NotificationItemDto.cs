@@ -17,7 +17,7 @@ public class NotificationItemDto : IMapFrom<NotificationItem>
 {
     public Guid Id { get; set; }
 
-    public string? Cron { get; set; }
+    public string JobId { get; set; } = null!;
 
     public PriorityLevel Priority { get; set; }
 
@@ -33,7 +33,7 @@ public class NotificationItemDto : IMapFrom<NotificationItem>
     {
         profile.CreateMap<NotificationItem, NotificationItemDto>()
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
-            .ForMember(d => d.Cron, opt => opt.MapFrom(s => s.Cron))
+            .ForMember(d => d.JobId, opt => opt.MapFrom(s => s.JobId))
             .ForMember(d => d.Priority, opt => opt.MapFrom(s => s.Priority))
             .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
             .ForMember(d => d.ReceiverContactType, opt => opt.MapFrom(s => s.ReceiverContactType))

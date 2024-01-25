@@ -11,6 +11,7 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Hangfire.Shared.Interfaces;
 using AutoMapper;
 using Hangfire.Server;
 using MediatR;
@@ -20,7 +21,7 @@ using Microsoft.Extensions.Logging;
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
 
-public record SyncGarageLookupsCommand : IQueueRequest
+public record SyncGarageLookupsCommand : IQueueRequest<Unit>
 {
     public const int InsertAll = -1;
     public const int UpdateAll = -1;
@@ -48,10 +49,10 @@ public record SyncGarageLookupsCommand : IQueueRequest
     public int MaxUpdateAmount { get; init; }
     public int BatchSize { get; set; }
 
-    public IQueueService QueueService { get; set; }
+    public IQueueService QueueingService { get; set; }
 }
 
-public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookupsCommand>
+public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookupsCommand, Unit>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IGarageService _garageService;
@@ -107,11 +108,11 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
             }
 
             var line = $"[{(start + request.BatchSize)}/{request.EndRowIndex}] insert: {garageItemsToInsert.Count} | update: {garageItemsToUpdate.Count} items";
-            request.QueueService.LogInformation(line, inProgressBar: true);
+            request.QueueingService.LogInformation(line, inProgressBar: true);
         }
 
         var message = $"Task finished.";
-        request.QueueService.LogInformation(message);
+        request.QueueingService.LogInformation(message);
         return Unit.Value;
 
     }
@@ -146,24 +147,24 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
 
     private void LogInformationBasedOnAmount(SyncGarageLookupsCommand request)
     {
-        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
+        request.QueueingService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
 
         if (request.MaxInsertAmount == SyncGarageLookupsCommand.InsertAll)
         {
-            request.QueueService.LogInformation($"Insert all available garages");
+            request.QueueingService.LogInformation($"Insert all available garages");
         }
         else
         {
-            request.QueueService.LogInformation($"Insert {_maxInsertAmount} garages");
+            request.QueueingService.LogInformation($"Insert {_maxInsertAmount} garages");
         }
 
         if (request.MaxUpdateAmount == SyncGarageLookupsCommand.UpdateAll)
         {
-            request.QueueService.LogInformation($"Update all available garages");
+            request.QueueingService.LogInformation($"Update all available garages");
         }
         else
         {
-            request.QueueService.LogInformation($"Update {_maxUpdateAmount} garages");
+            request.QueueingService.LogInformation($"Update {_maxUpdateAmount} garages");
         }
     }
 
@@ -234,7 +235,7 @@ public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLooku
             }
             catch (Exception ex)
             {
-                request.QueueService.LogError($"[{company.Naambedrijf}]:{ex.Message}");
+                request.QueueingService.LogError($"[{company.Naambedrijf}]:{ex.Message}");
             }
         }
 

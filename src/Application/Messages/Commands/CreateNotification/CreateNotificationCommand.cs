@@ -38,21 +38,21 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
         NotificationType type, 
         string? emailAddress = null,
         string? whatsappNumber = null,
-        string? cron = null
+        bool isRecurring = false
     )
     {
         VehicleLicensePlate = vehicleLicensePlate;
         Type = type;
         ReceiverEmailAddress = emailAddress;
         ReceiverWhatsappNumber = whatsappNumber;
-        Cron = cron;
+        IsRecurring = isRecurring;
     }
+
+    public bool IsRecurring { get; set; }
 
     public string VehicleLicensePlate { get; set; } = null!;
 
     public NotificationType Type { get; set; }
-
-    public string? Cron { get; set; } = null;
 
     public string? ReceiverEmailAddress { get; set; } = null;
 
@@ -81,15 +81,14 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
 
         var notification = new NotificationItem
         {
-            Cron = request.Cron,
             Type = request.Type,
             ReceiverContactType = receiverType,
             ReceiverContactIdentifier = receiverIdentifier, 
             VehicleLicensePlate = request.VehicleLicensePlate
         };
 
-        // Only store to the database if the cron is not null
-        if (!string.IsNullOrEmpty(request.Cron))
+        // Only store recurring notifications
+        if (request.IsRecurring)
         {
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync(cancellationToken);

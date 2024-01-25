@@ -18,14 +18,14 @@ namespace AutoHelper.Domain.Entities.Messages;
 public class NotificationItem : BaseAuditableEntity
 {
     /// <summary>
-    /// Can been null if the notification is not recurring
-    /// </summary>
-    public string? Cron { get; set; } = null;
-
-    /// <summary>
     /// How important is this notification
     /// </summary>
     public PriorityLevel Priority { get; set; } = PriorityLevel.Low;
+
+    /// <summary>
+    /// JobId of the scheduled job
+    /// </summary>
+    public string? JobId { get; set; } = null;
 
     /// <summary>
     /// What type of notification is this
@@ -53,5 +53,4 @@ public class NotificationItem : BaseAuditableEntity
 
     [ForeignKey(nameof(VehicleLicensePlate))]
     public VehicleLookupItem RelatedVehicleLookup { get; set; } = null!;
-
 }

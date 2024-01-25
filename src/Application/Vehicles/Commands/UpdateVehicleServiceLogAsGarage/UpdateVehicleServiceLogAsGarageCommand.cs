@@ -105,23 +105,23 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         {
             var timelineItem = await _mediator.Send(new CreateVehicleTimelineCommand(entity), cancellationToken);
 
-            // Send email to user to notify that the service log is verified
-            try
-            {
-                var command = new CreateNotificationCommand(
-                    request.VehicleLicensePlate,
-                    NotificationType.UserServiceReviewApproved,
-                    entity.ReporterEmailAddress,
-                    entity.ReporterPhoneNumber
-                );
+            //// TODO: Send email to user to notify that the service log is verified
+            //try
+            //{
+            //    var command = new CreateNotificationCommand(
+            //        request.VehicleLicensePlate,
+            //        NotificationType.UserServiceReviewApproved,
+            //        entity.ReporterEmailAddress,
+            //        entity.ReporterPhoneNumber
+            //    );
 
-                var notification = await _sender.Send(command, cancellationToken);
-            }
-            catch (Exception)
-            {
-                // TODO: Admin should fix this exception
-                throw;
-            }
+            //    var notification = await _sender.Send(command, cancellationToken);
+            //}
+            //catch (Exception)
+            //{
+            //    // TODO: Admin should fix this exception
+            //    throw;
+            //}
         }
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);

@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Hangfire.Shared.Interfaces;
 using AutoMapper;
 using Force.DeepCloner;
 using MediatR;
@@ -14,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 
-public record SyncVehicleLookupsCommand : IQueueRequest
+public record SyncVehicleLookupsCommand : IQueueRequest<Unit>
 {
     public const int InsertAll = -1;
     public const int UpdateAll = -1;
@@ -44,10 +46,12 @@ public record SyncVehicleLookupsCommand : IQueueRequest
     public int MaxUpdateAmount { get; init; }
     public int BatchSize { get; set; }
     public DateTime UpsertOnlyLastModifiedOlderThan { get; init; }
-    public IQueueService QueueService { get; set; }
+
+    [JsonIgnore]
+    public IQueueService QueueingService { get; set; }
 }
 
-public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLookupsCommand>
+public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLookupsCommand, Unit>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly IVehicleService _vehicleService;
@@ -108,11 +112,11 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLoo
             }
 
             var line = $"[{count}/{request.EndRowIndex}] insert: {vehicleLookupsToInsert.Count} | update: {vehicleLookupsToUpdate.Count} items";
-            request.QueueService.LogInformation(line, inProgressBar: true);
+            request.QueueingService.LogInformation(line, inProgressBar: true);
 
         } while (count == limit * offset || count < request.EndRowIndex);
 
-        request.QueueService.LogInformation($"Task finished");
+        request.QueueingService.LogInformation($"Task finished");
         return Unit.Value;
     }
 
@@ -165,7 +169,7 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLoo
         }
         catch (Exception ex)
         {
-            request.QueueService.LogError(ex.Message);
+            request.QueueingService.LogError(ex.Message);
         }
 
         return (vehicleLookupsToInsert, vehicleLookupsToUpdate);
@@ -173,24 +177,24 @@ public class UpsertVehicleLookupsCommandHandler : IRequestHandler<SyncVehicleLoo
 
     private void LogInformationBasedOnAmount(SyncVehicleLookupsCommand request)
     {
-        request.QueueService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
+        request.QueueingService.LogInformation($"Start upsert rows from {request.StartRowIndex} to {request.EndRowIndex}");
 
         if (request.MaxInsertAmount == SyncVehicleLookupsCommand.InsertAll)
         {
-            request.QueueService.LogInformation($"Insert all available vehicle lookups");
+            request.QueueingService.LogInformation($"Insert all available vehicle lookups");
         }
         else
         {
-            request.QueueService.LogInformation($"Insert {_maxInsertAmount} vehicle lookups");
+            request.QueueingService.LogInformation($"Insert {_maxInsertAmount} vehicle lookups");
         }
 
         if (request.MaxUpdateAmount == SyncVehicleLookupsCommand.UpdateAll)
         {
-            request.QueueService.LogInformation($"Update all available vehicle lookups");
+            request.QueueingService.LogInformation($"Update all available vehicle lookups");
         }
         else
         {
-            request.QueueService.LogInformation($"Update {_maxUpdateAmount} vehicle lookups");
+            request.QueueingService.LogInformation($"Update {_maxUpdateAmount} vehicle lookups");
         }
     }
 

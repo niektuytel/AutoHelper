@@ -20,9 +20,10 @@ using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using AutoHelper.Application.Messages.Commands.ScheduleNotification;
 using AutoHelper.WebUI.Controllers;
 using AutoHelper.Domain.Entities.Messages;
+using AutoHelper.Hangfire.Shared.MediatR;
+using Hangfire;
 
 namespace AutoHelper.Application.Vehicles.Commands.DeleteVehicleEventNotifier;
 
@@ -43,16 +44,27 @@ public record DeleteVehicleEventNotifierCommand : IRequest<NotificationItemDto>
 public class DeleteVehicleEventNotifierCommandHandler : IRequestHandler<DeleteVehicleEventNotifierCommand, NotificationItemDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly ISender _sender;
     private readonly IMapper _mapper;
 
-    public DeleteVehicleEventNotifierCommandHandler(IApplicationDbContext context, IMapper mapper)
+
+    public DeleteVehicleEventNotifierCommandHandler(IApplicationDbContext context, IBackgroundJobClient backgroundJobClient, ISender sender, IMapper mapper)
     {
         _context = context;
+        _backgroundJobClient = backgroundJobClient;
+        _sender = sender;
         _mapper = mapper;
     }
 
     public async Task<NotificationItemDto> Handle(DeleteVehicleEventNotifierCommand request, CancellationToken cancellationToken)
     {
+        // Delete the job if it exists
+        if (request.Notification?.JobId != null)
+        {
+            _sender.DeleteJob(_backgroundJobClient, request.Notification.JobId);
+        }
+
         var result = _context.Notifications.Remove(request.Notification!);
         await _context.SaveChangesAsync(cancellationToken);
 

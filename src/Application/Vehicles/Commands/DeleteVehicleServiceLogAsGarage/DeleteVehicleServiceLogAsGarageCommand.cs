@@ -56,23 +56,23 @@ public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Del
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        // Send email to user to notify that the service log is canceled/deleted
-        try
-        {
-            var command = new CreateNotificationCommand(
-                request.ServiceLog.VehicleLicensePlate,
-                NotificationType.UserServiceReviewDeclined,
-                entity.ReporterEmailAddress,
-                entity.ReporterPhoneNumber
-            );
+        //// TODO: Send email to user to notify that the service log is canceled/deleted
+        //try
+        //{
+        //    var command = new CreateNotificationCommand(
+        //        request.ServiceLog.VehicleLicensePlate,
+        //        NotificationType.UserServiceReviewDeclined,
+        //        entity.ReporterEmailAddress,
+        //        entity.ReporterPhoneNumber
+        //    );
 
-            var notification = await _sender.Send(command, cancellationToken);
-        }
-        catch (Exception)
-        {
-            // TODO: Admin should fix this exception
-            throw;
-        }
+        //    var notification = await _mediator..Send(command, cancellationToken);
+        //}
+        //catch (Exception)
+        //{
+        //    // TODO: Admin should fix this exception
+        //    throw;
+        //}
 
         return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(request.ServiceLog);
     }

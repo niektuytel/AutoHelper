@@ -23,21 +23,27 @@ using AutoHelper.Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using AutoHelper.WebUI.Controllers;
+using AutoHelper.Hangfire.Shared.Interfaces;
 
 namespace AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 
-public record SendNotificationMessageCommand : IRequest
+public record SendNotificationMessageCommand : IQueueRequest<Unit>
 {
-    public SendNotificationMessageCommand(NotificationItemDto notification)
+    public SendNotificationMessageCommand(Guid notificationId)
     {
-        Notification = notification;
+        NotificationId = notificationId;
     }
 
-    public NotificationItemDto Notification { get; set; }
+    public Guid NotificationId { get; set; }
 
+    [JsonIgnore]
+    public NotificationItem? Notification { get; set; } = null;
+
+    [JsonIgnore]
+    public IQueueService QueueingService { get; set; } = null!;
 }
 
-public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotificationMessageCommand>
+public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotificationMessageCommand, Unit>
 {
     private readonly IWhatsappTemplateService _whatsappService;
     private readonly IMailingService _mailingService;
@@ -50,7 +56,7 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
 
     public async Task<Unit> Handle(SendNotificationMessageCommand request, CancellationToken cancellationToken)
     {
-        var receiverType = request.Notification.ReceiverContactType;
+        var receiverType = request.Notification!.ReceiverContactType;
         var receiverService = GetMessagingService(receiverType);
 
         await receiverService.SendNotificationMessage(request.Notification, cancellationToken);

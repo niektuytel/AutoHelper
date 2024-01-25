@@ -16,6 +16,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
+        <ProjectReference Include="..\AutoHelper.Hangfire.Shared\AutoHelper.Hangfire.Shared.csproj" />
         <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
         <ProjectReference Include="..\Messaging\AutoHelper.Messaging.csproj" />
         <ProjectReference Include="..\Infrastructure\AutoHelper.Infrastructure.csproj" />
@@ -40,6 +41,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.2" />
         <PackageReference Include="NSwag.AspNetCore" Version="13.18.2" />
         <PackageReference Include="NSwag.MSBuild" Version="13.18.2">

@@ -38,7 +38,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
-        <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
+        <ProjectReference Include="..\AutoHelper.Hangfire.Shared\AutoHelper.Hangfire.Shared.csproj" />
     </ItemGroup>
 
 </Project>

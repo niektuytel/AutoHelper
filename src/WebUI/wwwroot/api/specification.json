@@ -342,181 +342,6 @@
         }
       }
     },
-    "/api/Conversation/ReceiveEmailMessage": {
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_ReceiveEmailMessage",
-        "requestBody": {
-          "x-name": "message",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReceiveEmailMessageCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Conversation/ReceiveWhatsappMessage": {
-      "get": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_ReceiveWhatsappMessageGET",
-        "parameters": [
-          {
-            "name": "hub.challenge",
-            "x-originalName": "hubChallenge",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "hub.verify_token",
-            "x-originalName": "hubVerifyToken",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_ReceiveWhatsappMessagePOST",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Conversation/StartGarageConversation": {
-      "post": {
-        "tags": [
-          "Conversation"
-        ],
-        "operationId": "Conversation_StartGarageConversation",
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateGarageConversationItemsCommand"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 1
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BadRequestResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/GarageAccount/GetSettings": {
       "get": {
         "tags": [
@@ -1461,6 +1286,181 @@
         }
       }
     },
+    "/api/Message/ReceiveEmailMessage": {
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_ReceiveEmailMessage",
+        "requestBody": {
+          "x-name": "message",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveEmailMessageCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Message/ReceiveWhatsappMessage": {
+      "get": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_ReceiveWhatsappMessageGET",
+        "parameters": [
+          {
+            "name": "hub.challenge",
+            "x-originalName": "hubChallenge",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "hub.verify_token",
+            "x-originalName": "hubVerifyToken",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_ReceiveWhatsappMessagePOST",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Message/StartGarageConversation": {
+      "post": {
+        "tags": [
+          "Message"
+        ],
+        "operationId": "Message_StartGarageConversation",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGarageConversationItemsCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/GetSpecificationsCard": {
       "get": {
         "tags": [
@@ -1756,69 +1756,19 @@
         }
       }
     },
-    "/api/Webhook/ConfigureWhatsAppMessageWebhook": {
-      "get": {
-        "tags": [
-          "Webhook"
-        ],
-        "operationId": "Webhook_ConfigureWhatsAppMessageWebhook",
-        "parameters": [
-          {
-            "name": "hub.mode",
-            "x-originalName": "hubMode",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 1
-          },
-          {
-            "name": "hub.challenge",
-            "x-originalName": "hubChallenge",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "hub.verify_token",
-            "x-originalName": "hubVerifyToken",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 3
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Webhook/ReceiveWhatsAppTextMessage": {
+    "/api/Vehicle/CreateServiceEventNotifier": {
       "post": {
         "tags": [
-          "Webhook"
+          "Vehicle"
         ],
-        "operationId": "Webhook_ReceiveWhatsAppTextMessage",
+        "operationId": "Vehicle_CreateServiceEventNotifier",
         "requestBody": {
-          "x-name": "messageReceived",
+          "x-name": "command",
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleEventNotifierCommand"
+              }
             }
           },
           "required": true,
@@ -1828,10 +1778,61 @@
           "200": {
             "description": "",
             "content": {
-              "application/octet-stream": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "$ref": "#/components/schemas/NotificationItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Vehicle/DeleteServiceEventNotifier/{id}": {
+      "delete": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_DeleteServiceEventNotifier",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationItemDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
                 }
               }
             }
@@ -1861,166 +1862,6 @@
             "additionalProperties": {
               "type": "string"
             }
-          }
-        }
-      },
-      "ReceiveEmailMessageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "from": {
-            "type": "string"
-          },
-          "body": {
-            "type": "string"
-          }
-        }
-      },
-      "ProblemDetails": {
-        "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "CreateGarageConversationItemsCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "messageContent",
-          "services"
-        ],
-        "properties": {
-          "userWhatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "userEmailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "messageType": {
-            "$ref": "#/components/schemas/ConversationType"
-          },
-          "messageContent": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "services": {
-            "type": "array",
-            "minLength": 1,
-            "nullable": false,
-            "xml": {
-              "wrapped": true
-            },
-            "items": {
-              "xml": {
-                "name": "VehicleService"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/VehicleService"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "ConversationType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Other",
-          "Price",
-          "Appointment",
-          "Technical",
-          "RequestAQuote"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ]
-      },
-      "VehicleService": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "garageServiceId",
-          "relatedGarageLookupIdentifier",
-          "relatedGarageLookupName",
-          "vehicleLicensePlate",
-          "vehicleLongitude",
-          "vehicleLatitude"
-        ],
-        "properties": {
-          "garageServiceId": {
-            "type": "string",
-            "format": "guid",
-            "minLength": 1,
-            "nullable": false
-          },
-          "garageServiceTitle": {
-            "type": "string",
-            "nullable": true
-          },
-          "relatedGarageLookupIdentifier": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "relatedGarageLookupName": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "conversationEmailAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "conversationWhatsappNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "vehicleLicensePlate": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "vehicleLongitude": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
-          },
-          "vehicleLatitude": {
-            "type": "string",
-            "minLength": 1,
-            "nullable": false
           }
         }
       },
@@ -2744,6 +2585,166 @@
           }
         }
       },
+      "ReceiveEmailMessageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateGarageConversationItemsCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageContent",
+          "services"
+        ],
+        "properties": {
+          "userWhatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "userEmailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/ConversationType"
+          },
+          "messageContent": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          },
+          "services": {
+            "type": "array",
+            "minLength": 1,
+            "nullable": false,
+            "xml": {
+              "wrapped": true
+            },
+            "items": {
+              "xml": {
+                "name": "VehicleService"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/VehicleService"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "ConversationType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "Price",
+          "Appointment",
+          "Technical",
+          "RequestAQuote"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "VehicleService": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "garageServiceId",
+          "relatedGarageLookupIdentifier",
+          "relatedGarageLookupName",
+          "vehicleLicensePlate",
+          "vehicleLongitude",
+          "vehicleLatitude"
+        ],
+        "properties": {
+          "garageServiceId": {
+            "type": "string",
+            "format": "guid",
+            "minLength": 1,
+            "nullable": false
+          },
+          "garageServiceTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "relatedGarageLookupIdentifier": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          },
+          "relatedGarageLookupName": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          },
+          "conversationEmailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "conversationWhatsappNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicleLicensePlate": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          },
+          "vehicleLongitude": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          },
+          "vehicleLatitude": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          }
+        }
+      },
       "VehicleSpecificationsCardItem": {
         "type": "object",
         "additionalProperties": false,
@@ -2959,6 +2960,106 @@
           },
           "item2": {
             "type": "string"
+          }
+        }
+      },
+      "NotificationItemDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "guid"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/PriorityLevel"
+          },
+          "type": {
+            "$ref": "#/components/schemas/NotificationType"
+          },
+          "receiverContactType": {
+            "$ref": "#/components/schemas/ContactType"
+          },
+          "receiverContactIdentifier": {
+            "type": "string"
+          },
+          "vehicleLicensePlate": {
+            "type": "string"
+          }
+        }
+      },
+      "PriorityLevel": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "None",
+          "Low",
+          "Medium",
+          "High"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "NotificationType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Other",
+          "GarageServiceReviewReminder",
+          "VehicleServiceReviewApproved",
+          "VehicleServiceReviewDeclined",
+          "VehicleServiceNotification"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "ContactType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Email",
+          "WhatsApp",
+          "PhoneNumber"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "CreateVehicleEventNotifierCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "vehicleLicensePlate"
+        ],
+        "properties": {
+          "vehicleLicensePlate": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": false
+          },
+          "receiverEmailAddress": {
+            "type": "string",
+            "pattern": "^[^@]+@[^@]+$",
+            "nullable": true
+          },
+          "receiverWhatsappNumber": {
+            "type": "string",
+            "pattern": "^\\+?[0-9]+$",
+            "nullable": true
           }
         }
       }

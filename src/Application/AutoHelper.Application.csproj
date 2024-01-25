@@ -30,6 +30,8 @@
     <ItemGroup>
       <Compile Remove="Common\Behaviours\AuthorizationBehaviour.cs" />
       <Compile Remove="Common\Interfaces\ICsvFileBuilder.cs" />
+      <Compile Remove="Common\Interfaces\IQueueRequest.cs" />
+      <Compile Remove="Common\Interfaces\IQueueService.cs" />
       <Compile Remove="Common\Models\LookupDto.cs" />
       <Compile Remove="Garages\Queries\GetGarageLookupCards\GarageEmployeeItemSearchDto.cs" />
       <Compile Remove="Vehicles\Queries\GetVehicleServiceLogs\VehicleGarageServiceDtoItem.cs" />
@@ -40,7 +42,6 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="DeepCloner" Version="0.10.4" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
-        <PackageReference Include="Hangfire.Core" Version="1.8.5" />
         <PackageReference Include="LinqKit" Version="1.2.4" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
@@ -51,6 +52,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\AutoHelper.Hangfire.Shared\AutoHelper.Hangfire.Shared.csproj" />
         <ProjectReference Include="..\Domain\AutoHelper.Domain.csproj" />
     </ItemGroup>
 

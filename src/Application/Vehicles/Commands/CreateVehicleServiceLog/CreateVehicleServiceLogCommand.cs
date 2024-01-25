@@ -96,25 +96,25 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        // Send email to garage owner to notify about new service log
-        try
-        {
-            var command = new CreateNotificationCommand(
-                request.VehicleLicensePlate,
-                NotificationType.GarageServiceReviewReminder,
-                request.GarageService!.Garage.Lookup.ConversationContactEmail,
-                request.GarageService.Garage.Lookup.ConversationContactWhatsappNumber
-            );
+        //// TODO: Send email to garage owner to notify about new service log
+        //try
+        //{
+        //    var command = new CreateNotificationCommand(
+        //        request.VehicleLicensePlate,
+        //        NotificationType.GarageServiceReviewReminder,
+        //        request.GarageService!.Garage.Lookup.ConversationContactEmail,
+        //        request.GarageService.Garage.Lookup.ConversationContactWhatsappNumber
+        //    );
 
-            var notification = await _sender.Send(command, cancellationToken);
+        //    var notification = await _sender.Send(command, cancellationToken);
 
 
-        }
-        catch (Exception)
-        {
-            // TODO: Admin should fix this exception
-            throw;
-        }
+        //}
+        //catch (Exception)
+        //{
+        //    // TODO: Admin should fix this exception
+        //    throw;
+        //}
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }
