@@ -374,69 +374,81 @@ internal class GraphEmailService : IMailingService
 
     private async Task SendVehicleServiceNotification(NotificationItem notification, CancellationToken cancellationToken)
     {
-        string subject = "";
         string html = "";
-
+        string subject = "";
         switch (notification.VehicleType)
         {
             case VehicleNotificationType.MOT:
-                subject = $"APK keuring voor [{notification.VehicleLicensePlate}]";
+                subject = $"APK verloopt over 4 weken voor [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_MOT>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleServiceType.Repair:
-                subject = $"Reparatie voor [{notification.VehicleLicensePlate}]";
-                html = new ComponentRenderer<VehicleServiceNotificationRepair>()
+            case VehicleNotificationType.WinterService:
+                subject = $"Zorg goed voor uw auto: Overweeg een onderhoudsbeurt na een intensieve winterperiode [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotification_WinterService>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleServiceType.Maintenance:
-                subject = $"Onderhoud voor [{notification.VehicleLicensePlate}]";
-                html = new ComponentRenderer<VehicleServiceNotificationMaintenance>()
+            case VehicleNotificationType.ChangeToSummerTyre:
+                subject = $"Tijd om uw Winterbanden te Wisselen voor de Zomer: [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotification_SummerTyreChange>()
+                    .Set(c => c.Notification, notification)
+                    .Render();
+                break;
+            case VehicleNotificationType.SummerCheck:
+                subject = $"Is uw auto klaar voor de vakantie? Plan een Zomercheck voor [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotification_SummerCheck>()
+                    .Set(c => c.Notification, notification)
+                    .Render();
+                break;
+            case VehicleNotificationType.SummerService:
+                subject = $"Heeft u een vakantietrip gemaakt? Overweeg een onderhoudsbeurt voor uw auto [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotification_SummerService>()
+                    .Set(c => c.Notification, notification)
+                    .Render();
+                break;
+            case VehicleNotificationType.ChangeToWinterTyre:
+                subject = $"Bereid uw auto voor op de winter: Tijd voor winterbanden [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotification_WinterTyreChange>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
         }
 
-        //string html = new ComponentRenderer<VehicleServiceNotification>()
-        //    .Set(c => c.Notification, notification)
-        //    .Render();
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = subject,
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = notification.ReceiverContactIdentifier
+                        }
+                    }
+                }
+            }
+        };
 
-        //var email = new GraphEmail
-        //{
-        //    Message = new GraphEmailMessage
-        //    {
-        //        Subject = $"Onderhoudsregel aangemaakt voor [{notification.VehicleLicensePlate}]: Bevestiging van Garage",
-        //        Body = new GraphEmailBody
-        //        {
-        //            ContentType = "HTML",
-        //            Content = html
-        //        },
-        //        From = new GraphEmailFrom
-        //        {
-        //            EmailAddress = new GraphEmailAddress
-        //            {
-        //                Name = "AutoHelper",
-        //                Address = _userId
-        //            }
-        //        },
-        //        ToRecipients = new GraphEmailRecipient[]
-        //        {
-        //            new GraphEmailRecipient()
-        //            {
-        //                EmailAddress = new GraphEmailAddress
-        //                {
-        //                    Address = notification.ReceiverContactIdentifier
-        //                }
-        //            }
-        //        }
-        //    }
-        //};
-
-        //await SendEmail(email);
+        await SendEmail(email);
     }
-
 
     private async Task<string> GetAccessToken()
     {

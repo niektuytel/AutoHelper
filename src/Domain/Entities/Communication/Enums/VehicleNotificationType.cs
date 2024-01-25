@@ -5,8 +5,8 @@ public enum VehicleNotificationType
     Other = 0,
     MOT = 1,
     WinterService = 2,
-    WinterTyreChange = 3,
-    SummerTyreChange = 4,
+    ChangeToWinterTyre = 3,
+    ChangeToSummerTyre = 4,
     SummerCheck = 5,
     SummerService = 6
 }

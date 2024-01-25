@@ -55,7 +55,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (summerTyreChangeTriggerDate > now && summerTyreChangeTriggerDate < triggerDate)
         {
             triggerDate = summerTyreChangeTriggerDate;
-            notificationType = VehicleNotificationType.SummerTyreChange;
+            notificationType = VehicleNotificationType.ChangeToSummerTyre;
         }
 
         // Prepare for going on holiday
@@ -71,7 +71,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (winterTyreChangeTriggerDate > now && winterTyreChangeTriggerDate < triggerDate)
         {
             triggerDate = winterTyreChangeTriggerDate;
-            notificationType = VehicleNotificationType.WinterTyreChange;
+            notificationType = VehicleNotificationType.ChangeToWinterTyre;
         }
 
         // Service Logs, oil change on each 10.000 km/1 year after summer
