@@ -7,7 +7,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { EnumValues } from 'enum-values';
 
 // custom imports
-import { ConversationType, GarageServiceType, MessageClient, VehicleService, CreateGarageConversationItemsCommand } from '../app/web-api-client';
+import { ConversationType, GarageServiceType, CommunicationClient, VehicleService, CreateGarageConversationItemsCommand } from '../app/web-api-client';
 import { showOnSuccess } from '../redux/slices/statusSnackbarSlice';
 
 const isValidEmail = (input: string): boolean => {
@@ -51,7 +51,7 @@ export default ({ requestQuote = false, services, open, onClose }: QuestionDialo
     });
 
     const [loading, setLoading] = useState<boolean>(false);
-    const messageClient = new MessageClient(process.env.PUBLIC_URL);
+    const messageClient = new CommunicationClient(process.env.PUBLIC_URL);
 
     const startGarageConversation = async (command: CreateGarageConversationItemsCommand) => {
         setLoading(true);

@@ -12,6 +12,9 @@ using RazorEngine.Text;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.WebUI.Controllers;
 using AutoHelper.Domain.Entities.Messages;
+using AutoHelper.Domain.Entities.Messages.Enums;
+using AutoHelper.Messaging.Templates.Conversation;
+using AutoHelper.Messaging.Templates.Notification;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -97,7 +100,7 @@ internal class GraphEmailService : IMailingService
         // he will send an clean message, this will been handled in gmail as 1 message.
         // but we want an tree of responses that it looks like an conversation in gmail
 
-        string html = new ComponentRenderer<Templates.Message>()
+        string html = new ComponentRenderer<Templates.Conversation.Message>()
             .Set(c => c.Content, content)
             .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
             .Render();
@@ -230,6 +233,211 @@ internal class GraphEmailService : IMailingService
         await SendEmail(email);
     }
 
+    public async Task SendNotificationMessage(NotificationItem notification, CancellationToken cancellationToken)
+    {
+        switch (notification.GeneralType)
+        {
+            case GeneralNotificationType.GarageServiceReviewReminder:
+                await SendGarageServiceReviewReminder(notification, cancellationToken);
+                break;
+            case GeneralNotificationType.VehicleServiceReviewApproved:
+                await SendVehicleServiceReviewApproved(notification, cancellationToken);
+                break;
+            case GeneralNotificationType.VehicleServiceReviewDeclined:
+                await SendVehicleServiceReviewDeclined(notification, cancellationToken);
+                break;
+            case GeneralNotificationType.VehicleServiceNotification:
+                await SendVehicleServiceNotification(notification, cancellationToken);
+                break;
+        }
+    }
+
+    private async Task SendGarageServiceReviewReminder(NotificationItem notification, CancellationToken cancellationToken)
+    {
+        string html = new ComponentRenderer<GarageServiceReviewReminder>()
+            .Set(c => c.Notification, notification)
+            .Render();
+
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Bevestiging gevraagd voor onderhoud aan ${notification.VehicleLicensePlate}",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = notification.ReceiverContactIdentifier
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
+    private async Task SendVehicleServiceReviewApproved(NotificationItem notification, CancellationToken cancellationToken)
+    {
+        string html = new ComponentRenderer<VehicleServiceReviewApproved>()
+            .Set(c => c.Notification, notification)
+            .Render();
+
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Onderhoudsregel Goedgekeurd voor [{notification.VehicleLicensePlate}]: Bevestiging van Garage",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = notification.ReceiverContactIdentifier
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
+    private async Task SendVehicleServiceReviewDeclined(NotificationItem notification, CancellationToken cancellationToken)
+    {
+        string html = new ComponentRenderer<VehicleServiceReviewDeclined>()
+            .Set(c => c.Notification, notification)
+            .Render();
+
+        var email = new GraphEmail
+        {
+            Message = new GraphEmailMessage
+            {
+                Subject = $"Onderhoudsregel afgekeurd voor [{notification.VehicleLicensePlate}]: Bevestiging van Garage",
+                Body = new GraphEmailBody
+                {
+                    ContentType = "HTML",
+                    Content = html
+                },
+                From = new GraphEmailFrom
+                {
+                    EmailAddress = new GraphEmailAddress
+                    {
+                        Name = "AutoHelper",
+                        Address = _userId
+                    }
+                },
+                ToRecipients = new GraphEmailRecipient[]
+                {
+                    new GraphEmailRecipient()
+                    {
+                        EmailAddress = new GraphEmailAddress
+                        {
+                            Address = notification.ReceiverContactIdentifier
+                        }
+                    }
+                }
+            }
+        };
+
+        await SendEmail(email);
+    }
+
+    private async Task SendVehicleServiceNotification(NotificationItem notification, CancellationToken cancellationToken)
+    {
+        string subject = "";
+        string html = "";
+
+        switch (notification.VehicleType)
+        {
+            case VehicleNotificationType.MOT:
+                subject = $"APK keuring voor [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotification_MOT>()
+                    .Set(c => c.Notification, notification)
+                    .Render();
+                break;
+            case VehicleServiceType.Repair:
+                subject = $"Reparatie voor [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotificationRepair>()
+                    .Set(c => c.Notification, notification)
+                    .Render();
+                break;
+            case VehicleServiceType.Maintenance:
+                subject = $"Onderhoud voor [{notification.VehicleLicensePlate}]";
+                html = new ComponentRenderer<VehicleServiceNotificationMaintenance>()
+                    .Set(c => c.Notification, notification)
+                    .Render();
+                break;
+        }
+
+        //string html = new ComponentRenderer<VehicleServiceNotification>()
+        //    .Set(c => c.Notification, notification)
+        //    .Render();
+
+        //var email = new GraphEmail
+        //{
+        //    Message = new GraphEmailMessage
+        //    {
+        //        Subject = $"Onderhoudsregel aangemaakt voor [{notification.VehicleLicensePlate}]: Bevestiging van Garage",
+        //        Body = new GraphEmailBody
+        //        {
+        //            ContentType = "HTML",
+        //            Content = html
+        //        },
+        //        From = new GraphEmailFrom
+        //        {
+        //            EmailAddress = new GraphEmailAddress
+        //            {
+        //                Name = "AutoHelper",
+        //                Address = _userId
+        //            }
+        //        },
+        //        ToRecipients = new GraphEmailRecipient[]
+        //        {
+        //            new GraphEmailRecipient()
+        //            {
+        //                EmailAddress = new GraphEmailAddress
+        //                {
+        //                    Address = notification.ReceiverContactIdentifier
+        //                }
+        //            }
+        //        }
+        //    }
+        //};
+
+        //await SendEmail(email);
+    }
+
+
     private async Task<string> GetAccessToken()
     {
         const string cacheKey = "GraphAccessToken";
@@ -317,8 +525,4 @@ internal class GraphEmailService : IMailingService
         }
     }
 
-    public Task SendNotificationMessage(NotificationItem notification, CancellationToken cancellationToken)
-    {
-         throw new NotImplementedException();
-    }
 }

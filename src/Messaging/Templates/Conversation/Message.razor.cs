@@ -4,7 +4,7 @@ using global::System.Linq;
 using global::System.Threading.Tasks;
 using global::Microsoft.AspNetCore.Components;
 
-namespace AutoHelper.Messaging.Templates;
+namespace AutoHelper.Messaging.Templates.Conversation;
 
 public partial class Message
 {
