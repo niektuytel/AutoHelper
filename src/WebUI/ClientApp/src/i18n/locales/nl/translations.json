@@ -244,18 +244,15 @@
   "GarageServiceDialog.ExpectedNextOdometerReading.Label": "Verplichte kilometerstand voor volgend onderhoud",
   "GarageServiceDialog.ExpectedNextDate.Label": "Verplichte datum voor volgend onderhoud",
 
-
-
   "Header.Menu.MyVehicles.Title": "Mijn voertuigen",
   "Header.Menu.MyMaintenance.Title": "Mijn onderhoud",
 
-  "NotificationDialog.Confirm": "Bedankt, we houden u op de hoogte",
-  "NotificationDialog.Title": "",
-  "NotificationDialog.Description": null,
-  "NotificationDialog.WhatsappOrEmail.Required": null,
-  "NotificationDialog.WhatsappOrEmail.Invalid": null,
-  "NotificationDialog.WhatsappOrEmail.Label": null,
-
+  "NotificationDialog.Confirm": "Bedankt, we houden u op de hoogte!",
+  "NotificationDialog.Title": "Houd me op de hoogte",
+  "NotificationDialog.Description": "Wij houden u op de hoogte wanneer er iets aan uw auto kan gebeuren, zoals de APK-keuring, het wisselen van winter- en zomerbanden, of een herinnering om onderhoud te plannen na verloop van tijd.",
+  "NotificationDialog.WhatsappOrEmail.Required": "Nodig om contact met u op te nemen",
+  "NotificationDialog.WhatsappOrEmail.Invalid": "Ongeldig e-mailadres of WhatsApp-nummer",
+  "NotificationDialog.WhatsappOrEmail.Label": "E-mailadres of WhatsApp-nummer",
 
 
 

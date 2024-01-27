@@ -243,12 +243,15 @@
   "GarageServiceDialog.ExpectedNextOdometerReading.Label": "Maintenance interval (km)",
   "GarageServiceDialog.ExpectedNextDate.Label": "Maintenance interval (date)",
 
-
-
-
   "Header.Menu.MyVehicles.Title": "My vehicles",
   "Header.Menu.MyMaintenance.Title": "My maintenance",
 
+  "NotificationDialog.Confirm": "Thank you, we will keep you updated!",
+  "NotificationDialog.Title": "Keep me informed",
+  "NotificationDialog.Description": "We will keep you informed about potential needs for your car, such as the MOT inspection, switching between winter and summer tires, or a reminder to schedule maintenance over time.",
+  "NotificationDialog.WhatsappOrEmail.Required": "Required to make contact with you",
+  "NotificationDialog.WhatsappOrEmail.Invalid": "Invalid email address or WhatsApp number",
+  "NotificationDialog.WhatsappOrEmail.Label": "Email address or WhatsApp number",
 
 
 
