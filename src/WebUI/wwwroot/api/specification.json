@@ -2101,8 +2101,8 @@
           "Other",
           "MOT",
           "WinterService",
-          "WinterTyreChange",
-          "SummerTyreChange",
+          "ChangeToWinterTyre",
+          "ChangeToSummerTyre",
           "SummerCheck",
           "SummerService"
         ],

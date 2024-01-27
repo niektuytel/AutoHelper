@@ -249,7 +249,12 @@
   "Header.Menu.MyVehicles.Title": "Mijn voertuigen",
   "Header.Menu.MyMaintenance.Title": "Mijn onderhoud",
 
-
+  "NotificationDialog.Confirm": "Bedankt, we houden u op de hoogte",
+  "NotificationDialog.Title": "",
+  "NotificationDialog.Description": null,
+  "NotificationDialog.WhatsappOrEmail.Required": null,
+  "NotificationDialog.WhatsappOrEmail.Invalid": null,
+  "NotificationDialog.WhatsappOrEmail.Label": null,
 
 
 

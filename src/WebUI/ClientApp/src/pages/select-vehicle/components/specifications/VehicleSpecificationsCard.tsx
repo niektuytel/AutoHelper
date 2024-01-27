@@ -6,6 +6,7 @@ import { Box, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typo
 import LicensePlateTextField from "./EditableLicensePlate";
 import useSearchVehicle from "../../../useSearchVehicle";
 import { useTranslation } from "react-i18next";
+import NotificationIcon from "./NotificationIcon";
 
 interface IProps {
     isMobile: boolean;
@@ -79,7 +80,12 @@ export default ({ isMobile, license_plate }: IProps) => {
                                 </TableCell>
                                 :
                                 <TableCell key={`cell-expirydate-value`} style={cellStyle}>
-                                    {vehicleBriefInfo?.dateOfMOTExpiry?.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                    <Box display="flex" alignItems="center">
+                                        <Box marginRight={1}>
+                                            {vehicleBriefInfo?.dateOfMOTExpiry?.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                        </Box>
+                                        <NotificationIcon expiryDate={vehicleBriefInfo?.dateOfMOTExpiry} />
+                                    </Box>
                                 </TableCell>
                             }
                         </TableRow>
