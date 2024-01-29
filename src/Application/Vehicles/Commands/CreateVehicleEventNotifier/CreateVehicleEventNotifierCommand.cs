@@ -32,9 +32,7 @@ public record CreateVehicleEventNotifierCommand : IRequest<NotificationItemDto>
 {
     public string VehicleLicensePlate { get; set; } = null!;
 
-    public string? ReceiverEmailAddress { get; set; } = null;
-
-    public string? ReceiverWhatsappNumber { get; set; } = null;
+    public string? ContactIdentifier { get; set; } = null;
 
     [JsonIgnore]
     public VehicleLookupItem? VehicleLookup { get; set; } = null!;
@@ -60,10 +58,10 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
 
     public async Task<NotificationItemDto> Handle(CreateVehicleEventNotifierCommand request, CancellationToken cancellationToken)
     {
-        // get next notifier
+        // get next notifier, and avoid db call to parse instance
         var nextNotifierQuery = new GetVehicleNextNotificationQuery(request.VehicleLicensePlate)
         {
-            Vehicle = request.VehicleLookup // avoid db call
+            Vehicle = request.VehicleLookup
         };
         var nextNotifier = await _sender.Send(nextNotifierQuery, cancellationToken);
 
@@ -73,8 +71,7 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
             GeneralNotificationType.VehicleServiceNotification,
             nextNotifier.NotificationType,
             nextNotifier.TriggerDate,
-            request.ReceiverEmailAddress,
-            request.ReceiverWhatsappNumber
+            request.ContactIdentifier
         );
         var notification = await _sender.Send(notificationCommand, cancellationToken);
 

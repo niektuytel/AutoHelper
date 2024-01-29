@@ -79,13 +79,16 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
     private readonly IMapper _mapper;
     private readonly ISender _sender;
     private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IIdentificationHelper _identificationHelper;
+
 
     public UpdateVehicleServiceLogAsGarageCommandHandler(
         IBlobStorageService blobStorageService, 
         IApplicationDbContext context, 
         IMapper mapper, 
         ISender sender, 
-        IBackgroundJobClient backgroundJobClient
+        IBackgroundJobClient backgroundJobClient,
+        IIdentificationHelper identificationHelper
     )
     {
         _blobStorageService = blobStorageService;
@@ -93,6 +96,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         _mapper = mapper;
         _sender = sender;
         _backgroundJobClient = backgroundJobClient;
+        _identificationHelper = identificationHelper;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(UpdateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
@@ -120,7 +124,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
             await SendNotificationToReporter(
                 entity.VehicleLicensePlate,
                 request.ServiceLog.ReporterEmailAddress!,
-                request.ServiceLog.ReporterPhoneNumber!, 
+                request.ServiceLog.ReporterPhoneNumber!,
                 cancellationToken
             );
         }
@@ -172,13 +176,13 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
     private async Task SendNotificationToReporter(string licencePlate, string emailAddress, string whatsappNumber, CancellationToken cancellationToken)
     {
+        var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatsappNumber);
         var notificationCommand = new CreateNotificationCommand(
             licencePlate,
             GeneralNotificationType.VehicleServiceReviewApproved,
             VehicleNotificationType.Other,
             triggerDate: null,
-            emailAddress: emailAddress,
-            whatsappNumber: whatsappNumber
+            contactIdentifier: contactIdentifier
         );
         var notification = await _sender.Send(notificationCommand, cancellationToken);
 

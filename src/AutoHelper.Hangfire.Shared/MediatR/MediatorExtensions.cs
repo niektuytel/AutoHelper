@@ -40,6 +40,10 @@ namespace AutoHelper.Hangfire.Shared.MediatR
 
         public static string ScheduleJob<T>(this ISender mediator, IBackgroundJobClient client, string queue, string title, IQueueRequest<T> request, DateTimeOffset dateTime)
         {
+#if DEBUG
+            dateTime = DateTime.Now.AddSeconds(10);
+#endif
+
             queue = queue.ToLower();
             var jobId = client.Schedule<MediatorHangfireBridge>(queue, bridge => bridge.Send(null, queue, title, request, CancellationToken.None), dateTime);
             return jobId;

@@ -1,4 +1,5 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.Text.RegularExpressions;
+using AutoHelper.Application.Common.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,17 +18,12 @@ public class CreateVehicleEventNotifierValidator : AbstractValidator<CreateVehic
             .MustAsync(BeValidAndExistingVehicle)
             .WithMessage("Invalid or non-existent vehicle.");
 
-        RuleFor(x => x.ReceiverWhatsappNumber)
-            .Matches(@"^\+?[0-9]+$").WithMessage("Invalid phone number format.")
-            .When(x => !string.IsNullOrEmpty(x.ReceiverWhatsappNumber));
-
-        RuleFor(x => x.ReceiverEmailAddress)
-            .EmailAddress().WithMessage("Invalid email address format.")
-            .When(x => !string.IsNullOrEmpty(x.ReceiverEmailAddress));
-
-        RuleFor(x => x)
-            .Must(x => !string.IsNullOrEmpty(x.ReceiverWhatsappNumber) || !string.IsNullOrEmpty(x.ReceiverEmailAddress))
-            .WithMessage("Either whatsapp number or email address is required.");
+        RuleFor(x => x.ContactIdentifier)
+            .NotEmpty().WithMessage("Either whatsapp number or email address is required.")
+            .Must(contactIdentifier =>
+                Regex.IsMatch(contactIdentifier, @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$") || // Email format
+                Regex.IsMatch(contactIdentifier, @"^\+?[0-9]{10,15}$") // Phone number format
+            );
 
     }
 

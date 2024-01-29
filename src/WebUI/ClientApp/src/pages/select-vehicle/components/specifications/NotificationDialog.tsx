@@ -61,19 +61,18 @@ export default ({ open, onClose }: QuestionDialogProps) => {
 
     const onSubmit = async (data: FormInput) => {
         let { whatsappOrEmail } = data;
-        var command = new CreateVehicleEventNotifierCommand({
-            vehicleLicensePlate: license_plate || ''
-        });
 
         // Check the type of whatsappOrEmail and set corresponding values
-        if (isValidEmail(whatsappOrEmail)) {
-            command.receiverEmailAddress = whatsappOrEmail;
-        } else if (isValidPhoneNumber(whatsappOrEmail)) {
-            command.receiverWhatsappNumber = whatsappOrEmail;
-        } else {
+        if (!isValidEmail(whatsappOrEmail) && !isValidPhoneNumber(whatsappOrEmail))
+        {
             console.error("Invalid input for whatsappOrEmail");
             return;
         }
+
+        var command = new CreateVehicleEventNotifierCommand({
+            vehicleLicensePlate: license_plate || '',
+            contactIdentifier: whatsappOrEmail,
+        });
         
         var response = await createNotification(command);
 

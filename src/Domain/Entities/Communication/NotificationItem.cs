@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Conversations.Enums;
@@ -65,4 +66,17 @@ public class NotificationItem : BaseAuditableEntity
 
     [ForeignKey(nameof(VehicleLicensePlate))]
     public VehicleLookupItem RelatedVehicleLookup { get; set; } = null!;
+
+    /// <summary>
+    /// Metadata of the notification, can be used to store additional information
+    /// </summary>
+    public string MetadataString { get; set; } =  "{}";
+
+    [NotMapped]
+    [JsonIgnore]
+    public Dictionary<string, string> Metadata
+    {
+        get => JsonSerializer.Deserialize<Dictionary<string, string>>(MetadataString) ?? new();
+        set => MetadataString = JsonSerializer.Serialize(value);
+    }
 }

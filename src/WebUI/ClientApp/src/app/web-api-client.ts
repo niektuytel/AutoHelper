@@ -3623,8 +3623,7 @@ export interface ITupleOfStringAndString {
 
 export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNotifierCommand {
     vehicleLicensePlate!: string;
-    receiverEmailAddress?: string | undefined;
-    receiverWhatsappNumber?: string | undefined;
+    contactIdentifier!: string;
 
     constructor(data?: ICreateVehicleEventNotifierCommand) {
         if (data) {
@@ -3638,8 +3637,7 @@ export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNot
     init(_data?: any) {
         if (_data) {
             this.vehicleLicensePlate = _data["vehicleLicensePlate"];
-            this.receiverEmailAddress = _data["receiverEmailAddress"];
-            this.receiverWhatsappNumber = _data["receiverWhatsappNumber"];
+            this.contactIdentifier = _data["contactIdentifier"];
         }
     }
 
@@ -3653,16 +3651,14 @@ export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNot
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["vehicleLicensePlate"] = this.vehicleLicensePlate;
-        data["receiverEmailAddress"] = this.receiverEmailAddress;
-        data["receiverWhatsappNumber"] = this.receiverWhatsappNumber;
+        data["contactIdentifier"] = this.contactIdentifier;
         return data;
     }
 }
 
 export interface ICreateVehicleEventNotifierCommand {
     vehicleLicensePlate: string;
-    receiverEmailAddress?: string | undefined;
-    receiverWhatsappNumber?: string | undefined;
+    contactIdentifier: string;
 }
 
 export interface FileParameter {

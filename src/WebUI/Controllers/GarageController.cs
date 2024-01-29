@@ -108,4 +108,5 @@ public class GarageController : ApiControllerBase
         var query = new GetGarageServicesAsVehicleQuery(identifier, licensePlate);
         return await Mediator.Send(query);
     }
+
 }

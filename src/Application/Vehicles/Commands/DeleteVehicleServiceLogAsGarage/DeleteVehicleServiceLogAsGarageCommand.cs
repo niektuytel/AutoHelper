@@ -45,14 +45,23 @@ public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Del
     private readonly IMapper _mapper;
     private readonly ISender _sender;
     private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IIdentificationHelper _identificationHelper;
 
-    public DeleteVehicleServiceLogAsGarageCommandHandler(IVehicleService vehicleService, IApplicationDbContext context, IMapper mapper, ISender sender, IBackgroundJobClient backgroundJobClient)
+    public DeleteVehicleServiceLogAsGarageCommandHandler(
+        IVehicleService vehicleService, 
+        IApplicationDbContext context, 
+        IMapper mapper, 
+        ISender sender, 
+        IBackgroundJobClient backgroundJobClient,
+        IIdentificationHelper identificationHelper
+    )
     {
         _vehicleService = vehicleService;
         _context = context;
         _mapper = mapper;
         _sender = sender;
         _backgroundJobClient = backgroundJobClient;
+        _identificationHelper = identificationHelper;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(DeleteVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
@@ -70,13 +79,13 @@ public class DeleteVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Del
 
     private async Task SendNotificationToReporter(VehicleServiceLogItem serviceLog, CancellationToken cancellationToken)
     {
+        var contactIdentifier = _identificationHelper.GetValidIdentifier(serviceLog.ReporterEmailAddress, serviceLog.ReporterPhoneNumber);
         var notificationCommand = new CreateNotificationCommand(
             serviceLog.VehicleLicensePlate,
             GeneralNotificationType.VehicleServiceReviewDeclined,
             VehicleNotificationType.Other,
             triggerDate: null,
-            emailAddress: serviceLog.ReporterEmailAddress,
-            whatsappNumber: serviceLog.ReporterPhoneNumber
+            contactIdentifier: contactIdentifier
         );
         var notification = await _sender.Send(notificationCommand, cancellationToken);
 

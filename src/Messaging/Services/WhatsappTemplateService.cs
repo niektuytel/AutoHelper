@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.ComponentModel;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using AutoHelper.Application.Common.Extensions;
@@ -6,14 +7,19 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Messages;
+using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Messaging.Models.GraphEmail;
+using AutoHelper.Messaging.Templates.Notification;
 using AutoHelper.WebUI.Controllers;
+using BlazorTemplater;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Exceptions;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Messages.Requests;
+using WhatsappBusiness.CloudApi.Webhook;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -268,6 +274,322 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
         }
     }
 
+    public async Task SendNotificationMessage(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
+    {
+        switch (notification.GeneralType)
+        {
+            case GeneralNotificationType.GarageServiceReviewReminder:
+                await SendGarageServiceReviewReminder(notification, vehicle, cancellationToken);
+                break;
+            case GeneralNotificationType.VehicleServiceReviewApproved:
+                await SendVehicleServiceReviewApproved(notification, vehicle, cancellationToken);
+                break;
+            case GeneralNotificationType.VehicleServiceReviewDeclined:
+                await SendVehicleServiceReviewDeclined(notification, vehicle, cancellationToken);
+                break;
+            case GeneralNotificationType.VehicleServiceNotification:
+                await SendVehicleServiceNotification(notification, vehicle, cancellationToken);
+                break;
+        }
+    }
+
+    private async Task SendGarageServiceReviewReminder(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
+    {
+        var receiverIdentifier = notification.ReceiverContactIdentifier;
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
+
+        var template = new TextTemplateMessageRequest
+        {
+            To = phoneNumberId,
+            Template = new TextMessageTemplate
+            {
+                Name = "garage_servicereview_reminder",
+                Language = new TextMessageLanguage
+                {
+                    Code = LanguageCode.Dutch
+                },
+                Components = new List<TextMessageComponent>
+                {
+                    new TextMessageComponent
+                    {
+                        Type = "Header",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = notification.VehicleLicensePlate
+                            }
+                        }
+                    },
+                    new TextMessageComponent
+                    {
+                        Type = "Body",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = notification.Metadata["description"]
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = notification.VehicleLicensePlate
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.Model
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.FuelType
+                            }
+                        }
+                    },
+                    new TextMessageComponent()
+                    {
+                        Type = "button",
+                        Parameters = new List<TextMessageParameter>()
+                        {
+                            new TextMessageParameter()
+                            {
+                                Type = "text",
+                                Text = notification.Metadata["serviceLogId"]
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        try
+        {
+            var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            // NO need to update message id
+        }
+        catch (WhatsappBusinessCloudAPIException ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    private async Task SendVehicleServiceReviewApproved(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
+    {
+        var receiverIdentifier = notification.ReceiverContactIdentifier;
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
+
+        var template = new TextTemplateMessageRequest
+        {
+            To = phoneNumberId,
+            Template = new TextMessageTemplate
+            {
+                Name = "vehicle_servicereview_approved",
+                Language = new TextMessageLanguage
+                {
+                    Code = LanguageCode.Dutch
+                },
+                Components = new List<TextMessageComponent>
+                {
+                    new TextMessageComponent
+                    {
+                        Type = "Body",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = notification.VehicleLicensePlate
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.Model
+                            },
+                        }
+                    }
+                }
+            }
+        };
+
+        try
+        {
+            var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            // NO need to update message id
+        }
+        catch (WhatsappBusinessCloudAPIException ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    private async Task SendVehicleServiceReviewDeclined(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
+    {
+        var receiverIdentifier = notification.ReceiverContactIdentifier;
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
+
+        var template = new TextTemplateMessageRequest
+        {
+            To = phoneNumberId,
+            Template = new TextMessageTemplate
+            {
+                Name = "vehicle_servicereview_declined",
+                Language = new TextMessageLanguage
+                {
+                    Code = LanguageCode.Dutch
+                },
+                Components = new List<TextMessageComponent>
+                {
+                    new TextMessageComponent
+                    {
+                        Type = "Body",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = notification.VehicleLicensePlate
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.Model
+                            },
+                        }
+                    }
+                }
+            }
+        };
+
+        try
+        {
+            var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            // NO need to update message id
+        }
+        catch (WhatsappBusinessCloudAPIException ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
+    private async Task SendVehicleServiceNotification(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
+    {
+        var name = "";
+        var components = new List<TextMessageComponent>
+        {
+            new TextMessageComponent
+            {
+                Type = "Body",
+                Parameters = new List<TextMessageParameter>
+                {
+                    new TextMessageParameter
+                    {
+                        Type = "text",
+                        Text = notification.VehicleLicensePlate
+                    },
+                    new TextMessageParameter
+                    {
+                        Type = "text",
+                        Text = vehicle.Model
+                    },
+                }
+            }
+        };
+
+        switch (notification.VehicleType)
+        {
+            case VehicleNotificationType.MOT:
+                name = "vehicle_servicenotification_mot";
+                components = new List<TextMessageComponent>
+                {
+                    new TextMessageComponent
+                    {
+                        Type = "Header",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = notification.VehicleLicensePlate
+                            }
+                        }
+                    },
+                    new TextMessageComponent
+                    {
+                        Type = "Body",
+                        Parameters = new List<TextMessageParameter>
+                        {
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = $"{vehicle.Brand} {vehicle.Model}"
+                            },
+                            new TextMessageParameter
+                            {
+                                Type = "text",
+                                Text = vehicle.MOTExpiryDate
+                            },
+                        }
+                    }
+                };
+                break;
+            case VehicleNotificationType.WinterService:
+                //🚗 Schoonmaaktip voor uw {{2}}! 🧼
+                //Na de winter is het belangrijk uw {{2}} goed schoon te maken. Dit voorkomt roest door strooizout en houdt uw auto in topstaat.
+                name = "vehicle_servicenotification_winterservice";
+                break;
+            case VehicleNotificationType.ChangeToSummerTyre:
+                name = "vehicle_servicenotification_summertyrechange";
+                break;
+            case VehicleNotificationType.SummerCheck:
+                name = "vehicle_servicenotification_summercheck";
+                break;
+            case VehicleNotificationType.SummerService:
+                name = "vehicle_servicenotification_summerservice2";
+                break;
+            case VehicleNotificationType.ChangeToWinterTyre:
+                name = "vehicle_servicenotification_wintertyrechange";
+                break;
+        }
+
+        var receiverIdentifier = notification.ReceiverContactIdentifier;
+        var phoneNumberId = GetPhoneNumberId(receiverIdentifier);
+
+        var template = new TextTemplateMessageRequest
+        {
+            To = phoneNumberId,
+            Template = new TextMessageTemplate
+            {
+                Name = name,
+                Language = new TextMessageLanguage
+                {
+                    Code = LanguageCode.Dutch
+                },
+                Components = components
+            }
+        };
+
+        try
+        {
+            var results = await _whatsAppBusinessClient.SendTextMessageTemplateAsync(template);
+            // NO need to update message id
+        }
+        catch (WhatsappBusinessCloudAPIException ex)
+        {
+            // TODO: Handle with ILogger or on hangfire
+            Console.WriteLine(ex.Message);
+            throw;
+        }
+    }
+
     public string GetPhoneNumberId(string phoneNumber)
     {
         if (_isDevelopment)
@@ -355,8 +677,4 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
         return message;
     }
 
-    public Task SendNotificationMessage(NotificationItem notification, CancellationToken cancellationToken)
-    {
-         throw new NotImplementedException();
-    }
 }

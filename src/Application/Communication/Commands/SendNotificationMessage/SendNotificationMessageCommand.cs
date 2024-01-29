@@ -55,19 +55,22 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
     private readonly IBackgroundJobClient _backgroundJobClient;
     private readonly IApplicationDbContext _context;
     private readonly ISender _sender;
+    private readonly IVehicleService _vehicleService;
 
     public SendNotificationMessageCommandHandler(
         IWhatsappTemplateService whatsappService, 
         IMailingService mailingService, 
         IBackgroundJobClient backgroundJobClient, 
         IApplicationDbContext context, 
-        ISender sender
+        ISender sender,
+        IVehicleService vehicleService
     ) {
         _whatsappService = whatsappService;
         _mailingService = mailingService;
         _backgroundJobClient = backgroundJobClient;
         _context = context;
         _sender = sender;
+        _vehicleService = vehicleService;
     }
 
     public async Task<Unit> Handle(SendNotificationMessageCommand request, CancellationToken cancellationToken)
@@ -75,7 +78,15 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
         // send notification
         var receiverType = request.Notification!.ReceiverContactType;
         var receiverService = GetMessagingService(receiverType);
-        await receiverService.SendNotificationMessage(request.Notification, cancellationToken);
+
+        var licensePlate = request.Notification.VehicleLicensePlate;
+        var vehicle = await _vehicleService.GetTechnicalBriefByLicensePlateAsync(licensePlate);
+        if (vehicle == null)
+        {
+            throw new InvalidDataException($"Vehicle not found: {licensePlate}");
+        }
+
+        await receiverService.SendNotificationMessage(request.Notification, vehicle, cancellationToken);
 
         // next notification
         _ = await HandleNextNotification(request.Notification, cancellationToken);

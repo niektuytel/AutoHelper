@@ -3072,7 +3072,8 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "vehicleLicensePlate"
+          "vehicleLicensePlate",
+          "contactIdentifier"
         ],
         "properties": {
           "vehicleLicensePlate": {
@@ -3080,15 +3081,10 @@
             "minLength": 1,
             "nullable": false
           },
-          "receiverEmailAddress": {
+          "contactIdentifier": {
             "type": "string",
-            "pattern": "^[^@]+@[^@]+$",
-            "nullable": true
-          },
-          "receiverWhatsappNumber": {
-            "type": "string",
-            "pattern": "^\\+?[0-9]+$",
-            "nullable": true
+            "minLength": 1,
+            "nullable": false
           }
         }
       }

@@ -537,4 +537,8 @@ internal class GraphEmailService : IMailingService
         }
     }
 
+    public Task SendNotificationMessage(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

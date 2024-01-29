@@ -44,7 +44,7 @@ public class CreateNotificationValidator : AbstractValidator<CreateNotificationC
 
     private bool HaveEmailOrWhatsapp(CreateNotificationCommand command)
     {
-        return !string.IsNullOrWhiteSpace(command.ReceiverEmailAddress) || !string.IsNullOrWhiteSpace(command.ReceiverWhatsappNumber);
+        return !string.IsNullOrWhiteSpace(command.ContactIdentifier);
     }
 
 }

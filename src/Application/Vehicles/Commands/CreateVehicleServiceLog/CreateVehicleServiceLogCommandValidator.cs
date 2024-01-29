@@ -1,9 +1,12 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
+using AutoMapper;
 using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -13,10 +16,12 @@ namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateVehicleServiceLogCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IMapper _mapper;
 
-    public CreateVehicleServiceLogCommandValidator(IApplicationDbContext applicationDbContext)
+    public CreateVehicleServiceLogCommandValidator(IApplicationDbContext applicationDbContext, IMapper mapper)
     {
         _context = applicationDbContext;
+        _mapper = mapper;
 
         RuleFor(x => x.VehicleLicensePlate)
             .NotEmpty().WithMessage("Vehicle license plate is required.")
@@ -85,22 +90,41 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
         return vehicle != null;
     }
 
-    private async Task<bool> BeValidAndExistingGarage(string lookupIdentifier, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingGarage(CreateVehicleServiceLogCommand command, string lookupIdentifier, CancellationToken cancellationToken)
     {
         var garage = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
-        return garage != null;
+        command.Garage = garage;
+
+        return command.Garage != null;
     }
 
     private async Task<bool> BeValidAndExistingGarageService(CreateVehicleServiceLogCommand command, Guid? garageServiceId, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageServices
+        var value = await _context.GarageServices
             .AsNoTracking()
             .FirstOrDefaultAsync(x =>
                 x.Id == garageServiceId,
                 cancellationToken: cancellationToken
             );
 
-        command.GarageService = entity;
+        GarageServiceDtoItem result = null!;
+        if (value == null)
+        {
+            var otherValue = await _context.GarageLookupServices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.Id == garageServiceId,
+                cancellationToken: cancellationToken
+            );
+
+            result = _mapper.Map<GarageServiceDtoItem>(otherValue);
+        }
+        else
+        {
+            result = _mapper.Map<GarageServiceDtoItem>(value);
+        }
+
+        command.GarageService = result;
         return command.GarageService != null;
     }
 

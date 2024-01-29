@@ -68,7 +68,10 @@ public record CreateVehicleServiceLogCommand : IRequest<VehicleServiceLogDtoItem
     internal DateTime? ParsedExpectedNextDate { get; private set; }
 
     [JsonIgnore]
-    public GarageServiceItem? GarageService { get; internal set; }
+    public GarageLookupItem? Garage { get; internal set; }
+
+    [JsonIgnore]
+    public GarageServiceDtoItem? GarageService { get; internal set; }
 
     public void SetParsedDates(DateTime? date, DateTime? expectedNextDate)
     {
@@ -84,13 +87,15 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
     private readonly IMapper _mapper;
     private readonly ISender _sender;
     private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IIdentificationHelper _identificationHelper;
 
     public CreateVehicleServiceLogCommandHandler(
         IBlobStorageService blobStorageService, 
         IApplicationDbContext context, 
         IMapper mapper, 
         ISender sender, 
-        IBackgroundJobClient backgroundJobClient
+        IBackgroundJobClient backgroundJobClient, 
+        IIdentificationHelper identificationHelper
     )
     {
         _blobStorageService = blobStorageService;
@@ -98,6 +103,7 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         _mapper = mapper;
         _sender = sender;
         _backgroundJobClient = backgroundJobClient;
+        _identificationHelper = identificationHelper;
     }
 
     public async Task<VehicleServiceLogDtoItem> Handle(CreateVehicleServiceLogCommand request, CancellationToken cancellationToken)
@@ -109,9 +115,18 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        var emailAddress = request.GarageService!.Garage.Lookup.ConversationContactEmail;
-        var whatappNumber = request.GarageService.Garage.Lookup.ConversationContactWhatsappNumber;
-        await SendNotificationToGarage(request.VehicleLicensePlate, emailAddress, whatappNumber, cancellationToken);
+        // send notification to garage
+        var emailAddress = request.Garage!.ConversationContactEmail;
+        var whatappNumber = request.Garage.ConversationContactWhatsappNumber;
+        var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatappNumber);
+        var metaData = new Dictionary<string, string>
+        {
+            { "serviceLogId", entity.Id.ToString() },
+            { "desciption", entity.Description ?? "" }
+        };
+
+        await SendNotificationToGarage(request.VehicleLicensePlate, contactIdentifier, metaData, cancellationToken);
+
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }
@@ -153,15 +168,15 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         }
     }
 
-    private async Task SendNotificationToGarage(string licencePlate, string emailAddress, string whatsappNumber, CancellationToken cancellationToken)
+    private async Task SendNotificationToGarage(string licencePlate, string contactIdentifier, Dictionary<string, string> metadata, CancellationToken cancellationToken)
     {
         var notificationCommand = new CreateNotificationCommand(
             licencePlate,
             GeneralNotificationType.GarageServiceReviewReminder,
             VehicleNotificationType.Other,
             triggerDate: null,
-            emailAddress: emailAddress,
-            whatsappNumber: whatsappNumber
+            contactIdentifier: contactIdentifier,
+            metadata: metadata
         );
         var notification = await _sender.Send(notificationCommand, cancellationToken);
 

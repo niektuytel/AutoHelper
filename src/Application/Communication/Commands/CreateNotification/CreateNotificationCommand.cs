@@ -38,16 +38,15 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
         GeneralNotificationType generalType, 
         VehicleNotificationType vehicleType = VehicleNotificationType.Other,
         DateTime? triggerDate = null,
-        string? emailAddress = null,
-        string? whatsappNumber = null
-    )
-    {
+        string? contactIdentifier = null,
+        Dictionary<string, string> metadata = null!
+    ){
         VehicleLicensePlate = vehicleLicensePlate;
         GeneralType = generalType;
         VehicleType = vehicleType;
         TriggerDate = triggerDate;
-        ReceiverEmailAddress = emailAddress;
-        ReceiverWhatsappNumber = whatsappNumber;
+        ContactIdentifier = contactIdentifier;
+        Metadata = metadata;
     }
 
     public bool IsRecurring { get; set; }
@@ -60,9 +59,9 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
 
     public DateTime? TriggerDate { get; set; }
 
-    public string? ReceiverEmailAddress { get; set; } = null;
+    public string? ContactIdentifier { get; set; } = null;
 
-    public string? ReceiverWhatsappNumber { get; set; } = null;
+    public Dictionary<string, string> Metadata { get; set; } = null!;
 
     [JsonIgnore]
     public VehicleLookupItem? VehicleLookup { get; set; } = null!;
@@ -82,8 +81,8 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
 
     public async Task<NotificationItem> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
     {
-        var receiverIdentifier = _identificationHelper.GetValidIdentifier(request.ReceiverEmailAddress, request.ReceiverWhatsappNumber);
-        var receiverType = receiverIdentifier!.GetContactType();
+        var receiver = request.ContactIdentifier!;
+        var receiverType = receiver.GetContactType();
 
         var notification = new NotificationItem
         {
@@ -91,8 +90,9 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
             VehicleType = request.VehicleType,
             TriggerDate = request.TriggerDate,
             ReceiverContactType = receiverType,
-            ReceiverContactIdentifier = receiverIdentifier, 
-            VehicleLicensePlate = request.VehicleLicensePlate
+            ReceiverContactIdentifier = receiver, 
+            VehicleLicensePlate = request.VehicleLicensePlate,
+            Metadata = request.Metadata
         };
 
         // Only store scheduled notifications
