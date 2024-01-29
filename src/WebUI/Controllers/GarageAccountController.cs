@@ -19,6 +19,8 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
 using System.Threading;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Infrastructure.Common.Interfaces;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -31,6 +33,21 @@ public class GarageAccountController : ApiControllerBase
     {
         _currentUser = currentUser;
         _identityService = identityService;
+    }
+
+    [HttpGet($"vehicle/{nameof(ServicelogDeeplink)}")]
+    [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ServicelogDeeplink([FromQuery] string action)
+    {
+        // looks like: "b02192d5-a953-4e73-9867-b62bf98d4d38:1"
+        // the first part is the serviceLogId and the second is approve:1 or reject: 0
+        var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(action));
+        var parts = decoded.Split(':');
+        var serviceLogId = parts[0];
+        var approve = parts[1] == "1";
+
+        return Redirect($"/vehicle#service_logs?approved={approve}");
     }
 
     [Authorize(Policy = "GarageRole")]
