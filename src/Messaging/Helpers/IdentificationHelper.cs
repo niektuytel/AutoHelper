@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using AutoHelper.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
-using WhatsappBusiness.CloudApi.Interfaces;
 
 namespace AutoHelper.Messaging.Helpers;
 
@@ -49,7 +47,7 @@ public class IdentificationHelper : IIdentificationHelper
     {
         if (string.IsNullOrWhiteSpace(emailAddress) && string.IsNullOrWhiteSpace(whatsappNumber))
         {
-            throw new ArgumentException("At least one of the parameters must be filled");
+            throw new InvalidOperationException("At least one of the parameters must be filled");
         }
 
         var identifier = emailAddress;

@@ -6,6 +6,7 @@ using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Admin;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Messages;
@@ -53,6 +54,9 @@ public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, 
     public DbSet<NotificationItem> Notifications => Set<NotificationItem>();
     public DbSet<ConversationItem> Conversations => Set<ConversationItem>();
     public DbSet<ConversationMessageItem> ConversationMessages => Set<ConversationMessageItem>();
+
+    // Admin entities
+    public DbSet<RequestLogItem> RequestLogs => Set<RequestLogItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

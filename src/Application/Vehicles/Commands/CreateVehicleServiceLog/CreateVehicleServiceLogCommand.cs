@@ -115,18 +115,27 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        // send notification to garage
-        var emailAddress = request.Garage!.ConversationContactEmail;
-        var whatappNumber = request.Garage.ConversationContactWhatsappNumber;
-        var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatappNumber);
         var metaData = new Dictionary<string, string>
         {
             { "serviceLogId", entity.Id.ToString() },
             { "desciption", entity.Description ?? "" }
         };
 
-        await SendNotificationToGarage(request.VehicleLicensePlate, contactIdentifier, metaData, cancellationToken);
+        // send notification to garage
+        var emailAddress = request.Garage!.ConversationContactEmail;
+        if (string.IsNullOrWhiteSpace(emailAddress))
+        {
+            emailAddress = request.Garage.EmailAddress;
+        }
+        
+        var whatappNumber = request.Garage.ConversationContactWhatsappNumber;
+        if (string.IsNullOrWhiteSpace(whatappNumber))
+        {
+            whatappNumber = request.Garage.WhatsappNumber;
+        }
 
+        var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatappNumber);
+        await SendNotificationToGarage(request.VehicleLicensePlate, contactIdentifier, metaData, cancellationToken);
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }

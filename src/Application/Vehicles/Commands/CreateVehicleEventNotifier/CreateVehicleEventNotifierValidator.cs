@@ -23,8 +23,8 @@ public class CreateVehicleEventNotifierValidator : AbstractValidator<CreateVehic
             .Must(contactIdentifier =>
                 Regex.IsMatch(contactIdentifier, @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$") || // Email format
                 Regex.IsMatch(contactIdentifier, @"^\+?[0-9]{10,15}$") // Phone number format
-            );
-
+            )
+            .WithMessage("Invalid whatsapp number or email address.");
     }
 
     private async Task<bool> BeValidAndExistingVehicle(CreateVehicleEventNotifierCommand command, string licensePlate, CancellationToken cancellationToken)

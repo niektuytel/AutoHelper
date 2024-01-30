@@ -1,6 +1,7 @@
 ﻿using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Admin;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Messages;
@@ -24,6 +25,8 @@ public interface IApplicationDbContext
     DbSet<NotificationItem> Notifications { get; }
     DbSet<ConversationItem> Conversations { get; }
     DbSet<ConversationMessageItem> ConversationMessages { get; }
+
+    DbSet<RequestLogItem> RequestLogs { get; }
 
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     Task BulkInsertAsync<T>(IList<T> entities, CancellationToken cancellationToken) where T : class;

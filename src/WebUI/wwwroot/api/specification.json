@@ -559,6 +559,48 @@
         }
       }
     },
+    "/api/GarageAccount/vehicle/ServicelogDeeplink": {
+      "get": {
+        "tags": [
+          "GarageAccount"
+        ],
+        "operationId": "GarageAccount_ServicelogDeeplink",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/GarageAccount/GetSettings": {
       "get": {
         "tags": [

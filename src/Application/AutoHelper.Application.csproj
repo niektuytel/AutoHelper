@@ -29,6 +29,7 @@
 
     <ItemGroup>
       <Compile Remove="Common\Behaviours\AuthorizationBehaviour.cs" />
+      <Compile Remove="Common\Behaviours\LoggingBehaviour.cs" />
       <Compile Remove="Common\Interfaces\ICsvFileBuilder.cs" />
       <Compile Remove="Common\Interfaces\IQueueRequest.cs" />
       <Compile Remove="Common\Interfaces\IQueueService.cs" />
