@@ -36,7 +36,7 @@ const textStyles = {
         cursor: 'pointer',
         '&:hover svg': {
             visibility: 'visible',
-        }
+        },
     }
 }
 

@@ -24,6 +24,7 @@ namespace AutoHelper.Hangfire.Shared.MediatR
 
         [Queue("{1}")]
         [DisplayName("{2}")]
+        [AutomaticRetry(Attempts = 1, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
         public async Task Send(PerformContext context, string queue, string displayName, IQueueRequest command, CancellationToken cancellationToken)
         {
             _queueJobService.Initialize(context);
@@ -34,6 +35,7 @@ namespace AutoHelper.Hangfire.Shared.MediatR
 
         [Queue("{1}")]
         [DisplayName("{2}")]
+        [AutomaticRetry(Attempts = 1, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
         public async Task Send<T>(PerformContext context, string queue, string displayName, IQueueRequest<T> command, CancellationToken cancellationToken)
         {
             _queueJobService.Initialize(context);
@@ -49,6 +51,7 @@ namespace AutoHelper.Hangfire.Shared.MediatR
 
         [Queue("{1}")]
         [DisplayName("{2}")]
+        [AutomaticRetry(Attempts = 1, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
         public async Task SendMany(PerformContext context, string queue, string displayName, object? request, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

@@ -253,7 +253,8 @@
   "NotificationDialog.WhatsappOrEmail.Invalid": "Invalid email address or WhatsApp number",
   "NotificationDialog.WhatsappOrEmail.Label": "Email address or WhatsApp number",
 
-
+  "VehicleServiceLogHeader.Title": "",
+  "VehicleServiceLogHeader.Button.Add": "Register service",
 
 
 

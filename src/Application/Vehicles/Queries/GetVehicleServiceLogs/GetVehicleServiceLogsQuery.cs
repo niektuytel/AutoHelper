@@ -40,13 +40,20 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
 
     public async Task<VehicleServiceLogDtoItem[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
     {
+        // INFO: before was like this,
+        // As inspection is not a service or repair, it should not be included
+        // As when the user insert it and do not show it make it a bit confusing
+        //v.VehicleLicensePlate == request.LicensePlate && (
+        //    v.Type == GarageServiceType.Service ||
+        //    v.Type == GarageServiceType.Repair
+        //)
+
         var entities = _context.VehicleServiceLogs
             .AsNoTracking()
             .Where(v => 
-                v.VehicleLicensePlate == request.LicensePlate && (
-                    v.Type == GarageServiceType.Service ||
-                    v.Type == GarageServiceType.Repair
-                )
+                v.VehicleLicensePlate == request.LicensePlate && 
+                v.Type != GarageServiceType.Other
+
             )
             .OrderByDescending(v => v.Date);
 

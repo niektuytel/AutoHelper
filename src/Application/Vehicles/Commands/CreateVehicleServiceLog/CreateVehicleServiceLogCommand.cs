@@ -22,6 +22,8 @@ using Microsoft.EntityFrameworkCore;
 using AutoHelper.Hangfire.Shared.MediatR;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using Hangfire;
+using AutoHelper.Application.Garages.Commands.CreateGarageReviewNotifier;
+using Microsoft.EntityFrameworkCore.Update;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
@@ -115,27 +117,15 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         await _context.SaveChangesAsync(cancellationToken);
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
-        var metaData = new Dictionary<string, string>
-        {
-            { "serviceLogId", entity.Id.ToString() },
-            { "desciption", entity.Description ?? "" }
-        };
-
         // send notification to garage
-        var emailAddress = request.Garage!.ConversationContactEmail;
-        if (string.IsNullOrWhiteSpace(emailAddress))
-        {
-            emailAddress = request.Garage.EmailAddress;
-        }
-        
-        var whatappNumber = request.Garage.ConversationContactWhatsappNumber;
-        if (string.IsNullOrWhiteSpace(whatappNumber))
-        {
-            whatappNumber = request.Garage.WhatsappNumber;
-        }
-
-        var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatappNumber);
-        await SendNotificationToGarage(request.VehicleLicensePlate, contactIdentifier, metaData, cancellationToken);
+        var title = $"{entity.GarageLookup!.Name}({entity.GarageLookup!.Identifier}) ask to review service logs";
+        var command = new SendGarageServiceReviewCommand(
+            entity.VehicleLicensePlate, 
+            entity.GarageLookupIdentifier,
+            entity.Id, 
+            request.GarageService!.Description!
+        );
+        _sender.Enqueue(_backgroundJobClient, "default", title, command);
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }
@@ -177,22 +167,4 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         }
     }
 
-    private async Task SendNotificationToGarage(string licencePlate, string contactIdentifier, Dictionary<string, string> metadata, CancellationToken cancellationToken)
-    {
-        var notificationCommand = new CreateNotificationCommand(
-            licencePlate,
-            GeneralNotificationType.GarageServiceReviewReminder,
-            VehicleNotificationType.Other,
-            triggerDate: null,
-            contactIdentifier: contactIdentifier,
-            metadata: metadata
-        );
-        var notification = await _sender.Send(notificationCommand, cancellationToken);
-
-        // schedule notification
-        var queue = nameof(SendNotificationMessageCommand);
-        var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
-        var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
-        _sender.Enqueue(_backgroundJobClient, queue, title, schuduleCommand);
-    }
 }

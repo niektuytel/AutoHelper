@@ -7,6 +7,7 @@ import VehicleServiceLogItemSkeleton from "./VehicleServiceLogLineSkeleton";
 import VehicleServiceLog from "./VehicleServiceLogLine";
 import { ServiceLogDrawerContext } from "../../../../context/ServiceLogDrawerContext";
 import VehicleServiceLogsIsEmpty from "./VehicleServiceLogsIsEmpty";
+import VehicleServiceLogHeader from "./VehicleServiceLogHeader";
 
 interface IProps {
     isMobile: boolean;
@@ -17,7 +18,7 @@ export default ({ isMobile, license_plate }: IProps) => {
     const { loading, vehicleServiceLogs } = useVehicleServiceLogs(license_plate);
 
     return <>
-        <Paper variant="outlined" sx={{ borderRadius: 1, overflow: "hidden" }}>
+        <Paper elevation={2} sx={{ borderRadius: 1, overflow: "hidden" }}>
             {loading ?
                 Array.from({ length: 10 }).map((_, index) =>
                     <VehicleServiceLogItemSkeleton key={`skeleton-${index}`} keyIndex={index} />
@@ -25,9 +26,12 @@ export default ({ isMobile, license_plate }: IProps) => {
                 :
                 vehicleServiceLogs?.length === 0 ?
                     <VehicleServiceLogsIsEmpty />
-                : vehicleServiceLogs?.map((logItem, index) => 
-                    <VehicleServiceLog key={`serviceLog-${index}`} keyIndex={index} isMobile={isMobile} license_plate={license_plate} logItem={logItem} />
-                )
+                : <>
+                    <VehicleServiceLogHeader isMobile={isMobile}/>
+                    {vehicleServiceLogs?.map((logItem, index) =>
+                        <VehicleServiceLog key={`serviceLog-${index}`} keyIndex={index} isMobile={isMobile} license_plate={license_plate} logItem={logItem} />
+                    )}
+                </>
             }
         </Paper>
     </>
