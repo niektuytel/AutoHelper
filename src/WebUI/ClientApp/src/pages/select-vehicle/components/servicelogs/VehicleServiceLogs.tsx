@@ -5,7 +5,6 @@ import { Box, Button, Paper } from '@mui/material';
 import useVehicleServiceLogs from "../../useVehicleServiceLogs";
 import VehicleServiceLogItemSkeleton from "./VehicleServiceLogLineSkeleton";
 import VehicleServiceLog from "./VehicleServiceLogLine";
-import { ServiceLogDrawerContext } from "../../../../context/ServiceLogDrawerContext";
 import VehicleServiceLogsIsEmpty from "./VehicleServiceLogsIsEmpty";
 import VehicleServiceLogHeader from "./VehicleServiceLogHeader";
 

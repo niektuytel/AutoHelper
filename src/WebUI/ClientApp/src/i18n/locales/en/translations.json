@@ -254,7 +254,7 @@
   "NotificationDialog.WhatsappOrEmail.Label": "Email address or WhatsApp number",
 
   "VehicleServiceLogHeader.Title": "",
-  "VehicleServiceLogHeader.Button.Add": "Register service",
+  "VehicleServiceLogHeader.AddButton": "Add servicelog",
 
 
 
