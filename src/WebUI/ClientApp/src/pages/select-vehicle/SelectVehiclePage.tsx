@@ -89,7 +89,7 @@ export default ({ }: IProps) => {
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
                 {tabsConfig.map((tab, index) => (
                     <Paper
-                        variant="outlined"
+                        elevation={1}
                         key={index}
                         sx={{
                             display: 'flex',
