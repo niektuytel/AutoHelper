@@ -25,6 +25,7 @@ import useConfirmationStep from '../../../hooks/useConfirmationStep';
 import useUserRole from '../../../hooks/useUserRole';
 import { use } from 'i18next';
 import { ServiceLogDrawerContext } from '../../../context/ServiceLogDrawerContext';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
 interface RoleBasedListProps {
     setOnMenu?: (value: boolean) => void;
@@ -41,7 +42,8 @@ export default ({ setOnMenu }: RoleBasedListProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const context = useContext(ServiceLogDrawerContext);
-    const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+    const { instance, accounts } = useMsal();
+    const isAuthenticated = useIsAuthenticated();
 
     if (!context) {
         throw new Error("DrawerComponent must be used within a DrawerProvider");

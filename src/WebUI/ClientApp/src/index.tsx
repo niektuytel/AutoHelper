@@ -13,10 +13,35 @@ import './i18n/config';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { Auth0ProviderWithNavigate } from "./auth0-provider-with-navigate";
+import { EventType, PublicClientApplication } from '@azure/msal-browser';
+import { MsalProvider } from '@azure/msal-react';
+import { msalConfig } from './authConfig';
 
 
 import { QueryClient, QueryClientProvider } from 'react-query';
+
+/**
+ * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
+ * For more, visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
+ */
+const msalInstance = new PublicClientApplication(msalConfig);
+
+// Default to using the first account if no account is active on page load
+if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
+    // Account selection logic is app dependent. Adjust as needed for different use cases.
+    msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
+}
+
+// Optional - This will update account state if a user signs in from another tab or window
+msalInstance.enableAccountStorageEvents();
+
+// Listen for sign-in event and set active account
+msalInstance.addEventCallback((event: any) => {
+    if (event.eventType === EventType.LOGIN_SUCCESS && event.payload.account) {
+        const account = event.payload.account;
+        msalInstance.setActiveAccount(account);
+    }
+});
 
 const queryConfig = {
     queries: {
@@ -42,20 +67,18 @@ const queryClient = new QueryClient({ defaultOptions: queryConfig });
 const element = document.getElementById('root');
 const root = createRoot(element!);
 root.render(
-    <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-            <HistoryRouter history={history}>
-                <Auth0ProviderWithNavigate>
-                    <CookiesProvider>
-                        <ThemeProvider theme={createTheme()}>
-                            <CssBaseline />
-                            <App />
-                        </ThemeProvider>
-                    </CookiesProvider>
-                </Auth0ProviderWithNavigate>
-            </HistoryRouter>
-        </Provider>
-    </QueryClientProvider>
+            <QueryClientProvider client={queryClient}>
+                <Provider store={store}>
+                    <HistoryRouter history={history}>
+        <CookiesProvider>
+                            <ThemeProvider theme={createTheme()}>
+                                <CssBaseline />
+                        <App msalInstance={msalInstance} />
+                            </ThemeProvider>
+        </CookiesProvider>
+                    </HistoryRouter>
+                </Provider>
+            </QueryClientProvider>
 );
 
             

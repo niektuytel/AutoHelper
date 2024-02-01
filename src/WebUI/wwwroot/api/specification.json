@@ -3136,8 +3136,8 @@
         "type": "oauth2",
         "flows": {
           "implicit": {
-            "authorizationUrl": "https://dev-2vmjtds0ooonfild.us.auth0.com/authorize",
-            "tokenUrl": "https://dev-2vmjtds0ooonfild.us.auth0.com/oauth/token"
+            "authorizationUrl": "/authorize",
+            "tokenUrl": "/oauth/token"
           }
         }
       }
@@ -3146,7 +3146,7 @@
   "security": [
     {
       "OAuth2": [
-        "AUTH0-AUDIENCE"
+        null
       ]
     }
   ]

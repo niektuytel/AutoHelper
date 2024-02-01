@@ -19,6 +19,7 @@ import VehicleTimelines from "./components/timeline/VehicleTimelines";
 import VehicleServiceLogs from "./components/servicelogs/VehicleServiceLogs";
 import VehicleSpecifications from "./components/specifications/VehicleSpecifications";
 import ServiceLogDrawer from "./components/servicelogs/ServiceLogDrawer";
+import { useMsal } from "@azure/msal-react";
 
 const tabsConfig = [
     { hash: "#mot_history", label: 'Tijdlijn', icon: <TimelineIcon fontSize='medium' /> },
@@ -45,6 +46,11 @@ export default ({ }: IProps) => {
         setActiveTab(index);
         navigate(tabsConfig[index].hash, { state: { from: location } });
     };
+
+
+    const { instance } = useMsal();
+    const activeAccount = instance.getActiveAccount();
+    console.log("active account", activeAccount);
 
     
     return <>

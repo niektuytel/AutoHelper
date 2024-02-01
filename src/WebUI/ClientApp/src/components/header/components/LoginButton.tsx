@@ -11,6 +11,8 @@ import { ROLES } from '../../../constants/roles';
 import { COLORS } from '../../../constants/colors';
 import useUserRole from '../../../hooks/useUserRole';
 import useConfirmationStep from '../../../hooks/useConfirmationStep';
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+import { garageLoginRequest, userLoginRequest } from '../../../authConfig';
 
 interface IProps {
     asIcon?: boolean;
@@ -64,9 +66,17 @@ export default ({ asIcon }:IProps) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const location = useLocation();
-    const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
+    //const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
     const { userRole, setUserRole } = useUserRole()
     const { setConfigurationIndex } = useConfirmationStep();
+    const { instance } = useMsal();
+
+    let activeAccount;
+
+    if (instance) {
+        activeAccount = instance.getActiveAccount();
+    }
+
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -76,50 +86,74 @@ export default ({ asIcon }:IProps) => {
         setAnchorEl(null);
     }, []);
 
-    const handleLogin = useCallback((role: string) => {
-        const redirectSettings = role === ROLES.GARAGE
-            ? {
-                returnTo: ROUTES.GARAGE_ACCOUNT.OVERVIEW
-            }
-            : {
-                returnTo: ROUTES.SELECT_VEHICLE
-            };
-        loginWithRedirect({
-            appState: redirectSettings
-        });
+    const handleLogin = (role: string) => {
+        instance.loginRedirect(userLoginRequest)
+            .catch((error) => console.log(error));
+
+
+        //if (role === ROLES.GARAGE) {
+        //    instance.loginRedirect(garageLoginRequest).catch(e => {
+        //        console.log(e);
+        //    });
+        //} else {
+        //    instance.loginRedirect(userLoginRequest).catch(e => {
+        //        console.log(e);
+        //    });
+        //}
+
+        //const redirectSettings = role === ROLES.GARAGE
+        //    ? {
+        //        returnTo: ROUTES.GARAGE_ACCOUNT.OVERVIEW
+        //    }
+        //    : {
+        //        returnTo: ROUTES.SELECT_VEHICLE
+        //    };
+
+
+        //loginWithRedirect({
+        //    appState: redirectSettings
+        //});
 
         setUserRole(role);
         setConfigurationIndex(100, userRole);
-
         handleClose();
-    }, [loginWithRedirect, handleClose, location]);
+    };
 
 
-    const handleLogout = useCallback(() => {
-        logout({ logoutParams: { returnTo: window.location.origin } });
+    const handleLogout = () => {
+        instance.logoutRedirect({
+            account: instance.getActiveAccount(),
+        });
+        //instance.logoutRedirect({
+        //    postLogoutRedirectUri: window.location.origin,
+        //});
+
+        //logout({ logoutParams: { returnTo: window.location.origin } });
 
         setUserRole("");
-
         handleClose();
-    }, [logout]);
+    };
 
-    if (isLoading) return <Skeleton variant='rounded' width="100px" height="100%" />;
 
-    if (asIcon) return <LogoutButtonIcon onLogout={handleLogout} />;
+    const { accounts } = useMsal();
 
-    if (isAuthenticated) {
-        return (
-            <Button
-                variant="contained"
-                fullWidth
-                onClick={handleLogout}
-                sx={{ height: "100%" }}
-            >
-                Logout
-            </Button>
-        );
-    } else {
-        return (
+    return <>
+        <AuthenticatedTemplate>
+            <p>Signed in as: {accounts[0]?.username}</p>
+            {asIcon ?
+                <LogoutButtonIcon onLogout={handleLogout} />
+                :
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleLogout}
+                    sx={{ height: "100%" }}
+                >
+                    Logout
+                </Button>
+            }
+        </AuthenticatedTemplate>
+        <UnauthenticatedTemplate>
             <>
                 <StyledLoginButton ref={buttonRef} variant="contained" fullWidth onClick={handleClick}>
                     Login
@@ -134,6 +168,26 @@ export default ({ asIcon }:IProps) => {
                     <LoginMenu onLogin={handleLogin} />
                 </Menu>
             </>
-        );
-    }
+        </UnauthenticatedTemplate>
+    </>
+
+    //if (isLoading) return <Skeleton variant='rounded' width="100px" height="100%" />;
+
+    //if (asIcon) return <LogoutButtonIcon onLogout={handleLogout} />;
+
+    //if (isAuthenticated) {
+    //    return (
+    //        <Button
+    //            variant="contained"
+    //            fullWidth
+    //            onClick={handleLogout}
+    //            sx={{ height: "100%" }}
+    //        >
+    //            Logout
+    //        </Button>
+    //    );
+    //} else {
+    //    return (
+    //    );
+    //}
 };

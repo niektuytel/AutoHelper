@@ -11,9 +11,15 @@ using Microsoft.Extensions.Configuration;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
+
+
+builder.Services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
+    .AddAzureADBearer(options => builder.Configuration.Bind("AzureAd", options));
 
 builder.Services.AddMessagingServices(builder.Configuration);
 builder.AddHangfireServices();

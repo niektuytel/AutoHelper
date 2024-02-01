@@ -30,6 +30,7 @@
         <PackageReference Include="Azure.Storage.Queues" Version="12.17.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="6.0.26" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.2" />
@@ -66,6 +67,10 @@
 
     <ItemGroup>
       <Content Remove="Pages\TestTemplate.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="ClientApp\src\auth0-provider-with-navigate.tsx" />
     </ItemGroup>
 
     <ItemGroup>
