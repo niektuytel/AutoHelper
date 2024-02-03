@@ -2,7 +2,7 @@ import React from "react";
 import { Snackbar, SnackbarCloseReason } from "@mui/material";
 import { Alert } from "@mui/lab";
 import { useDispatch, useSelector } from "react-redux";
-import { closeSnackbar } from "../../redux/slices/statusSnackbarSlice";
+import { closeSnackbar } from "../redux/slices/statusSnackbarSlice";
 
 export default () => {
     const dispatch = useDispatch();

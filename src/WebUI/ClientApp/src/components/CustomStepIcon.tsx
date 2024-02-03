@@ -31,7 +31,6 @@ interface IProps {
 }
 
 export default ({props, index}:IProps) => {
-    //const classes = CustomStepIconStyle();
     const { active, completed } = props;
   
     return <>

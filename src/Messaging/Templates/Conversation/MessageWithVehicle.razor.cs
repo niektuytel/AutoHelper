@@ -29,5 +29,5 @@ public partial class MessageWithVehicle
     [Parameter]
     public string NAP { get; set; } = string.Empty;
 
-    public string VehicleUrl => $"https://autohelper.nl/select-vehicle/{LicensePlate}";
+    public string VehicleUrl => $"https://autohelper.nl/vehicle/{LicensePlate}";
 }

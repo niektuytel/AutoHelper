@@ -12,6 +12,6 @@ public partial class VehicleServiceNotification_SummerCheck
     [Parameter]
     public NotificationItem Notification { get; set; } = new NotificationItem();
 
-    public string VehicleUrl => $"https://autohelper.nl/select-vehicle/{Notification.VehicleLicensePlate}";
+    public string VehicleUrl => $"https://autohelper.nl/vehicle/{Notification.VehicleLicensePlate}";
 
 }

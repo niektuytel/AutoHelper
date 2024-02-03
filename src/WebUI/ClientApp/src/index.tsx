@@ -14,11 +14,11 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { EventType, PublicClientApplication } from '@azure/msal-browser';
-import { MsalProvider } from '@azure/msal-react';
 import { msalConfig } from './authConfig';
 
 
 import { QueryClient, QueryClientProvider } from 'react-query';
+import theme from './constants/theme';
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -67,18 +67,18 @@ const queryClient = new QueryClient({ defaultOptions: queryConfig });
 const element = document.getElementById('root');
 const root = createRoot(element!);
 root.render(
-            <QueryClientProvider client={queryClient}>
-                <Provider store={store}>
-                    <HistoryRouter history={history}>
-        <CookiesProvider>
-                            <ThemeProvider theme={createTheme()}>
-                                <CssBaseline />
+    <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+            <HistoryRouter history={history}>
+                <CookiesProvider>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
                         <App msalInstance={msalInstance} />
-                            </ThemeProvider>
-        </CookiesProvider>
-                    </HistoryRouter>
-                </Provider>
-            </QueryClientProvider>
+                    </ThemeProvider>
+                </CookiesProvider>
+            </HistoryRouter>
+        </Provider>
+    </QueryClientProvider>
 );
 
             

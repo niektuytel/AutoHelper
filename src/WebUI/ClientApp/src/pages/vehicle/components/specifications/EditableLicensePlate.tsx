@@ -5,42 +5,24 @@ import {
     IconButton
 } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-
 // own imports
-import { getFormatedLicense, getLicenseFromPath } from "../../../app/LicensePlateUtils";
-import { alignProperty } from "@mui/material/styles/cssUtils";
+import { getFormatedLicense, getLicenseFromPath } from "../../../../utils/LicensePlateUtils";
 
 
 interface IProps {
+    license_plate: string;
 }
 
-export default ({ }: IProps) => {
+export default ({ license_plate }: IProps) => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const location = useLocation();
-
-    // initial license plate value
-    const [licence_plate, setLicencePlate] = React.useState<string>(getLicenseFromPath(location.pathname) || "");
-    const [isVisable, setIsVisable] = React.useState<boolean>(licence_plate ? true : false);
-    const [value, setValue] = React.useState<string>(licence_plate || "");
-    const [hasError, setHasError] = React.useState(false);
+    const [value, setValue] = React.useState<string>(license_plate || "");
     const [focused, setFocused] = React.useState(false);
-
-
-    // Update the license plate when pathname changes
-    React.useEffect(() => {
-        var license = getLicenseFromPath(location.pathname);
-        setIsVisable(license ? true : false);
-
-        if (license) {
-            setLicencePlate(license);
-            setValue(license);
-        }
-    }, [location.pathname]);
+    const [hasError, setHasError] = React.useState(false);
 
     const handleInput = (e: any) => {
         let license = e.target.value.toUpperCase().replace(/-/g, '');
@@ -51,34 +33,28 @@ export default ({ }: IProps) => {
         if (isValid) setHasError(false);
     }
 
-    const handleSearch = async () => {
+    async function handleSearch(): Promise<boolean> {
         var isValid = getLicenseFromPath(value) ? true : false;
         setHasError(!isValid);
 
-        if (!isValid || value.length === 0 || !licence_plate) {
-            return;
+        if (!isValid || value.length === 0 || !license_plate) {
+            return false;
         }
 
 
         // Combine pathname, search query, and hash fragment
         let fullURI = location.pathname + location.search + location.hash;
-        const uri = fullURI.replace(licence_plate, value);
+        const uri = fullURI.replace(license_plate, value);
         navigate(uri, { state: { from: location } });
+        return true;
     }
 
 
     const handleEnterPress = async (event:any) => {
-        if (event.key === 'Enter') {
-            handleSearch();
-
-            // Remove focus from the TextField
+        if (event.key === 'Enter' && await handleSearch()) {
             event.target.blur();
         }
     };
-
-    if (!licence_plate || !isVisable) {
-        return<></>;
-    }
 
     return <>
         <TextField
@@ -103,7 +79,7 @@ export default ({ }: IProps) => {
                     </InputAdornment>
                 ),
                 style: {
-                    color: focused ? "black" : "lightgray",
+                    color: "black",
                     height: '40px',
                     paddingRight: '0'
                 }

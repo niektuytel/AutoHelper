@@ -2,15 +2,11 @@
 import { useDispatch } from "react-redux";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
-import { useAuth0 } from "@auth0/auth0-react";
 
 //own imports
-import { BadRequestResponse, FileParameter, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
+import { BadRequestResponse, FileParameter, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
-import { ROUTES } from "../../../constants/routes";
 import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
-import useUserRole from "../../../hooks/useUserRole";
-import useConfirmationStep from "../../../hooks/useConfirmationStep";
 
 function useGarageServiceLogs(onResponse: (data: any) => void) {
     const queryClient = useQueryClient();

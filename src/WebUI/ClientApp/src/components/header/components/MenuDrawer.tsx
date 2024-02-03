@@ -7,9 +7,10 @@ import RoleBasedList from './RoleBasedList';
 interface IProps {
     onMenu: boolean;
     setOnMenu: (value: boolean) => void;
+    showStaticDrawer: boolean;
 }
 
-export default ({ onMenu, setOnMenu }: IProps) => {
+export default ({ onMenu, setOnMenu, showStaticDrawer }: IProps) => {
     return (
         <Drawer
             anchor="right"
@@ -27,7 +28,7 @@ export default ({ onMenu, setOnMenu }: IProps) => {
                 <LoginButton />
             </Toolbar>
             <Divider />
-            <RoleBasedList setOnMenu={setOnMenu} />
+            <RoleBasedList setOnMenu={setOnMenu} showStaticDrawer={showStaticDrawer} />
         </Drawer>
     );
 }

@@ -51,7 +51,7 @@ export default ({ licence_plate }: IProps) => {
 
                 // TODO: Set input string value to the the cookie: named 'recently_used_place'
                 const { lat, lng } = getLatLng(results[0]);
-                navigate(`${ROUTES.SELECT_GARAGE}/${licence_plate}/${lat}/${lng}`, { state: { from: location } });
+                navigate(`${ROUTES.GARAGES}/${licence_plate}/${lat}/${lng}`, { state: { from: location } });
             })
             .catch(error => {
                 dispatch(showOnError(t("Error on getting address location")));

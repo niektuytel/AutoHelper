@@ -6,7 +6,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 // own imports
 import useGarageServiceTypes from '../useGarageServiceTypes';
-import { getFormatedLicense } from '../../../../app/LicensePlateUtils';
+import { getFormatedLicense } from '../../../../utils/LicensePlateUtils';
 import { GarageServiceDtoItem } from '../../../../app/web-api-client';
 
 interface IProps {

@@ -14,104 +14,104 @@ namespace AutoHelper.Infrastructure.Persistence;
 
 public class ApplicationDbContextInitialiser
 {
-    private readonly ILogger<ApplicationDbContextInitialiser> _logger;
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IMediator _mediator;
+    //private readonly ILogger<ApplicationDbContextInitialiser> _logger;
+    //private readonly ApplicationDbContext _context;
+    //private readonly UserManager<ApplicationUser> _userManager;
+    //private readonly RoleManager<IdentityRole> _roleManager;
+    //private readonly IMediator _mediator;
 
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMediator mediator)
-    {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _mediator = mediator;
-    }
+    //public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMediator mediator)
+    //{
+    //    _logger = logger;
+    //    _context = context;
+    //    _userManager = userManager;
+    //    _roleManager = roleManager;
+    //    _mediator = mediator;
+    //}
 
     public async Task InitialiseAsync()
     {
-        try
-        {
-            if (_context.Database.IsSqlServer())
-            {
-                await _context.Database.MigrateAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while initialising the database.");
-            throw;
-        }
+        //try
+        //{
+        //    if (_context.Database.IsSqlServer())
+        //    {
+        //        await _context.Database.MigrateAsync();
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    _logger.LogError(ex, "An error occurred while initialising the database.");
+        //    throw;
+        //}
     }
 
     public async Task SeedAsync()
     {
-        try
-        {
-            if (!_context.Database.EnsureCreated())
-            {
-                await TrySeedAsync();
-            }
+        //try
+        //{
+        //    if (!_context.Database.EnsureCreated())
+        //    {
+        //        await TrySeedAsync();
+        //    }
 
-            // Default (development) garages
-            var testGarageLookup = GetTestGarageLookup();
-            if (_context.GarageLookups.FirstOrDefault(x => x.Name == testGarageLookup.Name) == null)
-            {
-                _context.GarageLookups.Add(testGarageLookup);
-                await _context.SaveChangesAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while seeding the database.");
-            throw;
-        }
+        //    // Default (development) garages
+        //    var testGarageLookup = GetTestGarageLookup();
+        //    if (_context.GarageLookups.FirstOrDefault(x => x.Name == testGarageLookup.Name) == null)
+        //    {
+        //        _context.GarageLookups.Add(testGarageLookup);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    _logger.LogError(ex, "An error occurred while seeding the database.");
+        //    throw;
+        //}
     }
 
     public async Task TrySeedAsync()
     {
-        // Default roles
-        var adminRole = new IdentityRole("Admin");
-        if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
-        {
-            await _roleManager.CreateAsync(adminRole);
-        }
+        //// Default roles
+        //var adminRole = new IdentityRole("Admin");
+        //if (_roleManager.Roles.All(r => r.Name != adminRole.Name))
+        //{
+        //    await _roleManager.CreateAsync(adminRole);
+        //}
 
-        var garageRole = new IdentityRole("Garage");
-        if (_roleManager.Roles.All(r => r.Name != garageRole.Name))
-        {
-            await _roleManager.CreateAsync(garageRole);
-        }
+        //var garageRole = new IdentityRole("Garage");
+        //if (_roleManager.Roles.All(r => r.Name != garageRole.Name))
+        //{
+        //    await _roleManager.CreateAsync(garageRole);
+        //}
 
-        var userRole = new IdentityRole("User");
-        if (_roleManager.Roles.All(r => r.Name != userRole.Name))
-        {
-            await _roleManager.CreateAsync(userRole);
-        }
+        //var userRole = new IdentityRole("User");
+        //if (_roleManager.Roles.All(r => r.Name != userRole.Name))
+        //{
+        //    await _roleManager.CreateAsync(userRole);
+        //}
 
-        await _context.SaveChangesAsync();
+        //await _context.SaveChangesAsync();
 
-        // Default (development) users
-        var admin = new ApplicationUser { Id = "admin@autohelper|e13a0844", UserName = "admin@autohelper.nl", Email = "admin@autohelper.nl" };
-        if (_userManager.Users.All(u => u.UserName != admin.UserName))
-        {
-            var result = await _userManager.CreateAsync(admin, "Autohelper123!");
-            if (result.Succeeded && !string.IsNullOrWhiteSpace(adminRole.Name))
-            {
-                await _userManager.AddToRolesAsync(admin, new[] { adminRole.Name });
-            }
-        }
+        //// Default (development) users
+        //var admin = new ApplicationUser { Id = "admin@autohelper|e13a0844", UserName = "admin@autohelper.nl", Email = "admin@autohelper.nl" };
+        //if (_userManager.Users.All(u => u.UserName != admin.UserName))
+        //{
+        //    var result = await _userManager.CreateAsync(admin, "Autohelper123!");
+        //    if (result.Succeeded && !string.IsNullOrWhiteSpace(adminRole.Name))
+        //    {
+        //        await _userManager.AddToRolesAsync(admin, new[] { adminRole.Name });
+        //    }
+        //}
 
-        var garage = new ApplicationUser { Id = "garage@autohelper|5ea3782cf852", UserName = "garage@autohelper.nl", Email = "garage@autohelper.nl" };
-        if (_userManager.Users.All(u => u.UserName != garage.UserName))
-        {
-            var result = await _userManager.CreateAsync(garage, "Autohelper123!");
-            if (result.Succeeded && !string.IsNullOrWhiteSpace(garageRole.Name))
-            {
-                await _userManager.AddToRolesAsync(garage, new[] { garageRole.Name });
-            }
-        }
+        //var garage = new ApplicationUser { Id = "garage@autohelper|5ea3782cf852", UserName = "garage@autohelper.nl", Email = "garage@autohelper.nl" };
+        //if (_userManager.Users.All(u => u.UserName != garage.UserName))
+        //{
+        //    var result = await _userManager.CreateAsync(garage, "Autohelper123!");
+        //    if (result.Succeeded && !string.IsNullOrWhiteSpace(garageRole.Name))
+        //    {
+        //        await _userManager.AddToRolesAsync(garage, new[] { garageRole.Name });
+        //    }
+        //}
 
     }
 

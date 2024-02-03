@@ -2,33 +2,38 @@
 // Used to get user id to pass the api, nswag does not integrate this functionality
 // to pass the bearer token(IDToken) to the api with user specific data 
 
-import { useAuth0 } from "@auth0/auth0-react";
-import { useTranslation } from "react-i18next";
+import { useMsal } from "@azure/msal-react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { garageLoginRequest, protectedResources } from "../authConfig";
 import { ROUTES } from "../constants/routes";
-import useConfirmationStep from "../hooks/useConfirmationStep";
+import useRoleIndex from "../hooks/useRoleIndex";
 import useUserRole from "../hooks/useUserRole";
 import { showOnError } from "../redux/slices/statusSnackbarSlice";
 import { GarageAccountClient } from "./web-api-client";
 
-async function fetchWithToken(accessToken: Promise<string>, url: RequestInfo, init?: RequestInit): Promise<Response> {
-    const resolvedToken = await accessToken;
-    const request: RequestInit = {
-        ...init,
-        headers: {
-            ...init?.headers,
-            "Authorization": `Bearer ${resolvedToken}`
+export function GetGarageAccountClient() {
+    const { instance, accounts } = useMsal();
+    const account = accounts[0];
+
+    async function fetchWithAuth(url: RequestInfo, init?: RequestInit): Promise<Response> {
+        try {
+            const response = await instance.acquireTokenSilent({
+                scopes: garageLoginRequest.scopes,
+                account: account
+            });
+
+            const authHeaders = { "Authorization": `Bearer ${response.accessToken}` };
+            const headers = init?.headers ? { ...init.headers, ...authHeaders } : authHeaders;
+
+            return window.fetch(url, { ...init, headers });
+        } catch (error) {
+            console.error('Error fetching with auth', error);
+            throw error; // Rethrow or handle as needed
         }
-    };
-    return window.fetch(url, request);
-}
+    }
 
-export function GetGarageAccountClient(): GarageAccountClient {
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = getAccessTokenSilently();
-
-    const client = new GarageAccountClient(process.env.PUBLIC_URL, { fetch: (url: RequestInfo, init?: RequestInit) => fetchWithToken(accessToken, url, init) });
+    const client = new GarageAccountClient(process.env.PUBLIC_URL, { fetch: fetchWithAuth });
     return client;
 }
 
@@ -36,7 +41,7 @@ export function useHandleApiRequest<T>() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { userRole } = useUserRole();
-    const { setConfigurationIndex } = useConfirmationStep();
+    const { setConfigurationIndex } = useRoleIndex();
 
     const handleApiRequest = async (
         apiCall: () => Promise<T>,

@@ -9,16 +9,15 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { ROUTES } from "../../../constants/routes";
-import { useAuth0 } from "@auth0/auth0-react";
 import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
-import useConfirmationStep from "../../../hooks/useConfirmationStep";
+import useRoleIndex from "../../../hooks/useRoleIndex";
 
 //own imports
 
 function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
     const { userRole } = useUserRole()
-    const { setConfigurationIndex } = useConfirmationStep();
+    const { setConfigurationIndex } = useRoleIndex();
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();

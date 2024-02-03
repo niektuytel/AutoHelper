@@ -16,51 +16,32 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
-using System.Threading;
 using AutoHelper.Application.Garages.Queries.GetGarageOverview;
-using AutoHelper.Infrastructure.Common.Interfaces;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
+using Microsoft.Identity.Web.Resource;
+using Microsoft.Identity.Web;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.WebUI.Controllers;
 
 public class GarageAccountController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
-    private readonly IIdentityService _identityService;
 
-    public GarageAccountController(ICurrentUserService currentUser, IIdentityService identityService)
+    public GarageAccountController(ICurrentUserService currentUser)
     {
         _currentUser = currentUser;
-        _identityService = identityService;
     }
 
-    [HttpGet($"vehicle/{nameof(ServicelogDeeplink)}")]
-    [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ServicelogDeeplink([FromQuery] string action)
-    {
-        // looks like: "{ "servicelogId": "b02192d5-a953-4e73-9867-b62bf98d4d38", "approve":true }"
-        // the first part is the serviceLogId and the second is approve:1 or reject: 0
-        var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(action));
-        var parts = decoded.Split(':');
-        var serviceLogId = parts[0];
-        var approve = parts[1] == "1";
-
-        return Redirect($"/vehicle#service_logs?approved={approve}");
-    }
-
-    [Authorize(Policy = "GarageRole")]
+    [Authorize(Policy = "UserReadWritePolicy")]
     [HttpGet($"{nameof(GetSettings)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
     public async Task<GarageSettingsDtoItem> GetSettings()
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
-        return await Mediator.Send(new GetGarageSettingsQuery(userId));
+        return await Mediator.Send(new GetGarageSettingsQuery(userId.ToString()));
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpGet($"{nameof(GetServices)}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceDtoItem>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -70,7 +51,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(new GetGarageServicesQuery(userId, licensePlate));
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpGet($"{nameof(GetServiceLogs)}")]
     [ProducesResponseType(typeof(IEnumerable<VehicleServiceLogAsGarageDtoItem>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -80,7 +60,7 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(new GetVehicleServiceLogsAsGarageQuery(userId, licensePlate));
     }
 
-    [Authorize(Policy = "GarageRole")]
+    [Authorize(Policy = "UserReadWritePolicy")]
     [HttpGet($"{nameof(GetOverview)}")]
     [ProducesResponseType(typeof(GarageOverviewDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -99,19 +79,9 @@ public class GarageAccountController : ApiControllerBase
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         var userName = _currentUser.UserName ?? command.GarageLookupIdentifier;
         var userEmail = _currentUser.UserEmail ?? command.EmailAddress;
-        var result = await Mediator.Send(command);
-        if (result != null)
-        {
-            // Register user with an garage Role
-            await _identityService.SetUserWithRoleAsync(command.UserId, userName, userEmail, "Garage");
-
-            return result;
-        }
-
-        return BadRequest("Could not create garage");
+        return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPost($"{nameof(CreateService)}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -121,7 +91,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -148,7 +117,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(UpdateSettings)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -158,7 +126,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(UpdateService)}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -168,7 +135,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPost($"{nameof(UpdateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -195,7 +161,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(command);
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(DeleteService)}/{{id}}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -205,7 +170,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(new DeleteGarageServiceCommand(id, userId));
     }
 
-    [Authorize(Policy = "GarageRole")]
     [HttpPut($"{nameof(DeleteServiceLog)}/{{id}}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]

@@ -18,7 +18,6 @@ import ConstructionIcon from '@mui/icons-material/Construction';
 import { BorderBottom } from "@mui/icons-material";
 import { COLORS } from "../../constants/colors";
 import { useNavigate, useParams } from "react-router";
-import HeaderLicensePlateSearch from "./components/HeaderLicensePlateSearch";
 import { ROUTES } from "../../constants/routes";
 import { GarageLookupDtoItem, VehicleService } from "../../app/web-api-client";
 import { getServices, removeService } from "../../redux/slices/storedServicesSlice";
@@ -47,8 +46,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
         }
     }, [headerRef.current]);
 
-    const isEditableLicensePlate = location.pathname.startsWith(ROUTES.SELECT_GARAGE);
-    const has3Sections = isEditableLicensePlate || (garageLookupIsLoading || garageLookup);
+    const has3Sections = (garageLookupIsLoading || garageLookup);
     return (
         <>
             <div style={{ margin: `${headerHeight}px 0` }} />
@@ -68,7 +66,6 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                         </Grid>
                         { has3Sections &&
                             <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                {isEditableLicensePlate && <HeaderLicensePlateSearch />}
                                 {garageLookupIsLoading && <Skeleton variant='rounded' />}
                                 {garageLookup?.name &&
                                     <Typography 
@@ -110,7 +107,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                     </Grid>
                 </StyledToolbar>
             </StyledAppBar>
-            <MenuDrawer onMenu={onMenu} setOnMenu={setOnMenu} />
+            <MenuDrawer onMenu={onMenu} setOnMenu={setOnMenu} showStaticDrawer={showStaticDrawer} />
         </>
     );
 }

@@ -31,6 +31,7 @@
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
         <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="6.0.26" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureADB2C.UI" Version="6.0.26" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.2" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.2" />
@@ -44,6 +45,7 @@
         <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.2" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="2.16.1" />
         <PackageReference Include="NSwag.AspNetCore" Version="13.18.2" />
         <PackageReference Include="NSwag.MSBuild" Version="13.18.2">
             <PrivateAssets>all</PrivateAssets>
@@ -55,8 +57,18 @@
 
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
+        <Compile Remove="Authorization\**" />
+        <Compile Remove="ClientApp\public\background\**" />
         <Content Remove="$(SpaRoot)**" />
+        <Content Remove="Authorization\**" />
+        <Content Remove="ClientApp\public\background\**" />
+        <EmbeddedResource Remove="Authorization\**" />
+        <EmbeddedResource Remove="ClientApp\public\background\**" />
+        <EntityDeploy Remove="Authorization\**" />
+        <EntityDeploy Remove="ClientApp\public\background\**" />
         <None Remove="$(SpaRoot)**" />
+        <None Remove="Authorization\**" />
+        <None Remove="ClientApp\public\background\**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     </ItemGroup>
 
@@ -70,11 +82,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="ClientApp\src\App.test.tsx" />
       <None Remove="ClientApp\src\auth0-provider-with-navigate.tsx" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ClientApp\public\background\" />
+      <None Remove="ClientApp\src\react-app-env.d.ts" />
+      <None Remove="ClientApp\src\setupTests.js" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

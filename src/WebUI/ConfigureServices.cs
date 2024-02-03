@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using App.Authorization;
-using App.Requirement;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire;
 using AutoHelper.Infrastructure.Common.Interfaces;
@@ -29,50 +27,49 @@ public static class ConfigureServices
     public static IServiceCollection AddWebUIServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDatabaseDeveloperPageExceptionFilter()
-                .AddHttpContextAccessor()
                 .AddControllerServices(configuration)
                 .AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
 
-        var audience = configuration["OAuth0:Audience"];
+        //var audience = configuration["OAuth0:Audience"];
 
-        services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddIdentityServerJwt()
-            .AddJwtBearer(options =>
-            {
-                options.Authority = configuration["OAuth0:Domain"];
-                options.Audience = audience;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuerSigningKey = true
-                };
-            });
+        //services.AddAuthentication(options =>
+        //    {
+        //        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    })
+        //    .AddIdentityServerJwt()
+        //    .AddJwtBearer(options =>
+        //    {
+        //        options.Authority = configuration["AzureAdB2C:Instance"];
+        //        //options.Audience = audience;
+        //        options.TokenValidationParameters = new TokenValidationParameters
+        //        {
+        //            ValidateAudience = true,
+        //            ValidateIssuerSigningKey = true
+        //        };
+        //    });
 
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy("read:admin-messages", policy =>
-            {
-                policy.Requirements.Add(new RbacRequirement("read:admin-messages"));
-            });
+        //services.AddAuthorization(options =>
+        //{
+        //    options.AddPolicy("read:admin-messages", policy =>
+        //    {
+        //        policy.Requirements.Add(new RbacRequirement("read:admin-messages"));
+        //    });
 
-            // Add a new policy for the Garage role
-            options.AddPolicy("AdminRole", policy => {
-                policy.RequireRole("Admin");
-            });
+        //    // Add a new policy for the Garage role
+        //    options.AddPolicy("AdminRole", policy => {
+        //        policy.RequireRole("Admin");
+        //    });
 
-            options.AddPolicy("GarageRole", policy => {
-                policy.RequireRole("Admin", "Garage");
-            });
-        });
+        //    options.AddPolicy("GarageRole", policy => {
+        //        policy.RequireRole("Admin", "Garage");
+        //    });
+        //});
 
-        services.AddSingleton<IAuthorizationHandler, RbacHandler>();
+        //services.AddSingleton<IAuthorizationHandler, RbacHandler>();
 
 
         return services;
@@ -98,29 +95,29 @@ public static class ConfigureServices
         services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);
 
-        services.AddOpenApiDocument((configure, serviceProvider) =>
-        {
-            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<FluentValidationSchemaProcessor>();
+        //services.AddOpenApiDocument((configure, serviceProvider) =>
+        //{
+        //    var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<FluentValidationSchemaProcessor>();
 
-            // Add the fluent validations schema processor
-            configure.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+        //    // Add the fluent validations schema processor
+        //    configure.SchemaProcessors.Add(fluentValidationSchemaProcessor);
 
-            configure.Title = "AutoHelper API";
-            configure.Version = "v1";
-            configure.XmlDocumentationFormatting = Namotion.Reflection.XmlDocsFormattingMode.Markdown;
-            configure.IgnoreObsoleteProperties = true;
-            configure.GenerateXmlObjects = true;
-            configure.GenerateExamples = true;
+        //    configure.Title = "AutoHelper API";
+        //    configure.Version = "v1";
+        //    configure.XmlDocumentationFormatting = Namotion.Reflection.XmlDocsFormattingMode.Markdown;
+        //    configure.IgnoreObsoleteProperties = true;
+        //    configure.GenerateXmlObjects = true;
+        //    configure.GenerateExamples = true;
 
-            var audience = configuration["OAuth0:Audience"];
-            configure.AddSecurity("OAuth2", new[] { audience }, new OpenApiSecurityScheme
-            {
-                Type = OpenApiSecuritySchemeType.OAuth2,
-                Flow = OpenApiOAuth2Flow.Implicit,
-                AuthorizationUrl = $"{configuration["OAuth0:Domain"]}/authorize",
-                TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
-            });
-        });
+        //    var audience = configuration["OAuth0:Audience"];
+        //    configure.AddSecurity("OAuth2", new[] { audience }, new OpenApiSecurityScheme
+        //    {
+        //        Type = OpenApiSecuritySchemeType.OAuth2,
+        //        Flow = OpenApiOAuth2Flow.Implicit,
+        //        AuthorizationUrl = $"{configuration["OAuth0:Domain"]}/authorize",
+        //        TokenUrl = $"{configuration["OAuth0:Domain"]}/oauth/token"
+        //    });
+        //});
 
         return services;
     }
@@ -157,29 +154,29 @@ public static class ConfigureServices
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseOpenApi(configure =>
-        {
-            configure.DocumentName = "v1";
-            configure.Path = "/swagger/v1/swagger.json";
-        });
+        //app.UseOpenApi(configure =>
+        //{
+        //    configure.DocumentName = "v1";
+        //    configure.Path = "/swagger/v1/swagger.json";
+        //});
 
-        app.UseSwaggerUi3(settings =>
-        {
-            settings.OAuth2Client = new OAuth2ClientSettings
-            {
-                ClientId = app.Configuration["OAuth0:ClientID"],
-                AppName = "AutoHelper API",
-                UsePkceWithAuthorizationCodeGrant = false,
-                AdditionalQueryStringParameters =
-                {
-                    { "audience", app.Configuration["OAuth0:Audience"] },
-                }
-            };
+        //app.UseSwaggerUi3(settings =>
+        //{
+        //    settings.OAuth2Client = new OAuth2ClientSettings
+        //    {
+        //        ClientId = app.Configuration["OAuth0:ClientID"],
+        //        AppName = "AutoHelper API",
+        //        UsePkceWithAuthorizationCodeGrant = false,
+        //        AdditionalQueryStringParameters =
+        //        {
+        //            { "audience", app.Configuration["OAuth0:Audience"] },
+        //        }
+        //    };
 
-            settings.Path = "/swagger";
-            settings.DocumentPath = "/swagger/v1/swagger.json";
-            settings.SwaggerRoutes.Add(new SwaggerUi3Route("v1", "/swagger/v1/swagger.json"));
-        });
+        //    settings.Path = "/swagger";
+        //    settings.DocumentPath = "/swagger/v1/swagger.json";
+        //    settings.SwaggerRoutes.Add(new SwaggerUi3Route("v1", "/swagger/v1/swagger.json"));
+        //});
 
         app.UseEndpoints(endpoints =>
         {

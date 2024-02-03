@@ -6,7 +6,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 import SearchGarage from './SearchGarage';
 import { GarageServiceDtoItem, GarageServiceType } from '../../../../app/web-api-client';
-import { enumToKeyValueArray } from '../../../../app/utils';
+import { enumToKeyValueArray } from '../../../../utils/utils';
 import useGarageServiceTypes from './useGarageServiceTypes';
 
 interface IProps {

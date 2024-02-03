@@ -5,21 +5,17 @@ import {
     Button, Divider, Typography, Box, IconButton, Drawer, useMediaQuery, useTheme, Stepper, StepLabel, Step, CircularProgress, Toolbar
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import GarageIcon from '@mui/icons-material/CarRepair';
 import CarIcon from '@mui/icons-material/DirectionsCar';
 import PersonIcon from '@mui/icons-material/Person';
 import CheckIcon from '@mui/icons-material/Check';
 import { useDispatch } from 'react-redux';
-import { useAuth0 } from '@auth0/auth0-react';
 
 
 // own imports
 import StepVehicle from './StepVehicle';
 import StepConfirmation from './StepConfirmation';
-import { BadRequestResponse, GarageAccountClient, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogDtoItem, VehicleServiceLogStatus } from '../../../../app/web-api-client';
-import { showOnError, showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
-import { GetGarageAccountClient } from '../../../../app/GarageClient';
-import { getFormatedLicense } from '../../../../app/LicensePlateUtils';
+import { GarageServiceDtoItem, GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from '../../../../app/web-api-client';
+import { getFormatedLicense } from '../../../../utils/LicensePlateUtils';
 
 interface IServiceLogDrawerData {
     id: string | undefined;

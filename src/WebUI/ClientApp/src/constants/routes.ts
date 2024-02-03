@@ -1,16 +1,17 @@
 ﻿import { useParams } from "react-router";
 
 export const ROUTES = {
-    SELECT_VEHICLE: "/select-vehicle",
-    SELECT_GARAGE: "/select-garage",
+    VEHICLE: "/vehicle",
+    GARAGES: "/garages",
     GARAGE: "/garage",
     GARAGE_ACCOUNT: {
-        OVERVIEW: "/garage/overview",
-        PLANNING: "/garage/planning",
-        EMPLOYEES: "/garage/employees",
-        SERVICES: "/garage/services",
-        SERVICELOGS: "/garage/servicelogs",
-        SETTINGS: "/garage/settings"
+        DEFAULT: "/garage-account",
+        OVERVIEW: "/garage-account/overview",
+        PLANNING: "/garage-account/planning",
+        EMPLOYEES: "/garage-account/employees",
+        SERVICES: "/garage-account/services",
+        SERVICELOGS: "/garage-account/servicelogs",
+        SETTINGS: "/garage-account/settings"
     },
     USER: {
         OVERVIEW: "/user/overview"

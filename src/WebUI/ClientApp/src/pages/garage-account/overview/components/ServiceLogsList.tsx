@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 // own imports
 import { ROUTES } from "../../../../constants/routes";
-import { getFormatedLicense } from "../../../../app/LicensePlateUtils";
+import { getFormatedLicense } from "../../../../utils/LicensePlateUtils";
 import { VehicleServiceLogAsGarageDtoItem } from "../../../../app/web-api-client";
 
 interface IProps {
@@ -18,7 +18,7 @@ export default ({ loading, servicelogs }: IProps) => {
     const location = useLocation();
 
     const gotoVehiclePage = (licensePlate: string) => {
-        navigate(`${ROUTES.SELECT_VEHICLE}/${licensePlate}`, { state: { from: location } });
+        navigate(`${ROUTES.VEHICLE}/${licensePlate}`, { state: { from: location } });
     }
 
     return <>

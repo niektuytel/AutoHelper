@@ -10,7 +10,7 @@ import AcceptIcon from '@mui/icons-material/CheckCircleOutline'; // You can chan
 import DeclineIcon from '@mui/icons-material/Cancel'; // You can change this to the appropriate Decline icon
 import { GarageServiceType, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from '../../../../app/web-api-client';
 import { useTranslation } from 'react-i18next';
-import { getFormatedLicense } from '../../../../app/LicensePlateUtils';
+import { getFormatedLicense } from '../../../../utils/LicensePlateUtils';
 import { ROUTES } from '../../../../constants/routes';
 
 interface IProps {
@@ -42,7 +42,7 @@ export default ({ item, handleApprove, handleEdit, handleDelete }: IProps) => {
         e.stopPropagation();
 
         // Then the page has an fresh cache, that the services are up to date
-        window.location.href = `${ROUTES.SELECT_VEHICLE}/${item.vehicleLicensePlate}`;
+        window.location.href = `${ROUTES.VEHICLE}/${item.vehicleLicensePlate}`;
     }
 
     const isNotVerified = item.status === VehicleServiceLogStatus.NotVerified;

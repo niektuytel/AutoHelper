@@ -18,7 +18,7 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import { useDispatch } from "react-redux";
 
 // own imports
-import { getFormatedLicense } from "../../../app/LicensePlateUtils";
+import { getFormatedLicense } from "../../../utils/LicensePlateUtils";
 import useSearchVehicle from "../../useSearchVehicle";
 import { ROUTES } from "../../../constants/routes";
 import { showOnError } from "../../../redux/slices/statusSnackbarSlice";
@@ -54,7 +54,7 @@ export default ({ }: IProps) => {
         if (response) {
             console.log("Response received:", response);
 
-            navigate(`${ROUTES.SELECT_VEHICLE}/${value}`, { state: { from: location } });
+            navigate(`${ROUTES.VEHICLE}/${value}`, { state: { from: location } });
         } else {
             console.error("Failed to get vehicle by license plate");
         }

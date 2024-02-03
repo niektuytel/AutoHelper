@@ -26,6 +26,8 @@ using Azure.Core;
 using MediatR;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -39,6 +41,21 @@ public class VehicleController : ApiControllerBase
     public VehicleController(IVehicleService vehicleService)
     {
         _vehicleService = vehicleService;
+    }
+
+    [HttpGet($"vehicle/{nameof(ServicelogDeeplink)}")]
+    [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ServicelogDeeplink([FromQuery] string action)
+    {
+        // looks like: "{ "servicelogId": "b02192d5-a953-4e73-9867-b62bf98d4d38", "approve":true }"
+        // the first part is the serviceLogId and the second is approve:1 or reject: 0
+        var decoded = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(action));
+        var parts = decoded.Split(':');
+        var serviceLogId = parts[0];
+        var approve = parts[1] == "1";
+
+        return Redirect($"/vehicle#service_logs?approved={approve}");
     }
 
     [HttpGet($"{nameof(GetSpecificationsCard)}")]

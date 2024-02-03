@@ -7,14 +7,13 @@ import { useLocation, useNavigate } from "react-router";
 import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, GarageServiceDtoItem, UpdateGarageServiceCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
-import { useAuth0 } from "@auth0/auth0-react";
 import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import useUserRole from "../../../hooks/useUserRole";
-import useConfirmationStep from "../../../hooks/useConfirmationStep";
+import useRoleIndex from "../../../hooks/useRoleIndex";
 
 export default (onResponse: (data: any) => void) => {
     const { userRole } = useUserRole()
-    const { configurationIndex, setConfigurationIndex } = useConfirmationStep();
+    const { configurationIndex, setConfigurationIndex } = useRoleIndex();
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();

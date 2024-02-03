@@ -83,7 +83,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
     type ServiceProperty = 'type' | 'vehicleType' | 'title' | 'description';
 
     const handleTitleChange = (event: any) => {
-        const service = defaultAvailableServices.find(item => item.type === event.target.value) as any;
+        const service = defaultAvailableServices.find((item: any) => item.type === event.target.value) as any;
         if (!service) return;
 
         const prevService = selectedService;
@@ -145,7 +145,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                                 label={t("GarageServiceDialog.Type.Label")}
                                                 size="small"
                                             >
-                                                {defaultAvailableServices.map(item => (
+                                                {defaultAvailableServices.map((item:any) => (
                                                     <MenuItem key={item.type} value={item.type}>
                                                         {item.title}
                                                     </MenuItem>
@@ -173,7 +173,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                                 label={t("GarageServiceDialog.VehicleType.Label")}
                                                 size="small"
                                             >
-                                                {defaultVehicleTypes.map(item => (
+                                                {defaultVehicleTypes.map((item: any) => (
                                                     <MenuItem key={item.type} value={item.type}>
                                                         {item.title}
                                                     </MenuItem>

@@ -1,5 +1,5 @@
 ﻿import { TFunction, useTranslation } from "react-i18next";
-import { enumToKeyValueArray } from "../../app/utils";
+import { enumToKeyValueArray } from "../../utils/utils";
 import { CreateGarageServiceCommand, GarageServiceDtoItem, GarageServiceType, VehicleType } from "../../app/web-api-client";
 
 // Display all enum items except the first one (None)

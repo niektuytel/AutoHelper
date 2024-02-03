@@ -44,24 +44,24 @@ public static class ConfigureServices
 
         services.AddScoped<ApplicationDbContextInitialiser>();
 
-        services
-            .AddDefaultIdentity<ApplicationUser>(options =>
-            {
-                // Require that usernames are email format
-                options.User.RequireUniqueEmail = true;
+        //services
+        //    .AddDefaultIdentity<ApplicationUser>(options =>
+        //    {
+        //        // Require that usernames are email format
+        //        options.User.RequireUniqueEmail = true;
 
-                // Set a specific allowed username character set (e.g., alphanumeric)
-                options.User.AllowedUserNameCharacters =
-                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-            })
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+        //        // Set a specific allowed username character set (e.g., alphanumeric)
+        //        options.User.AllowedUserNameCharacters =
+        //            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        //    })
+        //    .AddRoles<IdentityRole>()
+        //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.AddIdentityServer()
-            .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+        //services.AddIdentityServer()
+        //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
         services.AddTransient<IDateTime, DateTimeService>();
-        services.AddTransient<IIdentityService, IdentityService>();
+        //services.AddTransient<IIdentityService, IdentityService>();
         //services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
 

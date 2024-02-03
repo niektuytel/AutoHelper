@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { ROLES } from '../constants/roles';
 
-function useConfirmationStep() {
+export default () => {
     const [configurationIndex, setConfigurationIndex] = useState(Number(localStorage.getItem('confirmationStepIndex')) || 0);
 
     const setLocalConfigurationIndex = (index: number, role: string) => {
@@ -46,5 +46,3 @@ function useConfirmationStep() {
         setConfigurationIndex: setLocalConfigurationIndex
     };
 }
-
-export default useConfirmationStep;

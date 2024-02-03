@@ -9,10 +9,13 @@ using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Hangfire.Shared.MediatR;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
+[Authorize]
+[RequiredScopeOrAppPermission(RequiredScopesConfigurationKey = "AzureAD:Scopes:Admin.ReadWrite")]
 public class AdminAccountController: ApiControllerBase
 {
     private readonly IBackgroundJobClient _backgroundJobClient;
@@ -24,7 +27,6 @@ public class AdminAccountController: ApiControllerBase
 
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
-    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(SyncGarageLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -44,7 +46,6 @@ public class AdminAccountController: ApiControllerBase
         return $"Successfully start hangfire job: {queue}";
     }
 
-    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(SyncVehicleLookup)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -57,7 +58,6 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="endRowIndex">-1 means all of them</param>
     /// <param name="maxInsertAmount">-1 means all of them</param>
     /// <param name="maxUpdateAmount">-1 means all of them</param>
-    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(SyncVehicleLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -77,7 +77,6 @@ public class AdminAccountController: ApiControllerBase
         return $"Successfully start new queue: {queue}";
     }
 
-    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(SyncVehicleTimeline)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -90,7 +89,6 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="endRowIndex">-1 means all of them</param>
     /// <param name="maxInsertAmount">-1 means all of them</param>
     /// <param name="maxUpdateAmount">-1 means all of them</param>
-    [Authorize(Policy = "AdminRole")]
     [HttpPut($"{nameof(SyncVehicleTimelines)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]

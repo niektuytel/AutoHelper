@@ -1,7 +1,6 @@
 ﻿import { useQuery, useQueryClient } from "react-query";
 import { useState, useEffect } from "react";
 import { GarageClient, GarageServiceDtoItem } from "../../../app/web-api-client";
-import { useAuth0 } from "@auth0/auth0-react";
 import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 import { useTranslation } from "react-i18next";
 
