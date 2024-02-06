@@ -1,7 +1,6 @@
 ﻿using System.Globalization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Infrastructure.Common;
-using AutoHelper.Infrastructure.Identity;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using AutoHelper.Infrastructure.Services;

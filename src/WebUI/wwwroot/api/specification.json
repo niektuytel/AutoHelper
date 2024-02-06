@@ -3136,8 +3136,12 @@
         "type": "oauth2",
         "flows": {
           "implicit": {
-            "authorizationUrl": "/authorize",
-            "tokenUrl": "/oauth/token"
+            "authorizationUrl": "https://autohelperb2c.b2clogin.com/autohelperb2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_AutoHelper",
+            "tokenUrl": "https://autohelperb2c.b2clogin.com/autohelperb2c.onmicrosoft.com/oauth2/v2.0/token?p=B2C_1_AutoHelper",
+            "scopes": {
+              "https://autohelperb2c.onmicrosoft.com/api/Garage.ReadWrite": "Garage Control",
+              "https://autohelperb2c.onmicrosoft.com/api/User.ReadWrite": "User Control"
+            }
           }
         }
       }
@@ -3146,7 +3150,8 @@
   "security": [
     {
       "OAuth2": [
-        null
+        "Garage Control",
+        "User Control"
       ]
     }
   ]

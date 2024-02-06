@@ -13,7 +13,6 @@ using AutoHelper.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using WebUI.Models;
 using YamlDotNet.Core.Tokens;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using System;
@@ -28,6 +27,7 @@ using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using AutoHelper.WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 

@@ -1,46 +1,33 @@
-﻿/*
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License.
- */
-
-import { LogLevel } from "@azure/msal-browser";
-import { ROUTES } from "./constants/routes";
-
-
+﻿import { LogLevel } from "@azure/msal-browser";
 
 /**
  * Enter here the user flows and custom policies for your B2C application
- * To learn more about user flows, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
- * To learn more about custom policies, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview
  */
 export const b2cPolicies = {
     names: {
-        signUpSignIn: 'B2C_1_AutoHelper'
+        signUpSignIn: process.env.REACT_APP_B2C_POLICY_NAME
     },
     authorities: {
         signUpSignIn: {
-            authority: 'https://autohelperb2c.b2clogin.com/autohelperb2c.onmicrosoft.com/B2C_1_AutoHelper',
+            authority: `https://${process.env.REACT_APP_B2C_AUTHORITY_DOMAIN}/${process.env.REACT_APP_B2C_TENANT}/${process.env.REACT_APP_B2C_POLICY_NAME}`,
         },
     },
-    authorityDomain: 'autohelperb2c.b2clogin.com',
+    authorityDomain: process.env.REACT_APP_B2C_AUTHORITY_DOMAIN,
 };
 
-
 /**
- * Configuration object to be passed to MSAL instance on creation. 
- * For a full list of MSAL.js configuration parameters, visit:
- * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
+ * Configuration object to be passed to MSAL instance on creation.
  */
 export const msalConfig = {
     auth: {
-        clientId: "595b4f5a-8e82-4b32-927b-2053958eb336",
+        clientId: process.env.REACT_APP_CLIENT_ID,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
         knownAuthorities: [b2cPolicies.authorityDomain],
-        redirectUri: "/auth-callback",
-        navigateToLoginRequestUrl: false, // If "true", will navigate back to the original request location before processing the auth code response.
+        redirectUri: process.env.REACT_APP_REDIRECT_URI,
+        navigateToLoginRequestUrl: true,
     },
     cache: {
-        cacheLocation: "sessionStorage",
+        cacheLocation: "localStorage",
         storeAuthStateInCookie: true,
     },
     system: {
@@ -71,23 +58,19 @@ export const msalConfig = {
 };
 
 /**
- * Add here the endpoints and scopes when obtaining an access token for protected web APIs. For more information, see:
- * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
+ * Add here the endpoints and scopes when obtaining an access token for protected web APIs.
  */
 export const protectedResources = {
     autoHelperAPI: {
         scopes: {
-            user_write: ['https://autohelperb2c.onmicrosoft.com/595b4f5a-8e82-4b32-927b-2053958eb336/User.ReadWrite'],
-            garage_write: ['https://autohelperb2c.onmicrosoft.com/api/Garage.ReadWrite'],
+            user_write: [process.env.REACT_APP_USER_WRITE_SCOPE],
+            garage_write: [process.env.REACT_APP_GARAGE_WRITE_SCOPE],
         },
     },
 };
 
 /**
- * Scopes you add here will be prompted for user consent during sign-in.
- * By default, MSAL.js will add OIDC scopes (openid, profile, email) to any login request.
- * For more information about OIDC scopes, visit: 
- * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
+ * Scopes for user and garage login requests.
  */
 export const userLoginRequest = {
     scopes: ["openid", "profile", ...protectedResources.autoHelperAPI.scopes.user_write]
@@ -97,9 +80,8 @@ export const garageLoginRequest = {
 };
 
 /**
- * Add here the scopes to request when obtaining an access token for MS Graph API. For more information, see:
- * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
+ * Configuration for MS Graph API.
  */
 export const graphConfig = {
-    graphMeEndpoint: "https://graph.microsoft.com/v1.0/me" //e.g. https://graph.microsoft.com/v1.0/me
+    graphMeEndpoint: process.env.REACT_APP_GRAPH_ME_ENDPOINT
 };

@@ -10,12 +10,16 @@
 
     <ItemGroup>
       <Compile Remove="Files\**" />
+      <Compile Remove="Identity\**" />
       <Compile Remove="Persistence\Configurations\**" />
       <EmbeddedResource Remove="Files\**" />
+      <EmbeddedResource Remove="Identity\**" />
       <EmbeddedResource Remove="Persistence\Configurations\**" />
       <EntityDeploy Remove="Files\**" />
+      <EntityDeploy Remove="Identity\**" />
       <EntityDeploy Remove="Persistence\Configurations\**" />
       <None Remove="Files\**" />
+      <None Remove="Identity\**" />
       <None Remove="Persistence\Configurations\**" />
     </ItemGroup>
 

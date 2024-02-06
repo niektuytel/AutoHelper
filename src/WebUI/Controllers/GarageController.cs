@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Security;
 using AutoHelper.Domain.Entities.Garages;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +10,6 @@ using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Hangfire.Shared.MediatR;
 using Hangfire.Server;
 using AutoHelper.Domain.Entities.Conversations;
-using WebUI.Models;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Queries.GetGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
@@ -19,18 +17,18 @@ using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupCards;
+using Microsoft.AspNetCore.Authorization;
+using AutoHelper.WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
 public class GarageController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
-    private readonly IIdentityService _identityService;
 
-    public GarageController(ICurrentUserService currentUser, IIdentityService identityService)
+    public GarageController(ICurrentUserService currentUser)
     {
         _currentUser = currentUser;
-        _identityService = identityService;
     }
 
     [HttpGet($"{nameof(SearchLookups)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace WebUI.Models;
+namespace AutoHelper.WebUI.Models;
 
 public class BadRequestResponse
 {

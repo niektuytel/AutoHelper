@@ -1,21 +1,20 @@
 ﻿using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Security;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Hangfire.Shared.MediatR;
+using AutoHelper.WebUI.Models;
 using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-using WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
-[Authorize]
-[RequiredScopeOrAppPermission(RequiredScopesConfigurationKey = "AzureAD:Scopes:Admin.ReadWrite")]
+[Authorize(Policies.AdminDefaultPolicy)]
 public class AdminAccountController: ApiControllerBase
 {
     private readonly IBackgroundJobClient _backgroundJobClient;

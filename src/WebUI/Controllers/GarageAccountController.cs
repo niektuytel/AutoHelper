@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Security;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Garages.Commands.DeleteGarageService;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
@@ -8,7 +7,6 @@ using AutoHelper.Application.Garages.Commands.UpdateGarageService;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using Microsoft.AspNetCore.Mvc;
-using WebUI.Models;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
@@ -20,9 +18,12 @@ using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using Microsoft.Identity.Web.Resource;
 using Microsoft.Identity.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Microsoft.AspNetCore.Authorization;
+using AutoHelper.WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
+[Authorize(Policies.GarageDefaultPolicy)]
 public class GarageAccountController : ApiControllerBase
 {
     private readonly ICurrentUserService _currentUser;
@@ -32,7 +33,6 @@ public class GarageAccountController : ApiControllerBase
         _currentUser = currentUser;
     }
 
-    [Authorize(Policy = "UserReadWritePolicy")]
     [HttpGet($"{nameof(GetSettings)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -60,7 +60,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(new GetVehicleServiceLogsAsGarageQuery(userId, licensePlate));
     }
 
-    [Authorize(Policy = "UserReadWritePolicy")]
     [HttpGet($"{nameof(GetOverview)}")]
     [ProducesResponseType(typeof(GarageOverviewDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
@@ -70,7 +69,6 @@ public class GarageAccountController : ApiControllerBase
         return await Mediator.Send(new GetGarageOverviewQuery(userId));
     }
 
-    [Authorize]
     [HttpPost($"{nameof(CreateGarage)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]

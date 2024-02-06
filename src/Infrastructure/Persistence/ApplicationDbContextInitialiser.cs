@@ -4,7 +4,6 @@ using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

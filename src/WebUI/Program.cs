@@ -20,51 +20,125 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using System.IdentityModel.Tokens.Jwt;
+using AutoHelper.WebUI;
+using LinqKit;
+using AutoHelper.WebUI.Services;
+using AutoHelper.WebUI.Filters;
+using Microsoft.AspNetCore.Mvc;
+using NSwag;
+using ZymLabs.NSwag.FluentValidation;
+using NSwag.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddRazorPages();
-
-
-// This is required to be instantiated before the OpenIdConnectOptions starts getting configured.
-// By default, the claims mapping will map claim names in the old format to accommodate older SAML applications.
-// For instance, 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role' instead of 'roles' claim.
-// This flag ensures that the ClaimsIdentity claims collection will be built from the claims in the token
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-// Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(options =>
-        {
-            builder.Configuration.Bind("AzureAdB2C", options);
-        },
-        options => { builder.Configuration.Bind("AzureAdB2C", options); }
-    );
-
-builder.Services.AddAuthorization TODO: https://stackoverflow.com/questions/64193349/idw10201-neither-scope-or-roles-claim-was-found-in-the-bearer-token(options =>
+internal class Program
 {
-    options.AddPolicy("GarageReadWritePolicy", policy =>
-        policy.RequireScope("Garage.ReadWrite"));
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddRazorPages();
 
-    options.AddPolicy("UserReadWritePolicy", policy =>
-        policy.RequireScope("User.ReadWrite"));
-});
+        // Authentication and Authorization
+        JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+        builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAdB2C");
+        builder.Services.AddAuthorization(o => Policies.AllPolicies.ForEach(p => o.AddPolicy(p.Key, pb => pb.RequireScope(p.Value))));
+        builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
-//builder.Services.AddControllers();
+        // Custom API behavior + (Open)API Documentation
+        builder.Services.AddControllersWithViews(options => options.Filters.Add<ApiExceptionFilterAttribute>());
+        builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
-builder.Services.AddMessagingServices(builder.Configuration);
-builder.AddHangfireServices();
-builder.Services.AddApplicationServices();
-builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddWebUIServices(builder.Configuration);
+        var instance = builder.Configuration["AzureAdB2C:Instance"];
+        var domain = builder.Configuration["AzureAdB2C:Domain"];
+        var policy = builder.Configuration["AzureAdB2C:SignUpSignInPolicyId"];
+        builder.Services.AddOpenApiDocument((configure, serviceProvider) =>
+        {
+            // Add the fluent validations schema processor
+            var scope = serviceProvider.CreateScope();
+            var validationRules = scope.ServiceProvider.GetService<IEnumerable<FluentValidationRule>>();
+            var loggerFactory = scope.ServiceProvider.GetService<ILoggerFactory>();
+            var fluentSchema = new FluentValidationSchemaProcessor(scope.ServiceProvider, validationRules, loggerFactory);
+            configure.SchemaProcessors.Add(fluentSchema);
+
+            configure.Title = "AutoHelper API";
+            configure.Version = "v1";
+            configure.IgnoreObsoleteProperties = true;
+            configure.XmlDocumentationFormatting = Namotion.Reflection.XmlDocsFormattingMode.Markdown;
+            configure.GenerateXmlObjects = true;
+
+            configure.AddSecurity("OAuth2", Policies.AllScopes.Values, new OpenApiSecurityScheme
+            {
+                Type = OpenApiSecuritySchemeType.OAuth2,
+                Flow = OpenApiOAuth2Flow.Implicit,
+                AuthorizationUrl = $"{instance}/{domain}/oauth2/v2.0/authorize?p={policy}",
+                TokenUrl = $"{instance}/{domain}/oauth2/v2.0/token?p={policy}",
+                Scopes = Policies.AllScopes
+            });
+
+        });
+
+        // Database and Health Checks
+        builder.Services
+            .AddDatabaseDeveloperPageExceptionFilter()
+            .AddHealthChecks()
+            .AddDbContextCheck<ApplicationDbContext>();
+
+        builder.AddHangfireServices();
+        builder.Services.AddMessagingServices(builder.Configuration);
+        builder.Services.AddApplicationServices();
+        builder.Services.AddInfrastructureServices(builder.Configuration);
 
 
-var app = builder.Build();
+        // [BUILD]
+        var app = builder.Build();
+        app.MapRazorPages();
 
-// Use service
-using var scope = app.Services.CreateScope();
-app.MapRazorPages();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseMigrationsEndPoint();
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
+        }
 
-app.UseHangfireServices(scope);
-app.UseWebUIServices();
+        app.UseHealthChecks("/health");
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
 
-app.Run();
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        var clientID = app.Configuration["AzureAdB2C:ClientId"];
+        app.UseOpenApi();
+        app.UseSwaggerUi3(settings =>
+        {
+            settings.OAuth2Client = new OAuth2ClientSettings
+            {
+                ClientId = clientID,
+                AppName = "AutoHelper API"
+            };
+        });
+
+        _ = app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            //endpoints.MapFallbackToFile("index.html");
+        });
+
+
+        // Handle scoped services
+        using (var scope = app.Services.CreateScope())
+        {
+            app.UseHangfireServices(scope);
+
+            // Database initialisation
+            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+            initialiser.InitialiseAsync().Wait();
+            initialiser.SeedAsync().Wait();
+        }
+
+        app.Run();
+    }
+}

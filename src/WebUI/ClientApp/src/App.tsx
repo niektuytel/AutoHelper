@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
-import { Box, CircularProgress, Container, Theme, ThemeProvider, useMediaQuery } from '@mui/material';
+import { Box, CircularProgress, Container, Theme, useMediaQuery } from '@mui/material';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
+import { InteractionType } from '@azure/msal-browser';
 
 // own imports
 import Header from './components/header/Header';
@@ -17,13 +18,10 @@ import GarageSettings from './pages/garage-account/settings/GarageSettings';
 import GarageServices from './pages/garage-account/services/GarageServices';
 import RoleBasedList from './components/header/components/RoleBasedList';
 import { COLORS } from './constants/colors';
-import theme from './constants/theme';
 import Garage from './pages/garage/Garage';
 import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
 import HomePage from './pages/home/HomePage';
 import { ServiceLogDrawerProvider } from './context/ServiceLogDrawerContext';
-import { MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
-import { InteractionType } from '@azure/msal-browser';
 import { garageLoginRequest } from './authConfig';
 
 
@@ -103,7 +101,6 @@ export default ({ msalInstance }:any) => {
                                 <NotFoundPage />
                             </>
                         } />
-                        {/*<Route path='/auth-callback' element={<Navigate to={`${ROUTES.VEHICLE}`} />} />*/}
                         <Route path='/' element={<Navigate to={`${ROUTES.VEHICLE}`} />} />
                         <Route path={`${ROUTES.VEHICLE}`} element={
                             <>
