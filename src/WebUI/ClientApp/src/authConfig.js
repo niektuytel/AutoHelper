@@ -18,7 +18,7 @@ export const b2cPolicies = {
 /**
  * Configuration object to be passed to MSAL instance on creation.
  */
-export const msalConfig = {
+export const msalConfig: Configuration = {
     auth: {
         clientId: process.env.REACT_APP_CLIENT_ID,
         authority: b2cPolicies.authorities.signUpSignIn.authority,
@@ -72,10 +72,10 @@ export const protectedResources = {
 /**
  * Scopes for user and garage login requests.
  */
-export const userLoginRequest = {
+export const userLoginRequest: RedirectRequest = {
     scopes: ["openid", "profile", ...protectedResources.autoHelperAPI.scopes.user_write]
 };
-export const garageLoginRequest = {
+export const garageLoginRequest: RedirectRequest = {
     scopes: ["openid", "profile", ...protectedResources.autoHelperAPI.scopes.garage_write]
 };
 

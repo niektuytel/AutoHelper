@@ -17,7 +17,7 @@ import useRoleIndex from "../../../hooks/useRoleIndex";
 
 function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSetError<FieldValues>, notFound: boolean) {
     const { userRole } = useUserRole()
-    const { setConfigurationIndex } = useRoleIndex();
+    const { setRoleIndex } = useRoleIndex();
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
             async () => {
                 const result = await garageClient.getSettings();
 
-                setConfigurationIndex(2, userRole);
+                setRoleIndex(2, userRole);
                 return result;
             },
             t("GarageClient.404.Message")
@@ -67,7 +67,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
                 });
 
                 // Enable garage overview + services pages
-                setConfigurationIndex(2, userRole);
+                setRoleIndex(2, userRole);
             }
         }
     );
@@ -80,7 +80,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
             queryClient.setQueryData(['garageSettings'], response);
 
             // Enable garage overview + services pages
-            setConfigurationIndex(2, userRole);
+            setRoleIndex(2, userRole);
             navigate(ROUTES.GARAGE_ACCOUNT.SERVICES);
         },
         onError: (response) => {
@@ -101,7 +101,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
             queryClient.setQueryData(['garageSettings'], response);
 
             // Enable garage overview + services pages
-            setConfigurationIndex(2, userRole);
+            setRoleIndex(2, userRole);
         },
         onError: (response) => {
             console.error('Error:', response);

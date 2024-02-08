@@ -1,12 +1,12 @@
 ﻿import React, { CSSProperties } from "react";
 import { useQuery } from "react-query";
-import { Box, Link, Paper, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import { Box, Link, Paper, Skeleton, styled, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 
 // own imports
 import LicensePlateTextField from "./EditableLicensePlate";
 import useSearchVehicle from "../../../useSearchVehicle";
 import { useTranslation } from "react-i18next";
-import NotificationIcon from "./NotificationIcon";
+import VehicleExpiryDateCell from "./VehicleExpiryDateCell";
 
 interface IProps {
     isMobile: boolean;
@@ -27,6 +27,22 @@ export default ({ isMobile, license_plate }: IProps) => {
             staleTime: 60 * 60 * 1000, // 1 hour
         }
     );
+
+
+    // Define a styled TableCell with hover effects
+    const ClickableTableCell = styled(TableCell)({
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#f5f5f5', // Light grey background on hover
+        },
+        // Add any other styles you want
+    });
+
+    // Click handler function
+    const handleCellClick = () => {
+        console.log('TableCell clicked');
+        // Add your click handling logic here
+    };
 
     const cellStyle: CSSProperties = isMobile ? { textAlign: 'left' } : { textAlign: 'left', paddingRight: '0' };
     return <>
@@ -79,14 +95,7 @@ export default ({ isMobile, license_plate }: IProps) => {
                                     <Skeleton />
                                 </TableCell>
                                 :
-                                <TableCell key={`cell-expirydate-value`} style={cellStyle}>
-                                    <Box display="flex" alignItems="center">
-                                        <Box marginRight={1}>
-                                            {vehicleBriefInfo?.dateOfMOTExpiry?.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                                        </Box>
-                                        <NotificationIcon expiryDate={vehicleBriefInfo?.dateOfMOTExpiry} />
-                                    </Box>
-                                </TableCell>
+                                <VehicleExpiryDateCell expiryDate={vehicleBriefInfo?.dateOfMOTExpiry} isMobile={isMobile} />
                             }
                         </TableRow>
                         <TableRow>

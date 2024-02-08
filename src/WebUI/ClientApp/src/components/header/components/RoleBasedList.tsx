@@ -26,8 +26,8 @@ interface RoleBasedListProps {
 export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     const { userRole } = useUserRole()
     const { license_plate } = useParams<{ license_plate: string }>();
-    const { configurationIndex } = useRoleIndex();
-    const [prevIndex, setPrevIndex] = useState(configurationIndex || 0);
+    const { roleIndex } = useRoleIndex();
+    const [prevIndex, setPrevIndex] = useState(roleIndex || 0);
     const [shouldRender, setShouldRender] = useState(true);
     const [open, setOpen] = useState(false);
     const location = useLocation();
@@ -45,13 +45,13 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
 
     useEffect(() => {
         // Your existing logic
-        if (prevIndex !== configurationIndex) {
-            setPrevIndex(configurationIndex);
+        if (prevIndex !== roleIndex) {
+            setPrevIndex(roleIndex);
         }
 
         // Toggle the shouldRender state to force a re-render
         setShouldRender(prev => !prev);
-    }, [configurationIndex, prevIndex]); // Dependency on prevIndex
+    }, [roleIndex, prevIndex]); // Dependency on prevIndex
 
     const ListItemLink = ({ primary, icon, to, disabled = false }: { primary: string; icon: JSX.Element; to: string, disabled?: boolean }) => (
         <ListItem
@@ -70,7 +70,7 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     if (!isAuthenticated) {
         return <>
             <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.VEHICLE} />
+                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
                 <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />
                 <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={license_plate ? `${ROUTES.VEHICLE}/${license_plate}#service_logs` : ROUTES.VEHICLE} />
             </List>
@@ -81,10 +81,10 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     {
         return <>
             <List component="nav" sx={{ width: "250px" }}>
-                {!showStaticDrawer && <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.VEHICLE} />}
-                <ListItemLink disabled={configurationIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
-                <ListItemLink disabled={configurationIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
-                <ListItemLink disabled={configurationIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
+                {!showStaticDrawer && <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />}
+                <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
+                <ListItemLink disabled={roleIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
+                <ListItemLink disabled={roleIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
                 <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
             </List>
         </>;
@@ -93,7 +93,7 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     {
         return <>
             <List component="nav" sx={{ width: "250px" }}>
-                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to={ROUTES.VEHICLE} />
+                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
             </List>
         </>;
     }

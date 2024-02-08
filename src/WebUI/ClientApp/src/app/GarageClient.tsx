@@ -41,7 +41,7 @@ export function useHandleApiRequest<T>() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { userRole } = useUserRole();
-    const { setConfigurationIndex } = useRoleIndex();
+    const { setRoleIndex } = useRoleIndex();
 
     const handleApiRequest = async (
         apiCall: () => Promise<T>,
@@ -52,7 +52,7 @@ export function useHandleApiRequest<T>() {
             return response;
         } catch (error: any) {
             if (error.status === 404) {
-                setConfigurationIndex(0, userRole);
+                setRoleIndex(1, userRole);
                 dispatch(showOnError(messageFor404Error));
 
                 if (window.location.pathname !== ROUTES.GARAGE_ACCOUNT.SETTINGS) {

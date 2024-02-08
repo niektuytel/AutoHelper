@@ -13,7 +13,7 @@ import useRoleIndex from "../../../hooks/useRoleIndex";
 
 export default (onResponse: (data: any) => void) => {
     const { userRole } = useUserRole()
-    const { configurationIndex, setConfigurationIndex } = useRoleIndex();
+    const { roleIndex, setRoleIndex } = useRoleIndex();
     const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ export default (onResponse: (data: any) => void) => {
     const createMutation = useMutation(garageClient.createService.bind(garageClient), {
         onSuccess: (response) => {
             // Enable garage colleagues page
-            setConfigurationIndex(3, userRole)
+            setRoleIndex(3, userRole)
             dispatch(showOnSuccess("Garage service has been created!"));
 
             // Update the garageSettings in the cache after creating

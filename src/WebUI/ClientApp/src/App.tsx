@@ -3,7 +3,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { MsalAuthenticationTemplate, MsalProvider } from '@azure/msal-react';
-import { InteractionType } from '@azure/msal-browser';
+import { InteractionType, RedirectRequest } from '@azure/msal-browser';
 
 // own imports
 import Header from './components/header/Header';
@@ -101,8 +101,7 @@ export default ({ msalInstance }:any) => {
                                 <NotFoundPage />
                             </>
                         } />
-                        <Route path='/' element={<Navigate to={`${ROUTES.VEHICLE}`} />} />
-                        <Route path={`${ROUTES.VEHICLE}`} element={
+                        <Route path="/" element={
                             <>
                                 <Header showStaticDrawer={false} />
                                 <HomePage />
