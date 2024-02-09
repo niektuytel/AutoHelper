@@ -50,7 +50,6 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
     {
         var entity = new GarageServiceItem
         {
-            UserId = request.UserId,
             GarageId = request.Garage!.Id,
             Type = request.Type,
             VehicleType = request.VehicleType,

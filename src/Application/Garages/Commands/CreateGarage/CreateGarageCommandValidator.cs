@@ -18,10 +18,10 @@ public class CreateGarageCommandValidator : AbstractValidator<CreateGarageComman
 
         RuleFor(x => x.GarageLookupIdentifier)
             .NotEmpty().WithMessage("Garage identifier is required.")
-            .MustAsync(BeValidAndExistingGarageLookup)
-            .WithMessage("Invalid or non-existent garage lookup.")
             .MustAsync(BeNonExistingGarage)
-            .WithMessage("Garage already exists, is this your company? (contact support please)");
+            .WithMessage("Garage already exists, is this your company? (contact support please)")
+            .MustAsync(BeValidAndExistingGarageLookup)
+            .WithMessage("Invalid or non-existent garage lookup.");
 
         RuleFor(v => v.PhoneNumber)
             .NotEmpty().WithMessage("PhoneNumber is required.");
@@ -36,9 +36,11 @@ public class CreateGarageCommandValidator : AbstractValidator<CreateGarageComman
 
     private async Task<bool> BeValidAndExistingGarageLookup(CreateGarageCommand command, string lookupIdentifier, CancellationToken cancellationToken)
     {
-        var lookup = await _context.GarageLookups.FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
-        command.GarageLookup = lookup;
+        var lookup = await _context.GarageLookups
+            .Include(x => x.Services)
+            .FirstOrDefaultAsync(x => x.Identifier == lookupIdentifier, cancellationToken);
 
+        command.GarageLookup = lookup;
         return lookup != null;
     }
 

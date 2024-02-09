@@ -4,6 +4,7 @@ using AutoHelper.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240208191330_Add garage owner email addres")]
+    partial class Addgarageowneremailaddres
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,6 +337,10 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("VehicleType")
                         .HasColumnType("int");
 
@@ -551,8 +558,6 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("VehicleLicensePlate");
-
-                    b.HasIndex("VehicleServiceLogId");
 
                     b.ToTable("VehicleTimelineItems");
                 });

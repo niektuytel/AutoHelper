@@ -1,37 +1,14 @@
-﻿using System.Net;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
-using System.Threading;
-using AutoHelper.Application.Common.Extensions;
+﻿using System.Text;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
 using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
-using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
+using AutoHelper.Application.Messages.Commands.DeleteNotification;
 using AutoHelper.Application.Messages.Commands.ReceiveMessage;
 using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
-using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using Azure.Core;
-using GoogleApi.Entities.Interfaces;
 using AutoHelper.Hangfire.Shared.MediatR;
 using Hangfire;
-using HtmlAgilityPack;
-using IdentityModel;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using WhatsappBusiness.CloudApi.Configurations;
-using WhatsappBusiness.CloudApi.Exceptions;
-using WhatsappBusiness.CloudApi.Interfaces;
-using WhatsappBusiness.CloudApi.Messages.ReplyRequests;
-using WhatsappBusiness.CloudApi.Messages.Requests;
 using WhatsappBusiness.CloudApi.Webhook;
-using AutoHelper.Application.Messages.Commands.DeleteNotification;
-using AutoHelper.WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -51,7 +28,7 @@ public class CommunicationController : ApiControllerBase
 
     [HttpPost(nameof(ReceiveEmailMessage))]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
     public async Task<string> ReceiveEmailMessage([FromBody] ReceiveEmailMessageCommand message, CancellationToken cancellationToken)
     {
@@ -70,7 +47,7 @@ public class CommunicationController : ApiControllerBase
     public ActionResult<string> ReceiveWhatsappMessage(
         [FromQuery(Name = "hub.challenge")] int hubChallenge,
         [FromQuery(Name = "hub.verify_token")] string hubVerifyToken
-    ) 
+    )
     {
         if (!hubVerifyToken.Equals(VerifyToken))
         {
@@ -82,7 +59,7 @@ public class CommunicationController : ApiControllerBase
 
     [HttpPost(nameof(ReceiveWhatsappMessage))]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ReceiveWhatsappMessage(CancellationToken cancellationToken)
     {
         string requestBody;
@@ -147,14 +124,14 @@ public class CommunicationController : ApiControllerBase
 
     [HttpPost(nameof(StartGarageConversation))]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<string> StartGarageConversation([FromBody] CreateGarageConversationItemsCommand command, CancellationToken cancellationToken)
     {
         var conversations = await Mediator.Send(command, cancellationToken);
         var conversationIds = conversations.Select(x => x.Id).ToList();
 
         var sender = command.UserEmailAddress;
-        if(string.IsNullOrWhiteSpace(command.UserEmailAddress))
+        if (string.IsNullOrWhiteSpace(command.UserEmailAddress))
         {
             sender = command.UserWhatsappNumber;
         }
@@ -180,7 +157,7 @@ public class CommunicationController : ApiControllerBase
 
     [HttpDelete($"{nameof(DeleteNotification)}/{{id}}")]
     [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<NotificationItemDto> DeleteNotification([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var command = new DeleteNotificationCommand(id);

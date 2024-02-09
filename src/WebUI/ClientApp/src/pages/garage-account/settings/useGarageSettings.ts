@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { Dispatch } from "react";
 import { FieldValues, UseFormReset, UseFormSetError } from "react-hook-form";
 import { TFunction } from "i18next";
-import { GarageLocationDtoItem, CreateGarageCommand, GarageAccountClient, GarageSettingsDtoItem, UpdateGarageSettingsCommand, BadRequestResponse } from "../../../app/web-api-client";
+import { GarageLocationDtoItem, CreateGarageCommand, GarageAccountClient, GarageSettingsDtoItem, UpdateGarageSettingsCommand, ValidationProblemDetails } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -87,7 +87,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }
@@ -106,7 +106,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
         onError: (response) => {
             console.error('Error:', response);
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 const errors = Object.entries(response.errors);
                 errors.forEach((error) => {
                     let key = error[0];
@@ -115,7 +115,7 @@ function useGarageSettings(reset: UseFormReset<FieldValues>, setError: UseFormSe
                     const value = error[1];
                     setError(key, {
                         type: "manual",
-                        message: t(value as string)
+                        message: t(value[0] as string)
                     });
                 });
             }

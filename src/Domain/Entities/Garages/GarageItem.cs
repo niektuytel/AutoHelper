@@ -16,6 +16,12 @@ public class GarageItem : BaseAuditableEntity
     [Required]
     public string UserId { get; set; } = null!;
 
+    /// <summary>
+    /// Email of the garage owner
+    /// </summary>
+    [Required]
+    public string UserEmail { get; set; } = null!;
+
     [Required]
     public string GarageLookupIdentifier { get; set; } = null!;
 
@@ -26,5 +32,4 @@ public class GarageItem : BaseAuditableEntity
 
     [Required]
     public ICollection<ConversationItem> Conversations { get; set; } = new List<ConversationItem>();
-
 }

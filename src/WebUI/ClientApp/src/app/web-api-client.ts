@@ -110,7 +110,7 @@ export class AdminAccountClient implements IAdminAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -154,7 +154,7 @@ export class AdminAccountClient implements IAdminAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -223,7 +223,7 @@ export class AdminAccountClient implements IAdminAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -267,7 +267,7 @@ export class AdminAccountClient implements IAdminAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -336,7 +336,7 @@ export class AdminAccountClient implements IAdminAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -406,7 +406,7 @@ export class CommunicationClient implements ICommunicationClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status === 404) {
@@ -504,7 +504,7 @@ export class CommunicationClient implements ICommunicationClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -550,7 +550,7 @@ export class CommunicationClient implements ICommunicationClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -594,7 +594,7 @@ export class CommunicationClient implements ICommunicationClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -673,7 +673,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -723,7 +723,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -773,7 +773,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -814,7 +814,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -859,7 +859,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -904,7 +904,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -970,7 +970,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1015,7 +1015,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1060,7 +1060,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1136,7 +1136,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1180,7 +1180,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1224,7 +1224,7 @@ export class GarageAccountClient implements IGarageAccountClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1314,7 +1314,7 @@ export class GarageClient implements IGarageClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1368,7 +1368,7 @@ export class GarageClient implements IGarageClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1422,7 +1422,7 @@ export class GarageClient implements IGarageClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1468,7 +1468,7 @@ export class GarageClient implements IGarageClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1521,7 +1521,7 @@ export class GarageClient implements IGarageClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1541,7 +1541,7 @@ export interface IVehicleClient {
 
     getSpecifications(licensePlate: string | null | undefined): Promise<VehicleSpecificationsDtoItem>;
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]>;
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogCardDtoItem[]>;
 
     /**
      * @param licensePlate (optional) 
@@ -1600,7 +1600,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1643,7 +1643,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1686,7 +1686,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1697,7 +1697,7 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleSpecificationsDtoItem>(null as any);
     }
 
-    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogDtoItem[]> {
+    getServiceLogs(licensePlate: string | null | undefined): Promise<VehicleServiceLogCardDtoItem[]> {
         let url_ = this.baseUrl + "/api/Vehicle/GetServiceLogs?";
         if (licensePlate !== undefined && licensePlate !== null)
             url_ += "licensePlate=" + encodeURIComponent("" + licensePlate) + "&";
@@ -1715,7 +1715,7 @@ export class VehicleClient implements IVehicleClient {
         });
     }
 
-    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogDtoItem[]> {
+    protected processGetServiceLogs(response: Response): Promise<VehicleServiceLogCardDtoItem[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1725,7 +1725,7 @@ export class VehicleClient implements IVehicleClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(VehicleServiceLogDtoItem.fromJS(item));
+                    result200!.push(VehicleServiceLogCardDtoItem.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1736,7 +1736,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1744,7 +1744,7 @@ export class VehicleClient implements IVehicleClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<VehicleServiceLogDtoItem[]>(null as any);
+        return Promise.resolve<VehicleServiceLogCardDtoItem[]>(null as any);
     }
 
     /**
@@ -1794,7 +1794,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1864,7 +1864,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1909,7 +1909,7 @@ export class VehicleClient implements IVehicleClient {
             return response.text().then((_responseText) => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = BadRequestResponse.fromJS(resultData400);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
@@ -1919,106 +1919,6 @@ export class VehicleClient implements IVehicleClient {
         }
         return Promise.resolve<NotificationItemDto>(null as any);
     }
-}
-
-export class BadRequestResponse implements IBadRequestResponse {
-    type?: string;
-    title?: string;
-    status?: number;
-    errors?: { [key: string]: string; };
-
-    constructor(data?: IBadRequestResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            if (_data["errors"]) {
-                this.errors = {} as any;
-                for (let key in _data["errors"]) {
-                    if (_data["errors"].hasOwnProperty(key))
-                        (<any>this.errors)![key] = _data["errors"][key];
-                }
-            }
-        }
-    }
-
-    static fromJS(data: any): BadRequestResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new BadRequestResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        if (this.errors) {
-            data["errors"] = {};
-            for (let key in this.errors) {
-                if (this.errors.hasOwnProperty(key))
-                    (<any>data["errors"])[key] = (<any>this.errors)[key];
-            }
-        }
-        return data;
-    }
-}
-
-export interface IBadRequestResponse {
-    type?: string;
-    title?: string;
-    status?: number;
-    errors?: { [key: string]: string; };
-}
-
-export class ReceiveEmailMessageCommand implements IReceiveEmailMessageCommand {
-    from?: string;
-    body?: string;
-
-    constructor(data?: IReceiveEmailMessageCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.from = _data["from"];
-            this.body = _data["body"];
-        }
-    }
-
-    static fromJS(data: any): ReceiveEmailMessageCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReceiveEmailMessageCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["from"] = this.from;
-        data["body"] = this.body;
-        return data;
-    }
-}
-
-export interface IReceiveEmailMessageCommand {
-    from?: string;
-    body?: string;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -2083,6 +1983,160 @@ export interface IProblemDetails {
     instance?: string | undefined;
 
     [key: string]: any;
+}
+
+export class HttpValidationProblemDetails extends ProblemDetails implements IHttpValidationProblemDetails {
+    errors?: { [key: string]: string[]; };
+
+    [key: string]: any;
+
+    constructor(data?: IHttpValidationProblemDetails) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): HttpValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new HttpValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IHttpValidationProblemDetails extends IProblemDetails {
+    errors?: { [key: string]: string[]; };
+
+    [key: string]: any;
+}
+
+export class ValidationProblemDetails extends HttpValidationProblemDetails implements IValidationProblemDetails {
+    errors?: { [key: string]: string[]; };
+
+    [key: string]: any;
+
+    constructor(data?: IValidationProblemDetails) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (_data["errors"]) {
+                this.errors = {} as any;
+                for (let key in _data["errors"]) {
+                    if (_data["errors"].hasOwnProperty(key))
+                        (<any>this.errors)![key] = _data["errors"][key] !== undefined ? _data["errors"][key] : [];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): ValidationProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (this.errors) {
+            data["errors"] = {};
+            for (let key in this.errors) {
+                if (this.errors.hasOwnProperty(key))
+                    (<any>data["errors"])[key] = (<any>this.errors)[key];
+            }
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IValidationProblemDetails extends IHttpValidationProblemDetails {
+    errors?: { [key: string]: string[]; };
+
+    [key: string]: any;
+}
+
+export class ReceiveEmailMessageCommand implements IReceiveEmailMessageCommand {
+    from?: string;
+    body?: string;
+
+    constructor(data?: IReceiveEmailMessageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.from = _data["from"];
+            this.body = _data["body"];
+        }
+    }
+
+    static fromJS(data: any): ReceiveEmailMessageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReceiveEmailMessageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["from"] = this.from;
+        data["body"] = this.body;
+        return data;
+    }
+}
+
+export interface IReceiveEmailMessageCommand {
+    from?: string;
+    body?: string;
 }
 
 export class CreateGarageConversationItemsCommand implements ICreateGarageConversationItemsCommand {
@@ -3460,7 +3514,7 @@ export interface IVehicleInfoSectionItem {
     values?: string[][];
 }
 
-export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
+export class VehicleServiceLogCardDtoItem implements IVehicleServiceLogCardDtoItem {
     id?: string;
     garageLookupName?: string;
     garageLookupIdentifier?: string;
@@ -3474,12 +3528,9 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
     odometerReading?: number;
     expectedNextOdometerReading?: number | undefined;
     status?: VehicleServiceLogStatus;
-    reporterName?: string;
-    reporterPhoneNumber?: string | undefined;
-    reporterEmailAddress?: string | undefined;
     metaData?: string;
 
-    constructor(data?: IVehicleServiceLogDtoItem) {
+    constructor(data?: IVehicleServiceLogCardDtoItem) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3503,16 +3554,13 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
             this.odometerReading = _data["odometerReading"];
             this.expectedNextOdometerReading = _data["expectedNextOdometerReading"];
             this.status = _data["status"];
-            this.reporterName = _data["reporterName"];
-            this.reporterPhoneNumber = _data["reporterPhoneNumber"];
-            this.reporterEmailAddress = _data["reporterEmailAddress"];
             this.metaData = _data["metaData"];
         }
     }
 
-    static fromJS(data: any): VehicleServiceLogDtoItem {
+    static fromJS(data: any): VehicleServiceLogCardDtoItem {
         data = typeof data === 'object' ? data : {};
-        let result = new VehicleServiceLogDtoItem();
+        let result = new VehicleServiceLogCardDtoItem();
         result.init(data);
         return result;
     }
@@ -3532,15 +3580,12 @@ export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
         data["odometerReading"] = this.odometerReading;
         data["expectedNextOdometerReading"] = this.expectedNextOdometerReading;
         data["status"] = this.status;
-        data["reporterName"] = this.reporterName;
-        data["reporterPhoneNumber"] = this.reporterPhoneNumber;
-        data["reporterEmailAddress"] = this.reporterEmailAddress;
         data["metaData"] = this.metaData;
         return data;
     }
 }
 
-export interface IVehicleServiceLogDtoItem {
+export interface IVehicleServiceLogCardDtoItem {
     id?: string;
     garageLookupName?: string;
     garageLookupIdentifier?: string;
@@ -3554,9 +3599,6 @@ export interface IVehicleServiceLogDtoItem {
     odometerReading?: number;
     expectedNextOdometerReading?: number | undefined;
     status?: VehicleServiceLogStatus;
-    reporterName?: string;
-    reporterPhoneNumber?: string | undefined;
-    reporterEmailAddress?: string | undefined;
     metaData?: string;
 }
 
@@ -3668,6 +3710,106 @@ export class TupleOfStringAndString implements ITupleOfStringAndString {
 export interface ITupleOfStringAndString {
     item1?: string;
     item2?: string;
+}
+
+export class VehicleServiceLogDtoItem implements IVehicleServiceLogDtoItem {
+    id?: string;
+    garageLookupName?: string;
+    garageLookupIdentifier?: string;
+    type?: GarageServiceType;
+    title?: string | undefined;
+    description?: string | undefined;
+    attachedFile?: string | undefined;
+    notes?: string;
+    date?: Date;
+    expectedNextDate?: Date | undefined;
+    odometerReading?: number;
+    expectedNextOdometerReading?: number | undefined;
+    status?: VehicleServiceLogStatus;
+    reporterName?: string;
+    reporterPhoneNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
+    metaData?: string;
+
+    constructor(data?: IVehicleServiceLogDtoItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.garageLookupName = _data["garageLookupName"];
+            this.garageLookupIdentifier = _data["garageLookupIdentifier"];
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.attachedFile = _data["attachedFile"];
+            this.notes = _data["notes"];
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.expectedNextDate = _data["expectedNextDate"] ? new Date(_data["expectedNextDate"].toString()) : <any>undefined;
+            this.odometerReading = _data["odometerReading"];
+            this.expectedNextOdometerReading = _data["expectedNextOdometerReading"];
+            this.status = _data["status"];
+            this.reporterName = _data["reporterName"];
+            this.reporterPhoneNumber = _data["reporterPhoneNumber"];
+            this.reporterEmailAddress = _data["reporterEmailAddress"];
+            this.metaData = _data["metaData"];
+        }
+    }
+
+    static fromJS(data: any): VehicleServiceLogDtoItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new VehicleServiceLogDtoItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["garageLookupName"] = this.garageLookupName;
+        data["garageLookupIdentifier"] = this.garageLookupIdentifier;
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["attachedFile"] = this.attachedFile;
+        data["notes"] = this.notes;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["expectedNextDate"] = this.expectedNextDate ? this.expectedNextDate.toISOString() : <any>undefined;
+        data["odometerReading"] = this.odometerReading;
+        data["expectedNextOdometerReading"] = this.expectedNextOdometerReading;
+        data["status"] = this.status;
+        data["reporterName"] = this.reporterName;
+        data["reporterPhoneNumber"] = this.reporterPhoneNumber;
+        data["reporterEmailAddress"] = this.reporterEmailAddress;
+        data["metaData"] = this.metaData;
+        return data;
+    }
+}
+
+export interface IVehicleServiceLogDtoItem {
+    id?: string;
+    garageLookupName?: string;
+    garageLookupIdentifier?: string;
+    type?: GarageServiceType;
+    title?: string | undefined;
+    description?: string | undefined;
+    attachedFile?: string | undefined;
+    notes?: string;
+    date?: Date;
+    expectedNextDate?: Date | undefined;
+    odometerReading?: number;
+    expectedNextOdometerReading?: number | undefined;
+    status?: VehicleServiceLogStatus;
+    reporterName?: string;
+    reporterPhoneNumber?: string | undefined;
+    reporterEmailAddress?: string | undefined;
+    metaData?: string;
 }
 
 export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNotifierCommand {

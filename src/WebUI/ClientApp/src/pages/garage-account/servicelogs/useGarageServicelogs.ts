@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import { useTranslation } from "react-i18next";
 
 //own imports
-import { BadRequestResponse, FileParameter, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
+import { ValidationProblemDetails, FileParameter, VehicleServiceLogAsGarageDtoItem, VehicleServiceLogStatus } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
 
@@ -82,7 +82,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }
@@ -162,7 +162,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }
@@ -199,7 +199,7 @@ function useGarageServiceLogs(onResponse: (data: any) => void) {
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }

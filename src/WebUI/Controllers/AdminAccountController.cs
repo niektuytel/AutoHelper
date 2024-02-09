@@ -1,21 +1,17 @@
-﻿using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
+﻿using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Hangfire.Shared.MediatR;
-using AutoHelper.WebUI.Models;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 
 namespace AutoHelper.WebUI.Controllers;
 
 [Authorize(Policies.AdminDefaultPolicy)]
-public class AdminAccountController: ApiControllerBase
+public class AdminAccountController : ApiControllerBase
 {
     private readonly IBackgroundJobClient _backgroundJobClient;
 
@@ -28,7 +24,7 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [HttpPut($"{nameof(SyncGarageLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public string SyncGarageLookups(
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
@@ -47,7 +43,7 @@ public class AdminAccountController: ApiControllerBase
 
     [HttpPut($"{nameof(SyncVehicleLookup)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<string> SyncVehicleLookup([FromQuery] string licensePlate)
     {
         var command = new SyncVehicleLookupCommand(licensePlate);
@@ -59,7 +55,7 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="maxUpdateAmount">-1 means all of them</param>
     [HttpPut($"{nameof(SyncVehicleLookups)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public string SyncVehicleLookups(
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,
@@ -78,7 +74,7 @@ public class AdminAccountController: ApiControllerBase
 
     [HttpPut($"{nameof(SyncVehicleTimeline)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<string> SyncVehicleTimeline([FromQuery] string licensePlate)
     {
         var command = new SyncVehicleTimelineCommand(licensePlate);
@@ -90,7 +86,7 @@ public class AdminAccountController: ApiControllerBase
     /// <param name="maxUpdateAmount">-1 means all of them</param>
     [HttpPut($"{nameof(SyncVehicleTimelines)}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public string SyncVehicleTimelines(
         [FromQuery] int startRowIndex = 0,
         [FromQuery] int endRowIndex = -1,

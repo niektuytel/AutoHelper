@@ -22,6 +22,9 @@ public record CreateGarageCommand : IRequest<GarageSettingsDtoItem>
     public string? UserId { get; set; }
 
     [JsonIgnore]
+    public string? UserEmail { get; set; }
+
+    [JsonIgnore]
     public GarageLookupItem GarageLookup { get; set; } = new GarageLookupItem();
 
     public string GarageLookupIdentifier { get; set; } = "";
@@ -39,7 +42,6 @@ public record CreateGarageCommand : IRequest<GarageSettingsDtoItem>
     public string? ConversationWhatsappNumber { get; set; }
 
     public GarageLocationDtoItem Location { get; set; }
-
 }
 
 public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageCommand, GarageSettingsDtoItem>
@@ -59,6 +61,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
         var entity = new GarageItem
         {
             UserId = request.UserId!,
+            UserEmail = request.UserEmail!,
             GarageLookupIdentifier = request.GarageLookupIdentifier
         };
 
@@ -90,7 +93,6 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
             {
                 var service = new GarageServiceItem
                 {
-                    UserId = request.UserId!,
                     GarageId = entity.Id,
                     Type = lookupService.Type,
                     VehicleType = lookupService.VehicleType,

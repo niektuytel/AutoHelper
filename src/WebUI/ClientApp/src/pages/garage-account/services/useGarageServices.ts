@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, CreateGarageServiceCommand, GarageClient, GarageServiceDtoItem, UpdateGarageServiceCommand } from "../../../app/web-api-client";
+import { ValidationProblemDetails, CreateGarageServiceCommand, GarageClient, GarageServiceDtoItem, UpdateGarageServiceCommand } from "../../../app/web-api-client";
 import { showOnError, showOnSuccess } from "../../../redux/slices/statusSnackbarSlice";
 import { ROUTES } from "../../../constants/routes";
 import { GetGarageAccountClient, useHandleApiRequest } from "../../../app/GarageClient";
@@ -57,7 +57,7 @@ export default (onResponse: (data: any) => void) => {
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }
@@ -83,7 +83,7 @@ export default (onResponse: (data: any) => void) => {
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }
@@ -104,7 +104,7 @@ export default (onResponse: (data: any) => void) => {
             console.error('Error:', response);
 
             // Display specific error message from server response
-            if (response instanceof BadRequestResponse && response.errors) {
+            if (response instanceof ValidationProblemDetails && response.errors) {
                 dispatch(showOnError(Object.entries(response.errors)[0][1]));
             }
         }

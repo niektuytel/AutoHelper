@@ -1,33 +1,14 @@
-﻿using System.Diagnostics.Metrics;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
-using AutoHelper.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using YamlDotNet.Core.Tokens;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
-using System;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
-using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
-using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using Azure.Core;
-using MediatR;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
-using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
+using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
-using AutoHelper.WebUI.Models;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -45,7 +26,7 @@ public class VehicleController : ApiControllerBase
 
     [HttpGet($"vehicle/{nameof(ServicelogDeeplink)}")]
     [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ServicelogDeeplink([FromQuery] string action)
     {
         // looks like: "{ "servicelogId": "b02192d5-a953-4e73-9867-b62bf98d4d38", "approve":true }"
@@ -60,7 +41,7 @@ public class VehicleController : ApiControllerBase
 
     [HttpGet($"{nameof(GetSpecificationsCard)}")]
     [ProducesResponseType(typeof(VehicleSpecificationsCardItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleSpecificationsCardItem> GetSpecificationsCard([FromQuery] string licensePlate)
     {
         // TODO: advice on service of the car at given mileage
@@ -69,16 +50,16 @@ public class VehicleController : ApiControllerBase
 
     [HttpGet($"{nameof(GetSpecifications)}")]
     [ProducesResponseType(typeof(VehicleSpecificationsDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleSpecificationsDtoItem> GetSpecifications([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleSpecificationsQuery(licensePlate));
     }
 
     [HttpGet($"{nameof(GetServiceLogs)}")]
-    [ProducesResponseType(typeof(VehicleServiceLogDtoItem[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleServiceLogDtoItem[]> GetServiceLogs([FromQuery] string licensePlate)
+    [ProducesResponseType(typeof(VehicleServiceLogCardDtoItem[]), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<VehicleServiceLogCardDtoItem[]> GetServiceLogs([FromQuery] string licensePlate)
     {
         return await Mediator.Send(new GetVehicleServiceLogsQuery(licensePlate));
     }
@@ -86,7 +67,7 @@ public class VehicleController : ApiControllerBase
     /// <param name="maxAmount">-1 means all of them</param>
     [HttpGet($"{nameof(GetTimeline)}")]
     [ProducesResponseType(typeof(VehicleTimelineDtoItem[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount = 5)
     {
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
@@ -94,7 +75,7 @@ public class VehicleController : ApiControllerBase
 
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceLogDtoItem commandWithAttachment, CancellationToken cancellationToken)
     {
         // JsonIgnore does not work on the controller level, so we do the mapping
@@ -118,7 +99,7 @@ public class VehicleController : ApiControllerBase
 
     [HttpPost(nameof(CreateServiceEventNotifier))]
     [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<NotificationItemDto> CreateServiceEventNotifier([FromBody] CreateVehicleEventNotifierCommand command, CancellationToken cancellationToken)
     {
         return await Mediator.Send(command, cancellationToken);

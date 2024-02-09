@@ -208,6 +208,7 @@
   "AddMaintenanceLog.ServiceType.Label": "Soort onderhoud",
   "AddMaintenanceLog.ServiceType.Required": "Welke onderhoud is er uitgevoerd?",
   "AddMaintenanceLog.ServiceDescription.Label": "Omschrijving",
+  "AddMaintenanceLog.ServiceDescription.Required": "Omschrijf wat er is gebeurd",
   "AddMaintenanceLog.Attachments.Label": "Bijlage",
   "AddMaintenanceLog.Date.Required": "Wanneer is dit gebeurd?",
   "AddMaintenanceLog.Date.Label": "Datum",
@@ -223,7 +224,6 @@
   "AddMaintenanceLog.ServiceEmailAddress.Label": "E-mailadres",
   "AddMaintenanceLog.LicensePlate.Label": "Kenteken, b.v. 87-GRN-6",
   "AddMaintenanceLog.LicensePlate.Required": "Op welk voertuig is deze onderhoud?",
-
 
 
   "ServiceLogsIsEmpty.Title": "Onderhouds boekje is leeg",

@@ -39,6 +39,7 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
     {
         var query = _context.VehicleServiceLogs.Where(x =>
             x.GarageLookupIdentifier == request.Garage!.GarageLookupIdentifier &&
+            x.Status == Domain.VehicleServiceLogStatus.VerifiedByGarage &&
             x.Date >= DateTime.Now.AddYears(-1) // last year - now
         )
         .OrderByDescending(x => x.Date);

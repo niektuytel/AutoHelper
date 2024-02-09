@@ -42,13 +42,19 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
 
     private async Task<bool> ServiceShouldNotExist(CreateGarageServiceCommand request, GarageServiceType type, CancellationToken cancellationToken)
     {
+        if (request.Garage == null)
+        {
+            return false;
+        }
+
         var foundSome = await _context.GarageServices.AnyAsync(x => 
-            x.UserId == request.UserId && 
+            x.GarageId == request.Garage!.Id && 
             x.Type == type && 
             x.VehicleType == request.VehicleType && 
             x.Title == request.Title
             , cancellationToken
         );
+
         return foundSome == false;
     }
 

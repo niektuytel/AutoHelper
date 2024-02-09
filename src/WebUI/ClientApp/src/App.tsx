@@ -94,10 +94,10 @@ export default ({ msalInstance }:any) => {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <ServiceLogDrawerProvider>
                 <MsalProvider instance={msalInstance}>
+                    {/*TODO: Reduce rendertime, <Header showStaticDrawer={false} />*/}
                     <Routes>
                         <Route path="*" element={
                             <>
-                                <Header showStaticDrawer={false} />
                                 <NotFoundPage />
                             </>
                         } />
@@ -143,10 +143,10 @@ export default ({ msalInstance }:any) => {
                             </GarageRouteContent>
                         } />
                     </Routes>
+                    <StatusSnackbar />
+                    <Footer />
                 </MsalProvider>
             </ServiceLogDrawerProvider>
-            <StatusSnackbar />
-            <Footer />
         </LocalizationProvider>
     </>;
 }

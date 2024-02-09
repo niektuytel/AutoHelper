@@ -7,12 +7,6 @@ namespace AutoHelper.Domain.Entities.Garages;
 public class GarageServiceItem : BaseEntity
 {
     /// <summary>
-    /// UserId of the garage owner
-    /// </summary>
-    [Required]
-    public string UserId { get; set; }
-
-    /// <summary>
     /// GarageId for the full garage foreign data
     /// </summary>
     [Required]

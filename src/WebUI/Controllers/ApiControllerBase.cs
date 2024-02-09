@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Hangfire;
-using MediatR;
+﻿using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 

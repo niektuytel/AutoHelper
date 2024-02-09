@@ -68,6 +68,9 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .HasIndex(e => e.VehicleLicensePlate);
 
         builder.Entity<VehicleTimelineItem>()
+            .HasIndex(e => e.VehicleServiceLogId);
+
+        builder.Entity<VehicleTimelineItem>()
             .HasOne(e => e.VehicleLookup)
             .WithMany(g => g.Timeline)
             .HasForeignKey(e => e.VehicleLicensePlate)

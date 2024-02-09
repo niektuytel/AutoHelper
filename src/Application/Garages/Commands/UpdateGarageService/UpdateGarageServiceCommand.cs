@@ -49,7 +49,10 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
 
     public async Task<GarageServiceDtoItem> Handle(UpdateGarageServiceCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.GarageServices.FirstOrDefaultAsync(item => item.Id == request.Id && item.UserId == request.UserId, cancellationToken);
+        var entity = await _context.GarageServices
+            .Include(item => item.Garage)
+            .FirstOrDefaultAsync(item => item.Id == request.Id && item.Garage.UserId == request.UserId, cancellationToken);
+
         if (entity == null)
         {
             throw new NotFoundException(nameof(GarageServiceItem), request.Id);

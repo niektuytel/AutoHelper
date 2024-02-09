@@ -17,7 +17,7 @@ namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 /// <summary>
 /// Only returns service and repair logs
 /// </summary>
-public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogDtoItem[]>
+public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogCardDtoItem[]>
 {
     public GetVehicleServiceLogsQuery(string licensePlate)
     {
@@ -27,7 +27,7 @@ public record GetVehicleServiceLogsQuery : IRequest<VehicleServiceLogDtoItem[]>
     public string LicensePlate { get; set; }
 }
 
-public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogDtoItem[]>
+public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServiceLogsQuery, VehicleServiceLogCardDtoItem[]>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -38,7 +38,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
         _mapper = mapper;
     }
 
-    public async Task<VehicleServiceLogDtoItem[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
+    public async Task<VehicleServiceLogCardDtoItem[]> Handle(GetVehicleServiceLogsQuery request, CancellationToken cancellationToken)
     {
         // INFO: before was like this,
         // As inspection is not a service or repair, it should not be included
@@ -58,7 +58,7 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
             .OrderByDescending(v => v.Date);
 
         var result = await _mapper
-            .ProjectTo<VehicleServiceLogDtoItem>(entities)
+            .ProjectTo<VehicleServiceLogCardDtoItem>(entities)
             .ToArrayAsync(cancellationToken);
 
         return result;

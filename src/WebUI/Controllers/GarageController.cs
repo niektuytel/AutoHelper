@@ -1,24 +1,11 @@
-﻿using System.Security.Claims;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities.Garages;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using AutoHelper.Application.Garages.Queries.GetGarageLookup;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
-using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Hangfire.Shared.MediatR;
-using Hangfire.Server;
-using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Application.Garages._DTOs;
+using AutoHelper.Application.Garages.Queries.GetGarageLookup;
+using AutoHelper.Application.Garages.Queries.GetGarageLookupCards;
 using AutoHelper.Application.Garages.Queries.GetGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Infrastructure.Common.Interfaces;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Application.Garages.Queries.GetGarageLookupCards;
-using Microsoft.AspNetCore.Authorization;
-using AutoHelper.WebUI.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -33,7 +20,7 @@ public class GarageController : ApiControllerBase
 
     [HttpGet($"{nameof(SearchLookups)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
     [ProducesResponseType(typeof(PaginatedList<GarageLookupBriefDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<PaginatedList<GarageLookupBriefDto>> SearchLookups(
         [FromRoute] string licensePlate,
         [FromRoute] float latitude,
@@ -64,7 +51,7 @@ public class GarageController : ApiControllerBase
 
     [HttpGet($"{nameof(SearchLookupsByName)}")]
     [ProducesResponseType(typeof(GarageLookupDtoItem[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageLookupDtoItem[]> SearchLookupsByName(
         [FromQuery] string name,
         [FromQuery] int maxSize = 10,
@@ -77,19 +64,20 @@ public class GarageController : ApiControllerBase
 
     [HttpGet($"{nameof(SearchLookupCardsByName)}")]
     [ProducesResponseType(typeof(GarageLookupSimplefiedDto[]), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageLookupSimplefiedDto[]> SearchLookupCardsByName(
-        [FromQuery] string name, 
-        [FromQuery] int maxSize = 10, 
+        [FromQuery] string name,
+        [FromQuery] int maxSize = 10,
         CancellationToken cancellationToken = default
-    ){
+    )
+    {
         var query = new GetGarageLookupCardsByNameQuery(name, maxSize);
         return await Mediator.Send(query, cancellationToken);
     }
 
     [HttpGet($"{nameof(GetLookup)}/{{identifier}}")]
     [ProducesResponseType(typeof(GarageLookupDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageLookupDtoItem> GetLookup([FromRoute] string identifier, [FromQuery] string? licensePlate = null)
     {
         var request = new GetGarageLookupQuery(identifier, licensePlate);
@@ -98,11 +86,12 @@ public class GarageController : ApiControllerBase
 
     [HttpGet($"{nameof(GetServices)}/{{identifier}}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceDtoItem>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IEnumerable<GarageServiceDtoItem>> GetServices(
-        [FromRoute] string identifier, 
+        [FromRoute] string identifier,
         [FromQuery] string? licensePlate = null
-    ) {
+    )
+    {
         var query = new GetGarageServicesAsVehicleQuery(identifier, licensePlate);
         return await Mediator.Send(query);
     }

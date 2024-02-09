@@ -103,8 +103,30 @@ export default ({ isMobile, keyIndex, license_plate, logItem }: IProps) => {
                         sx={{ ml: 1, mt: 1 }}
                     />
                 )}
+                {!isMobile && (logItem.status === VehicleServiceLogStatus.VerifiedByGarage ?
+                    <Tooltip title={t("ServiceLog.Verified.Title")}>
+                        <Chip
+                            color="success"
+                            icon={<VerifiedIcon />}
+                            label={t("ServiceLog.Verified.Label")}
+                            variant="outlined"
+                            sx={{ ml: 1, mt: 1 }}
+                        />
+                    </Tooltip>
+                    :
+                    <Tooltip title={t("ServiceLog.UnVerified.Title")}>
+                        <Chip
+                            color="warning"
+                            icon={<NewReleasesIcon />}
+                            label={t("ServiceLog.UnVerified.Label")}
+                            variant="outlined"
+                            sx={{ ml: 1, mt: 1 }}
+                        />
+                    </Tooltip>
+                    
+                )}
             </Box>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', m: 1, mt: 0 }}>
+            {isMobile && <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', m: 1, mt: 0 }}>
                 {logItem.status === VehicleServiceLogStatus.VerifiedByGarage ?
                     <Tooltip title={t("ServiceLog.Verified.Title")}>
                         <Chip
@@ -126,7 +148,7 @@ export default ({ isMobile, keyIndex, license_plate, logItem }: IProps) => {
                         />
                     </Tooltip>
                 }
-            </Box>
+            </Box>}
             <Divider sx={{ mt: 1 }} />
         </Box>
     </>

@@ -1,25 +1,20 @@
-﻿using System.Security.Claims;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Garages.Commands.CreateGarageItem;
+using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 using AutoHelper.Application.Garages.Commands.DeleteGarageService;
 using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Application.Garages.Commands.UpdateGarageService;
+using AutoHelper.Application.Garages.Queries.GetGarageOverview;
 using AutoHelper.Application.Garages.Queries.GetGarageServices;
 using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using Microsoft.AspNetCore.Mvc;
-using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
-using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
+using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogsAsGarage;
-using AutoHelper.Application.Garages.Queries.GetGarageOverview;
-using Microsoft.Identity.Web.Resource;
-using Microsoft.Identity.Web;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.AspNetCore.Authorization;
-using AutoHelper.WebUI.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -35,7 +30,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpGet($"{nameof(GetSettings)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageSettingsDtoItem> GetSettings()
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -44,7 +39,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpGet($"{nameof(GetServices)}")]
     [ProducesResponseType(typeof(IEnumerable<GarageServiceDtoItem>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IEnumerable<GarageServiceDtoItem>> GetServices([FromQuery] string? licensePlate = null)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -53,8 +48,8 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpGet($"{nameof(GetServiceLogs)}")]
     [ProducesResponseType(typeof(IEnumerable<VehicleServiceLogAsGarageDtoItem>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IEnumerable<VehicleServiceLogAsGarageDtoItem>> GetServiceLogs([FromQuery] string? licensePlate=null)
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IEnumerable<VehicleServiceLogAsGarageDtoItem>> GetServiceLogs([FromQuery] string? licensePlate = null)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
         return await Mediator.Send(new GetVehicleServiceLogsAsGarageQuery(userId, licensePlate));
@@ -62,7 +57,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpGet($"{nameof(GetOverview)}")]
     [ProducesResponseType(typeof(GarageOverviewDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageOverviewDtoItem> GetOverview()
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -71,18 +66,17 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPost($"{nameof(CreateGarage)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<GarageSettingsDtoItem>> CreateGarage([FromBody] CreateGarageCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
-        var userName = _currentUser.UserName ?? command.GarageLookupIdentifier;
-        var userEmail = _currentUser.UserEmail ?? command.EmailAddress;
+        command.UserEmail = _currentUser.UserEmail ?? command.EmailAddress;
         return await Mediator.Send(command);
     }
 
     [HttpPost($"{nameof(CreateService)}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageServiceDtoItem> CreateService([FromBody] CreateGarageServiceCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -91,7 +85,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogAsGarageDtoItem> CreateServiceLog([FromForm] CreateVehicleServiceAsGarageLogDtoItem serviceLogDto, CancellationToken cancellationToken)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -117,7 +111,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPut($"{nameof(UpdateSettings)}")]
     [ProducesResponseType(typeof(GarageSettingsDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageSettingsDtoItem> UpdateSettings([FromBody] UpdateGarageSettingsCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -126,7 +120,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPut($"{nameof(UpdateService)}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageServiceDtoItem> UpdateService([FromBody] UpdateGarageServiceCommand command)
     {
         command.UserId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -135,7 +129,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPost($"{nameof(UpdateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogAsGarageDtoItem> UpdateServiceLog([FromForm] UpdateVehicleServiceAsGarageLogDtoItem serviceLogDto, CancellationToken cancellationToken)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -161,7 +155,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPut($"{nameof(DeleteService)}/{{id}}")]
     [ProducesResponseType(typeof(GarageServiceDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<GarageServiceDtoItem> DeleteService([FromRoute] Guid id)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");
@@ -170,7 +164,7 @@ public class GarageAccountController : ApiControllerBase
 
     [HttpPut($"{nameof(DeleteServiceLog)}/{{id}}")]
     [ProducesResponseType(typeof(VehicleServiceLogAsGarageDtoItem), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(BadRequestResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<VehicleServiceLogAsGarageDtoItem> DeleteServiceLog([FromRoute] Guid id)
     {
         var userId = _currentUser.UserId ?? throw new Exception("Missing userId on IdToken");

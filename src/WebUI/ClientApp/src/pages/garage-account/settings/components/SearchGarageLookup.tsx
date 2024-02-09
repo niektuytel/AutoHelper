@@ -46,10 +46,16 @@ export default memo(({ value, onChange, error }: ISearchGarageProps) => {
             freeSolo
             options={options}
             value={value || ''}
-            getOptionLabel={(option: any) => `${option?.name}, ${option?.city}` || ''}
+            getOptionLabel={(option: any) => {
+                const invalidOption = option?.name == undefined && option?.city == undefined;
+                if (invalidOption) {
+                    return '';
+                }
+
+                return `${option?.name}, ${option?.city}`;
+            }}
             onInputChange={(event, newInputValue) => {
                 const garageLookup = options.find(option => `${option?.name}, ${option?.city}` === newInputValue);
-
                 onChange(garageLookup);
                 setSearch(newInputValue);
             }}

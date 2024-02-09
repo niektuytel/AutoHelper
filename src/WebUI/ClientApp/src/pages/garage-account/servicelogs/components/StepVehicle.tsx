@@ -126,6 +126,7 @@ const GarageStep = ({ licensePlate, setVehicleService, control, file, setFile }:
             <Controller
                 name="description"
                 control={control}
+                rules={{ required: t("AddMaintenanceLog.ServiceDescription.Required") }}
                 render={({ field, fieldState: { error } }) => (
                     <TextField
                         {...field}

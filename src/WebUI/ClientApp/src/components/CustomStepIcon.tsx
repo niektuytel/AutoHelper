@@ -20,7 +20,6 @@ const styles = {
         backgroundColor: 'currentColor',
     },
     completed: {
-        zIndex: 1,
         fontSize: 18
     },
 }

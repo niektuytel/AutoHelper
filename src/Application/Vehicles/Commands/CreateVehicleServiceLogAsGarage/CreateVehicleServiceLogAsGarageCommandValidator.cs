@@ -39,6 +39,47 @@ public class CreateVehicleServiceLogAsGarageCommandValidator : AbstractValidator
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Description is required.");
 
+        // - When OdometerReading has for example 1200, ExpectedNextOdometerReading should be null/1200 or greater
+        // - When OdometerReading has for example 1200 on Date 01/01/21, other Odometer before 1200 CANT be before 01/01/21
+
+        // - When Date has for example 01/01/21, ExpectedNextDate should be null/01/01/21 or later
+        RuleFor(x => x.Date)
+            .Must(ValidDate)
+            .WithMessage("Invalid date format.");
+
+        RuleFor(x => x)
+            .Custom((x, context) => {
+                if (!string.IsNullOrEmpty(x.ExpectedNextDate))
+                {
+                    var isValid = ValidDate(x, x.ExpectedNextDate);
+                    if (!isValid)
+                    {
+                        context.AddFailure("ExpectedNextDate", "Invalid expected next date format.");
+                    }
+                    else if (x.ParsedExpectedNextDate < x.ParsedDate)
+                    {
+                        context.AddFailure("ExpectedNextDate", "Expected next date must be later than the actual date.");
+                    }
+                }
+            });
+
+        //// - When Date has for example 01/01/21 on OdometerReading 1200, other Odometer after 1200 CANT be before 01/01/21
+        //RuleFoTODO get this good worklkign r(x => x)
+        //    .Custom(async (x, context) => {
+        //        if (x.OdometerReading != default)
+        //        {
+        //            var existingEntries = await _context.VehicleServiceLogs
+        //                .Where(vl => vl.VehicleLicensePlate == x.VehicleLicensePlate && vl.Date < x.ParsedDate)
+        //                .ToListAsync();
+
+        //            if (existingEntries.Any(e => e.OdometerReading > x.OdometerReading))
+        //            {
+        //                context.AddFailure("OdometerReading", "There are odometer readings greater than this one recorded before the specified date.");
+        //            }
+        //        }
+        //    });
+
+
         RuleFor(x => x.Date)
             .Must(ValidDate)
             .WithMessage("Invalid date format.")

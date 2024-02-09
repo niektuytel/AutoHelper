@@ -29,20 +29,16 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     const { roleIndex } = useRoleIndex();
     const [prevIndex, setPrevIndex] = useState(roleIndex || 0);
     const [shouldRender, setShouldRender] = useState(true);
-    const [open, setOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const context = useContext(ServiceLogDrawerContext);
-    const { instance, accounts } = useMsal();
     const isAuthenticated = useIsAuthenticated();
 
     if (!context) {
         throw new Error("DrawerComponent must be used within a DrawerProvider");
     }
-
-    const { toggleDrawer } = context;
-
+    
     useEffect(() => {
         // Your existing logic
         if (prevIndex !== roleIndex) {
@@ -58,8 +54,8 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
             button
             disabled={disabled}
             onClick={() => { navigate(to, { state: { from: location } }); setOnMenu && setOnMenu(false); }}
+            style={location.pathname === to ? { backgroundColor: '#ECECEC' } : {}}
         >
-            {/*style={location.pathname === to ? { backgroundColor: '#e0e0e0' } : {}}*/}
             <ListItemIcon style={location.pathname === to ? { color: 'black' } : {}}>
                 {React.cloneElement(icon, { color: location.pathname === to ? 'black' : 'action' })}
             </ListItemIcon>
@@ -79,13 +75,26 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
 
     if (userRole == ROLES.GARAGE)
     {
+        if (showStaticDrawer)
+        {
+            return <>
+                <List component="nav" sx={{ width: "250px" }}>
+                    <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
+                    <ListItemLink disabled={roleIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
+                    <ListItemLink disabled={roleIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
+                    <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
+                </List>
+            </>;
+        }
+
+        const onGarageAccount = location.pathname.startsWith(ROUTES.GARAGE_ACCOUNT.DEFAULT);
         return <>
             <List component="nav" sx={{ width: "250px" }}>
-                {!showStaticDrawer && <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />}
-                <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
-                <ListItemLink disabled={roleIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
-                <ListItemLink disabled={roleIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
-                <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
+                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
+                {!onGarageAccount && <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />}
+                {!onGarageAccount && <ListItemLink disabled={roleIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />}
+                {!onGarageAccount && <ListItemLink disabled={roleIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />}
+                {!onGarageAccount && <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />}
             </List>
         </>;
     }

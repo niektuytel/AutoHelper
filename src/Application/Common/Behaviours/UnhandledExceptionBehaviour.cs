@@ -24,9 +24,16 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse> : IPipelineBehavio
         {
             return await next();
         }
-        catch (ValidationException ex)
+        catch (Exception ex) 
+        when (ex is ForbiddenAccessException || ex is NotFoundException || ex is ValidationException)
         {
-            await LogExceptionAsync(request, LogLevel.Warning, JsonSerializer.Serialize(ex.Errors), cancellationToken);
+            var message = ex.Message;
+            if (ex is ValidationException validationEx)
+            {
+                message = JsonSerializer.Serialize(validationEx.Errors);
+            }
+
+            await LogExceptionAsync(request, LogLevel.Warning, message, cancellationToken);
             throw;
         }
         catch (Exception ex)

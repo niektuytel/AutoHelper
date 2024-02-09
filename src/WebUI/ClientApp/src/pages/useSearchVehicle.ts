@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
 //own imports
-import { BadRequestResponse, VehicleSpecificationsCardItem, VehicleClient } from "../app/web-api-client";
+import { ValidationProblemDetails, VehicleSpecificationsCardItem, VehicleClient } from "../app/web-api-client";
 import { useState } from "react";
 import { showOnError } from "../redux/slices/statusSnackbarSlice";
 
@@ -27,7 +27,7 @@ function useSearchVehicle() {
             console.error('Error:', error);
 
             // Display specific error message from server response
-            if (error instanceof BadRequestResponse && error.errors) {
+            if (error instanceof ValidationProblemDetails && error.errors) {
                 dispatch(showOnError(t(Object.entries(error.errors)[0][1])));
             }
         } finally {

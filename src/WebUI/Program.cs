@@ -1,33 +1,17 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Infrastructure.Common;
-using AutoHelper.Infrastructure.Persistence;
-using AutoHelper.Hangfire;
-using AutoHelper.Messaging;
-using Hangfire;
-using MediatR;
-using Microsoft.Extensions.Configuration;
-using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Web;
-using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using System.IdentityModel.Tokens.Jwt;
+using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Hangfire;
+using AutoHelper.Infrastructure.Persistence;
+using AutoHelper.Messaging;
 using AutoHelper.WebUI;
-using LinqKit;
-using AutoHelper.WebUI.Services;
 using AutoHelper.WebUI.Filters;
+using AutoHelper.WebUI.Services;
+using LinqKit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 using NSwag;
-using ZymLabs.NSwag.FluentValidation;
 using NSwag.AspNetCore;
+using ZymLabs.NSwag.FluentValidation;
 
 internal class Program
 {

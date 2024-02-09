@@ -55,8 +55,7 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                 sx={(showStaticDrawer && !onMenu) ? { zIndex: (theme) => theme.zIndex.drawer + 1 } : {}}
                 style={{
                     boxShadow: `none`,
-                    borderBottom: `1px solid ${COLORS.BORDER_GRAY}`,
-                    zIndex: 1
+                    borderBottom: `1px solid ${COLORS.BORDER_GRAY}`
                 }}
             >
                 <StyledToolbar>

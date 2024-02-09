@@ -12,7 +12,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
 
 // own imports
-import { BadRequestResponse, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
+import { ValidationProblemDetails, GarageLookupSimplefiedDto, GarageServiceDtoItem, GarageServiceType, VehicleClient, VehicleServiceLogDtoItem } from '../../../../app/web-api-client';
 import StepConfirmation from './StepConfirmation';
 import StepVehicle from './StepVehicle';
 import StepGarage from './StepGarage';
@@ -182,7 +182,7 @@ export default ({ licensePlate }: IServiceLogDrawerProps) => {
                 console.error('Error:', error);
 
                 // Display specific error message from server response
-                if (error instanceof BadRequestResponse && error.errors) {
+                if (error instanceof ValidationProblemDetails && error.errors) {
                     dispatch(showOnError(Object.entries(error.errors)[0][1]));
                 }
             } finally {

@@ -205,6 +205,7 @@
   "AddMaintenanceLog.ServiceType.Label": "Service type",
   "AddMaintenanceLog.ServiceType.Required": "Select service that happend on the vehicle",
   "AddMaintenanceLog.ServiceDescription.Label": "Description",
+  "AddMaintenanceLog.ServiceDescription.Required": "Explain what you did",
   "AddMaintenanceLog.Attachments.Label": "Attachments",
   "AddMaintenanceLog.Date.Required": "When did this happen?",
   "AddMaintenanceLog.Date.Label": "Date",

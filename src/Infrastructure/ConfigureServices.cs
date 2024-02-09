@@ -32,6 +32,7 @@ public static class ConfigureServices
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     builder => {
+                        builder.CommandTimeout((int)TimeSpan.FromMinutes(5).TotalSeconds);// needed for data migrations
                         builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                         builder.UseNetTopologySuite();
                     }
@@ -39,33 +40,9 @@ public static class ConfigureServices
             );
         }
 
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
+        services.AddTransient<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ApplicationDbContextInitialiser>();
-
-        //services
-        //    .AddDefaultIdentity<ApplicationUser>(options =>
-        //    {
-        //        // Require that usernames are email format
-        //        options.User.RequireUniqueEmail = true;
-
-        //        // Set a specific allowed username character set (e.g., alphanumeric)
-        //        options.User.AllowedUserNameCharacters =
-        //            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-        //    })
-        //    .AddRoles<IdentityRole>()
-        //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-        //services.AddIdentityServer()
-        //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
         services.AddTransient<IDateTime, DateTimeService>();
-        //services.AddTransient<IIdentityService, IdentityService>();
-        //services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
-
-
-        //services.AddAuthorization(options =>
-        //    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
 
         services.AddTransient<RDWApiClient>();
         services.AddTransient<IVehicleService, VehicleService>();

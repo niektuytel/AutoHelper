@@ -160,9 +160,9 @@ export default ({ control, setFormValue, defaultLocation, notFound }: LocationSe
         handleSearchByAddress(value.address!, value.city!);
 
         // Contact
-        setFormValue("phoneNumber", value.phoneNumber);
-        setFormValue("whatsappNumber", value.whatsappNumber);
-        setFormValue("email", value.emailAddress);
+        setFormValue("phoneNumber", value.phoneNumber || "");
+        setFormValue("whatsappNumber", value.whatsappNumber || "");
+        setFormValue("email", value.emailAddress || "");
 
         if (value?.conversationContactEmail) {
             setFormValue("conversationEmail", value?.conversationContactEmail);
