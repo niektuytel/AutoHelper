@@ -9,42 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Common\Security\**" />
-      <Compile Remove="TodoItems\**" />
-      <Compile Remove="TodoLists\**" />
-      <Compile Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
-      <Compile Remove="WeatherForecasts\**" />
-      <EmbeddedResource Remove="Common\Security\**" />
-      <EmbeddedResource Remove="TodoItems\**" />
-      <EmbeddedResource Remove="TodoLists\**" />
-      <EmbeddedResource Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
-      <EmbeddedResource Remove="WeatherForecasts\**" />
-      <EntityDeploy Remove="Common\Security\**" />
-      <EntityDeploy Remove="TodoItems\**" />
-      <EntityDeploy Remove="TodoLists\**" />
-      <EntityDeploy Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
-      <EntityDeploy Remove="WeatherForecasts\**" />
-      <None Remove="Common\Security\**" />
-      <None Remove="TodoItems\**" />
-      <None Remove="TodoLists\**" />
-      <None Remove="Vehicles\Queries\GetVehicleMOTHistory\**" />
-      <None Remove="WeatherForecasts\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Common\Behaviours\AuthorizationBehaviour.cs" />
-      <Compile Remove="Common\Behaviours\LoggingBehaviour.cs" />
-      <Compile Remove="Common\Interfaces\ICsvFileBuilder.cs" />
-      <Compile Remove="Common\Interfaces\IIdentityService.cs" />
-      <Compile Remove="Common\Interfaces\IQueueRequest.cs" />
-      <Compile Remove="Common\Interfaces\IQueueService.cs" />
-      <Compile Remove="Common\Models\LookupDto.cs" />
-      <Compile Remove="Garages\Queries\GetGarageLookupCards\GarageEmployeeItemSearchDto.cs" />
-      <Compile Remove="Vehicles\Queries\GetVehicleServiceLogs\VehicleGarageServiceDtoItem.cs" />
-      <Compile Remove="Vehicles\_DTOs\VehicleDtoItem.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="DeepCloner" Version="0.10.4" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
