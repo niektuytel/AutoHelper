@@ -20,6 +20,8 @@ public record CreateGarageServiceCommand : IRequest<GarageServiceDtoItem>
 
     public VehicleType VehicleType { get; set; }
 
+    public VehicleFuelType VehicleFuelType { get; set; }
+
     public string Title { get; set; } = null!;
 
     public string Description { get; set; } = null!;
@@ -47,6 +49,7 @@ public class CreateGarageServiceItemCommandHandler : IRequestHandler<CreateGarag
             GarageId = request.Garage!.Id,
             Type = request.Type,
             VehicleType = request.VehicleType,
+            VehicleFuelType = request.VehicleFuelType,
             Title = request.Title,
             Description = request.Description,
             ExpectedNextDateIsRequired = request.ExpectedNextDateIsRequired,

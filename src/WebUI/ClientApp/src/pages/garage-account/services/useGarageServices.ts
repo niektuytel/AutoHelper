@@ -114,6 +114,7 @@ export default (onResponse: (data: any) => void) => {
         var command = new CreateGarageServiceCommand();
         command.type = data.type;
         command.vehicleType = data.vehicleType;
+        command.vehicleFuelType = data.vehicleFuelType;
         command.title = data.title;
         command.description = data.description;
         command.expectedNextOdometerReadingIsRequired = data.expectedNextOdometerReadingIsRequired;
@@ -129,6 +130,7 @@ export default (onResponse: (data: any) => void) => {
         command.id = data.id;
         command.type = data.type;
         command.vehicleType = data.vehicleType;
+        command.vehicleFuelType = data.vehicleFuelType;
         command.title = data.title;
         command.description = data.description;
         command.expectedNextOdometerReadingIsRequired = data.expectedNextOdometerReadingIsRequired;

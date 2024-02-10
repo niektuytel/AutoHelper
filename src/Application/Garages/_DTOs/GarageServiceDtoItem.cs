@@ -21,6 +21,11 @@ public class GarageServiceDtoItem : IMapFrom<GarageServiceItem>, IMapFrom<Garage
     public VehicleType VehicleType { get; set; } = VehicleType.Any;
 
     /// <summary>
+    /// Like: Petrol, Diesel, Electric, etc.
+    /// </summary>
+    public VehicleFuelType VehicleFuelType { get; set; } = VehicleFuelType.Any;
+
+    /// <summary>
     /// Like: "MOT Service", "Oil Change", "Wheel Alignment", etc.
     /// </summary>
     public string? Title { get; set; }
@@ -46,6 +51,7 @@ public class GarageServiceDtoItem : IMapFrom<GarageServiceItem>, IMapFrom<Garage
             .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
             .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
             .ForMember(d => d.VehicleType, opt => opt.MapFrom(s => s.VehicleType))
+            .ForMember(d => d.VehicleFuelType, opt => opt.MapFrom(s => s.VehicleFuelType))
             .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Title))
             .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Description))
             .ForMember(d => d.ExpectedNextDateIsRequired, opt => opt.MapFrom(s => s.ExpectedNextDateIsRequired))
@@ -55,6 +61,7 @@ public class GarageServiceDtoItem : IMapFrom<GarageServiceItem>, IMapFrom<Garage
         profile.CreateMap<GarageLookupServiceItem, GarageServiceDtoItem>()
             .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type))
             .ForMember(d => d.VehicleType, opt => opt.MapFrom(s => s.VehicleType))
+            .ForMember(d => d.VehicleFuelType, opt => opt.MapFrom(s => s.VehicleFuelType))
             .ForMember(d => d.Title, opt => opt.MapFrom(s => s.Title))
             .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Description))
             .ForMember(d => d.ExpectedNextDateIsRequired, opt => opt.MapFrom(s => s.ExpectedNextDateIsRequired))

@@ -2274,6 +2274,9 @@
           "vehicleType": {
             "$ref": "#/components/schemas/VehicleType"
           },
+          "vehicleFuelType": {
+            "$ref": "#/components/schemas/VehicleFuelType"
+          },
           "title": {
             "type": "string",
             "nullable": true
@@ -2332,6 +2335,26 @@
           7,
           8,
           9
+        ]
+      },
+      "VehicleFuelType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Any",
+          "Diesel",
+          "Gasoline",
+          "LPG",
+          "Electric",
+          "Hybrid"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
         ]
       },
       "VehicleServiceLogAsGarageDtoItem": {
@@ -2583,6 +2606,9 @@
           "vehicleType": {
             "$ref": "#/components/schemas/VehicleType"
           },
+          "vehicleFuelType": {
+            "$ref": "#/components/schemas/VehicleFuelType"
+          },
           "title": {
             "type": "string",
             "minLength": 1,
@@ -2687,6 +2713,9 @@
             "minLength": 1,
             "nullable": false,
             "$ref": "#/components/schemas/VehicleType"
+          },
+          "vehicleFuelType": {
+            "$ref": "#/components/schemas/VehicleFuelType"
           },
           "title": {
             "type": "string",

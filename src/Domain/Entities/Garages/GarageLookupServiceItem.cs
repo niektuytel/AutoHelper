@@ -26,6 +26,12 @@ public class GarageLookupServiceItem : BaseEntity
     public VehicleType VehicleType { get; set; } = VehicleType.Any;
 
     /// <summary>
+    /// Like: Petrol, Diesel, Electric, etc.
+    /// </summary>
+    [Required]
+    public VehicleFuelType VehicleFuelType { get; set; } = VehicleFuelType.Any;
+
+    /// <summary>
     /// Like: "MOT Service", "Oil Change", "Wheel Alignment", etc.
     /// </summary>
     public string? Title { get; set; }

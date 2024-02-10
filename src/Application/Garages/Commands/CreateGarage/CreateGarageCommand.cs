@@ -89,6 +89,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
                     GarageId = entity.Id,
                     Type = lookupService.Type,
                     VehicleType = lookupService.VehicleType,
+                    VehicleFuelType = lookupService.VehicleFuelType,
                     Title = lookupService.Title,
                     Description = lookupService.Description,
                     ExpectedNextDateIsRequired = lookupService.ExpectedNextDateIsRequired,

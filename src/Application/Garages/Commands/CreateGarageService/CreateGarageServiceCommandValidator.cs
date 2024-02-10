@@ -24,6 +24,12 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             .MustAsync(ServiceShouldNotExist)
             .WithMessage(c => $"A service with Type: {c.Type}, VehicleType:{c.VehicleType} and Title:{c.Title} already exists for this garage.");
 
+        RuleFor(v => v.VehicleType)
+            .NotNull().WithMessage("VehicleType is required.");
+
+        RuleFor(v => v.VehicleFuelType)
+            .NotNull().WithMessage("VehicleFuelType is required.");
+
         RuleFor(v => v.Title)
             .NotEmpty().WithMessage("Title is required.");
 

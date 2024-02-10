@@ -24,7 +24,7 @@ import { useTranslation } from "react-i18next";
 import AddIcon from '@mui/icons-material/Add';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EuroIcon from '@mui/icons-material/Euro';
-import { GarageServiceType, GarageServiceDtoItem, VehicleType } from "../../../../app/web-api-client";
+import { GarageServiceType, GarageServiceDtoItem, VehicleType, VehicleFuelType } from "../../../../app/web-api-client";
 import { COLORS } from "../../../../constants/colors";
 
 // own imports
@@ -41,11 +41,12 @@ interface IProps {
 }
 
 export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps) => {
-    const { t } = useTranslation(['serviceTypes']);
+    const { t } = useTranslation(['serviceTypes', 'serviceFuelTypes']);
     const theme = useTheme();
 
     const typeTitle = t(`serviceTypes:${GarageServiceType[service.type!]}.Title`);
     const vehicleTypeTitle = t(`serviceTypes:${VehicleType[service.vehicleType!]}.Title`);
+    const vehicleFuelTypeTitle = t(`serviceFuelTypes:${VehicleFuelType[service.vehicleFuelType!]}.Title`);
     const title = service.title ? service.title : typeTitle;
     const description = service.description ? service.description : t(`serviceTypes:${GarageServiceType[service.type!]}.Description`);
 
@@ -60,7 +61,7 @@ export default ({ service, selectedItem, setSelectedItem, addCartItem }: IProps)
             onClick={() => setSelectedItem(service)}
         >
             <CardHeader
-                title={`${title} (${vehicleTypeTitle})`}
+                title={`${title} [${vehicleTypeTitle}, ${vehicleFuelTypeTitle}]`}
                 titleTypographyProps={{ variant: "body1" }}
                 style={{ paddingBottom: "4px", paddingTop: "4px", paddingLeft: "4px" }}
             />

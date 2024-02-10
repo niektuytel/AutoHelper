@@ -18,7 +18,10 @@ public class UpdateGarageServiceCommandValidator : AbstractValidator<UpdateGarag
             .NotEmpty().WithMessage("Type is required.");
 
         RuleFor(v => v.VehicleType)
-            .NotEmpty().WithMessage("VehicleType is required.");
+            .NotNull().WithMessage("VehicleType is required.");
+
+        RuleFor(v => v.VehicleFuelType)
+            .NotNull().WithMessage("VehicleFuelType is required.");
 
         RuleFor(v => v.Title)
             .NotEmpty().WithMessage("Title is required.");

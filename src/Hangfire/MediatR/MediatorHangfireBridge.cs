@@ -15,20 +15,20 @@ namespace AutoHelper.Hangfire.MediatR;
 public class MediatorHangfireBridge
 {
     private readonly IMediator _mediator;
-    private readonly IQueueService _queueJobService;
+    private readonly IQueueContext _queueContext;
 
-    public MediatorHangfireBridge(IMediator mediator, IQueueService queueJobService)
+    public MediatorHangfireBridge(IMediator mediator, IQueueContext queueContext)
     {
         _mediator = mediator;
-        _queueJobService = queueJobService;
+        _queueContext = queueContext;
     }
 
     [Queue("{1}")]
     [DisplayName("{2}")]
     public async Task Send(PerformContext context, string queue, string displayName, IQueueRequest command, CancellationToken cancellationToken)
     {
-        _queueJobService.Initialize(context);
-        command.QueueService = _queueJobService;
+        _queueContext.Initialize(context);
+        command.QueueService = _queueContext;
 
         await _mediator.Send(command, cancellationToken);
     }
@@ -37,8 +37,8 @@ public class MediatorHangfireBridge
     [DisplayName("{2}")]
     public async Task Send<T>(PerformContext context, string queue, string displayName, IQueueRequest<T> command, CancellationToken cancellationToken)
     {
-        _queueJobService.Initialize(context);
-        command.QueueingService = _queueJobService;
+        _queueContext.Initialize(context);
+        command.QueueingService = _queueContext;
 
         await _mediator.Send(command, cancellationToken);
     }
@@ -59,8 +59,8 @@ public class MediatorHangfireBridge
             throw new ArgumentNullException(nameof(request));
         }
 
-        _queueJobService.Initialize(context);
-        (request as IQueueRequest)!.QueueService = _queueJobService;
+        _queueContext.Initialize(context);
+        (request as IQueueRequest)!.QueueService = _queueContext;
 
         while (nextStep)
         {

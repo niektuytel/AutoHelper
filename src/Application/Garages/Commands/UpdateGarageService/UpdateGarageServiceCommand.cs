@@ -22,6 +22,8 @@ public record UpdateGarageServiceCommand : IRequest<GarageServiceDtoItem>
 
     public VehicleType VehicleType { get; set; }
 
+    public VehicleFuelType VehicleFuelType { get; set; }
+
     public string Title { get; set; } = null!;
 
     public string Description { get; set; } = null!;
@@ -56,6 +58,7 @@ public class UpdateGarageServiceCommandHandler : IRequestHandler<UpdateGarageSer
 
         entity.Type = request.Type;
         entity.VehicleType = request.VehicleType;
+        entity.VehicleFuelType = request.VehicleFuelType;
         entity.Title = request.Title;
         entity.Description = request.Description;
         entity.ExpectedNextDateIsRequired = request.ExpectedNextDateIsRequired;

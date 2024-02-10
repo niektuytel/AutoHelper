@@ -158,6 +158,7 @@ internal class GarageService : IGarageService
             GarageLookupIdentifier = garageLookupIdentifier,
             Type = rdwService.Type,
             VehicleType = rdwService.VehicleType,
+            VehicleFuelType = rdwService.VehicleFuelType,
             Title = rdwService.Title,
             Description = rdwService.Description,
             ExpectedNextDateIsRequired = rdwService.ExpectedNextDateIsRequired,

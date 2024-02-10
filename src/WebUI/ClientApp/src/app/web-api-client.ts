@@ -2457,6 +2457,7 @@ export class GarageServiceDtoItem implements IGarageServiceDtoItem {
     id?: string | undefined;
     type?: GarageServiceType;
     vehicleType?: VehicleType;
+    vehicleFuelType?: VehicleFuelType;
     title?: string | undefined;
     description?: string | undefined;
     expectedNextDateIsRequired?: boolean;
@@ -2476,6 +2477,7 @@ export class GarageServiceDtoItem implements IGarageServiceDtoItem {
             this.id = _data["id"];
             this.type = _data["type"];
             this.vehicleType = _data["vehicleType"];
+            this.vehicleFuelType = _data["vehicleFuelType"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.expectedNextDateIsRequired = _data["expectedNextDateIsRequired"];
@@ -2495,6 +2497,7 @@ export class GarageServiceDtoItem implements IGarageServiceDtoItem {
         data["id"] = this.id;
         data["type"] = this.type;
         data["vehicleType"] = this.vehicleType;
+        data["vehicleFuelType"] = this.vehicleFuelType;
         data["title"] = this.title;
         data["description"] = this.description;
         data["expectedNextDateIsRequired"] = this.expectedNextDateIsRequired;
@@ -2507,6 +2510,7 @@ export interface IGarageServiceDtoItem {
     id?: string | undefined;
     type?: GarageServiceType;
     vehicleType?: VehicleType;
+    vehicleFuelType?: VehicleFuelType;
     title?: string | undefined;
     description?: string | undefined;
     expectedNextDateIsRequired?: boolean;
@@ -2531,6 +2535,15 @@ export enum VehicleType {
     Tractor = 7,
     Trailer = 8,
     Caravan = 9,
+}
+
+export enum VehicleFuelType {
+    Any = 0,
+    Diesel = 1,
+    Gasoline = 2,
+    LPG = 3,
+    Electric = 4,
+    Hybrid = 5,
 }
 
 export class VehicleServiceLogAsGarageDtoItem implements IVehicleServiceLogAsGarageDtoItem {
@@ -2861,6 +2874,7 @@ export interface IGarageLocationDtoItem {
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     type!: GarageServiceType;
     vehicleType?: VehicleType;
+    vehicleFuelType?: VehicleFuelType;
     title!: string;
     description!: string;
     expectedNextDateIsRequired!: boolean;
@@ -2879,6 +2893,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
         if (_data) {
             this.type = _data["type"];
             this.vehicleType = _data["vehicleType"];
+            this.vehicleFuelType = _data["vehicleFuelType"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.expectedNextDateIsRequired = _data["expectedNextDateIsRequired"];
@@ -2897,6 +2912,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
         data = typeof data === 'object' ? data : {};
         data["type"] = this.type;
         data["vehicleType"] = this.vehicleType;
+        data["vehicleFuelType"] = this.vehicleFuelType;
         data["title"] = this.title;
         data["description"] = this.description;
         data["expectedNextDateIsRequired"] = this.expectedNextDateIsRequired;
@@ -2908,6 +2924,7 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 export interface ICreateGarageServiceCommand {
     type: GarageServiceType;
     vehicleType?: VehicleType;
+    vehicleFuelType?: VehicleFuelType;
     title: string;
     description: string;
     expectedNextDateIsRequired: boolean;
@@ -2982,6 +2999,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     id!: string;
     type!: GarageServiceType;
     vehicleType!: VehicleType;
+    vehicleFuelType?: VehicleFuelType;
     title!: string;
     description!: string;
     expectedNextDateIsRequired!: boolean;
@@ -3001,6 +3019,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
             this.id = _data["id"];
             this.type = _data["type"];
             this.vehicleType = _data["vehicleType"];
+            this.vehicleFuelType = _data["vehicleFuelType"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.expectedNextDateIsRequired = _data["expectedNextDateIsRequired"];
@@ -3020,6 +3039,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
         data["id"] = this.id;
         data["type"] = this.type;
         data["vehicleType"] = this.vehicleType;
+        data["vehicleFuelType"] = this.vehicleFuelType;
         data["title"] = this.title;
         data["description"] = this.description;
         data["expectedNextDateIsRequired"] = this.expectedNextDateIsRequired;
@@ -3032,6 +3052,7 @@ export interface IUpdateGarageServiceCommand {
     id: string;
     type: GarageServiceType;
     vehicleType: VehicleType;
+    vehicleFuelType?: VehicleFuelType;
     title: string;
     description: string;
     expectedNextDateIsRequired: boolean;

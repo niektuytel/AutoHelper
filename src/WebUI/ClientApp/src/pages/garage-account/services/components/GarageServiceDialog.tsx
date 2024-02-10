@@ -23,9 +23,9 @@ import { useTranslation } from "react-i18next";;
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CloseIcon from '@mui/icons-material/Close';
 import { Controller, useForm } from "react-hook-form";
-import { UpdateGarageServiceCommand, GarageServiceType, VehicleType } from "../../../../app/web-api-client";
+import { UpdateGarageServiceCommand, GarageServiceType, VehicleType, VehicleFuelType } from "../../../../app/web-api-client";
 import useGarageServices from "../useGarageServices";
-import { getAllGarageServiceTypes, getAllVehicleType } from "../../defaultGarageService";
+import { getAllGarageServiceTypes, getAllVehicleFuelType, getAllVehicleType } from "../../defaultGarageService";
 
 // own imports
 
@@ -42,7 +42,7 @@ interface IProps {
 }
 
 export default ({ dialogOpen, setDialogOpen, mode, service, createService, updateService, loading }: IProps) => {
-    const { t } = useTranslation(['translations', 'serviceTypes']);
+    const { t } = useTranslation(['translations', 'serviceTypes', 'serviceFuelTypes']);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -51,11 +51,13 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
 
     const defaultAvailableServices = getAllGarageServiceTypes(t);
     const defaultVehicleTypes = getAllVehicleType(t);
+    const defaultVehicleFuelTypes = getAllVehicleFuelType(t);
     const { control, watch, setValue, handleSubmit, reset, formState: { errors }, setError } = useForm({
         defaultValues: {
             id: '',
             type: GarageServiceType.Service,
             vehicleType: VehicleType.LightCar,
+            vehicleFuelType: VehicleFuelType.Any,
             title: '',
             description: '',
             expectedNextOdometerReadingIsRequired: false,
@@ -69,6 +71,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
             setValue("id", service.id!);
             setValue("type", service.type!);
             setValue("vehicleType", service.vehicleType!);
+            setValue("vehicleFuelType", service.vehicleFuelType!);
             setValue("title", service.title ? service.title : t(`serviceTypes:${GarageServiceType[service.type!]}.Title`));
             setValue("description", service.description ? service.description : t(`serviceTypes:${GarageServiceType[service.type!]}.Description`));
             setValue("expectedNextOdometerReadingIsRequired", service.expectedNextOdometerReadingIsRequired ?? false);
@@ -80,7 +83,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         }
     }, [service, mode, setValue]);
 
-    type ServiceProperty = 'type' | 'vehicleType' | 'title' | 'description';
+    type ServiceProperty = 'type' | 'vehicleType' | 'vehicleFuelType' | 'title' | 'description';
 
     const handleTitleChange = (event: any) => {
         const service = defaultAvailableServices.find((item: any) => item.type === event.target.value) as any;
@@ -90,7 +93,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
         setVehicleService(service);
 
         const item = watch();
-        const propertiesToUpdate: ServiceProperty[] = ['type', 'vehicleType', 'title', 'description'];
+        const propertiesToUpdate: ServiceProperty[] = ['type', 'vehicleType', 'vehicleFuelType', 'title', 'description'];
         propertiesToUpdate.forEach(property => {
             if (!item[property] || (prevService && item[property] == prevService[property])) {
                 setValue(property, service[property]);
@@ -127,7 +130,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogContent dividers>
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={4}>
                                 <Controller
                                     name="type"
                                     control={control}
@@ -155,7 +158,7 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                     )}
                                 />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid item xs={12} sm={4}>
                                 <Controller
                                     name="vehicleType"
                                     control={control}
@@ -174,6 +177,34 @@ export default ({ dialogOpen, setDialogOpen, mode, service, createService, updat
                                                 size="small"
                                             >
                                                 {defaultVehicleTypes.map((item: any) => (
+                                                    <MenuItem key={item.type} value={item.type}>
+                                                        {item.title}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={4}>
+                                <Controller
+                                    name="vehicleFuelType"
+                                    control={control}
+                                    rules={{ required: t("GarageServiceDialog.VehicleFuelType.Required") }}
+                                    render={({ field }) => (
+                                        <FormControl fullWidth size='small'>
+                                            <InputLabel htmlFor="select-title">{t("GarageServiceDialog.VehicleFuelType.Label")}</InputLabel>
+                                            <Select
+                                                {...field}
+                                                onChange={(event) => {
+                                                    field.onChange(event);
+                                                    handleTitleChange(event);
+                                                }}
+                                                labelId="service-fuel-type-label"
+                                                label={t("GarageServiceDialog.VehicleFuelType.Label")}
+                                                size="small"
+                                            >
+                                                {defaultVehicleFuelTypes.map((item: any) => (
                                                     <MenuItem key={item.type} value={item.type}>
                                                         {item.title}
                                                     </MenuItem>

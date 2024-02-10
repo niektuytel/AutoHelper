@@ -8,14 +8,16 @@ i18n.use(initReactI18next).init({
     resources: {
         en: {
             translations: require('./locales/en/translations.json'),
-            serviceTypes: require('./locales/en/serviceTypes.json')
+            serviceTypes: require('./locales/en/serviceTypes.json'),
+            serviceFuelTypes: require('./locales/en/serviceFuelTypes.json')
         },
         nl: {
             translations: require('./locales/nl/translations.json'),
-            serviceTypes: require('./locales/nl/serviceTypes.json')
+            serviceTypes: require('./locales/nl/serviceTypes.json'),
+            serviceFuelTypes: require('./locales/nl/serviceFuelTypes.json')
         }
     },
-    ns: ['translations', 'serviceTypes'],
+    ns: ['translations', 'serviceTypes', 'serviceFuelTypes'],
     defaultNS: 'translations'
 });
 
