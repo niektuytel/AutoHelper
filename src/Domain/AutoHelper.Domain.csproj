@@ -9,24 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Entities\Deprecated\**" />
-      <Compile Remove="Entities\Garages\_Unused\**" />
-      <Compile Remove="Events\**" />
-      <Compile Remove="Exceptions\**" />
-      <EmbeddedResource Remove="Entities\Deprecated\**" />
-      <EmbeddedResource Remove="Entities\Garages\_Unused\**" />
-      <EmbeddedResource Remove="Events\**" />
-      <EmbeddedResource Remove="Exceptions\**" />
-      <EntityDeploy Remove="Entities\Garages\_Unused\**" />
-      <EntityDeploy Remove="Events\**" />
-      <EntityDeploy Remove="Exceptions\**" />
-      <None Remove="Entities\Deprecated\**" />
-      <None Remove="Entities\Garages\_Unused\**" />
-      <None Remove="Events\**" />
-      <None Remove="Exceptions\**" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Remove="Entities\Garages\GarageBankingDetailsItem.cs" />
     </ItemGroup>
 

@@ -9,13 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Common\Security\**" />
-      <EmbeddedResource Remove="Common\Security\**" />
-      <EntityDeploy Remove="Common\Security\**" />
-      <None Remove="Common\Security\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.4.0" />
         <PackageReference Include="Hangfire.Core" Version="1.8.9" />
