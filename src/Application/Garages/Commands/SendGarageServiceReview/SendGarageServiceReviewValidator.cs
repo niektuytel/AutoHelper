@@ -1,15 +1,7 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageReviewNotifier;
 

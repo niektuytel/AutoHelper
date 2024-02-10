@@ -2283,8 +2283,8 @@ export class NotificationItemDto implements INotificationItemDto {
     jobId?: string;
     triggerDate?: Date;
     priority?: PriorityLevel;
-    generalType?: GeneralNotificationType;
-    vehicleType?: VehicleNotificationType;
+    generalType?: NotificationGeneralType;
+    vehicleType?: NotificationVehicleType;
     receiverContactType?: ContactType;
     receiverContactIdentifier?: string;
     vehicleLicensePlate?: string;
@@ -2339,8 +2339,8 @@ export interface INotificationItemDto {
     jobId?: string;
     triggerDate?: Date;
     priority?: PriorityLevel;
-    generalType?: GeneralNotificationType;
-    vehicleType?: VehicleNotificationType;
+    generalType?: NotificationGeneralType;
+    vehicleType?: NotificationVehicleType;
     receiverContactType?: ContactType;
     receiverContactIdentifier?: string;
     vehicleLicensePlate?: string;
@@ -2353,7 +2353,7 @@ export enum PriorityLevel {
     High = 3,
 }
 
-export enum GeneralNotificationType {
+export enum NotificationGeneralType {
     Other = 0,
     GarageServiceReviewReminder = 1,
     VehicleServiceReviewApproved = 2,
@@ -2361,7 +2361,7 @@ export enum GeneralNotificationType {
     VehicleServiceNotification = 4,
 }
 
-export enum VehicleNotificationType {
+export enum NotificationVehicleType {
     Other = 0,
     MOT = 1,
     WinterService = 2,

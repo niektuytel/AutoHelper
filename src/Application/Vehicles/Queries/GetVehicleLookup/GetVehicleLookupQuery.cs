@@ -1,6 +1,5 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
 using MediatR;
 

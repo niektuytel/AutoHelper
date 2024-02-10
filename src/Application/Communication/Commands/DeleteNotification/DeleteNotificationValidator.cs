@@ -1,5 +1,4 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 

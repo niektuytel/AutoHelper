@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+﻿using System.Text.RegularExpressions;
+using AutoHelper.Domain.Common.Enums;
 
 namespace AutoHelper.Application.Common.Extensions;
 

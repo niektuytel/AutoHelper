@@ -65,7 +65,7 @@ internal class Program
             .AddHealthChecks()
             .AddDbContextCheck<ApplicationDbContext>();
 
-        builder.AddHangfireServices();
+        builder.Services.AddHangfireServices(builder.Configuration, builder.Environment.IsDevelopment());
         builder.Services.AddMessagingServices(builder.Configuration);
         builder.Services.AddApplicationServices();
         builder.Services.AddInfrastructureServices(builder.Configuration);

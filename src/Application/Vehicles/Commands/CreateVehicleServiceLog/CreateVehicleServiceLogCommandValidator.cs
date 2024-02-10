@@ -1,15 +1,9 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
@@ -22,6 +16,7 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
     {
         _context = applicationDbContext;
         _mapper = mapper;
+        CascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.VehicleLicensePlate)
             .NotEmpty().WithMessage("Vehicle license plate is required.")
@@ -38,31 +33,10 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
             .MustAsync(BeValidAndExistingGarageService)
             .WithMessage("Invalid or non-existent garage service.");
 
-        RuleFor(x => x.Date)
-            .Must(ValidDate)
-            .WithMessage("Invalid date format.")
-            .DependentRules(() =>
-            {
-                RuleFor(x => x.ExpectedNextDate)
-                    .Must(ValidDate)
-                    .WithMessage("Invalid expected next date format.")
-                    .When(x => !string.IsNullOrEmpty(x.ExpectedNextDate))
-                    .DependentRules(() =>
-                    {
-                        RuleFor(x => x)
-                            .Must(x => BeLaterDate(x))
-                            .WithMessage("Expected next date must be later than the actual date.")
-                            .When(x => !string.IsNullOrEmpty(x.ExpectedNextDate));
-                    });
-            });
-
-        RuleFor(x => x.OdometerReading)
-            .GreaterThanOrEqualTo(0).WithMessage("Odometer reading must be non-negative.");
-
-        RuleFor(x => x.ExpectedNextOdometerReading)
-            .GreaterThanOrEqualTo(x => x.OdometerReading)
-            .WithMessage("Expected next odometer reading must be greater than or equal to the current odometer reading.")
-            .When(x => x.ExpectedNextOdometerReading.HasValue);
+        // Date & ExpectedNextDate
+        ValidateDate();
+        ValidateOdometerReadings();
+        ValidateExpectedNextDateAndOdometerReading();
 
         RuleFor(x => x.ReporterName)
             .NotEmpty().WithMessage("Created by is required.");
@@ -143,8 +117,78 @@ public class CreateVehicleServiceLogCommandValidator : AbstractValidator<CreateV
         return isValid;
     }
 
-    private bool BeLaterDate(CreateVehicleServiceLogCommand command)
+    private void ValidateDate()
     {
-        return command.ParsedExpectedNextDate > command.ParsedDate;
+        RuleFor(x => x.Date)
+            .Must(ValidDate).WithMessage("Invalid date format.");
+    }
+
+    private void ValidateOdometerReadings()
+    {
+        RuleFor(x => x.OdometerReading)
+            .GreaterThanOrEqualTo(0).WithMessage("Odometer reading must be non-negative.");
+
+        RuleFor(x => x.ExpectedNextOdometerReading)
+            .GreaterThanOrEqualTo(x => x.OdometerReading)
+            .WithMessage("Expected next odometer reading must be greater than or equal to the current odometer reading.")
+            .When(x => x.ExpectedNextOdometerReading.HasValue);
+    }
+
+    private void ValidateExpectedNextDateAndOdometerReading()
+    {
+        RuleFor(x => x)
+            .Custom(ValidateExpectedNextDate)
+            .Custom(ValidateExpectedNextOdometerReading)
+            .CustomAsync(ValidateOdometerReadingConsistency);
+    }
+
+    private bool ValidDate(string date, out DateTime parsedDate)
+    {
+        return DateTime.TryParse(date, out parsedDate);
+    }
+
+    private void ValidateExpectedNextDate(CreateVehicleServiceLogCommand command, ValidationContext<CreateVehicleServiceLogCommand> context)
+    {
+        if (!string.IsNullOrEmpty(command.ExpectedNextDate))
+        {
+            if (!ValidDate(command.ExpectedNextDate, out var parsedNextDate))
+            {
+                context.AddFailure("ExpectedNextDate", "Invalid expected next date format.");
+            }
+            else if (parsedNextDate < command.ParsedDate)
+            {
+                context.AddFailure("ExpectedNextDate", "Expected next date must be later than the actual date.");
+            }
+        }
+    }
+
+    private void ValidateExpectedNextOdometerReading(CreateVehicleServiceLogCommand command, ValidationContext<CreateVehicleServiceLogCommand> context)
+    {
+        if (command.ExpectedNextOdometerReading.HasValue && command.ExpectedNextOdometerReading < command.OdometerReading)
+        {
+            context.AddFailure("ExpectedNextOdometerReading", "Expected next odometer reading must be greater than current reading.");
+        }
+    }
+
+    private async Task ValidateOdometerReadingConsistency(CreateVehicleServiceLogCommand command, ValidationContext<CreateVehicleServiceLogCommand> context, CancellationToken cancellationToken)
+    {
+        if (command.OdometerReading != default)
+        {
+            var existingEntries = await _context.VehicleServiceLogs
+                .Where(vl => vl.VehicleLicensePlate == command.VehicleLicensePlate)
+                .ToListAsync(cancellationToken);
+
+            var largerOdoButSmalLerDate = existingEntries.Where(x => x.OdometerReading > command.OdometerReading && x.Date < command.ParsedDate);
+            if (largerOdoButSmalLerDate.Any())
+            {
+                context.AddFailure("OdometerReading", $"Er zijn hogere KM-standen bekend dan {command.OdometerReading} voor de datum {command.ParsedDate!.Value.ToShortDateString()}");
+            }
+
+            var smallerOdoButLargerDate = existingEntries.Where(x => x.OdometerReading < command.OdometerReading && x.Date > command.ParsedDate);
+            if (smallerOdoButLargerDate.Any())
+            {
+                context.AddFailure("OdometerReading", $"Er zijn lagere KM-standen bekend dan {command.OdometerReading} na de datum {command.ParsedDate!.Value.ToShortDateString()}");
+            }
+        }
     }
 }

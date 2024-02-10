@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 
 namespace AutoHelper.Messaging.Helpers;

@@ -1,20 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Models;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Hangfire.Shared.Interfaces;
-using AutoMapper;
-using Force.DeepCloner;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
@@ -54,7 +42,7 @@ public record SyncVehicleTimelinesCommand : IQueueRequest<Unit>
     public int BatchSize { get; init; }
 
     [JsonIgnore]
-    public IQueueService QueueingService { get; set; }
+    public IQueueContext QueueingService { get; set; }
 }
 
 public class UpsertVehicleTimelinesCommandHandler : IRequestHandler<SyncVehicleTimelinesCommand, Unit>

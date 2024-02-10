@@ -4,7 +4,7 @@ using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
 using AutoHelper.Application.Messages.Commands.DeleteNotification;
 using AutoHelper.Application.Messages.Commands.ReceiveMessage;
 using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using AutoHelper.Hangfire.Shared.MediatR;
+using AutoHelper.Hangfire.Extentions;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,13 +15,13 @@ namespace AutoHelper.WebUI.Controllers;
 public class CommunicationController : ApiControllerBase
 {
     const string VerifyToken = "Autohelper";
-    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IQueueService _queueService;
     private readonly IWhatsappResponseService _whatsappResponseService;
     private readonly ILogger<CommunicationController> _logger;
 
-    public CommunicationController(IBackgroundJobClient backgroundJobClient, IWhatsappResponseService whatsappResponseService, ILogger<CommunicationController> logger)
+    public CommunicationController(IQueueService queueService, IWhatsappResponseService whatsappResponseService, ILogger<CommunicationController> logger)
     {
-        _backgroundJobClient = backgroundJobClient;
+        _queueService = queueService;
         _whatsappResponseService = whatsappResponseService;
         _logger = logger;
     }
@@ -36,7 +36,7 @@ public class CommunicationController : ApiControllerBase
 
         var queue = nameof(SendConversationMessageCommand);
         var messageCommand = new SendConversationMessageCommand(conversationMessage);
-        Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
+        _queueService.Enqueue(queue, messageCommand.Title, messageCommand);
 
         return $"Conversation-ID: {conversationMessage.ConversationId}";
     }
@@ -109,7 +109,7 @@ public class CommunicationController : ApiControllerBase
 
                 var queue = nameof(SendConversationMessageCommand);
                 var messageCommand = new SendConversationMessageCommand(conversationMessage);
-                Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
+                _queueService.Enqueue(queue, messageCommand.Title, messageCommand);
             }
             catch (Exception ex)
             {
@@ -149,7 +149,7 @@ public class CommunicationController : ApiControllerBase
 
             var queue = nameof(SendConversationMessageCommand);
             var messageCommand = new SendConversationMessageCommand(message.Id);
-            Mediator.Enqueue(_backgroundJobClient, queue, messageCommand.Title, messageCommand);
+            _queueService.Enqueue(queue, messageCommand.Title, messageCommand);
         }
 
         return $"Conversation-IDs: [{string.Join(", ", conversationIds)}]";

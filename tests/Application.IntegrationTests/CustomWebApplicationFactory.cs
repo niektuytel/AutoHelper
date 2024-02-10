@@ -1,5 +1,4 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Infrastructure.Common.Interfaces;
 using AutoHelper.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

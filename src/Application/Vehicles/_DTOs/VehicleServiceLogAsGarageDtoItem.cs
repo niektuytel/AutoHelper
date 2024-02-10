@@ -1,14 +1,11 @@
-﻿using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
+﻿using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 
-public class VehicleServiceLogAsGarageDtoItem: IMapFrom<VehicleServiceLogItem>
+public class VehicleServiceLogAsGarageDtoItem : IMapFrom<VehicleServiceLogItem>
 {
     public Guid Id { get; set; }
     public string VehicleLicensePlate { get; set; }

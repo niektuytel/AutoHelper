@@ -1,9 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
-using AutoHelper.Domain.Entities.Messages.Enums;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Vehicles;
 using MediatR;
 
@@ -32,14 +29,14 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
     {
         var now = DateTime.UtcNow;
         var triggerDate = now.AddYears(1);
-        var notificationType = VehicleNotificationType.Other;
+        var notificationType = NotificationVehicleType.Other;
 
         // MOT Expiry
         var motTriggerDate = GetMOTTriggerDate(request.Vehicle!);
         if (motTriggerDate > now && motTriggerDate < triggerDate)
         {
             triggerDate = motTriggerDate;
-            notificationType = VehicleNotificationType.MOT;
+            notificationType = NotificationVehicleType.MOT;
         }
 
         // Service Logs, oil change on each 10.000 km/1 year after winter
@@ -47,7 +44,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (winterServiceTriggerDate > now && winterServiceTriggerDate < triggerDate)
         {
             triggerDate = winterServiceTriggerDate;
-            notificationType = VehicleNotificationType.WinterService;
+            notificationType = NotificationVehicleType.WinterService;
         }
 
         // Prepare tyres for the summer
@@ -55,7 +52,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (summerTyreChangeTriggerDate > now && summerTyreChangeTriggerDate < triggerDate)
         {
             triggerDate = summerTyreChangeTriggerDate;
-            notificationType = VehicleNotificationType.ChangeToSummerTyre;
+            notificationType = NotificationVehicleType.ChangeToSummerTyre;
         }
 
         // Prepare for going on holiday
@@ -63,7 +60,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (summerCheckTriggerDate > now && summerCheckTriggerDate < triggerDate)
         {
             triggerDate = summerCheckTriggerDate;
-            notificationType = VehicleNotificationType.SummerCheck;
+            notificationType = NotificationVehicleType.SummerCheck;
         }
 
         // Prepare tyres for the winter
@@ -71,7 +68,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (winterTyreChangeTriggerDate > now && winterTyreChangeTriggerDate < triggerDate)
         {
             triggerDate = winterTyreChangeTriggerDate;
-            notificationType = VehicleNotificationType.ChangeToWinterTyre;
+            notificationType = NotificationVehicleType.ChangeToWinterTyre;
         }
 
         // Service Logs, oil change on each 10.000 km/1 year after summer
@@ -79,7 +76,7 @@ public class GetVehicleNextNotificationQueryHandler : IRequestHandler<GetVehicle
         if (summerServiceTriggerDate > now && summerServiceTriggerDate < triggerDate)
         {
             triggerDate = summerServiceTriggerDate;
-            notificationType = VehicleNotificationType.SummerService;
+            notificationType = NotificationVehicleType.SummerService;
         }
 
         var entity = new VehicleNextNotificationItem

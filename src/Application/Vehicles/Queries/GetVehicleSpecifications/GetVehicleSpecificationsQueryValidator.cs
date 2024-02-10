@@ -1,5 +1,4 @@
-﻿using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 

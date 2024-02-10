@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace AutoHelper.Application.Garages._DTOs;
+﻿namespace AutoHelper.Application.Garages._DTOs;
 
 public class GarageLocationDtoItem
 {

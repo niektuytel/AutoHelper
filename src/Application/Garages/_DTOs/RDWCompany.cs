@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using Newtonsoft.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Application.Garages._DTOs;
 

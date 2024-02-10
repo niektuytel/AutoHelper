@@ -1,32 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.IO;
-using System.Text.Json;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Extensions;
+﻿using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Infrastructure.Common.Extentions;
-using AutoHelper.Infrastructure.Common.Models.NewFolder;
-using Azure;
-using Azure.Core;
-using GoogleApi.Entities.Interfaces;
-using GoogleApi.Entities.Maps.Geocoding;
-using GoogleApi.Entities.Search.Common;
-using GoogleApi.Entities.Search.Video.Common;
-using HtmlAgilityPack;
-using MediatR;
-using Microsoft.Extensions.Configuration;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
-using Newtonsoft.Json.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Infrastructure.Services;
 
@@ -34,17 +12,18 @@ internal class GarageService : IGarageService
 {
     private readonly IApplicationDbContext _context;
     private readonly IBlobStorageService _blobStorageService;
-    private readonly WebScraperClient _webScraperClient;
-    private readonly GoogleApiClient _googleApiClient;
-    private readonly RDWApiClient _rdwService;
+    private readonly IWebScraperClient _webScraperClient;
+    private readonly IGoogleApiClient _googleApiClient;
+    private readonly IRDWApiClient _rdwService;
 
     public GarageService(
         IApplicationDbContext context,
         IBlobStorageService blobStorageService,
-        WebScraperClient webScraperClient,
-        GoogleApiClient googleApiClient,
-        RDWApiClient rdwService
-    ) {
+        IWebScraperClient webScraperClient,
+        IGoogleApiClient googleApiClient,
+        IRDWApiClient rdwService
+    )
+    {
         _context = context;
         _blobStorageService = blobStorageService;
         _webScraperClient = webScraperClient;
@@ -86,7 +65,7 @@ internal class GarageService : IGarageService
 
         return (null, null);
     }
-    
+
     private bool IsGarageUpdateRequired(RDWCompany company, GarageLookupItem garage)
     {
         if (garage == null || garage.GarageId != null)
@@ -153,10 +132,10 @@ internal class GarageService : IGarageService
     public async Task<(
         List<GarageLookupServiceItem> itemsToInsert,
         List<GarageLookupServiceItem> itemsToRemove
-    )>  
+    )>
     UpsertLookupServices(
-        IEnumerable<GarageLookupServiceItem>? garageServices, 
-        IEnumerable<GarageLookupServiceItem> rdwServices, 
+        IEnumerable<GarageLookupServiceItem>? garageServices,
+        IEnumerable<GarageLookupServiceItem> rdwServices,
         string garageIdentifier
     )
     {
@@ -201,13 +180,12 @@ internal class GarageService : IGarageService
         }
 
         // Get details from the given place id
-        var placeDetailsJson = await _googleApiClient.GetPlaceDetailsFromPlaceId(placeId);
-        if (placeDetailsJson == null)
+        var details = await _googleApiClient.GetPlaceDetailsFromPlaceId(placeId);
+        if (details == null)
         {
             return null;
         }
 
-        var details = JsonSerializer.Deserialize<GoogleApiDetailPlaceItem>(placeDetailsJson)!;
         if (details?.result?.business_status?.ToUpper() != "OPERATIONAL")
         {
             return null;
@@ -223,7 +201,7 @@ internal class GarageService : IGarageService
                 item.Image = await _blobStorageService.UploadGarageImageAsync(fileBytes, fileExtension, CancellationToken.None);
 
                 // Create and upload thumbnail image
-                var thumbnailBytes = CreateThumbnail(fileBytes, 150);
+                var thumbnailBytes = _googleApiClient.CreateThumbnail(fileBytes, 150);
                 item.ImageThumbnail = await _blobStorageService.UploadGarageImageAsync(thumbnailBytes, fileExtension, CancellationToken.None);
             }
         }
@@ -244,18 +222,6 @@ internal class GarageService : IGarageService
         item.UserRatingsTotal = details.result.user_ratings_total;
 
         return item;
-    }
-
-    private static byte[] CreateThumbnail(byte[] originalImage, int thumbnailHeight)
-    {
-        using var image = Image.Load(originalImage);
-        // Calculate the new width while maintaining the aspect ratio
-        int newWidth = (int)((double)image.Width / ((double)image.Height / (double)thumbnailHeight));
-
-        image.Mutate(x => x.Resize(newWidth, thumbnailHeight));
-        using var memoryStream = new MemoryStream();
-        image.SaveAsJpeg(memoryStream);
-        return memoryStream.ToArray();
     }
 
     private async Task<GarageLookupItem> SetInformationFromWebScraper(GarageLookupItem item)

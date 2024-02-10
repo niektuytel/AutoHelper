@@ -1,5 +1,4 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -47,10 +46,10 @@ public class CreateGarageServiceCommandValidator : AbstractValidator<CreateGarag
             return false;
         }
 
-        var foundSome = await _context.GarageServices.AnyAsync(x => 
-            x.GarageId == request.Garage!.Id && 
-            x.Type == type && 
-            x.VehicleType == request.VehicleType && 
+        var foundSome = await _context.GarageServices.AnyAsync(x =>
+            x.GarageId == request.Garage!.Id &&
+            x.Type == type &&
+            x.VehicleType == request.VehicleType &&
             x.Title == request.Title
             , cancellationToken
         );

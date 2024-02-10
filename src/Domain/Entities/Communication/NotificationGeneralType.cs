@@ -1,6 +1,6 @@
-﻿namespace AutoHelper.Domain.Entities.Messages.Enums;
+﻿namespace AutoHelper.Domain.Entities.Communication;
 
-public enum GeneralNotificationType
+public enum NotificationGeneralType
 {
     Other = 0,
     GarageServiceReviewReminder = 1,

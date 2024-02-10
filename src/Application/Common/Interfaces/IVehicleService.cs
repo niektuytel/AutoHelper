@@ -1,9 +1,6 @@
 ﻿using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Application.Common.Interfaces;
 

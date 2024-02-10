@@ -1,12 +1,5 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace AutoHelper.Infrastructure.Services;

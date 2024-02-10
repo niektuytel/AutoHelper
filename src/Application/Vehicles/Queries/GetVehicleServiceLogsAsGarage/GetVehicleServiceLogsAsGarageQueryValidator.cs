@@ -1,8 +1,5 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Queries.GetGarageOverview;
-using AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;

@@ -1,72 +1,69 @@
-﻿using Hangfire;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using System.Linq.Expressions;
-using AutoHelper.Application.Common.Interfaces;
-using Hangfire.Server;
+﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Hangfire.Extentions;
+using Hangfire;
 using Hangfire.Console;
 using Hangfire.Console.Progress;
-using System;
-using AutoHelper.Hangfire.Shared.Interfaces;
+using Hangfire.Server;
+using MediatR;
 
 namespace AutoHelper.Hangfire.Services;
 
 internal class HangfireJobService : IQueueService
 {
-    private PerformContext? _context;
-    private IProgressBar? _progress = null;
+    private readonly IBackgroundJobClient _client;
 
-    public HangfireJobService()
+    public HangfireJobService(IBackgroundJobClient client)
     {
+        _client = client;
     }
 
-    public void Initialize(PerformContext context)
+    /// <param name="isRecursive">Enqueue response until repsonse is not MediatR.IBaseRequest</param>
+    public void Enqueue(string queue, string title, IQueueRequest request, bool isRecursive = false)
     {
-        _context = context;
-    }
-
-    public void LogInformation(string value, bool asProgress = false)
-    {
-        if (_context == null) throw new InvalidOperationException("PerformContext not initialized.");
-        if(asProgress)
+        queue = queue.ToLower();
+        if (isRecursive)
         {
-            _context.WriteProgressBar(value);
+            _client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(null, queue, title, request, CancellationToken.None));
         }
         else
         {
-            _context.WriteLine(value);
+            _client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(null, queue, title, request, CancellationToken.None));
         }
     }
 
-    public void LogWarning(string value)
+    /// <param name="isRecursive">Enqueue response until repsonse is not MediatR.IBaseRequest</param>
+    public void Enqueue<T>(string queue, string title, IQueueRequest<T> request, bool isRecursive = false)
     {
-        if (_context == null) throw new InvalidOperationException("PerformContext not initialized.");
-
-        _context.SetTextColor(ConsoleTextColor.Yellow);
-        _context.WriteLine(value);
-        _context.ResetTextColor();
-    }
-
-    public void LogError(string value)
-    {
-        if (_context == null) throw new InvalidOperationException("PerformContext not initialized.");
-
-        _context.SetTextColor(ConsoleTextColor.Red);
-        _context.WriteLine(value);
-        _context.ResetTextColor();
-    }
-
-    public void LogProgress(int procentage, bool useNewInstance = false)
-    {
-        if (_context == null) throw new InvalidOperationException("PerformContext not initialized.");
-
-        if (useNewInstance || _progress == null)
+        queue = queue.ToLower();
+        if (isRecursive)
         {
-            _progress = _context.WriteProgressBar();
-        }
+            _client.Enqueue<MediatorHangfireBridge>(bridge => bridge.SendMany(null, queue, title, request, CancellationToken.None));
 
-        _progress.SetValue(procentage);
+        }
+        else
+        {
+            _client.Enqueue<MediatorHangfireBridge>(bridge => bridge.Send(null, queue, title, request, CancellationToken.None));
+        }
     }
 
+    public string ScheduleJob<T>(string queue, string title, IQueueRequest<T> request, DateTimeOffset dateTime)
+    {
+#if DEBUG
+        dateTime = DateTime.Now.AddSeconds(10);
+#endif
+
+        queue = queue.ToLower();
+        var jobId = _client.Schedule<MediatorHangfireBridge>(queue, bridge => bridge.Send(null, queue, title, request, CancellationToken.None), dateTime);
+        return jobId;
+    }
+
+    public void StartRecurringJob<T>(string jobId, IRequest<T> request, string cron)
+    {
+        RecurringJob.AddOrUpdate<MediatorHangfireBridge>(jobId, bridge => bridge.Send(request, CancellationToken.None), cron);
+    }
+
+    public void DeleteJob(string jobId)
+    {
+        _client.Delete(jobId);
+    }
 }

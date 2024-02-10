@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

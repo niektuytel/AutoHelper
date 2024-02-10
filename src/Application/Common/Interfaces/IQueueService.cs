@@ -1,13 +1,10 @@
-﻿using System.Linq.Expressions;
-using Hangfire.Server;
-
-namespace AutoHelper.Application.Common.Interfaces;
+﻿namespace AutoHelper.Application.Common.Interfaces;
 
 public interface IQueueService
 {
-    void Initialize(PerformContext context);
-    void LogInformation(string value, bool inProgressBar = false);
-    void LogWarning(string value);
-    void LogError(string value);
-    void LogProgress(int procentage, bool useNewInstance = false);
+    void DeleteJob(string jobId);
+    void Enqueue(string queue, string title, IQueueRequest request, bool isRecursive = false);
+    void Enqueue<T>(string queue, string title, IQueueRequest<T> request, bool isRecursive = false);
+    string ScheduleJob<T>(string queue, string title, IQueueRequest<T> request, DateTimeOffset dateTime);
+    void StartRecurringJob<T>(string jobId, MediatR.IRequest<T> request, string cron);
 }

@@ -1,10 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Domain.Entities.Garages;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.Index.HPRtree;
-using MediatR;
+﻿using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 
 namespace AutoHelper.Application.Garages._DTOs;

@@ -1,4 +1,4 @@
-﻿namespace AutoHelper.Domain.Enums;
+﻿namespace AutoHelper.Domain.Common.Enums;
 
 public enum PriorityLevel
 {

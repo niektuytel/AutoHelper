@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using AutoHelper.Domain.Entities.Vehicles;
+﻿using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 
 namespace AutoHelper.Application.Garages._DTOs;

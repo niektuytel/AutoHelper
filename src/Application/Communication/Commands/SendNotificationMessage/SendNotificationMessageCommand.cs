@@ -1,34 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Conversations.Enums;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoMapper;
-using MediatR;
-using AutoHelper.Application.Messages._DTOs;
-using Hangfire;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using System.Text.Json.Serialization;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using AutoHelper.Domain.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using AutoHelper.WebUI.Controllers;
-using AutoHelper.Hangfire.Shared.Interfaces;
-using AutoHelper.Hangfire.Shared.MediatR;
 using AutoHelper.Application.Messages.Commands.DeleteNotification;
-using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleNextNotification;
-using System.Threading;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
+using AutoHelper.Domain.Entities.Messages;
+using MediatR;
 
 namespace AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 
@@ -45,31 +22,32 @@ public record SendNotificationMessageCommand : IQueueRequest<Unit>
     public NotificationItem? Notification { get; set; } = null;
 
     [JsonIgnore]
-    public IQueueService QueueingService { get; set; } = null!;
+    public IQueueContext QueueingService { get; set; } = null!;
 }
 
 public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotificationMessageCommand, Unit>
 {
     private readonly IWhatsappTemplateService _whatsappService;
     private readonly IMailingService _mailingService;
-    private readonly IBackgroundJobClient _backgroundJobClient;
     private readonly IApplicationDbContext _context;
     private readonly ISender _sender;
+    private readonly IQueueService _queueService;
     private readonly IVehicleService _vehicleService;
 
     public SendNotificationMessageCommandHandler(
-        IWhatsappTemplateService whatsappService, 
-        IMailingService mailingService, 
-        IBackgroundJobClient backgroundJobClient, 
-        IApplicationDbContext context, 
+        IWhatsappTemplateService whatsappService,
+        IMailingService mailingService,
+        IApplicationDbContext context,
         ISender sender,
+        IQueueService queueService,
         IVehicleService vehicleService
-    ) {
+    )
+    {
         _whatsappService = whatsappService;
         _mailingService = mailingService;
-        _backgroundJobClient = backgroundJobClient;
         _context = context;
         _sender = sender;
+        _queueService = queueService;
         _vehicleService = vehicleService;
     }
 
@@ -110,7 +88,7 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
     private async Task<NotificationItem?> HandleNextNotification(NotificationItem notification, CancellationToken cancellationToken)
     {
         // check if notification needs to continue
-        if (notification.GeneralType != GeneralNotificationType.VehicleServiceNotification)
+        if (notification.GeneralType != NotificationGeneralType.VehicleServiceNotification)
         {
             var deleteNotificationCommand = new DeleteNotificationCommand(notification.Id);
             _ = await _sender.Send(deleteNotificationCommand);
@@ -128,8 +106,8 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
         // schedule notification
         var queue = nameof(SendNotificationMessageCommand);
         var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
-        var title = $"{notification.VehicleLicensePlate}_{GeneralNotificationType.VehicleServiceNotification.ToString()}";
-        var jobId = _sender.ScheduleJob(_backgroundJobClient, queue, title, schuduleCommand, nextNotifier.TriggerDate);
+        var title = $"{notification.VehicleLicensePlate}_{NotificationGeneralType.VehicleServiceNotification.ToString()}";
+        var jobId = _queueService.ScheduleJob(queue, title, schuduleCommand, nextNotifier.TriggerDate);
 
         // update notification
         notification.TriggerDate = nextNotifier.TriggerDate;

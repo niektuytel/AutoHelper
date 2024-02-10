@@ -1,15 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+﻿using AutoHelper.Application.Common.Mappings;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Domain.Enums;
 using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace AutoHelper.WebUI.Controllers;
 
@@ -23,9 +16,9 @@ public class NotificationItemDto : IMapFrom<NotificationItem>
 
     public PriorityLevel Priority { get; set; }
 
-    public GeneralNotificationType GeneralType { get; set; }
+    public NotificationGeneralType GeneralType { get; set; }
 
-    public VehicleNotificationType VehicleType { get; set; }
+    public NotificationVehicleType VehicleType { get; set; }
 
     public ContactType ReceiverContactType { get; set; }
 

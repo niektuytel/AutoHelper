@@ -1,53 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Hangfire.Dashboard;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
+﻿using Hangfire.Dashboard;
 
 namespace AutoHelper.Hangfire;
 
 public class HangfireDashboardAuthFilter : IDashboardAuthorizationFilter
 {
-    private readonly IHostEnvironment _env;
-    private const string RequiredUsername = "User1";
-    private const string RequiredPassword = "Autohelper123!";
+    private const string RequiredUsername = "Admin";
+    private const string RequiredPassword = "Auto1337!";
+    private readonly bool _inDevelopment;
 
-    public HangfireDashboardAuthFilter(IHostEnvironment env)
+    public HangfireDashboardAuthFilter(bool inDevelopment)
     {
-        _env = env;
+        _inDevelopment = inDevelopment;
     }
 
     public bool Authorize(DashboardContext context)
     {
-        return true;
+        // Skip authorization if environment is Development
+        if (_inDevelopment)
+        {
+            return true;
+        }
 
-        //// Skip authorization if environment is Development
-        //if (_env.IsDevelopment())
-        //{
-        //    return true;
-        //}
+        var httpContext = context.GetHttpContext();
 
-        //var httpContext = context.GetHttpContext();
-        //string authHeader = httpContext.Request.Headers["Authorization"];
-        //var user = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //if (string.IsNullOrWhiteSpace(authHeader) || !authHeader.StartsWith("Basic "))
-        //{
-        //    return false;
-        //}
+        // Try to get the username and password from the request
+        string authHeader = httpContext.Request.Headers["Authorization"];
+        if (string.IsNullOrWhiteSpace(authHeader))
+        {
+            return false;
+        }
 
-        //string encodedUsernamePassword = authHeader.Substring("Basic ".Length).Trim();
-        //var encoding = Encoding.GetEncoding("iso-8859-1");
-        //string usernamePassword = encoding.GetString(Convert.FromBase64String(encodedUsernamePassword));
+        var credentials = GetCredentials(authHeader);
+        if (credentials == null)
+        {
+            return false;
+        }
 
-        //int separatorIndex = usernamePassword.IndexOf(':');
+        // Check if the username and password match
+        return credentials.Item1 == RequiredUsername && credentials.Item2 == RequiredPassword;
+    }
 
-        //var username = usernamePassword.Substring(0, separatorIndex);
-        //var password = usernamePassword.Substring(separatorIndex + 1);
+    private Tuple<string, string> GetCredentials(string authHeader)
+    {
+        if (!authHeader.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
 
-        //return username == RequiredUsername && password == RequiredPassword;
+        string encodedCredentials = authHeader.Substring("Basic ".Length).Trim();
+        string decodedCredentials;
+
+        try
+        {
+            decodedCredentials = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encodedCredentials));
+        }
+        catch
+        {
+            return null;
+        }
+
+        var parts = decodedCredentials.Split(':');
+        if (parts.Length != 2)
+        {
+            return null;
+        }
+
+        return new Tuple<string, string>(parts[0], parts[1]);
     }
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+﻿using AutoHelper.Application.Common.Interfaces;
+
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Messages.Commands.SendConversationMessage;

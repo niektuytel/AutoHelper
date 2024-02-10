@@ -1,8 +1,4 @@
-﻿using System.Security.Claims;
-
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Infrastructure.Common.Interfaces;
-using Microsoft.AspNetCore.Identity;
+﻿using AutoHelper.Application.Common.Interfaces;
 
 namespace AutoHelper.Hangfire.Dashboard;
 

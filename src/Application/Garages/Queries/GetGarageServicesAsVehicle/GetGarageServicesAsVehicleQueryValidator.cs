@@ -1,11 +1,8 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Commands.CreateGarageServiceItem;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;

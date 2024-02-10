@@ -6,7 +6,7 @@ public enum GarageServiceType
     /// Some other service type
     /// </summary>
     Other = 0,
-              
+
     /// <summary>
     /// Maintenance, onderhoud used for example for oil change
     /// </summary>

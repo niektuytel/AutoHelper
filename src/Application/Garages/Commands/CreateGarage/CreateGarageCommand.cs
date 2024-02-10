@@ -1,18 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.Index.HPRtree;
 using NetTopologySuite;
+using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Application.Garages.Commands.CreateGarageItem;
 
@@ -33,7 +26,7 @@ public record CreateGarageCommand : IRequest<GarageSettingsDtoItem>
 
     public string? PhoneNumber { get; set; }
 
-    public string? WhatsappNumber { get; set; } 
+    public string? WhatsappNumber { get; set; }
 
     public string? EmailAddress { get; set; }
 
@@ -87,7 +80,7 @@ public class CreateGarageItemCommandHandler : IRequestHandler<CreateGarageComman
         await _context.SaveChangesAsync(cancellationToken);
 
         // Insert all lookup services
-        if(request.GarageLookup.Services?.Any() == true)
+        if (request.GarageLookup.Services?.Any() == true)
         {
             foreach (var lookupService in request.GarageLookup.Services)
             {

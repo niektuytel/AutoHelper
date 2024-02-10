@@ -1,8 +1,7 @@
-﻿using FluentValidation;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles.Commands.DeleteVehicleServiceLogAsGarage;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 
 public class DeleteVehicleServiceLogAsGarageCommandValidator : AbstractValidator<DeleteVehicleServiceLogAsGarageCommand>
 {
@@ -38,8 +37,8 @@ public class DeleteVehicleServiceLogAsGarageCommandValidator : AbstractValidator
     private async Task<bool> BeValidAndExistingServiceLog(DeleteVehicleServiceLogAsGarageCommand command, Guid logId, CancellationToken cancellationToken)
     {
         var entity = await _context.VehicleServiceLogs
-            .FirstOrDefaultAsync(x => 
-                x.GarageLookupIdentifier == command.Garage.GarageLookupIdentifier && x.Id == logId, 
+            .FirstOrDefaultAsync(x =>
+                x.GarageLookupIdentifier == command.Garage.GarageLookupIdentifier && x.Id == logId,
                 cancellationToken
             );
 

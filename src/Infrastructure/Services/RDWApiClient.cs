@@ -1,20 +1,15 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using AutoHelper.Application.Common.Interfaces;
+﻿using System.Net;
 using AutoHelper.Application.Garages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Infrastructure.Common.Extentions;
-using Azure;
-using GoogleApi.Entities.Interfaces;
+using AutoHelper.Domain.Extentions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal partial class RDWApiClient
+internal partial class RDWApiClient : IRDWApiClient
 {
     private readonly HttpClient _httpClient;
 
@@ -77,7 +72,7 @@ internal partial class RDWApiClient
         return JArray.Parse(json)?.First();
     }
 
-    internal VehicleInfoSectionItem GetFiscalData(JToken data)
+    public VehicleInfoSectionItem GetFiscalData(JToken data)
     {
         return new VehicleInfoSectionItem("Fiscaal")
         {
@@ -88,7 +83,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetShaftsData(JArray? shafts)
+    public VehicleInfoSectionItem GetShaftsData(JArray? shafts)
     {
         if (shafts == null)
         {
@@ -118,7 +113,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetCharacteristicsData(JToken data)
+    public VehicleInfoSectionItem GetCharacteristicsData(JToken data)
     {
         return new VehicleInfoSectionItem("Eigenschappen")
         {
@@ -134,7 +129,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetEmissions(JToken fuelInfo)
+    public VehicleInfoSectionItem GetEmissions(JToken fuelInfo)
     {
         if (!fuelInfo.HasValues)
             return null;  // or you could throw an exception or handle it some other way depending on your needs.
@@ -158,7 +153,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetEnvironmentalPerformance(JToken fuelInfo)
+    public VehicleInfoSectionItem GetEnvironmentalPerformance(JToken fuelInfo)
     {
         if (fuelInfo?.HasValues != true)
             return null;  // or you could throw an exception or handle it some other way depending on your needs.
@@ -193,7 +188,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetMotorData(JToken data)
+    public VehicleInfoSectionItem GetMotorData(JToken data)
     {
         return new VehicleInfoSectionItem("Moter")
         {
@@ -207,7 +202,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetRecallData(JToken data)
+    public VehicleInfoSectionItem GetRecallData(JToken data)
     {
         // Adjust based on the possible values in the dataset
         string terugroepactieStatus = data.GetSafeValue("openstaande_terugroepactie_indicator") == "Nee"
@@ -223,7 +218,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetVehicleStatus(JToken data)
+    public VehicleInfoSectionItem GetVehicleStatus(JToken data)
     {
         return new VehicleInfoSectionItem("Status van het voertuig")
         {
@@ -240,7 +235,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetCounterReadings(JToken data)
+    public VehicleInfoSectionItem GetCounterReadings(JToken data)
     {
         return new VehicleInfoSectionItem("Tellerstanden")
         {
@@ -253,7 +248,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetWeightsData(JToken data)
+    public VehicleInfoSectionItem GetWeightsData(JToken data)
     {
         return new VehicleInfoSectionItem("Gewichten")
         {
@@ -270,7 +265,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetExpirationDatesAndHistory(JToken data)
+    public VehicleInfoSectionItem GetExpirationDatesAndHistory(JToken data)
     {
         return new VehicleInfoSectionItem("Vervaldata en historie")
         {
@@ -289,7 +284,7 @@ internal partial class RDWApiClient
         };
     }
 
-    internal VehicleInfoSectionItem GetGeneralData(JToken data)
+    public VehicleInfoSectionItem GetGeneralData(JToken data)
     {
         return new VehicleInfoSectionItem("Algemeen")
         {
@@ -353,7 +348,7 @@ internal partial class RDWApiClient
 
         do
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset*limit}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}?$limit={limit}&$offset={offset * limit}");
             request.Headers.Add("X-App-Token", "OKPXTphw9Jujrm9kFGTqrTg3x");
             request.Headers.Add("Accept", "application/json");
             var response = await _httpClient.SendAsync(request);
@@ -448,7 +443,7 @@ internal partial class RDWApiClient
     private static List<GarageLookupServiceItem> CreateServiceItems(string rdwErkenning)
     {
         var items = new List<GarageLookupServiceItem>();
-        switch(rdwErkenning)
+        switch (rdwErkenning)
         {
             case "Demontage":
                 items.Add(new GarageLookupServiceItem()
@@ -497,7 +492,7 @@ internal partial class RDWApiClient
                     ExpectedNextOdometerReadingIsRequired = true
                 });
                 break;
-                
+
             case "APK Zware voertuigen":
                 items.Add(new GarageLookupServiceItem()
                 {
@@ -566,7 +561,7 @@ internal partial class RDWApiClient
                 });
                 break;
 
-            case "Boordcomputertaxi" :
+            case "Boordcomputertaxi":
                 items.Add(new GarageLookupServiceItem()
                 {
                     Type = GarageServiceType.Inspection,
@@ -584,7 +579,7 @@ internal partial class RDWApiClient
     /// https://opendata.rdw.nl/resource/hx2c-gt7k.json
     /// </summary>
     /// <exception cref="Exception">When issue on api http call</exception>
-    internal async Task<IEnumerable<VehicleDetectedDefectDescriptionDtoItem>> GetDetectedDefectDescriptions()
+    public async Task<IEnumerable<VehicleDetectedDefectDescriptionDtoItem>> GetDetectedDefectDescriptions()
     {
         var url = $"https://opendata.rdw.nl/resource/hx2c-gt7k.json";
         var request = new HttpRequestMessage(HttpMethod.Get, $"{url}");
@@ -665,7 +660,7 @@ internal partial class RDWApiClient
     /// <summary>
     /// https://opendata.rdw.nl/resource/m9d7-ebf2.json
     /// </summary>
-    internal async Task<int> GetVehicleBasicsWithMOTRequirementCount()
+    public async Task<int> GetVehicleBasicsWithMOTRequirementCount()
     {
         // Define the categories that require MOT.
         string[] apkRequiredCategories = { "M1", "M2", "M3", "N1", "N2", "N3", "O1", "O2", "O3", "O4", "L5", "L7" };
@@ -713,7 +708,7 @@ internal partial class RDWApiClient
     /// <summary>
     /// https://opendata.rdw.nl/resource/a34c-vvps.json?$where=(kenteken='RV231P'%20OR%20kenteken='87GRN6')
     /// </summary>
-    internal async Task<IEnumerable<VehicleDetectedDefectDtoItem>> GetVehicleDetectedDefects(List<string> licensePlates, int offset, int limit)
+    public async Task<IEnumerable<VehicleDetectedDefectDtoItem>> GetVehicleDetectedDefects(List<string> licensePlates, int offset, int limit)
     {
         var url = $"https://opendata.rdw.nl/resource/a34c-vvps.json";
         var query = string.Join(" OR ", licensePlates.Select(licensePlate => $"kenteken='{licensePlate}'"));
@@ -735,7 +730,7 @@ internal partial class RDWApiClient
     /// https://opendata.rdw.nl/resource/sgfe-77wx.json?$where=(kenteken='RV231P'%20OR%20kenteken='87GRN6')
     /// </summary>
     /// <exception cref="Exception">When issue on api http call</exception>
-    internal async Task<IEnumerable<VehicleInspectionNotificationDtoItem>> GetVehicleInspectionNotifications(List<string> licensePlates, int offset, int limit)
+    public async Task<IEnumerable<VehicleInspectionNotificationDtoItem>> GetVehicleInspectionNotifications(List<string> licensePlates, int offset, int limit)
     {
         var url = $"https://opendata.rdw.nl/resource/sgfe-77wx.json";
         var query = string.Join(" OR ", licensePlates.Select(licensePlate => $"kenteken='{licensePlate}'"));
@@ -756,7 +751,7 @@ internal partial class RDWApiClient
     /// <summary>
     /// https://opendata.rdw.nl/resource/5k74-3jha.json
     /// </summary>
-    internal async Task<IEnumerable<RDWCompany>> GetAllCompanies(int offset, int limit, bool includeFiltering = true)
+    public async Task<IEnumerable<RDWCompany>> GetAllCompanies(int offset, int limit, bool includeFiltering = true)
     {
         var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json?$limit={limit}&$offset={offset * limit}";
         if (includeFiltering)
@@ -780,7 +775,7 @@ internal partial class RDWApiClient
     /// <summary>
     /// https://opendata.rdw.nl/resource/5k74-3jha.json
     /// </summary>
-    internal async Task<int> GetAllCompaniesCount(bool includeFiltering = true)
+    public async Task<int> GetAllCompaniesCount(bool includeFiltering = true)
     {
         var url = $"https://opendata.rdw.nl/resource/5k74-3jha.json?$select=count(*)";
         if (includeFiltering)

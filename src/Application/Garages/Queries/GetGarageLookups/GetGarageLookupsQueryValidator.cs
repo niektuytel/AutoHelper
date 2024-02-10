@@ -1,6 +1,5 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 using AutoHelper.Application.Vehicles._DTOs;
 using FluentValidation;
 

@@ -1,36 +1,30 @@
-﻿using System.Globalization;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Vehicles.Commands;
+using AutoHelper.Application.Messages.Commands.SendConversationMessage;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
+using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
 using Hangfire.Console;
-using Hangfire.Logging;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
-using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
-using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using AutoHelper.Hangfire.Shared.Interfaces;
 using Microsoft.Extensions.Hosting;
-using Hangfire.SqlServer;
-using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
+using Newtonsoft.Json;
 
 namespace AutoHelper.Hangfire;
 
 public static class ConfigureServices
 {
-    public static void AddHangfireServices(this WebApplicationBuilder builder)
+    public static void AddHangfireServices(this IServiceCollection services, IConfiguration configuration, bool inDevelopment)
     {
-        var hangfireConnection = builder.Configuration.GetConnectionString("HangfireConnection");
-        builder.Services.AddDbContext<HangfireDbContext>(o => o.UseSqlServer(hangfireConnection));
+        var hangfireConnection = configuration.GetConnectionString("HangfireConnection");
+        services.AddDbContext<HangfireDbContext>(o => o.UseSqlServer(hangfireConnection));
 
-        builder.Services.AddHangfire(config =>
+        services.AddHangfire(config =>
         {
             config.UseSqlServerStorage(hangfireConnection, new SqlServerStorageOptions
             {
@@ -44,18 +38,19 @@ public static class ConfigureServices
 
         });
 
-        builder.Services.AddTransient<IQueueService, HangfireJobService>();
+        services.AddTransient<IQueueContext, HangfireJobContext>();
+        services.AddTransient<IQueueService, HangfireJobService>();
 
         // production we use the dashboard web service to run the jobs
-        if (builder.Environment.IsDevelopment())
+        if (inDevelopment)
         {
-            builder.AddHangfireServerInstance();
+            services.AddHangfireServerInstance();
         }
     }
 
-    public static void AddHangfireServerInstance(this WebApplicationBuilder builder)
+    public static void AddHangfireServerInstance(this IServiceCollection services)
     {
-        builder.Services.AddHangfireServer(options =>
+        services.AddHangfireServer(options =>
         {
             var queues = new List<string>
             {
@@ -90,14 +85,14 @@ public static class ConfigureServices
         //// define that we want to use batches
         //GlobalConfiguration.Configuration.UseBatches();
 
-        if(app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment())
         {
             // Migrate and Update the database
             var context = scope.ServiceProvider.GetRequiredService<HangfireDbContext>();
             var created = context.Database.EnsureCreated();
             context.Database.Migrate();
         }
-        
+
         // production we use the dashboard web service to run the dashboard
         if (app.Environment.IsDevelopment())
         {
@@ -109,7 +104,9 @@ public static class ConfigureServices
     {
         app.UseHangfireDashboard(matchPath, new DashboardOptions()
         {
-            Authorization = new[] { new HangfireDashboardAuthFilter(app.Environment) }
+            Authorization = new[] {
+                new HangfireDashboardAuthFilter(app.Environment.IsDevelopment())
+            }
         });
     }
 }

@@ -2126,10 +2126,10 @@
             "$ref": "#/components/schemas/PriorityLevel"
           },
           "generalType": {
-            "$ref": "#/components/schemas/GeneralNotificationType"
+            "$ref": "#/components/schemas/NotificationGeneralType"
           },
           "vehicleType": {
-            "$ref": "#/components/schemas/VehicleNotificationType"
+            "$ref": "#/components/schemas/NotificationVehicleType"
           },
           "receiverContactType": {
             "$ref": "#/components/schemas/ContactType"
@@ -2158,7 +2158,7 @@
           3
         ]
       },
-      "GeneralNotificationType": {
+      "NotificationGeneralType": {
         "type": "integer",
         "description": "",
         "x-enumNames": [
@@ -2176,7 +2176,7 @@
           4
         ]
       },
-      "VehicleNotificationType": {
+      "NotificationVehicleType": {
         "type": "integer",
         "description": "",
         "x-enumNames": [

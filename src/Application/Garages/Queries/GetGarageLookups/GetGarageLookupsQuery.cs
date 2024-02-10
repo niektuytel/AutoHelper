@@ -1,9 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
@@ -136,7 +134,7 @@ public class GetGaragesBySearchQueryHandler : IRequestHandler<GetGarageLookupsQu
         // All filters should match for the item to be included
         foreach (var filter in filters)
         {
-            queryable = queryable.Where(x => 
+            queryable = queryable.Where(x =>
                 x.Services.Any(y => ((int)y.Type).ToString() == filter)
             );
         }

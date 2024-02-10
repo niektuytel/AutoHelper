@@ -1,12 +1,5 @@
-﻿using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
-using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+﻿using AutoHelper.Application.Common.Interfaces;
+
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,10 +20,10 @@ public class CreateConversationMessageValidator : AbstractValidator<CreateConver
 
     private bool BeValidAndExistingMessage(CreateConversationMessageCommand command)
     {
-        if(command.ConversationId == null)
+        if (command.ConversationId == null)
         {
             return command.Conversation != null;
-        }   
+        }
 
         var entity = _context.ConversationMessages
             .AsNoTracking()

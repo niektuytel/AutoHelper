@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
-        <ProjectReference Include="..\AutoHelper.Hangfire.Shared\AutoHelper.Hangfire.Shared.csproj" />
         <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />
         <ProjectReference Include="..\Messaging\AutoHelper.Messaging.csproj" />
         <ProjectReference Include="..\Infrastructure\AutoHelper.Infrastructure.csproj" />
@@ -27,8 +26,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageReference Include="LinqKit.Core" Version="1.2.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.15" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.15" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.15" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.15" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Identity.Web" Version="2.16.1" />
         <PackageReference Include="NSwag.AspNetCore" Version="13.18.2" />
         <PackageReference Include="NSwag.MSBuild" Version="13.18.2">

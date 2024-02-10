@@ -1,9 +1,4 @@
-﻿using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleLookup;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 

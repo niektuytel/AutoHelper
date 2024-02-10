@@ -1,11 +1,10 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace AutoHelper.Domain.Entities.Vehicles;
 
-public class VehicleTimelineItem: BaseEntity
+public class VehicleTimelineItem : BaseEntity
 {
     public VehicleTimelineItem()
     { }

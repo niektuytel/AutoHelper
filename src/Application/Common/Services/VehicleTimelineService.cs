@@ -1,22 +1,7 @@
-﻿using System.Collections.Generic;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Infrastructure.Common.Extentions;
-using AutoHelper.Infrastructure.Common.Models;
-using Azure;
-using Azure.Core;
-using Force.DeepCloner;
-using GoogleApi.Entities.Maps.Directions.Response;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
@@ -25,7 +10,7 @@ internal class VehicleTimelineService : IVehicleTimelineService
     public async Task<List<VehicleTimelineItem>> InsertableTimelineItems(VehicleLookupItem vehicle, IEnumerable<VehicleDetectedDefectDtoItem> defectsBatch, IEnumerable<VehicleInspectionNotificationDtoItem> inspectionsBatch, List<VehicleServiceLogItem> serviceLogsBatch, IEnumerable<VehicleDetectedDefectDescriptionDtoItem> defectDescriptions)
     {
         var vehicleTimelinesToInsert = new List<VehicleTimelineItem>();
-        
+
         // handle failed MOTs
         var defects = defectsBatch!.Where(x => x.LicensePlate == vehicle.LicensePlate);
         var failedMOTsToInsert = await NewFailedMOTItems(vehicle, defects, defectDescriptions);
@@ -50,8 +35,8 @@ internal class VehicleTimelineService : IVehicleTimelineService
         }
 
         // handle servicelogs changes
-        var serviceLogs = serviceLogsBatch!.Where(x => 
-            x.VehicleLicensePlate == vehicle.LicensePlate && 
+        var serviceLogs = serviceLogsBatch!.Where(x =>
+            x.VehicleLicensePlate == vehicle.LicensePlate &&
             x.Status != Domain.VehicleServiceLogStatus.NotVerified
         );
 
@@ -115,7 +100,7 @@ internal class VehicleTimelineService : IVehicleTimelineService
                 description += $" ({defect.DetectedAmount}x)";
             }
 
-            extraData.Add(new (description, information.DefectArticleNumber));
+            extraData.Add(new(description, information.DefectArticleNumber));
         }
 
         // set the property back to serialize and store the updates
@@ -176,7 +161,7 @@ internal class VehicleTimelineService : IVehicleTimelineService
 
     private async Task<VehicleTimelineItem?> NewOwnerChangedItem(VehicleLookupItem vehicle)
     {
-        var entity = vehicle.Timeline?.FirstOrDefault(x => 
+        var entity = vehicle.Timeline?.FirstOrDefault(x =>
             x.Type == VehicleTimelineType.OwnerChange &&
             x.Date == vehicle.DateOfAscription
         );
@@ -211,7 +196,7 @@ internal class VehicleTimelineService : IVehicleTimelineService
     private async Task<List<VehicleTimelineItem>> NewServiceLogItems(VehicleLookupItem vehicle, IEnumerable<VehicleServiceLogItem> serviceLogs)
     {
         var itemsToInsert = new List<VehicleTimelineItem>();
-        
+
         // No serviceLogs found
         if (serviceLogs?.Any() != true)
         {
@@ -258,14 +243,14 @@ internal class VehicleTimelineService : IVehicleTimelineService
 
         if (!string.IsNullOrEmpty(serviceLog.Notes))
         {
-            extraData.Add(new ("Technische aantekening", serviceLog.Notes));
+            extraData.Add(new("Technische aantekening", serviceLog.Notes));
         }
-        
+
         if (serviceLog.ExpectedNextDate != null && serviceLog.ExpectedNextDate != DateTime.MinValue)
         {
             extraData.Add(new("Volgende onderhoudsbeurt op", ((DateTime)serviceLog.ExpectedNextDate).ToShortDateString()));
         }
-        
+
         if (serviceLog.ExpectedNextOdometerReading != null && serviceLog.ExpectedNextOdometerReading != 0)
         {
             extraData.Add(new("Volgende onderhoudsbeurt op", $"{serviceLog.ExpectedNextOdometerReading} km"));

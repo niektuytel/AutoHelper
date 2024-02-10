@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AutoHelper.Domain.Entities.Vehicles;
 
 namespace AutoHelper.Domain.Entities.Garages;
@@ -20,7 +20,7 @@ public class GarageServiceItem : BaseEntity
     /// </summary>
     [Required]
     public GarageServiceType Type { get; set; } = GarageServiceType.Other;
-    
+
     /// <summary>
     /// Like: Light Vehicle, Heavy vehicle, etc.
     /// Needed for filtering and made able to make more specific services for each vehicle type

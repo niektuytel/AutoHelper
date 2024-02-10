@@ -1,25 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Reflection;
-using System.Reflection.Emit;
+﻿using System.Reflection;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Admin;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Hangfire.Shared.MediatR;
 using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using EFCore.BulkExtensions;
 using MediatR;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Options;
 
 
 namespace AutoHelper.Infrastructure.Persistence;
@@ -32,7 +23,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public ApplicationDbContext(
         DbContextOptions<ApplicationDbContext> options,
         IMediator mediator,
-        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor) 
+        AuditableEntitySaveChangesInterceptor auditableEntitySaveChangesInterceptor)
         : base(options)
     {
         _mediator = mediator;
@@ -135,7 +126,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             }
 
             // 1205 is the SQL Server error code for a deadlock
-            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 1205 && retryCount < maxRetries) 
+            catch (Microsoft.Data.SqlClient.SqlException ex) when (ex.Number == 1205 && retryCount < maxRetries)
             {
                 retryCount++;
                 await Task.Delay(delay, cancellationToken);

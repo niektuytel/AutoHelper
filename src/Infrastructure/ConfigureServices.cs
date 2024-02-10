@@ -1,12 +1,9 @@
-﻿using System.Globalization;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Infrastructure.Common;
 using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Infrastructure.Persistence.Interceptors;
 using AutoHelper.Infrastructure.Services;
 using HtmlAgilityPack;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -19,7 +16,7 @@ public static class ConfigureServices
         CultureConfig.SetGlobalCultureToNL();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
-        if (configuration.GetValue<bool>("UseInMemoryDatabase"))
+        if (bool.Parse(configuration["UseInMemoryDatabase"]!) == true)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -31,7 +28,8 @@ public static class ConfigureServices
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    builder => {
+                    builder =>
+                    {
                         builder.CommandTimeout((int)TimeSpan.FromMinutes(5).TotalSeconds);// needed for data migrations
                         builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                         builder.UseNetTopologySuite();
@@ -44,14 +42,11 @@ public static class ConfigureServices
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddTransient<IDateTime, DateTimeService>();
 
-        services.AddTransient<RDWApiClient>();
-        services.AddTransient<IVehicleService, VehicleService>();
-        services.AddTransient<IVehicleTimelineService, VehicleTimelineService>();
-        services.AddTransient<IGarageService, GarageService>();
+        services.AddTransient<IRDWApiClient, RDWApiClient>();
         services.AddTransient<IBlobStorageService, AzureBlobStorageService>();
+        services.AddTransient<IWebScraperClient, WebScraperClient>();
+        services.AddTransient<IGoogleApiClient, GoogleApiClient>();
         services.AddTransient<HtmlWeb>();
-        services.AddTransient<WebScraperClient>();
-        services.AddTransient<GoogleApiClient>();
 
 
         return services;

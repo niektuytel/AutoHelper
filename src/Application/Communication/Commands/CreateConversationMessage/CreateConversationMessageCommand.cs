@@ -1,22 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Conversations.Enums;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoMapper;
 using MediatR;
-using AutoHelper.Application.Messages._DTOs;
-using Hangfire;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using System.Text.Json.Serialization;
-using AutoHelper.Domain.Entities;
 
 namespace AutoHelper.Application.Messages.Commands.CreateConversationMessage;
 
@@ -72,7 +59,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         {
             request.ReceiverIdentifier = _phoneNumberHelper.GetPhoneNumberId(request.ReceiverIdentifier!);
         }
-        
+
         var message = new ConversationMessageItem
         {
             ConversationId = request.Conversation!.Id,
@@ -81,7 +68,7 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
             SenderContactIdentifier = request.SenderIdentifier!,
             ReceiverContactType = receiverType,
             ReceiverContactIdentifier = request.ReceiverIdentifier!,
-            Status = MessageStatus.Pending,
+            Status = ConversationMessageStatus.Pending,
             MessageContent = request.Message
         };
 

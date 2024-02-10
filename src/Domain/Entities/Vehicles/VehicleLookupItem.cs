@@ -1,7 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AutoHelper.Domain.Entities.Conversations;
-using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Domain.Entities.Vehicles;
 
@@ -32,7 +29,7 @@ public class VehicleLookupItem
 
     [Required]
     public List<VehicleTimelineItem> Timeline { get; set; } = new List<VehicleTimelineItem>();
-    
+
     [Required]
     public ICollection<VehicleServiceLogItem> ServiceLogs { get; set; } = new List<VehicleServiceLogItem>();
 

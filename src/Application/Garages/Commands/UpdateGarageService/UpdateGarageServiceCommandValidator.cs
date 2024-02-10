@@ -1,6 +1,5 @@
 ﻿using AutoHelper.Application.Garages._DTOs;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageService;
 
@@ -27,7 +26,7 @@ public class UpdateGarageServiceCommandValidator : AbstractValidator<UpdateGarag
         RuleFor(v => v.Description)
             .NotEmpty().WithMessage("Description is required.")
             .MaximumLength(800).WithMessage("Description must not exceed 800 characters.");
-        
+
         RuleFor(v => v.ExpectedNextDateIsRequired)
             .NotNull().WithMessage("ExpectedNextDateIsRequired is required.");
 

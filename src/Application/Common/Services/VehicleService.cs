@@ -1,31 +1,19 @@
-﻿using System.Collections.Generic;
-using AutoHelper.Application.Common.Exceptions;
+﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Infrastructure.Common.Extentions;
-using AutoHelper.Infrastructure.Common.Models;
-using Azure;
-using Azure.Core;
-using Force.DeepCloner;
-using GoogleApi.Entities.Maps.Directions.Response;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using AutoHelper.Domain.Extentions;
 using Newtonsoft.Json.Linq;
 
 namespace AutoHelper.Infrastructure.Services;
 
 internal class VehicleService : IVehicleService
 {
-    private readonly RDWApiClient _rdwService;
+    private readonly IRDWApiClient _rdwService;
 
-    public VehicleService(RDWApiClient rdwService)
+    public VehicleService(IRDWApiClient rdwService)
     {
         _rdwService = rdwService;
     }
@@ -44,8 +32,8 @@ internal class VehicleService : IVehicleService
         var mark = data.GetSafeValue("merk").ToUpper();
         var tradingMark = data.GetSafeValue("handelsbenaming").ToUpper()
             .Replace($"{mark} ", "");
-            
-            //.ToCamelCase()
+
+        //.ToCamelCase()
         var brandText = $"{mark.ToTitleCase()} ({tradingMark.ToTitleCase()}){fromText}";
         var mileage = data.GetSafeValue("tellerstandoordeel");
         var response = new VehicleSpecificationsCardItem
@@ -56,7 +44,7 @@ internal class VehicleService : IVehicleService
             Mileage = mileage,
         };
 
-        if(DateTime.TryParse(data.GetSafeDateValue("vervaldatum_apk_dt"), out var motExpiry))
+        if (DateTime.TryParse(data.GetSafeDateValue("vervaldatum_apk_dt"), out var motExpiry))
         {
             response.DateOfMOTExpiry = motExpiry;
         }
@@ -71,9 +59,9 @@ internal class VehicleService : IVehicleService
         {
             var amount = fuelInfo.GetSafeDecimalValue("brandstofverbruik_gecombineerd");
             var consumptionText = amount != 0
-                ? $"{(100 / (amount/100M)):F0}km op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving").ToLower()}"
+                ? $"{(100 / (amount / 100M)):F0}km op 1 liter {fuelInfo.GetSafeValue("brandstof_omschrijving").ToLower()}"
                 : "Niet geregistreerd";
-            
+
             response.Consumption = consumptionText;
         }
 

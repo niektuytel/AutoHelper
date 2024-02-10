@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Garages.Queries.GetGarageServices;
 
 public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem>>
 {
-    public GetGarageServicesQuery(string userId, string? licensePlate=null)
+    public GetGarageServicesQuery(string userId, string? licensePlate = null)
     {
         UserId = userId;
         LicensePlate = licensePlate;
@@ -29,7 +21,7 @@ public record GetGarageServicesQuery : IRequest<IEnumerable<GarageServiceDtoItem
     [JsonIgnore]
     public GarageItem? Garage { get; set; } = new GarageItem();
 
-    public string? LicensePlate { get; internal set;}
+    public string? LicensePlate { get; internal set; }
 
 }
 

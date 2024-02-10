@@ -1,9 +1,10 @@
-﻿using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
+﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
-using AutoHelper.Hangfire.Shared.MediatR;
+using AutoHelper.Hangfire.Extentions;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,11 @@ namespace AutoHelper.WebUI.Controllers;
 [Authorize(Policies.AdminDefaultPolicy)]
 public class AdminAccountController : ApiControllerBase
 {
-    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IQueueService _queueService;
 
-    public AdminAccountController(IBackgroundJobClient backgroundJobClient)
+    public AdminAccountController(IQueueService queueService)
     {
-        _backgroundJobClient = backgroundJobClient;
+        _queueService = queueService;
     }
 
     /// <param name="maxInsertAmount">-1 is all of them</param>
@@ -37,7 +38,7 @@ public class AdminAccountController : ApiControllerBase
         var queue = nameof(SyncGarageLookupsCommand);
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
-        Mediator.Enqueue(_backgroundJobClient, queue, title, command);
+        _queueService.Enqueue(queue, title, command);
         return $"Successfully start hangfire job: {queue}";
     }
 
@@ -68,7 +69,7 @@ public class AdminAccountController : ApiControllerBase
         var queue = $"{nameof(SyncVehicleLookupsCommand)}";
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] lookups";
 
-        Mediator.Enqueue(_backgroundJobClient, queue, title, command);
+        _queueService.Enqueue(queue, title, command);
         return $"Successfully start new queue: {queue}";
     }
 
@@ -99,7 +100,7 @@ public class AdminAccountController : ApiControllerBase
         var queue = $"{nameof(SyncVehicleLookupsCommand)}";
         var title = $"[start:{startRowIndex}/end:{endRowIndex}] max_[insert:{maxInsertAmount}|update:{maxUpdateAmount}] timelines";
 
-        Mediator.Enqueue(_backgroundJobClient, queue, title, command);
+        _queueService.Enqueue(queue, title, command);
         return $"Successfully start queue: {queue}";
     }
 

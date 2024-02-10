@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
-using MediatR;
 
 namespace AutoHelper.Domain.Entities.Conversations;
 
@@ -25,7 +19,7 @@ public class ConversationItem : BaseAuditableEntity
 
     [Required]
     public string GarageLookupIdentifier { get; set; }
-    
+
     [ForeignKey(nameof(GarageLookupIdentifier))]
     public GarageLookupItem RelatedGarage { get; set; } = null!;
 
@@ -46,9 +40,9 @@ public class ConversationItem : BaseAuditableEntity
         }
         set
         {
-            RelatedServiceIdsString = (value == null) ? 
-                "" 
-                : 
+            RelatedServiceIdsString = (value == null) ?
+                ""
+                :
                 string.Join(";", value.Select(v => v.ToString()));
         }
     }

@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mail;
 using AutoHelper.Domain.Entities.Garages;
 
 namespace AutoHelper.Domain.Entities.Vehicles;
 
-public class VehicleServiceLogItem: BaseAuditableEntity
+public class VehicleServiceLogItem : BaseAuditableEntity
 {
     public VehicleServiceLogItem()
     {
@@ -13,7 +12,7 @@ public class VehicleServiceLogItem: BaseAuditableEntity
 
     [Required]
     public string VehicleLicensePlate { get; set; }
-    
+
     [ForeignKey(nameof(VehicleLicensePlate))]
     public VehicleLookupItem VehicleLookup { get; set; }
 

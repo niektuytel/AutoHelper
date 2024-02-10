@@ -1,13 +1,10 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Messaging.Helpers;
 using AutoHelper.Messaging.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using WhatsappBusiness.CloudApi.Interfaces;
-using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Configurations;
 using WhatsappBusiness.CloudApi.Extensions;
-using AutoHelper.Messaging.Models;
-using AutoHelper.Messaging.Helpers;
 
 namespace AutoHelper.Messaging;
 

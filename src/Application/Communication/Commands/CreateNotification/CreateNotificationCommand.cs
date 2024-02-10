@@ -1,27 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Conversations.Enums;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoMapper;
-using MediatR;
-using AutoHelper.Application.Messages._DTOs;
-using Hangfire;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using System.Text.Json.Serialization;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using AutoHelper.Domain.Enums;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+using AutoHelper.Domain.Entities.Vehicles;
+using MediatR;
 
 namespace AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
 
@@ -30,17 +13,18 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
 
     public CreateNotificationCommand()
     {
-        
+
     }
 
     public CreateNotificationCommand(
-        string vehicleLicensePlate, 
-        GeneralNotificationType generalType, 
-        VehicleNotificationType vehicleType = VehicleNotificationType.Other,
+        string vehicleLicensePlate,
+        NotificationGeneralType generalType,
+        NotificationVehicleType vehicleType = NotificationVehicleType.Other,
         DateTime? triggerDate = null,
         string? contactIdentifier = null,
         Dictionary<string, string> metadata = null!
-    ){
+    )
+    {
         VehicleLicensePlate = vehicleLicensePlate;
         GeneralType = generalType;
         VehicleType = vehicleType;
@@ -53,9 +37,9 @@ public record CreateNotificationCommand : IRequest<NotificationItem>
 
     public string VehicleLicensePlate { get; set; } = null!;
 
-    public GeneralNotificationType GeneralType { get; set; }
+    public NotificationGeneralType GeneralType { get; set; }
 
-    public VehicleNotificationType VehicleType { get; set; }
+    public NotificationVehicleType VehicleType { get; set; }
 
     public DateTime? TriggerDate { get; set; }
 
@@ -90,7 +74,7 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
             VehicleType = request.VehicleType,
             TriggerDate = request.TriggerDate,
             ReceiverContactType = receiverType,
-            ReceiverContactIdentifier = receiver, 
+            ReceiverContactIdentifier = receiver,
             VehicleLicensePlate = request.VehicleLicensePlate,
             Metadata = request.Metadata
         };

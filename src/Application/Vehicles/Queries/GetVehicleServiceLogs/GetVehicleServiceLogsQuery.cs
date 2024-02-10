@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
 using AutoMapper;
 using MediatR;
@@ -50,8 +43,8 @@ public class GetVehicleServiceLogsQueryHandler : IRequestHandler<GetVehicleServi
 
         var entities = _context.VehicleServiceLogs
             .AsNoTracking()
-            .Where(v => 
-                v.VehicleLicensePlate == request.LicensePlate && 
+            .Where(v =>
+                v.VehicleLicensePlate == request.LicensePlate &&
                 v.Type != GarageServiceType.Other
 
             )

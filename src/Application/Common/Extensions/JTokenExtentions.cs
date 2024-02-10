@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace AutoHelper.Infrastructure.Common.Extentions;
+namespace AutoHelper.Domain.Extentions;
 
 public static class JTokenExtentions
 {

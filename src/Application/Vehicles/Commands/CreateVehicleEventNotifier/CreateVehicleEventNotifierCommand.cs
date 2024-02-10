@@ -1,30 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mail;
-using System.Text.Json.Serialization;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
-using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Domain;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Messages.Enums;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
+using AutoHelper.Application.Vehicles.Queries.GetVehicleNextNotification;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.WebUI.Controllers;
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using AutoHelper.WebUI.Controllers;
-using Hangfire;
-using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
-using AutoHelper.Hangfire.Shared.MediatR;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleNextNotification;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 
@@ -43,15 +26,15 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
 {
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
-    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IQueueService _queueService;
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public CreateVehicleEventNotifierCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IBackgroundJobClient backgroundJobClient, IMapper mapper, ISender sender)
+    public CreateVehicleEventNotifierCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IQueueService queueService, IMapper mapper, ISender sender)
     {
         _blobStorageService = blobStorageService;
         _context = context;
-        _backgroundJobClient = backgroundJobClient;
+        _queueService = queueService;
         _mapper = mapper;
         _sender = sender;
     }
@@ -68,7 +51,7 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
         // create notification
         var notificationCommand = new CreateNotificationCommand(
             request.VehicleLicensePlate,
-            GeneralNotificationType.VehicleServiceNotification,
+            NotificationGeneralType.VehicleServiceNotification,
             nextNotifier.NotificationType,
             nextNotifier.TriggerDate,
             request.ContactIdentifier
@@ -79,7 +62,7 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
         var queue = nameof(SendNotificationMessageCommand);
         var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
         var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
-        var jobId = _sender.ScheduleJob(_backgroundJobClient, queue, title, schuduleCommand, nextNotifier.TriggerDate);
+        var jobId = _queueService.ScheduleJob(queue, title, schuduleCommand, nextNotifier.TriggerDate);
 
         // update notification with job id
         notification.JobId = jobId;

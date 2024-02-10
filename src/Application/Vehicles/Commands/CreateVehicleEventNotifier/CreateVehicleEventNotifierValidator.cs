@@ -30,12 +30,12 @@ public class CreateVehicleEventNotifierValidator : AbstractValidator<CreateVehic
     private async Task<bool> BeValidAndExistingVehicle(CreateVehicleEventNotifierCommand command, string licensePlate, CancellationToken cancellationToken)
     {
         licensePlate = licensePlate.ToUpper().Replace("-", "");
-        
+
         command.VehicleLicensePlate = licensePlate;
         command.VehicleLookup = await _context.VehicleLookups
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
-        
+
         return command.VehicleLookup != null;
     }
 }

@@ -2,21 +2,21 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoHelper.Hangfire.Shared.Interfaces;
+using AutoHelper.Application.Common.Interfaces;
 using FluentValidation;
 using Hangfire;
 using Hangfire.Server;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace AutoHelper.Hangfire.Shared.MediatR
+namespace AutoHelper.Hangfire.Extentions
 {
     public class MediatorHangfireBridge
     {
         private readonly IMediator _mediator;
-        private readonly IQueueService _queueJobService;
+        private readonly IQueueContext _queueJobService;
 
-        public MediatorHangfireBridge(IMediator mediator, IQueueService queueJobService)
+        public MediatorHangfireBridge(IMediator mediator, IQueueContext queueJobService)
         {
             _mediator = mediator;
             _queueJobService = queueJobService;

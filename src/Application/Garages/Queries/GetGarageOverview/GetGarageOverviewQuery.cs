@@ -71,7 +71,7 @@ public class GetGarageOverviewQueryHandler : IRequestHandler<GetGarageOverviewQu
 
         var recentServiceLogs = await query.Take(15).ToListAsync(cancellationToken);
         var recentServiceLogsDto = _mapper.Map<List<VehicleServiceLogAsGarageDtoItem>>(recentServiceLogs);
-        
+
         var statistics = new GarageOverviewDtoItem(
             totalApprovedServiceLogs,
             totalPendingServiceLogs,

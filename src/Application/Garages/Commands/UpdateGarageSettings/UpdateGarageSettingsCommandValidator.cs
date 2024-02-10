@@ -1,12 +1,7 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using static AutoHelper.Application.Garages.Commands.CreateGarageItem.CreateGarageCommandValidator;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 

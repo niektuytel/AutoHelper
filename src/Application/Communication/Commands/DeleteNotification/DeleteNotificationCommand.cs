@@ -1,29 +1,9 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mail;
-using System.Text.Json.Serialization;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
-using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
-using AutoHelper.Domain;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using AutoHelper.Domain.Entities.Vehicles;
+using AutoHelper.Domain.Entities.Messages;
+using AutoHelper.WebUI.Controllers;
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using AutoHelper.WebUI.Controllers;
-using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Hangfire.Shared.MediatR;
-using Hangfire;
 
 namespace AutoHelper.Application.Messages.Commands.DeleteNotification;
 
@@ -44,15 +24,15 @@ public record DeleteNotificationCommand : IRequest<NotificationItemDto>
 public class DeleteNotificationCommandHandler : IRequestHandler<DeleteNotificationCommand, NotificationItemDto>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IQueueService _queueService;
     private readonly ISender _sender;
     private readonly IMapper _mapper;
 
 
-    public DeleteNotificationCommandHandler(IApplicationDbContext context, IBackgroundJobClient backgroundJobClient, ISender sender, IMapper mapper)
+    public DeleteNotificationCommandHandler(IApplicationDbContext context, IQueueService queueService, ISender sender, IMapper mapper)
     {
         _context = context;
-        _backgroundJobClient = backgroundJobClient;
+        _queueService = queueService;
         _sender = sender;
         _mapper = mapper;
     }
@@ -62,7 +42,7 @@ public class DeleteNotificationCommandHandler : IRequestHandler<DeleteNotificati
         // Delete the job if it exists
         if (request.Notification?.JobId != null)
         {
-            _sender.DeleteJob(_backgroundJobClient, request.Notification.JobId);
+            _queueService.DeleteJob(request.Notification.JobId);
         }
 
         _context.Notifications.Remove(request.Notification!);

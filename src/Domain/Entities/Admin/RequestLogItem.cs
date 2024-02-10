@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -16,10 +11,11 @@ public class RequestLogItem
     public RequestLogItem() { }
 
     public RequestLogItem(
-        IBaseRequest request, 
+        IBaseRequest request,
         LogLevel logLevel,
-        string logMessage 
-    ) {
+        string logMessage
+    )
+    {
         Id = Guid.NewGuid();
         Date = DateTime.UtcNow;
         LogLevel = logLevel;

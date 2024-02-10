@@ -1,5 +1,4 @@
-﻿using AutoHelper.Domain.Entities.Garages;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 

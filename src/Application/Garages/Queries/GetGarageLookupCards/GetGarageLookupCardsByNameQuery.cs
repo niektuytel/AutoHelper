@@ -1,8 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Garages._DTOs;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

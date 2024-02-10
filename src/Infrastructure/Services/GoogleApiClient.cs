@@ -1,26 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Net.Http;
 using System.Text.Json;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Infrastructure.Common.Extentions;
 using AutoHelper.Infrastructure.Common.Models;
-using Azure;
-using Azure.Core;
-using GoogleApi.Entities.Maps.Geocoding;
-using GoogleApi.Entities.Search.Common;
-using GoogleApi.Entities.Search.Video.Common;
-using HtmlAgilityPack;
-using MediatR;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace AutoHelper.Infrastructure.Services;
 
-internal class GoogleApiClient
+internal class GoogleApiClient : IGoogleApiClient
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiKey;
@@ -68,7 +55,7 @@ internal class GoogleApiClient
     /// https://developers.google.com/maps/documentation/places/web-service/details
     /// </summary>
     /// <returns>all details related to this place</returns>
-    public async Task<string?> GetPlaceDetailsFromPlaceId(string place_id)
+    public async Task<GoogleApiDetailPlaceItem?> GetPlaceDetailsFromPlaceId(string place_id)
     {
         var url = "https://maps.googleapis.com/maps/api/place/details/json" +
             "?fields=name,place_id,business_status,editorial_summary,formatted_phone_number,geometry,icon,icon_background_color,icon_mask_base_uri,opening_hours,photos,price_level,rating,reviews,secondary_opening_hours,user_ratings_total,website" +
@@ -81,7 +68,8 @@ internal class GoogleApiClient
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            return content;
+            var details = JsonSerializer.Deserialize<GoogleApiDetailPlaceItem>(content)!;
+            return details;
         }
 
         return null;
@@ -109,6 +97,18 @@ internal class GoogleApiClient
         }
 
         return (null, "");
+    }
+
+    public byte[] CreateThumbnail(byte[] originalImage, int thumbnailHeight)
+    {
+        using var image = Image.Load(originalImage);
+        // Calculate the new width while maintaining the aspect ratio
+        int newWidth = (int)((double)image.Width / ((double)image.Height / (double)thumbnailHeight));
+
+        image.Mutate(x => x.Resize(newWidth, thumbnailHeight));
+        using var memoryStream = new MemoryStream();
+        image.SaveAsJpeg(memoryStream);
+        return memoryStream.ToArray();
     }
 
     private string GetFileExtension(string? contentType)

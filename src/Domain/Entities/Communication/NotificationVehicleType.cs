@@ -1,6 +1,6 @@
-﻿namespace AutoHelper.Domain.Entities.Messages.Enums;
+﻿namespace AutoHelper.Domain.Entities.Communication;
 
-public enum VehicleNotificationType
+public enum NotificationVehicleType
 {
     Other = 0,
     MOT = 1,

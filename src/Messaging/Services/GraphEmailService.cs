@@ -1,20 +1,16 @@
-﻿using AutoHelper.Application.Common.Interfaces;
-using Microsoft.Extensions.Configuration;
+﻿using System.Text.Json;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
-using System.Text.Json;
-using AutoHelper.Messaging.Models;
-using Microsoft.Extensions.Caching.Memory;
-using AutoHelper.Messaging.Models.GraphEmail;
-using BlazorTemplater;
-using AutoHelper.Messaging.Templates;
-using WhatsappBusiness.CloudApi.Response;
-using RazorEngine.Text;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.WebUI.Controllers;
 using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Messages.Enums;
+using AutoHelper.Messaging.Models;
+using AutoHelper.Messaging.Models.GraphEmail;
 using AutoHelper.Messaging.Templates.Conversation;
 using AutoHelper.Messaging.Templates.Notification;
+using BlazorTemplater;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -188,7 +184,7 @@ internal class GraphEmailService : IMailingService
 
         await SendEmail(email);
     }
-    
+
     public async Task SendMessageConfirmation(ConversationMessageItem message, string receiverName, CancellationToken cancellationToken)
     {
         var receiverIdentifier = message.SenderContactIdentifier;
@@ -237,16 +233,16 @@ internal class GraphEmailService : IMailingService
     {
         switch (notification.GeneralType)
         {
-            case GeneralNotificationType.GarageServiceReviewReminder:
+            case NotificationGeneralType.GarageServiceReviewReminder:
                 await SendGarageServiceReviewReminder(notification, cancellationToken);
                 break;
-            case GeneralNotificationType.VehicleServiceReviewApproved:
+            case NotificationGeneralType.VehicleServiceReviewApproved:
                 await SendVehicleServiceReviewApproved(notification, cancellationToken);
                 break;
-            case GeneralNotificationType.VehicleServiceReviewDeclined:
+            case NotificationGeneralType.VehicleServiceReviewDeclined:
                 await SendVehicleServiceReviewDeclined(notification, cancellationToken);
                 break;
-            case GeneralNotificationType.VehicleServiceNotification:
+            case NotificationGeneralType.VehicleServiceNotification:
                 await SendVehicleServiceNotification(notification, cancellationToken);
                 break;
         }
@@ -378,37 +374,37 @@ internal class GraphEmailService : IMailingService
         string subject = "";
         switch (notification.VehicleType)
         {
-            case VehicleNotificationType.MOT:
+            case NotificationVehicleType.MOT:
                 subject = $"APK verloopt over 4 weken voor [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_MOT>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleNotificationType.WinterService:
+            case NotificationVehicleType.WinterService:
                 subject = $"Zorg goed voor uw auto: Overweeg een onderhoudsbeurt na een intensieve winterperiode [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_WinterService>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleNotificationType.ChangeToSummerTyre:
+            case NotificationVehicleType.ChangeToSummerTyre:
                 subject = $"Tijd om uw Winterbanden te Wisselen voor de Zomer: [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_SummerTyreChange>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleNotificationType.SummerCheck:
+            case NotificationVehicleType.SummerCheck:
                 subject = $"Is uw auto klaar voor de vakantie? Plan een Zomercheck voor [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_SummerCheck>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleNotificationType.SummerService:
+            case NotificationVehicleType.SummerService:
                 subject = $"Heeft u een vakantietrip gemaakt? Overweeg een onderhoudsbeurt voor uw auto [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_SummerService>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
-            case VehicleNotificationType.ChangeToWinterTyre:
+            case NotificationVehicleType.ChangeToWinterTyre:
                 subject = $"Bereid uw auto voor op de winter: Tijd voor winterbanden [{notification.VehicleLicensePlate}]";
                 html = new ComponentRenderer<VehicleServiceNotification_WinterTyreChange>()
                     .Set(c => c.Notification, notification)

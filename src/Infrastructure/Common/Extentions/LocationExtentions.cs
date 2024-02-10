@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AutoHelper.Infrastructure.Common.Extentions;
+﻿namespace AutoHelper.Infrastructure.Common.Extentions;
 
 public static class LocationExtentions
 {

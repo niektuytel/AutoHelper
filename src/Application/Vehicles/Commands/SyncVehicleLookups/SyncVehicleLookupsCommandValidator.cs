@@ -1,7 +1,4 @@
 ﻿using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleLookup;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using FluentValidation;
 
 namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;

@@ -1,22 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net;
-using System.Text.Json.Serialization;
-using System.Xml.Linq;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Hangfire.Shared.Interfaces;
-using AutoMapper;
-using Hangfire.Server;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 
@@ -49,7 +35,7 @@ public record SyncGarageLookupsCommand : IQueueRequest<Unit>
     public int MaxUpdateAmount { get; init; }
     public int BatchSize { get; set; }
 
-    public IQueueService QueueingService { get; set; }
+    public IQueueContext QueueingService { get; set; }
 }
 
 public class UpsertGarageLookupsCommandHandler : IRequestHandler<SyncGarageLookupsCommand, Unit>

@@ -1,29 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mail;
-using System.Text.Json.Serialization;
-using AutoHelper.Application.Common.Exceptions;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Mappings;
-using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
+using AutoHelper.Application.Garages.Commands.CreateGarageReviewNotifier;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Domain;
-using AutoHelper.Domain.Entities;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using AutoHelper.Hangfire.Shared.MediatR;
-using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
-using Hangfire;
-using AutoHelper.Application.Garages.Commands.CreateGarageReviewNotifier;
-using Microsoft.EntityFrameworkCore.Update;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
 
@@ -88,15 +72,15 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly ISender _sender;
-    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IQueueService _queueService;
     private readonly IIdentificationHelper _identificationHelper;
 
     public CreateVehicleServiceLogCommandHandler(
-        IBlobStorageService blobStorageService, 
-        IApplicationDbContext context, 
-        IMapper mapper, 
-        ISender sender, 
-        IBackgroundJobClient backgroundJobClient, 
+        IBlobStorageService blobStorageService,
+        IApplicationDbContext context,
+        IMapper mapper,
+        ISender sender,
+        IQueueService queueService,
         IIdentificationHelper identificationHelper
     )
     {
@@ -104,7 +88,7 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         _context = context;
         _mapper = mapper;
         _sender = sender;
-        _backgroundJobClient = backgroundJobClient;
+        _queueService = queueService;
         _identificationHelper = identificationHelper;
     }
 
@@ -120,12 +104,12 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         // send notification to garage
         var title = $"{entity.GarageLookup!.Name}({entity.GarageLookup!.Identifier}) ask to review service logs";
         var command = new SendGarageServiceReviewCommand(
-            entity.VehicleLicensePlate, 
+            entity.VehicleLicensePlate,
             entity.GarageLookupIdentifier,
-            entity.Id, 
+            entity.Id,
             request.GarageService!.Description!
         );
-        _sender.Enqueue(_backgroundJobClient, "default", title, command);
+        _queueService.Enqueue("default", title, command);
 
         return _mapper.Map<VehicleServiceLogDtoItem>(entity);
     }

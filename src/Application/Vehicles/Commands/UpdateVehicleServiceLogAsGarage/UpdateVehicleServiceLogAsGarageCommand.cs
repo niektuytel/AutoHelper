@@ -1,28 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Mail;
-using System.Text.Json.Serialization;
-using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Mappings;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
-using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
+using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleTimeline;
 using AutoHelper.Domain;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Messages.Enums;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using AutoHelper.Hangfire.Shared.MediatR;
 using Microsoft.EntityFrameworkCore;
-using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
-using Hangfire;
 
 namespace AutoHelper.Application.Vehicles.Commands.UpdateVehicleServiceLogAsGarage;
 
@@ -78,16 +65,16 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly ISender _sender;
-    private readonly IBackgroundJobClient _backgroundJobClient;
+    private readonly IQueueService _queueService;
     private readonly IIdentificationHelper _identificationHelper;
 
 
     public UpdateVehicleServiceLogAsGarageCommandHandler(
-        IBlobStorageService blobStorageService, 
-        IApplicationDbContext context, 
-        IMapper mapper, 
-        ISender sender, 
-        IBackgroundJobClient backgroundJobClient,
+        IBlobStorageService blobStorageService,
+        IApplicationDbContext context,
+        IMapper mapper,
+        ISender sender,
+        IQueueService queueService,
         IIdentificationHelper identificationHelper
     )
     {
@@ -95,7 +82,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         _context = context;
         _mapper = mapper;
         _sender = sender;
-        _backgroundJobClient = backgroundJobClient;
+        _queueService = queueService;
         _identificationHelper = identificationHelper;
     }
 
@@ -116,7 +103,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         // entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         // insert timeline + send reporter a notification
-        if(entity.Status == VehicleServiceLogStatus.VerifiedByGarage)
+        if (entity.Status == VehicleServiceLogStatus.VerifiedByGarage)
         {
             var timelineCommand = new CreateVehicleTimelineCommand(entity);
             var timeline = await _sender.Send(timelineCommand, cancellationToken);
@@ -179,8 +166,8 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatsappNumber);
         var notificationCommand = new CreateNotificationCommand(
             licencePlate,
-            GeneralNotificationType.VehicleServiceReviewApproved,
-            VehicleNotificationType.Other,
+            NotificationGeneralType.VehicleServiceReviewApproved,
+            NotificationVehicleType.Other,
             triggerDate: null,
             contactIdentifier: contactIdentifier
         );
@@ -190,7 +177,7 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
         var queue = nameof(SendNotificationMessageCommand);
         var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
         var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
-        _sender.Enqueue(_backgroundJobClient, queue, title, schuduleCommand);
+        _queueService.Enqueue(queue, title, schuduleCommand);
     }
 
 }

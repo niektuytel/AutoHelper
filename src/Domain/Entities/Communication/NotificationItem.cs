@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Conversations.Enums;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Messages.Enums;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Vehicles;
-using MediatR;
 
 namespace AutoHelper.Domain.Entities.Messages;
 
@@ -38,13 +30,13 @@ public class NotificationItem : BaseAuditableEntity
     /// What type of notification is this
     /// </summary>
     [Required]
-    public GeneralNotificationType GeneralType { get; set; }
+    public NotificationGeneralType GeneralType { get; set; }
 
     /// <summary>
     /// What type of notification is this, related to the vehicle point-of-view
     /// </summary>
     [Required]
-    public VehicleNotificationType VehicleType { get; set; }
+    public NotificationVehicleType VehicleType { get; set; }
 
     /// <summary>
     /// Type of receiver, can be whatsapp, email, etc
@@ -70,7 +62,7 @@ public class NotificationItem : BaseAuditableEntity
     /// <summary>
     /// Metadata of the notification, can be used to store additional information
     /// </summary>
-    public string MetadataString { get; set; } =  "{}";
+    public string MetadataString { get; set; } = "{}";
 
     [NotMapped]
     [JsonIgnore]

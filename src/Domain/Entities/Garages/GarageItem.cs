@@ -1,9 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
-using System;
-using AutoHelper.Domain.Entities.Vehicles;
-using NetTopologySuite.Geometries;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AutoHelper.Domain.Entities.Conversations;
 
 namespace AutoHelper.Domain.Entities.Garages;

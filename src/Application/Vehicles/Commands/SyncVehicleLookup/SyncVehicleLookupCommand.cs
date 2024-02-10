@@ -1,14 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Models;
-using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoMapper;
-using Force.DeepCloner;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
-using Microsoft.Extensions.Logging;
 
 namespace AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
 

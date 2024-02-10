@@ -1,25 +1,19 @@
-using AutoHelper.Messaging;
-using AutoHelper.Hangfire;
-using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
-using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Common.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using AutoHelper.Infrastructure.Persistence;
-using AutoHelper.Infrastructure.Common.Interfaces;
+using AutoHelper.Hangfire;
 using AutoHelper.Hangfire.Dashboard;
+using AutoHelper.Messaging;
 
 internal static class Program
 {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var inDev = builder.Environment.IsDevelopment();
         builder.Services.AddRazorPages();
 
         builder.Services.AddMessagingServices(builder.Configuration);
-        builder.AddHangfireServices();
-        builder.AddHangfireServerInstance();
+        builder.Services.AddHangfireServices(builder.Configuration, inDev);
+        builder.Services.AddHangfireServerInstance();
         builder.Services.AddApplicationServices();
         builder.Services.AddInfrastructureServices(builder.Configuration);
 
@@ -28,7 +22,7 @@ internal static class Program
         var app = builder.Build();
         app.MapRazorPages();
 
-        if (app.Environment.IsDevelopment())
+        if (inDev)
         {
             app.UseDeveloperExceptionPage();
         }

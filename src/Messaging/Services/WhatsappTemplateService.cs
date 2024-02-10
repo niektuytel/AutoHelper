@@ -1,25 +1,15 @@
-﻿using System.ComponentModel;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading;
+﻿using System.Text.RegularExpressions;
 using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Conversations;
 using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Messages.Enums;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoHelper.Messaging.Models.GraphEmail;
-using AutoHelper.Messaging.Templates.Notification;
-using AutoHelper.WebUI.Controllers;
-using BlazorTemplater;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Exceptions;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Messages.Requests;
-using WhatsappBusiness.CloudApi.Webhook;
 
 namespace AutoHelper.Messaging.Services;
 
@@ -278,16 +268,16 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
     {
         switch (notification.GeneralType)
         {
-            case GeneralNotificationType.GarageServiceReviewReminder:
+            case NotificationGeneralType.GarageServiceReviewReminder:
                 await SendGarageServiceReviewReminder(notification, vehicle, cancellationToken);
                 break;
-            case GeneralNotificationType.VehicleServiceReviewApproved:
+            case NotificationGeneralType.VehicleServiceReviewApproved:
                 await SendVehicleServiceReviewApproved(notification, vehicle, cancellationToken);
                 break;
-            case GeneralNotificationType.VehicleServiceReviewDeclined:
+            case NotificationGeneralType.VehicleServiceReviewDeclined:
                 await SendVehicleServiceReviewDeclined(notification, vehicle, cancellationToken);
                 break;
-            case GeneralNotificationType.VehicleServiceNotification:
+            case NotificationGeneralType.VehicleServiceNotification:
                 await SendVehicleServiceNotification(notification, vehicle, cancellationToken);
                 break;
         }
@@ -506,7 +496,7 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
 
         switch (notification.VehicleType)
         {
-            case VehicleNotificationType.MOT:
+            case NotificationVehicleType.MOT:
                 name = "vehicle_servicenotification_mot";
                 components = new List<TextMessageComponent>
                 {
@@ -541,21 +531,21 @@ internal class WhatsappTemplateService : IWhatsappTemplateService
                     }
                 };
                 break;
-            case VehicleNotificationType.WinterService:
+            case NotificationVehicleType.WinterService:
                 //🚗 Schoonmaaktip voor uw {{2}}! 🧼
                 //Na de winter is het belangrijk uw {{2}} goed schoon te maken. Dit voorkomt roest door strooizout en houdt uw auto in topstaat.
                 name = "vehicle_servicenotification_winterservice";
                 break;
-            case VehicleNotificationType.ChangeToSummerTyre:
+            case NotificationVehicleType.ChangeToSummerTyre:
                 name = "vehicle_servicenotification_summertyrechange";
                 break;
-            case VehicleNotificationType.SummerCheck:
+            case NotificationVehicleType.SummerCheck:
                 name = "vehicle_servicenotification_summercheck";
                 break;
-            case VehicleNotificationType.SummerService:
+            case NotificationVehicleType.SummerService:
                 name = "vehicle_servicenotification_summerservice2";
                 break;
-            case VehicleNotificationType.ChangeToWinterTyre:
+            case NotificationVehicleType.ChangeToWinterTyre:
                 name = "vehicle_servicenotification_wintertyrechange";
                 break;
         }

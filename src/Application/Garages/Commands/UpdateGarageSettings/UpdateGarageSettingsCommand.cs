@@ -1,18 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Garages.Commands.CreateGarageItem;
-using AutoHelper.Application.Garages.Queries.GetGarageSettings;
 using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 using NetTopologySuite;
-using Microsoft.Extensions.Logging;
+using NetTopologySuite.Geometries;
 
 namespace AutoHelper.Application.Garages.Commands.UpdateGarageItemSettings;
 
@@ -77,7 +71,7 @@ public class UpdateGarageItemSettingsCommandHandler : IRequestHandler<UpdateGara
         request.Garage.Lookup.ConversationContactEmail = request.ConversationEmail;
         request.Garage.Lookup.ConversationContactWhatsappNumber = request.ConversationWhatsappNumber;
 
-        if(request.Location != null && request.Location?.Longitude != default && request.Location?.Longitude != default)
+        if (request.Location != null && request.Location?.Longitude != default && request.Location?.Longitude != default)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             request.Garage.Lookup.Location = geometryFactory.CreatePoint(new Coordinate(request.Location!.Longitude, request.Location!.Latitude));

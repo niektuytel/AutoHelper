@@ -24,7 +24,7 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse> : IPipelineBehavio
         {
             return await next();
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         when (ex is ForbiddenAccessException || ex is NotFoundException || ex is ValidationException)
         {
             var message = ex.Message;

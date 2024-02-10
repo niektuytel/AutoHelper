@@ -1,10 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using AutoHelper.Application.Common.Mappings;
+﻿using AutoHelper.Application.Common.Mappings;
 using AutoHelper.Domain.Entities.Vehicles;
-using Newtonsoft.Json;
 using AutoMapper;
-using System;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 

@@ -1,7 +1,4 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
-using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +24,7 @@ public class GetVehicleNextNotificationValidator : AbstractValidator<GetVehicleN
         licensePlate = licensePlate.ToUpper().Replace("-", "");
         command.LicensePlate = licensePlate;
 
-        if(command.Vehicle == null)
+        if (command.Vehicle == null)
         {
             command.Vehicle = await _context.VehicleLookups
                 .AsNoTracking()

@@ -1,6 +1,5 @@
 ﻿using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
 using AutoHelper.Domain.Entities.Garages;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,7 @@ public class GetGarageLookupQueryValidator : AbstractValidator<GetGarageLookupQu
     public GetGarageLookupQueryValidator(IApplicationDbContext context)
     {
         _context = context;
-        
+
         RuleFor(v => v.GarageLookupIdentifier)
             .NotEmpty()
             .WithMessage("GarageLookupIdentifier cannot be empty.")

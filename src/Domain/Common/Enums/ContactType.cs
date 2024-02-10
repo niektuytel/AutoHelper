@@ -1,4 +1,4 @@
-﻿namespace AutoHelper.Domain.Entities.Conversations.Enums;
+﻿namespace AutoHelper.Domain.Common.Enums;
 
 public enum ContactType
 {

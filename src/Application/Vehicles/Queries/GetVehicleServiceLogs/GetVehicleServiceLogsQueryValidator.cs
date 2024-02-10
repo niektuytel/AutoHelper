@@ -1,5 +1,4 @@
-﻿using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace AutoHelper.Application.Vehicles.Queries.GetVehicleServiceLogs;
 
@@ -20,7 +19,7 @@ public class GetVehicleServiceLogsQueryValidator : AbstractValidator<GetVehicleS
 
                 // Replace spaces or hyphens with an empty string
                 var processedLicensePlate = licensePlate.Replace(" ", "").Replace("-", "");
-                
+
                 // Validate the length of the processed license plate
                 if (processedLicensePlate.Length < 4 || processedLicensePlate.Length > 9)
                 {

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AutoHelper.Domain.Entities.Conversations.Enums;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
 
 namespace AutoHelper.Domain.Entities.Conversations;
 
@@ -30,7 +31,7 @@ public class ConversationMessageItem : BaseAuditableEntity
     public string ReceiverContactIdentifier { get; set; } = null!;
 
     [Required]
-    public MessageStatus Status { get; set; }
+    public ConversationMessageStatus Status { get; set; }
 
     [Required]
     public string MessageContent { get; set; } = null!;

@@ -1,6 +1,4 @@
-﻿using AutoHelper.Domain.Entities.Vehicles;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AutoHelper.Application.Vehicles._DTOs;
 

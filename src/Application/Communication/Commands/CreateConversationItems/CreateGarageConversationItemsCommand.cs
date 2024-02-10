@@ -1,24 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Conversations.Enums;
-using AutoHelper.Domain.Entities.Garages;
-using AutoHelper.Domain.Entities.Vehicles;
-using AutoMapper;
-using MediatR;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Messages._DTOs;
-using Hangfire;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using System.Text.Json.Serialization;
 using AutoHelper.Application.Messages.Commands.CreateConversationMessage;
-using System.Threading;
-using AutoHelper.Domain.Entities;
+using AutoHelper.Domain.Entities.Communication;
+using AutoHelper.Domain.Entities.Conversations;
+using MediatR;
 
 namespace AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
 
@@ -69,9 +54,9 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
                     .Select(item => item.GarageServiceId);
 
                 var conversation = CreateConversation(
-                    request.MessageType, 
-                    vehicle.VehicleLicensePlate!, 
-                    garage.RelatedGarageLookupIdentifier!, 
+                    request.MessageType,
+                    vehicle.VehicleLicensePlate!,
+                    garage.RelatedGarageLookupIdentifier!,
                     serviceIds
                 );
 
@@ -85,7 +70,8 @@ public class CreateGarageConversationBatchCommandHandler : IRequestHandler<Creat
         return conversations.AsEnumerable();
     }
 
-    private ConversationItem CreateConversation(ConversationType conversationType, string licensePlate, string garageIdentifier, IEnumerable<Guid> serviceIds) {
+    private ConversationItem CreateConversation(ConversationType conversationType, string licensePlate, string garageIdentifier, IEnumerable<Guid> serviceIds)
+    {
         var conversation = new ConversationItem
         {
             GarageLookupIdentifier = garageIdentifier!,

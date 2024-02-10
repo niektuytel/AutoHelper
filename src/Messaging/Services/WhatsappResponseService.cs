@@ -1,21 +1,10 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Vehicles;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Exceptions;
 using WhatsappBusiness.CloudApi.Interfaces;
 using WhatsappBusiness.CloudApi.Messages.ReplyRequests;
 using WhatsappBusiness.CloudApi.Messages.Requests;
-using WhatsappBusiness.CloudApi.Webhook;
 using TextMessageContext = WhatsappBusiness.CloudApi.Messages.ReplyRequests.TextMessageContext;
 
 namespace AutoHelper.Messaging.Services;
@@ -115,7 +104,7 @@ internal class WhatsappResponseService : IWhatsappResponseService
                 }
             };
 
-            if(!string.IsNullOrEmpty(contextMessageId))
+            if (!string.IsNullOrEmpty(contextMessageId))
             {
                 request.Context = new TextMessageContext
                 {

@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Hangfire.Dashboard.Management.v2" Version="2.2.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Application\AutoHelper.Application.csproj" />
     <ProjectReference Include="..\Domain\AutoHelper.Domain.csproj" />
     <ProjectReference Include="..\Hangfire\AutoHelper.Hangfire.csproj" />

@@ -1,19 +1,10 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using System.Text.Json.Serialization;
+using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Domain.Common.Enums;
+using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Conversations.Enums;
 using MediatR;
-using Microsoft.VisualBasic;
-using System.Net.Mail;
-using System.Net;
-using System.Text.Json.Serialization;
-using System.Threading;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Configuration;
-using static System.Net.Mime.MediaTypeNames;
-using AutoHelper.Domain.Entities;
-using AutoHelper.Hangfire.Shared.Interfaces;
 
 namespace AutoHelper.Application.Messages.Commands.SendConversationMessage;
 
@@ -21,7 +12,7 @@ public record SendConversationMessageCommand : IQueueRequest<string>
 {
     public SendConversationMessageCommand()
     {
-        
+
     }
 
     public SendConversationMessageCommand(Guid messageId)
@@ -44,7 +35,7 @@ public record SendConversationMessageCommand : IQueueRequest<string>
     public string Title => $"[{Message?.SenderContactIdentifier}] To [{Message?.ReceiverContactIdentifier}]";
 
     [JsonIgnore]
-    public IQueueService QueueingService { get; set; } = null!;
+    public IQueueContext QueueingService { get; set; } = null!;
 }
 
 public class SendMessageCommandHandler : IRequestHandler<SendConversationMessageCommand, string>
@@ -82,7 +73,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
 
         var isFirstMessage = totalMessagesInConversation == 1;
         if (isFirstMessage)
-        { 
+        {
             await HandleFirstMessage(
                 senderService,
                 receiverService,
@@ -96,8 +87,8 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
         else
         {
             await receiverService.SendMessage(
-                request.Message, 
-                senderContactName, 
+                request.Message,
+                senderContactName,
                 cancellationToken
             );
         }
@@ -108,14 +99,15 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
     }
 
     private async Task HandleFirstMessage(
-        IMessagingService senderService, 
-        IMessagingService receiverService, 
+        IMessagingService senderService,
+        IMessagingService receiverService,
         ConversationMessageItem message,
         string senderContactName,
         string receiverContactName,
         bool sendToGarage,
         CancellationToken cancellationToken
-    ) {
+    )
+    {
         if (sendToGarage)
         {
             var licensePlate = message!.Conversation.VehicleLicensePlate;
@@ -137,7 +129,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
 
     private async Task UpdateDatabaseMessage(SendConversationMessageCommand request, CancellationToken cancellationToken)
     {
-        request.Message!.Status = MessageStatus.Delivered;
+        request.Message!.Status = ConversationMessageStatus.Delivered;
 
         _context.ConversationMessages.Update(request.Message);
         await _context.SaveChangesAsync(cancellationToken);
@@ -158,12 +150,12 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
 
         return conversation.RelatedGarage.Name;
     }
-    
+
     private IMessagingService GetMessagingService(SendConversationMessageCommand request, bool fromSender)
     {
-        var contactType = fromSender ? 
-            request.Message!.SenderContactType 
-            : 
+        var contactType = fromSender ?
+            request.Message!.SenderContactType
+            :
             request.Message!.ReceiverContactType;
 
         return contactType switch
