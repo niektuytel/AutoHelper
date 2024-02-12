@@ -52,7 +52,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RequestLogs");
+                    b.ToTable("RequestLogs", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Conversations.ConversationItem", b =>
@@ -102,7 +102,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("VehicleLicensePlate");
 
-                    b.ToTable("Conversations");
+                    b.ToTable("Conversations", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Conversations.ConversationMessageItem", b =>
@@ -157,7 +157,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.ToTable("ConversationMessages");
+                    b.ToTable("ConversationMessages", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageItem", b =>
@@ -194,7 +194,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("GarageLookupIdentifier");
 
-                    b.ToTable("Garages");
+                    b.ToTable("Garages", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupItem", b =>
@@ -272,7 +272,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasKey("Identifier");
 
-                    b.ToTable("GarageLookups");
+                    b.ToTable("GarageLookups", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageLookupServiceItem", b =>
@@ -310,7 +310,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("GarageLookupIdentifier");
 
-                    b.ToTable("GarageLookupServices");
+                    b.ToTable("GarageLookupServices", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Garages.GarageServiceItem", b =>
@@ -347,7 +347,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("GarageId");
 
-                    b.ToTable("GarageServices");
+                    b.ToTable("GarageServices", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Messages.NotificationItem", b =>
@@ -403,7 +403,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("VehicleLicensePlate");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Vehicles.VehicleLookupItem", b =>
@@ -437,7 +437,7 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.HasIndex("LicensePlate")
                         .IsUnique();
 
-                    b.ToTable("VehicleLookups");
+                    b.ToTable("VehicleLookups", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Vehicles.VehicleServiceLogItem", b =>
@@ -517,7 +517,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("VehicleLicensePlate");
 
-                    b.ToTable("VehicleServiceLogs");
+                    b.ToTable("VehicleServiceLogs", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Vehicles.VehicleTimelineItem", b =>
@@ -560,7 +560,7 @@ namespace AutoHelper.Infrastructure.Migrations
 
                     b.HasIndex("VehicleServiceLogId");
 
-                    b.ToTable("VehicleTimelineItems");
+                    b.ToTable("VehicleTimelineItems", (string)null);
                 });
 
             modelBuilder.Entity("AutoHelper.Domain.Entities.Conversations.ConversationItem", b =>

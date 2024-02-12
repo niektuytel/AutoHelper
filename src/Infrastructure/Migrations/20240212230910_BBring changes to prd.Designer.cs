@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240210224023_Add Vehicle fuel type on garage service")]
-    partial class AddVehiclefueltypeongarageservice
+    [Migration("20240212230910_BBring changes to prd")]
+    partial class BBringchangestoprd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
