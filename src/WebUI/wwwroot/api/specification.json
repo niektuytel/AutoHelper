@@ -2592,6 +2592,8 @@
         "additionalProperties": false,
         "required": [
           "type",
+          "vehicleType",
+          "vehicleFuelType",
           "title",
           "description",
           "expectedNextDateIsRequired",
@@ -2604,9 +2606,11 @@
             "$ref": "#/components/schemas/GarageServiceType"
           },
           "vehicleType": {
+            "nullable": false,
             "$ref": "#/components/schemas/VehicleType"
           },
           "vehicleFuelType": {
+            "nullable": false,
             "$ref": "#/components/schemas/VehicleFuelType"
           },
           "title": {
@@ -2692,6 +2696,7 @@
           "id",
           "type",
           "vehicleType",
+          "vehicleFuelType",
           "title",
           "description",
           "expectedNextDateIsRequired",
@@ -2710,11 +2715,11 @@
             "$ref": "#/components/schemas/GarageServiceType"
           },
           "vehicleType": {
-            "minLength": 1,
             "nullable": false,
             "$ref": "#/components/schemas/VehicleType"
           },
           "vehicleFuelType": {
+            "nullable": false,
             "$ref": "#/components/schemas/VehicleFuelType"
           },
           "title": {

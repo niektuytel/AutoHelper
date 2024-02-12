@@ -1,8 +1,8 @@
 ﻿{
-  "Any.Title": "Any Fuel Type",
-  "Diesel.Title": "Diesel Fuel",
-  "Gasoline.Title": "Gasoline Fuel",
-  "LPG.Title": "LPG Fuel",
-  "Electric.Title": "Electric Fuel",
-  "Hybrid.Title": "Hybrid Fuel"
+  "Any.Title": "Any Type",
+  "Diesel.Title": "Diesel",
+  "Gasoline.Title": "Gasoline",
+  "LPG.Title": "LPG",
+  "Electric.Title": "Electric",
+  "Hybrid.Title": "Hybrid"
 }

@@ -2873,8 +2873,8 @@ export interface IGarageLocationDtoItem {
 
 export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
     type!: GarageServiceType;
-    vehicleType?: VehicleType;
-    vehicleFuelType?: VehicleFuelType;
+    vehicleType!: VehicleType;
+    vehicleFuelType!: VehicleFuelType;
     title!: string;
     description!: string;
     expectedNextDateIsRequired!: boolean;
@@ -2923,8 +2923,8 @@ export class CreateGarageServiceCommand implements ICreateGarageServiceCommand {
 
 export interface ICreateGarageServiceCommand {
     type: GarageServiceType;
-    vehicleType?: VehicleType;
-    vehicleFuelType?: VehicleFuelType;
+    vehicleType: VehicleType;
+    vehicleFuelType: VehicleFuelType;
     title: string;
     description: string;
     expectedNextDateIsRequired: boolean;
@@ -2999,7 +2999,7 @@ export class UpdateGarageServiceCommand implements IUpdateGarageServiceCommand {
     id!: string;
     type!: GarageServiceType;
     vehicleType!: VehicleType;
-    vehicleFuelType?: VehicleFuelType;
+    vehicleFuelType!: VehicleFuelType;
     title!: string;
     description!: string;
     expectedNextDateIsRequired!: boolean;
@@ -3052,7 +3052,7 @@ export interface IUpdateGarageServiceCommand {
     id: string;
     type: GarageServiceType;
     vehicleType: VehicleType;
-    vehicleFuelType?: VehicleFuelType;
+    vehicleFuelType: VehicleFuelType;
     title: string;
     description: string;
     expectedNextDateIsRequired: boolean;

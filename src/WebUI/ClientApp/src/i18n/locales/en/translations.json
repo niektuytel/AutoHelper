@@ -237,6 +237,8 @@
   "GarageServiceDialog.Type.Required": "Service type is required",
   "GarageServiceDialog.VehicleType.Label": "Vehicle type",
   "GarageServiceDialog.VehicleType.Required": "Vehicle type is required",
+  "GarageServiceDialog.VehicleFuelType.Label": "Fuel Type",
+  "GarageServiceDialog.VehicleFuelType.Required": "Fuel Type is required",
   "GarageServiceDialog.Title.Label": "Title",
   "GarageServiceDialog.Title.Required": "Title is required",
   "GarageServiceDialog.Description.Label": "Description",
