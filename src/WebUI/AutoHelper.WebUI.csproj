@@ -27,9 +27,9 @@
 
     <ItemGroup>
         <PackageReference Include="LinqKit.Core" Version="1.2.5" />
-        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.15" />
         <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.15" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.15">
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

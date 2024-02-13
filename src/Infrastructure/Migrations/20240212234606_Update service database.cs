@@ -5,7 +5,7 @@
 namespace AutoHelper.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class BBringchangestoprd : Migration
+    public partial class Updateservicedatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

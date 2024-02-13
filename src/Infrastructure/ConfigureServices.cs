@@ -30,7 +30,7 @@ public static class ConfigureServices
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
                     builder =>
                     {
-                        builder.CommandTimeout((int)TimeSpan.FromMinutes(5).TotalSeconds);// needed for data migrations
+                        builder.CommandTimeout((int)TimeSpan.FromMinutes(25).TotalSeconds);// needed for data migrations
                         builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                         builder.UseNetTopologySuite();
                     }
