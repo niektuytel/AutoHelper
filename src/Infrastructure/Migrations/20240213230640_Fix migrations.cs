@@ -5,7 +5,7 @@
 namespace AutoHelper.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateServices : Migration
+    public partial class Fixmigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

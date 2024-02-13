@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace AutoHelper.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240213225035_Update Services")]
-    partial class UpdateServices
+    [Migration("20240208215322_Remove UserID service and it from the garage")]
+    partial class RemoveUserIDserviceanditfromthegarage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -303,9 +303,6 @@ namespace AutoHelper.Infrastructure.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<int>("VehicleFuelType")
-                        .HasColumnType("int");
-
                     b.Property<int>("VehicleType")
                         .HasColumnType("int");
 
@@ -338,9 +335,6 @@ namespace AutoHelper.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehicleFuelType")
                         .HasColumnType("int");
 
                     b.Property<int>("VehicleType")
