@@ -1,5 +1,4 @@
-﻿using System.Net.Http;
-using System.Text.Json;
+﻿using System.Text.Json;
 using AutoHelper.Infrastructure.Common.Models;
 using Microsoft.Extensions.Configuration;
 using SixLabors.ImageSharp;

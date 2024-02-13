@@ -4,8 +4,6 @@ using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
 using AutoHelper.Application.Messages.Commands.DeleteNotification;
 using AutoHelper.Application.Messages.Commands.ReceiveMessage;
 using AutoHelper.Application.Messages.Commands.SendConversationMessage;
-using AutoHelper.Hangfire.Extentions;
-using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WhatsappBusiness.CloudApi.Webhook;

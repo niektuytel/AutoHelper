@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using AutoHelper.Application.Common.Interfaces;
 using FluentValidation;
 using Hangfire;

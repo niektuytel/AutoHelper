@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using Hangfire;
-using Hangfire.Server;
-using Hangfire.States;
 using MediatR;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AutoHelper.Hangfire.MediatR;
 

@@ -80,16 +80,15 @@ public static class ConfigureServices
         configuration.UseSerializerSettings(jsonSettings);
     }
 
-    public static void UseHangfireServices(this WebApplication app, IServiceScope scope)
+    public static void UseHangfireServices(this WebApplication app)
     {
         //// define that we want to use batches
         //GlobalConfiguration.Configuration.UseBatches();
 
-        if (app.Environment.IsDevelopment())
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<HangfireDbContext>();
+        if (context.Database.EnsureCreated())
         {
-            // Migrate and Update the database
-            var context = scope.ServiceProvider.GetRequiredService<HangfireDbContext>();
-            var created = context.Database.EnsureCreated();
             context.Database.Migrate();
         }
 

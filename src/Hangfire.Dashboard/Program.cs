@@ -36,10 +36,8 @@ internal static class Program
 
         app.UseEndpoints(endpoints => endpoints.MapRazorPages());
 
-        using var scope = app.Services.CreateScope();
-        app.UseHangfireServices(scope);
+        app.UseHangfireServices();
         app.UseHangfireDashboardInstance(matchPath: "");
-
         app.Run();
     }
 

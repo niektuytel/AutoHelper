@@ -4,8 +4,6 @@ using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookup;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleLookups;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimeline;
 using AutoHelper.Application.Vehicles.Commands.SyncVehicleTimelines;
-using AutoHelper.Hangfire.Extentions;
-using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

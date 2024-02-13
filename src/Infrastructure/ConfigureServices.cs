@@ -13,6 +13,9 @@ public static class ConfigureServices
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        //// Database and Health Checks
+        //services.AddDbContextCheck<ApplicationDbContext>();
+
         CultureConfig.SetGlobalCultureToNL();
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
@@ -51,4 +54,13 @@ public static class ConfigureServices
 
         return services;
     }
+
+    public static void UseInfrastructureServices(this IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        //var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        //initialiser.InitialiseAsync().Wait();
+        //initialiser.SeedAsync().Wait();
+    }
+
 }

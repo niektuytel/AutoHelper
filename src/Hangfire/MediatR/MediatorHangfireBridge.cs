@@ -1,14 +1,10 @@
 ﻿using System.ComponentModel;
-using System.Threading.Tasks;
 using AutoHelper.Application.Common.Exceptions;
 using AutoHelper.Application.Common.Interfaces;
 using Hangfire;
-using Hangfire.Console;
 using Hangfire.Server;
 using MediatR;
 using Newtonsoft.Json;
-using static System.Net.Mime.MediaTypeNames;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace AutoHelper.Hangfire.MediatR;
 

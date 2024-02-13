@@ -1,9 +1,6 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire.Extentions;
 using Hangfire;
-using Hangfire.Console;
-using Hangfire.Console.Progress;
-using Hangfire.Server;
 using MediatR;
 
 namespace AutoHelper.Hangfire.Services;

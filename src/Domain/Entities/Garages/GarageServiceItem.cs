@@ -27,7 +27,7 @@ public class GarageServiceItem : BaseEntity
     /// </summary>
     [Required]
     public VehicleType VehicleType { get; set; } = VehicleType.Any;
-    
+
     /// <summary>
     /// Like: Petrol, Diesel, Electric, etc.
     /// </summary>

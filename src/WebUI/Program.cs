@@ -59,12 +59,7 @@ internal class Program
 
         });
 
-        // Database and Health Checks
-        builder.Services
-            .AddDatabaseDeveloperPageExceptionFilter()
-            .AddHealthChecks()
-            .AddDbContextCheck<ApplicationDbContext>();
-
+        builder.Services.AddHealthChecks();
         builder.Services.AddHangfireServices(builder.Configuration, builder.Environment.IsDevelopment());
         builder.Services.AddMessagingServices(builder.Configuration);
         builder.Services.AddApplicationServices();
@@ -77,7 +72,7 @@ internal class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.UseMigrationsEndPoint();
+            //app.UseMigrationsEndPoint();
             app.UseDeveloperExceptionPage();
         }
         else
@@ -111,17 +106,8 @@ internal class Program
             //endpoints.MapFallbackToFile("index.html");
         });
 
-
-        // Handle scoped services
-        using (var scope = app.Services.CreateScope())
-        {
-            app.UseHangfireServices(scope);
-
-            // Database initialisation
-            var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-            initialiser.InitialiseAsync().Wait();
-            initialiser.SeedAsync().Wait();
-        }
+        app.UseHangfireServices();
+        app.Services.UseInfrastructureServices();
 
         app.Run();
     }

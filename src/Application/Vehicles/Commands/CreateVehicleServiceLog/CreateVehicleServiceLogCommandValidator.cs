@@ -1,6 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Garages._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLogAsGarage;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
