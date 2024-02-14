@@ -4,6 +4,7 @@ export const ROUTES = {
     VEHICLE: "/vehicle",
     GARAGES: "/garages",
     GARAGE: "/garage",
+    POLICY: "/policy",
     GARAGE_ACCOUNT: {
         DEFAULT: "/garage-account",
         OVERVIEW: "/garage-account/overview",

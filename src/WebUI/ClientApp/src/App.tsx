@@ -23,6 +23,7 @@ import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicel
 import HomePage from './pages/home/HomePage';
 import { ServiceLogDrawerProvider } from './context/ServiceLogDrawerContext';
 import { garageLoginRequest } from './authConfig';
+import PolicyPage from './pages/policy/PolicyPage';
 
 
 function ErrorComponent({ error }: any) {
@@ -98,7 +99,14 @@ export default ({ msalInstance }:any) => {
                     <Routes>
                         <Route path="*" element={
                             <>
+                                <Header showStaticDrawer={false} />
                                 <NotFoundPage />
+                            </>
+                        } />
+                        <Route path={`${ROUTES.POLICY}`} element={
+                            <>
+                                <Header showStaticDrawer={false} />
+                                <PolicyPage />
                             </>
                         } />
                         <Route path="/" element={
