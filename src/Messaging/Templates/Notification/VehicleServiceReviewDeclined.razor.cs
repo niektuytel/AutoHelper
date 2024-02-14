@@ -8,6 +8,8 @@ public partial class VehicleServiceReviewDeclined
     [Parameter]
     public NotificationItem Notification { get; set; } = new NotificationItem();
 
-    public string VehicleUrl => $"https://autohelper.nl/vehicle/{Notification.VehicleLicensePlate}";
+    public string Domain => $"https://autohelper.nl";// https://localhost:5001
+
+    public string VehicleUrl => $"{Domain}/vehicle/{Notification.VehicleLicensePlate}";
 
 }

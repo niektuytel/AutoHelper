@@ -24,7 +24,7 @@ public class VehicleController : ApiControllerBase
         _vehicleService = vehicleService;
     }
 
-    [HttpGet($"vehicle/{nameof(ServicelogDeeplink)}")]
+    [HttpGet($"{nameof(ServicelogDeeplink)}")]
     [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ServicelogDeeplink([FromQuery] string action)
