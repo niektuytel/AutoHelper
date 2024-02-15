@@ -14,7 +14,7 @@ internal static class Program
         builder.Services.AddMessagingServices(builder.Configuration);
         builder.Services.AddHangfireServices(builder.Configuration, inDev);
         builder.Services.AddHangfireServerInstance();
-        builder.Services.AddApplicationServices();
+        builder.Services.AddApplicationServices(builder.Configuration);
         builder.Services.AddInfrastructureServices(builder.Configuration);
 
         builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
