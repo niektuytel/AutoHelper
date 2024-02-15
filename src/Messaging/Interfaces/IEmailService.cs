@@ -3,7 +3,7 @@
 namespace AutoHelper.Messaging.Interfaces;
 internal interface IEmailService
 {
-    Task SendEmail(GraphEmail email);
+    Task SendEmail(GraphEmail email, CancellationToken cancellationToken);
     string GetTestEmailAddress();
     string GetUserId();
 }

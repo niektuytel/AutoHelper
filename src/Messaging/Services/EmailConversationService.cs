@@ -74,7 +74,7 @@ internal class EmailConversationService : IEmailConversationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
     public async Task SendMessageWithVehicle(ConversationMessageItem message, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
@@ -87,7 +87,7 @@ internal class EmailConversationService : IEmailConversationService
             .Set(c => c.LicensePlate, vehicle.LicensePlate)
             .Set(c => c.Content, content)
             .Set(c => c.FuelType, vehicle.FuelType)
-            .Set(c => c.Model, $"{vehicle.Brand} {vehicle.Model}({vehicle.YearOfFirstAdmission})")// Dacia Sandero (2008)
+            .Set(c => c.Model, vehicle.FullName)
             .Set(c => c.MOT, vehicle.MOTExpiryDate)
             .Set(c => c.NAP, vehicle.Mileage)
             .Set(c => c.ConversationId, conversationId.ToString().Split('-')[0])
@@ -124,7 +124,7 @@ internal class EmailConversationService : IEmailConversationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
     public async Task SendMessageConfirmation(ConversationMessageItem message, string receiverName, CancellationToken cancellationToken)
@@ -168,7 +168,7 @@ internal class EmailConversationService : IEmailConversationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
 }

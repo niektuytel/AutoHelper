@@ -158,7 +158,7 @@ internal class WhatsappConversationService : IWhatsappConversationService
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = $"{vehicle.Brand.ToTitleCase()} {vehicle.Model.ToTitleCase()}({vehicle.YearOfFirstAdmission})"// Dacia Sandero (2008)
+                                Text = vehicle.FullName// Dacia Sandero (2008)
                             },
                             new TextMessageParameter
                             {

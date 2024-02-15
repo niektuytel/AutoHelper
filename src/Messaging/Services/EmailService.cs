@@ -50,7 +50,7 @@ internal class EmailService : IEmailService
         _testEmailAddress = _configuration["GraphMicrosoft:TestEmailAddress"]!;
     }
 
-    public async Task SendEmail(GraphEmail email)
+    public async Task SendEmail(GraphEmail email, CancellationToken cancellationToken)
     {
         var accessToken = await GetAccessToken();
         var emailJson = JsonSerializer.Serialize(email);
@@ -60,7 +60,7 @@ internal class EmailService : IEmailService
         requestMessage.Content = new StringContent(emailJson, System.Text.Encoding.UTF8, "application/json");
 
         var response = await _httpClient.SendAsync(requestMessage);
-        var responseString = await response.Content.ReadAsStringAsync();
+        var responseString = await response.Content.ReadAsStringAsync(cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
             throw new ApplicationException($"Failed to send email: {responseString}");

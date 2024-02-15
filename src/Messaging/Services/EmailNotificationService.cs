@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Interfaces.Messaging.Email;
 using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Communication;
@@ -21,10 +22,12 @@ namespace AutoHelper.Messaging.Services;
 internal class EmailNotificationService : IEmailNotificationService
 {
     private readonly IEmailService _emailService;
+    private readonly IAesEncryptionService _aesEncryptionService;
 
-    public EmailNotificationService(IEmailService emailService)
+    public EmailNotificationService(IEmailService emailService, IAesEncryptionService encryptionService)
     {
         _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        _aesEncryptionService = encryptionService ?? throw new ArgumentNullException(nameof(encryptionService));
     }
 
     public async Task SendNotification(NotificationItem notification, VehicleTechnicalDtoItem vehicle, CancellationToken cancellationToken)
@@ -32,31 +35,33 @@ internal class EmailNotificationService : IEmailNotificationService
         switch (notification.GeneralType)
         {
             case NotificationGeneralType.GarageServiceReviewReminder:
-                await SendGarageServiceReviewReminder(notification, cancellationToken);
+                await SendGarageServiceReviewReminder(notification, vehicle, cancellationToken);
                 break;
             case NotificationGeneralType.VehicleServiceReviewApproved:
-                await SendVehicleServiceReviewApproved(notification, cancellationToken);
+                await SendVehicleServiceReviewApproved(notification, vehicle, cancellationToken);
                 break;
             case NotificationGeneralType.VehicleServiceReviewDeclined:
-                await SendVehicleServiceReviewDeclined(notification, cancellationToken);
+                await SendVehicleServiceReviewDeclined(notification, vehicle, cancellationToken);
                 break;
             case NotificationGeneralType.VehicleServiceNotification:
-                await SendVehicleServiceNotification(notification, cancellationToken);
+                await SendVehicleServiceNotification(notification, vehicle, cancellationToken);
                 break;
         }
     }
 
-    private async Task SendGarageServiceReviewReminder(NotificationItem notification, CancellationToken cancellationToken)
+    private async Task SendGarageServiceReviewReminder(NotificationItem notification, VehicleTechnicalDtoItem vehicleInfo, CancellationToken cancellationToken)
     {
-        string html = new ComponentRenderer<GarageServiceReviewReminder>()
+        string html = new ComponentRenderer<VehicleServiceReview>()
+            .AddService(_aesEncryptionService)
             .Set(c => c.Notification, notification)
+            .Set(c => c.VehicleInfo, vehicleInfo)
             .Render();
 
         var email = new GraphEmail
         {
             Message = new GraphEmailMessage
             {
-                Subject = $"Bevestiging gevraagd voor onderhoud aan ${notification.VehicleLicensePlate}",
+                Subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceReview.Subject}",
                 Body = new GraphEmailBody
                 {
                     ContentType = "HTML",
@@ -83,20 +88,21 @@ internal class EmailNotificationService : IEmailNotificationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
-    private async Task SendVehicleServiceReviewApproved(NotificationItem notification, CancellationToken cancellationToken)
+    private async Task SendVehicleServiceReviewApproved(NotificationItem notification, VehicleTechnicalDtoItem vehicleInfo, CancellationToken cancellationToken)
     {
         string html = new ComponentRenderer<VehicleServiceReviewApproved>()
             .Set(c => c.Notification, notification)
+            .Set(c => c.VehicleInfo, vehicleInfo)
             .Render();
 
         var email = new GraphEmail
         {
             Message = new GraphEmailMessage
             {
-                Subject = $"Onderhoudsregel Goedgekeurd voor [{notification.VehicleLicensePlate}]: Bevestiging van Garage",
+                Subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceReviewApproved.Subject}",
                 Body = new GraphEmailBody
                 {
                     ContentType = "HTML",
@@ -123,20 +129,21 @@ internal class EmailNotificationService : IEmailNotificationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
-    private async Task SendVehicleServiceReviewDeclined(NotificationItem notification, CancellationToken cancellationToken)
+    private async Task SendVehicleServiceReviewDeclined(NotificationItem notification, VehicleTechnicalDtoItem vehicleInfo, CancellationToken cancellationToken)
     {
         string html = new ComponentRenderer<VehicleServiceReviewDeclined>()
             .Set(c => c.Notification, notification)
+            .Set(c => c.VehicleInfo, vehicleInfo)
             .Render();
 
         var email = new GraphEmail
         {
             Message = new GraphEmailMessage
             {
-                Subject = $"Onderhoudsregel afgekeurd voor [{notification.VehicleLicensePlate}]: Bevestiging van Garage",
+                Subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceReviewDeclined.Subject}",
                 Body = new GraphEmailBody
                 {
                     ContentType = "HTML",
@@ -163,48 +170,49 @@ internal class EmailNotificationService : IEmailNotificationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
-    private async Task SendVehicleServiceNotification(NotificationItem notification, CancellationToken cancellationToken)
+    private async Task SendVehicleServiceNotification(NotificationItem notification, VehicleTechnicalDtoItem vehicleInfo, CancellationToken cancellationToken)
     {
         string html = "";
         string subject = "";
         switch (notification.VehicleType)
         {
             case NotificationVehicleType.MOT:
-                subject = $"APK verloopt over 4 weken voor [{notification.VehicleLicensePlate}]";
+                subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceNotification_MOT.Subject}";
                 html = new ComponentRenderer<VehicleServiceNotification_MOT>()
                     .Set(c => c.Notification, notification)
+                    .Set(c => c.VehicleInfo, vehicleInfo)
                     .Render();
                 break;
             case NotificationVehicleType.WinterService:
-                subject = $"Zorg goed voor uw auto: Overweeg een onderhoudsbeurt na een intensieve winterperiode [{notification.VehicleLicensePlate}]";
+                subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceNotification_WinterService.Subject}";
                 html = new ComponentRenderer<VehicleServiceNotification_WinterService>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
             case NotificationVehicleType.ChangeToSummerTyre:
-                subject = $"Tijd om uw Winterbanden te Wisselen voor de Zomer: [{notification.VehicleLicensePlate}]";
-                html = new ComponentRenderer<VehicleServiceNotification_SummerTyreChange>()
+                subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceNotification_TyreChangeToSummer.Subject}";
+                html = new ComponentRenderer<VehicleServiceNotification_TyreChangeToSummer>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
             case NotificationVehicleType.SummerCheck:
-                subject = $"Is uw auto klaar voor de vakantie? Plan een Zomercheck voor [{notification.VehicleLicensePlate}]";
+                subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceNotification_SummerCheck.Subject}";
                 html = new ComponentRenderer<VehicleServiceNotification_SummerCheck>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
             case NotificationVehicleType.SummerService:
-                subject = $"Heeft u een vakantietrip gemaakt? Overweeg een onderhoudsbeurt voor uw auto [{notification.VehicleLicensePlate}]";
+                subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceNotification_SummerService.Subject}";
                 html = new ComponentRenderer<VehicleServiceNotification_SummerService>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
             case NotificationVehicleType.ChangeToWinterTyre:
-                subject = $"Bereid uw auto voor op de winter: Tijd voor winterbanden [{notification.VehicleLicensePlate}]";
-                html = new ComponentRenderer<VehicleServiceNotification_WinterTyreChange>()
+                subject = $"[{notification.VehicleLicensePlate}] {VehicleServiceNotification_TyreChangeToWinter.Subject}";
+                html = new ComponentRenderer<VehicleServiceNotification_TyreChangeToWinter>()
                     .Set(c => c.Notification, notification)
                     .Render();
                 break;
@@ -241,7 +249,7 @@ internal class EmailNotificationService : IEmailNotificationService
             }
         };
 
-        await _emailService.SendEmail(email);
+        await _emailService.SendEmail(email, cancellationToken);
     }
 
 }

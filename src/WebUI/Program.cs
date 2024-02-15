@@ -62,7 +62,7 @@ internal class Program
         builder.Services.AddHealthChecks();
         builder.Services.AddHangfireServices(builder.Configuration, builder.Environment.IsDevelopment());
         builder.Services.AddMessagingServices(builder.Configuration);
-        builder.Services.AddApplicationServices();
+        builder.Services.AddApplicationServices(builder.Configuration);
         builder.Services.AddInfrastructureServices(builder.Configuration);
 
 
@@ -100,14 +100,14 @@ internal class Program
             };
         });
 
+        app.UseHangfireServices();
+        app.Services.UseInfrastructureServices();
+
         _ = app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
             endpoints.MapFallbackToFile("index.html");
         });
-
-        app.UseHangfireServices();
-        app.Services.UseInfrastructureServices();
 
         app.Run();
     }

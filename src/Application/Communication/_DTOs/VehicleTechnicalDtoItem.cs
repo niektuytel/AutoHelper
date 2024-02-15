@@ -11,4 +11,7 @@ public class VehicleTechnicalDtoItem
     public string FuelType { get; set; }
     public decimal CombinedFuelConsumption { get; set; }
     public decimal FuelEfficiency { get; set; }
+
+    public string Name => $"{Brand} {Model}";// Dacia Sandero;
+    public string FullName => $"{Brand} {Model}({YearOfFirstAdmission})";// Dacia Sandero (2008);
 }

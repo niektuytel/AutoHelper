@@ -131,8 +131,8 @@
                                                                 <table class="alignment" cellpadding="0" cellspacing="0" role="presentation" align="center">
                                                                     <tr>
                                                                         <td style="padding: 20px;">
-                                                                            <a href="https://autohelper.nl" target="_blank">
-                                                                                <img class="icon" src="https://bcc7abed98.imgdist.com/pub/bfra/1nqqy0ir/wg7/zre/sxo/ic_white_autohelper.png" height="32" width="225" align="center" style="display: block; height: auto; margin: 0 auto; border: 0;">
+                                                                            <a href="@VehicleUrl" target="_blank">
+                                                                                <img class="icon" src="@DomainUrl/images/ic_white_autohelper.png" height="32" width="225" align="center" style="display: block; height: auto; margin: 0 auto; border: 0;">
                                                                             </a>
                                                                         </td>
                                                                     </tr>
@@ -160,7 +160,7 @@
 													<table class="heading_block block-2" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-bottom: solid 1px #ddd;">
 														<tr>
 															<td class="pad" style="padding-bottom:30px;padding-left:60px;padding-right:60px;padding-top:10px;text-align:center;width:100%;">
-																<h3 style="margin: 0; color: #020b22; direction: ltr; font-family: Poppins, Arial, Helvetica, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: normal; line-height: 150%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 60px;"><span class="tinyMce-placeholder">[{{1}}] APK verloopt bijna!</span></h3>
+																<h3 style="margin: 0; color: #020b22; direction: ltr; font-family: Poppins, Arial, Helvetica, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: normal; line-height: 150%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 60px;"><span class="tinyMce-placeholder">[@Notification.VehicleLicensePlate] APK verloopt bijna!</span></h3>
 															</td>
 														</tr>
 													</table>
@@ -181,12 +181,12 @@
 											<tr>
 												<td class="column column-2" width="50%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 30px; padding-right: 30px; padding-top: 20px; vertical-align: top; border-right: 0px; border-left: 0px;">
 													<span style="margin: 0; color: #020b22; direction: ltr; font-family: Poppins, Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 700; letter-spacing: normal; line-height: 150%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 60px;">
-														De APK van uw voertuig, {{1}} nadert zijn vervaldatum.<br/>
+														De APK van uw voertuig, @VehicleInfo.Name nadert zijn vervaldatum.<br/>
 														<br/>
-														<a href="https://autohelper.nl/vehicle/{{1}}" target="_blank">
-															Voertuig informatie
-														</a><br/>
-														📅 Vervaldatum APK: {{2}}<br/>
+                                                        📅 Vervaldatum APK: @VehicleInfo.MOTExpiryDate<br />
+                                                        <a href="@VehicleUrl" target="_blank">
+                                                            Voertuig informatie
+                                                        </a><br />
 													</span>
 												</td>
 											</tr>

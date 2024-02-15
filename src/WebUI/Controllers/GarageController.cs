@@ -5,6 +5,7 @@ using AutoHelper.Application.Garages.Queries.GetGarageLookup;
 using AutoHelper.Application.Garages.Queries.GetGarageLookupCards;
 using AutoHelper.Application.Garages.Queries.GetGarageLookups;
 using AutoHelper.Application.Garages.Queries.GetGarageServicesAsVehicle;
+using AutoHelper.Application.Vehicles.Commands.ReviewVehicleServiceLog;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoHelper.WebUI.Controllers;
@@ -16,6 +17,16 @@ public class GarageController : ApiControllerBase
     public GarageController(ICurrentUserService currentUser)
     {
         _currentUser = currentUser;
+    }
+
+    [HttpGet($"{nameof(ServiceLogReview)}")]
+    [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ServiceLogReview([FromQuery] string action)
+    {
+        var command = new ReviewVehicleServiceLogCommand(action);
+        var servicelog = await Mediator.Send(command);
+        return Redirect($"/thankyou?from={nameof(ServiceLogReview)}");
     }
 
     [HttpGet($"{nameof(SearchLookups)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]
@@ -48,6 +59,7 @@ public class GarageController : ApiControllerBase
 
         return await Mediator.Send(query, cancellationToken);
     }
+
 
     [HttpGet($"{nameof(SearchLookupsByName)}")]
     [ProducesResponseType(typeof(GarageLookupDtoItem[]), StatusCodes.Status200OK)]

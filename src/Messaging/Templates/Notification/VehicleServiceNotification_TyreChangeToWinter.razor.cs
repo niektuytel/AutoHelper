@@ -1,18 +1,14 @@
-using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Messages;
 using global::Microsoft.AspNetCore.Components;
 
 namespace AutoHelper.Messaging.Templates.Notification;
 
-public partial class VehicleServiceNotification_MOT
+public partial class VehicleServiceNotification_TyreChangeToWinter
 {
-    public static string Subject => "APK";
+    public static string Subject => "Winterbandenwissel";
 
     [Parameter]
     public NotificationItem Notification { get; set; } = new NotificationItem();
-
-    [Parameter]
-    public VehicleTechnicalDtoItem VehicleInfo { get; set; } = new VehicleTechnicalDtoItem();
 
     public string DomainUrl => "https://autohelper.nl";
 

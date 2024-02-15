@@ -281,7 +281,7 @@ internal class WhatsappNotificationService : IWhatsappNotificationService
                             new TextMessageParameter
                             {
                                 Type = "text",
-                                Text = $"{vehicle.Brand} {vehicle.Model}"
+                                Text = vehicle.Name
                             },
                             new TextMessageParameter
                             {
