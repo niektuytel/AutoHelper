@@ -1,4 +1,4 @@
-﻿namespace AutoHelper.Application.Common.Interfaces;
+﻿namespace AutoHelper.Application.Common.Interfaces.Queue;
 
 public interface IQueueService
 {

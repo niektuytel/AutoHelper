@@ -1,5 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Conversation;
+using AutoHelper.Application.Common.Interfaces.Messaging.Email;
+using AutoHelper.Application.Common.Interfaces.Messaging.Whatsapp;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Domain.Common.Enums;
 using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Conversations;
@@ -41,14 +45,14 @@ public record SendConversationMessageCommand : IQueueRequest<string>
 public class SendMessageCommandHandler : IRequestHandler<SendConversationMessageCommand, string>
 {
     private readonly IApplicationDbContext _context;
-    private readonly IWhatsappTemplateService _whatsappService;
-    private readonly IMailingService _mailingService;
+    private readonly IWhatsappConversationService _whatsappService;
+    private readonly IEmailConversationService _mailingService;
     private readonly IVehicleService _vehicleService;
 
     public SendMessageCommandHandler(
         IApplicationDbContext context,
-        IWhatsappTemplateService whatsappService,
-        IMailingService mailingService,
+        IWhatsappConversationService whatsappService,
+        IEmailConversationService mailingService,
         IVehicleService vehicleService
     )
     {
@@ -99,8 +103,8 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
     }
 
     private async Task HandleFirstMessage(
-        IMessagingService senderService,
-        IMessagingService receiverService,
+        IConversationService senderService,
+        IConversationService receiverService,
         ConversationMessageItem message,
         string senderContactName,
         string receiverContactName,
@@ -151,7 +155,7 @@ public class SendMessageCommandHandler : IRequestHandler<SendConversationMessage
         return conversation.RelatedGarage.Name;
     }
 
-    private IMessagingService GetMessagingService(SendConversationMessageCommand request, bool fromSender)
+    private IConversationService GetMessagingService(SendConversationMessageCommand request, bool fromSender)
     {
         var contactType = fromSender ?
             request.Message!.SenderContactType

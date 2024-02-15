@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using FluentValidation;
 using Hangfire;
 using Hangfire.Server;

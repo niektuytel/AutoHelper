@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Domain.Entities.Vehicles;
 using MediatR;

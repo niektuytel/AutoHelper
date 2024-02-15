@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Messaging;
 using AutoHelper.Domain.Entities.Conversations;
 using Microsoft.EntityFrameworkCore;
 using WhatsappBusiness.CloudApi.Exceptions;

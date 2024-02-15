@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using AutoHelper.Application.Common.Exceptions;
-using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using Hangfire;
 using Hangfire.Server;
 using MediatR;

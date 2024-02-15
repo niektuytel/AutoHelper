@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AutoHelper.Application.Common.Interfaces;
+namespace AutoHelper.Application.Common.Interfaces.Queue;
 
 public interface IQueueRequest : IRequest
 {

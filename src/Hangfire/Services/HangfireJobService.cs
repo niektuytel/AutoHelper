@@ -1,4 +1,4 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Hangfire.Extentions;
 using Hangfire;
 using MediatR;

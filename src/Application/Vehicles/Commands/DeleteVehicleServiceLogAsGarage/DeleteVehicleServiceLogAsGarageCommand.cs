@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using AutoHelper.Application.Vehicles._DTOs;

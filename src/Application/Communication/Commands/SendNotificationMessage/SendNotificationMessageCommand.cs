@@ -1,5 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Conversation;
+using AutoHelper.Application.Common.Interfaces.Messaging;
+using AutoHelper.Application.Common.Interfaces.Messaging.Email;
+using AutoHelper.Application.Common.Interfaces.Messaging.Whatsapp;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Application.Messages.Commands.DeleteNotification;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleNextNotification;
 using AutoHelper.Domain.Common.Enums;
@@ -27,16 +32,16 @@ public record SendNotificationMessageCommand : IQueueRequest<Unit>
 
 public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotificationMessageCommand, Unit>
 {
-    private readonly IWhatsappTemplateService _whatsappService;
-    private readonly IMailingService _mailingService;
+    private readonly IWhatsappNotificationService _whatsappService;
+    private readonly IEmailNotificationService _mailingService;
     private readonly IApplicationDbContext _context;
     private readonly ISender _sender;
     private readonly IQueueService _queueService;
     private readonly IVehicleService _vehicleService;
 
     public SendNotificationMessageCommandHandler(
-        IWhatsappTemplateService whatsappService,
-        IMailingService mailingService,
+        IWhatsappNotificationService whatsappService,
+        IEmailNotificationService mailingService,
         IApplicationDbContext context,
         ISender sender,
         IQueueService queueService,
@@ -64,7 +69,7 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
             throw new InvalidDataException($"Vehicle not found: {licensePlate}");
         }
 
-        await receiverService.SendNotificationMessage(request.Notification, vehicle, cancellationToken);
+        await receiverService.SendNotification(request.Notification, vehicle, cancellationToken);
 
         // next notification
         _ = await HandleNextNotification(request.Notification, cancellationToken);
@@ -72,7 +77,7 @@ public class SendNotificationMessageCommandHandler : IRequestHandler<SendNotific
         return Unit.Value;
     }
 
-    private IMessagingService GetMessagingService(ContactType contactType)
+    private INotificationService GetMessagingService(ContactType contactType)
     {
         return contactType switch
         {

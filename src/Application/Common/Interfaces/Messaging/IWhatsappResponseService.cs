@@ -1,6 +1,6 @@
 ﻿using AutoHelper.Domain.Entities.Conversations;
 
-namespace AutoHelper.Application.Common.Interfaces;
+namespace AutoHelper.Application.Common.Interfaces.Messaging;
 
 public interface IWhatsappResponseService
 {

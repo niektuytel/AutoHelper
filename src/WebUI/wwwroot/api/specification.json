@@ -1503,7 +1503,7 @@
         }
       }
     },
-    "/api/Vehicle/vehicle/ServicelogDeeplink": {
+    "/api/Vehicle/ServicelogDeeplink": {
       "get": {
         "tags": [
           "Vehicle"

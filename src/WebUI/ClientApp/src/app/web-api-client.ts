@@ -1565,7 +1565,7 @@ export class VehicleClient implements IVehicleClient {
     }
 
     servicelogDeeplink(action: string | null | undefined): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/api/Vehicle/vehicle/ServicelogDeeplink?";
+        let url_ = this.baseUrl + "/api/Vehicle/ServicelogDeeplink?";
         if (action !== undefined && action !== null)
             url_ += "action=" + encodeURIComponent("" + action) + "&";
         url_ = url_.replace(/[?&]$/, "");

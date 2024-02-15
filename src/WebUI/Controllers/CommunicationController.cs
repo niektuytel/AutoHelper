@@ -1,5 +1,6 @@
 ﻿using System.Text;
-using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Messaging;
+using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Application.Messages.Commands.CreateGarageConversationItems;
 using AutoHelper.Application.Messages.Commands.DeleteNotification;
 using AutoHelper.Application.Messages.Commands.ReceiveMessage;

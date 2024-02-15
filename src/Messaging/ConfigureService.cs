@@ -1,5 +1,9 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Common.Interfaces.Messaging;
+using AutoHelper.Application.Common.Interfaces.Messaging.Email;
+using AutoHelper.Application.Common.Interfaces.Messaging.Whatsapp;
 using AutoHelper.Messaging.Helpers;
+using AutoHelper.Messaging.Interfaces;
 using AutoHelper.Messaging.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,11 +28,17 @@ public static class ConfigureService
             ?? throw new ArgumentNullException(nameof(whatsAppBusinessApiConfiguration.AccessToken));
 
         services.AddWhatsAppBusinessCloudApiService(whatsAppBusinessApiConfiguration);
-        services.AddScoped<IWhatsappTemplateService, WhatsappTemplateService>();
-        services.AddScoped<IWhatsappResponseService, WhatsappResponseService>();
-        services.AddScoped<IIdentificationHelper, IdentificationHelper>();
-        services.AddScoped<IMailingService, GraphEmailService>();
 
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+        services.AddScoped<IEmailConversationService, EmailConversationService>();
+
+        services.AddScoped<IWhatsappService, WhatsappService>();
+        services.AddScoped<IWhatsappNotificationService, WhatsappNotificationService>();
+        services.AddScoped<IWhatsappConversationService, WhatsappConversationService>(); 
+
+        services.AddScoped<IIdentificationHelper, IdentificationHelper>();
+        services.AddScoped<IWhatsappResponseService, WhatsappResponseService>();
     }
 
 }

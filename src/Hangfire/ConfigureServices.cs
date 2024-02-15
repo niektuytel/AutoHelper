@@ -1,4 +1,4 @@
-﻿using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces.Queue;
 using AutoHelper.Application.Garages.Commands.UpsertGarageLookups;
 using AutoHelper.Application.Messages.Commands.SendConversationMessage;
 using AutoHelper.Application.Messages.Commands.SendNotificationMessage;

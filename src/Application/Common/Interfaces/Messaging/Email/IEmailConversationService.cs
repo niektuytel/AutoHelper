@@ -1,0 +1,7 @@
+﻿using AutoHelper.Application.Common.Interfaces.Conversation;
+
+namespace AutoHelper.Application.Common.Interfaces.Messaging.Email;
+
+public interface IEmailConversationService : IConversationService
+{
+}
