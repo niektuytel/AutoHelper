@@ -34,7 +34,7 @@ internal class EmailNotificationService : IEmailNotificationService
     {
         switch (notification.GeneralType)
         {
-            case NotificationGeneralType.GarageServiceReviewReminder:
+            case NotificationGeneralType.VehicleServiceReview:
                 await SendGarageServiceReviewReminder(notification, vehicle, cancellationToken);
                 break;
             case NotificationGeneralType.VehicleServiceReviewApproved:

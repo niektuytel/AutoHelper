@@ -2163,7 +2163,7 @@
         "description": "",
         "x-enumNames": [
           "Other",
-          "GarageServiceReviewReminder",
+          "VehicleServiceReview",
           "VehicleServiceReviewApproved",
           "VehicleServiceReviewDeclined",
           "VehicleServiceNotification"

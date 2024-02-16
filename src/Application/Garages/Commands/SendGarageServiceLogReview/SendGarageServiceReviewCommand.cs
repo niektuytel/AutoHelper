@@ -91,7 +91,7 @@ public class CreateGarageServiceReviewNotifierCommandHandler : IRequestHandler<S
     {
         var notificationCommand = new CreateNotificationCommand(
             licencePlate,
-            NotificationGeneralType.GarageServiceReviewReminder,
+            NotificationGeneralType.VehicleServiceReview,
             NotificationVehicleType.Other,
             triggerDate: null,
             contactIdentifier: contactIdentifier,

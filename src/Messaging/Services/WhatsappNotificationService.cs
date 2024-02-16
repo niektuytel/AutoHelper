@@ -29,7 +29,7 @@ internal class WhatsappNotificationService : IWhatsappNotificationService
     {
         switch (notification.GeneralType)
         {
-            case NotificationGeneralType.GarageServiceReviewReminder:
+            case NotificationGeneralType.VehicleServiceReview:
                 await SendGarageServiceReviewReminder(notification, vehicle, cancellationToken);
                 break;
             case NotificationGeneralType.VehicleServiceReviewApproved:
