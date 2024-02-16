@@ -7,6 +7,7 @@ using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
 using Hangfire.Console;
+using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;

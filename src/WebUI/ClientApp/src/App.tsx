@@ -21,6 +21,7 @@ import { COLORS } from './constants/colors';
 import Garage from './pages/garage/Garage';
 import GarageServicelogs from './pages/garage-account/servicelogs/GarageServicelogs';
 import HomePage from './pages/home/HomePage';
+import ThankYouPage from './pages/thankyou/ThankYouPage';
 import { ServiceLogDrawerProvider } from './context/ServiceLogDrawerContext';
 import { garageLoginRequest } from './authConfig';
 import PolicyPage from './pages/policy/PolicyPage';
@@ -107,6 +108,12 @@ export default ({ msalInstance }:any) => {
                             <>
                                 <Header showStaticDrawer={false} />
                                 <PolicyPage />
+                            </>
+                        } />
+                        <Route path={`${ROUTES.THANKYOU}`} element={
+                            <>
+                                <Header showStaticDrawer={false} />
+                                <ThankYouPage />
                             </>
                         } />
                         <Route path="/" element={
