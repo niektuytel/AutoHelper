@@ -7,6 +7,7 @@ using AutoHelper.Hangfire.Persistence;
 using AutoHelper.Hangfire.Services;
 using Hangfire;
 using Hangfire.Console;
+using Hangfire.Dashboard.BasicAuthorization;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -103,9 +104,24 @@ public static class ConfigureServices
     {
         app.UseHangfireDashboard(matchPath, new DashboardOptions()
         {
-            Authorization = new[] {
-                new HangfireDashboardAuthFilter(app.Environment.IsDevelopment())
+#if !DEBUG
+            Authorization = new[] { new BasicAuthAuthorizationFilter(
+                new BasicAuthAuthorizationFilterOptions
+                {
+                    RequireSsl = false,
+                    SslRedirect = false,
+                    LoginCaseSensitive = true,
+                    Users = new[]
+                    {
+                        new BasicAuthAuthorizationUser{ 
+                            Login = app.Configuration["Hangfire:Login"], 
+                            PasswordClear = app.Configuration["Hangfire:PasswordClear"] 
+                        }
+                    }
+
+                }) 
             }
+#endif
         });
     }
 }
