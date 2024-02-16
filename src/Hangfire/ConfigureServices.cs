@@ -38,8 +38,8 @@ public static class ConfigureServices
 
         });
 
-        services.AddTransient<IQueueContext, HangfireJobContext>();
-        services.AddTransient<IQueueService, HangfireJobService>();
+        services.AddScoped<IQueueContext, HangfireJobContext>();
+        services.AddScoped<IQueueService, HangfireJobService>();
 
         // production we use the dashboard web service to run the jobs
         if (inDevelopment)

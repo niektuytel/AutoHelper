@@ -41,15 +41,15 @@ public static class ConfigureServices
             );
         }
 
-        services.AddTransient<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ApplicationDbContextInitialiser>();
-        services.AddTransient<IDateTime, DateTimeService>();
+        services.AddScoped<IDateTime, DateTimeService>();
 
-        services.AddTransient<IRDWApiClient, RDWApiClient>();
-        services.AddTransient<IBlobStorageService, AzureBlobStorageService>();
-        services.AddTransient<IWebScraperClient, WebScraperClient>();
-        services.AddTransient<IGoogleApiClient, GoogleApiClient>();
-        services.AddTransient<HtmlWeb>();
+        services.AddScoped<IRDWApiClient, RDWApiClient>();
+        services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
+        services.AddScoped<IWebScraperClient, WebScraperClient>();
+        services.AddScoped<IGoogleApiClient, GoogleApiClient>();
+        services.AddScoped<HtmlWeb>();
 
 
         return services;
