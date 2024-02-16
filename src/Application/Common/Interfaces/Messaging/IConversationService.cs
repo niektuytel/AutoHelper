@@ -1,6 +1,5 @@
 ﻿using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Messages;
 
 namespace AutoHelper.Application.Common.Interfaces.Conversation;
 

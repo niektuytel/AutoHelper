@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Hangfire;
-using AutoHelper.Infrastructure.Persistence;
 using AutoHelper.Messaging;
 using AutoHelper.WebUI;
 using AutoHelper.WebUI.Filters;

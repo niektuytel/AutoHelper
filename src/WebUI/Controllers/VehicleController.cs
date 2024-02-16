@@ -1,5 +1,4 @@
-﻿using System.Text;
-using AutoHelper.Application.Common.Interfaces;
+﻿using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
@@ -8,7 +7,6 @@ using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecifications;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleSpecificationsCard;
 using AutoHelper.Application.Vehicles.Queries.GetVehicleTimeline;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace AutoHelper.WebUI.Controllers;
 

@@ -1,14 +1,22 @@
-﻿namespace AutoHelper.Application.Common.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace AutoHelper.Application.Common.Models;
 
 public class ServiceLogReviewAction
 {
+    public ServiceLogReviewAction()
+    {
+    }
+
     public ServiceLogReviewAction(Guid serviceLogId, bool approved)
     {
         ServiceLogId = serviceLogId;
         Approve = approved;
     }
 
-    public Guid ServiceLogId { get; private set; }
+    [JsonPropertyName("ServiceLogId")]
+    public Guid ServiceLogId { get; set; }
 
-    public bool Approve { get; private set; }
+    [JsonPropertyName("Approve")]
+    public bool Approve { get; set; }
 }

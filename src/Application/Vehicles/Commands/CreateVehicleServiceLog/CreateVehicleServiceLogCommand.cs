@@ -103,7 +103,7 @@ public class CreateVehicleServiceLogCommandHandler : IRequestHandler<CreateVehic
         //entity.AddDomainEvent(new SomeDomainEvent(entity));
 
         // send notification to garage
-        var title = $"{entity.GarageLookup!.Name}({entity.GarageLookup!.Identifier}) ask to review service logs";
+        var title = $"Ask to review service logs on garage {entity.GarageLookup!.Name}({entity.GarageLookup!.Identifier})";
         var command = new SendGarageServiceReviewCommand(
             entity.VehicleLicensePlate,
             entity.GarageLookupIdentifier,

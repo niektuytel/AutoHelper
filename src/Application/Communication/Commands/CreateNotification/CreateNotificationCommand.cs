@@ -79,12 +79,9 @@ public class CreateNotificationMessageCommandHandler : IRequestHandler<CreateNot
             Metadata = request.Metadata
         };
 
-        // Only store scheduled notifications
-        if (request.TriggerDate != null)
-        {
-            _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // store all notifications, to be able to track them
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return notification;
     }

@@ -1,13 +1,9 @@
-﻿using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Extensions;
+﻿using AutoHelper.Application.Common.Extensions;
 using AutoHelper.Application.Common.Interfaces.Messaging;
 using AutoHelper.Application.Common.Interfaces.Messaging.Whatsapp;
 using AutoHelper.Application.Messages._DTOs;
-using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Messaging.Interfaces;
-using Microsoft.Extensions.Configuration;
 using WhatsappBusiness.CloudApi;
 using WhatsappBusiness.CloudApi.Exceptions;
 using WhatsappBusiness.CloudApi.Interfaces;

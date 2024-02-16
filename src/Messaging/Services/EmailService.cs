@@ -1,15 +1,7 @@
 ﻿using System.Text.Json;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
-using AutoHelper.Domain.Entities.Communication;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Messaging.Interfaces;
 using AutoHelper.Messaging.Models;
 using AutoHelper.Messaging.Models.GraphEmail;
-using AutoHelper.Messaging.Templates.Conversation;
-using AutoHelper.Messaging.Templates.Notification;
-using BlazorTemplater;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
@@ -66,9 +58,9 @@ internal class EmailService : IEmailService
             throw new ApplicationException($"Failed to send email: {responseString}");
         }
     }
-    
-    public string GetUserId() 
-    { 
+
+    public string GetUserId()
+    {
         return _userId;
     }
 

@@ -1,8 +1,8 @@
+using System.Web;
 using AutoHelper.Application.Common.Interfaces;
 using AutoHelper.Application.Common.Models;
 using AutoHelper.Application.Messages._DTOs;
 using AutoHelper.Domain.Entities.Messages;
-using AutoHelper.Domain.Entities.Vehicles;
 using global::Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 
@@ -39,7 +39,8 @@ public partial class VehicleServiceReview
         }
     }
 
-    public string ApproveUrl {
+    public string ApproveUrl
+    {
         get
         {
             var success = Notification.Metadata.TryGetValue("serviceLogId", out var serviceLogIdString);
@@ -52,7 +53,7 @@ public partial class VehicleServiceReview
             var action = new ServiceLogReviewAction(serviceLogId, true);
             var actionJson = JsonConvert.SerializeObject(action);
             var actionEncrypted = AesEncryption.Encrypt(actionJson);
-            return $"{DomainUrl}/api/garage/ServiceLogReview?action={actionEncrypted}";
+            return $"{DomainUrl}/api/garage/ServiceLogReview?action={HttpUtility.UrlEncode(actionEncrypted)}";
         }
     }
 
@@ -70,7 +71,7 @@ public partial class VehicleServiceReview
             var action = new ServiceLogReviewAction(serviceLogId, false);
             var actionJson = JsonConvert.SerializeObject(action);
             var actionEncrypted = AesEncryption.Encrypt(actionJson);
-            return $"{DomainUrl}/api/garage/ServiceLogReview?action={actionEncrypted}";
+            return $"{DomainUrl}/api/garage/ServiceLogReview?action={HttpUtility.UrlEncode(actionEncrypted)}";
         }
     }
 }

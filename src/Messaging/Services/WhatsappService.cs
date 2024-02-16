@@ -1,23 +1,13 @@
 ﻿using System.Text.RegularExpressions;
-using AutoHelper.Application.Common.Extensions;
-using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Messages._DTOs;
-using AutoHelper.Domain.Entities.Communication;
-using AutoHelper.Domain.Entities.Conversations;
-using AutoHelper.Domain.Entities.Messages;
 using AutoHelper.Messaging.Interfaces;
 using Microsoft.Extensions.Configuration;
-using WhatsappBusiness.CloudApi;
-using WhatsappBusiness.CloudApi.Exceptions;
-using WhatsappBusiness.CloudApi.Interfaces;
-using WhatsappBusiness.CloudApi.Messages.Requests;
 
 namespace AutoHelper.Messaging.Services;
 
 internal class WhatsappService : IWhatsappService
 {
     private readonly IConfiguration _configuration;
-    
+
     public WhatsappService(IConfiguration configuration)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

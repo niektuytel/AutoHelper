@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Interfaces.Conversation;
 using AutoHelper.Application.Common.Interfaces.Messaging;
 using AutoHelper.Application.Common.Interfaces.Messaging.Email;
 using AutoHelper.Application.Common.Interfaces.Messaging.Whatsapp;

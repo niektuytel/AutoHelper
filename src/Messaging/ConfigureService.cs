@@ -35,7 +35,7 @@ public static class ConfigureService
 
         services.AddScoped<IWhatsappService, WhatsappService>();
         services.AddScoped<IWhatsappNotificationService, WhatsappNotificationService>();
-        services.AddScoped<IWhatsappConversationService, WhatsappConversationService>(); 
+        services.AddScoped<IWhatsappConversationService, WhatsappConversationService>();
 
         services.AddScoped<IIdentificationHelper, IdentificationHelper>();
         services.AddScoped<IWhatsappResponseService, WhatsappResponseService>();

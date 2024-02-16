@@ -21,7 +21,11 @@ public class SendConversationMessageValidator : AbstractValidator<SendConversati
 
     private async Task<bool> BeValidAndExistingMessage(SendConversationMessageCommand command, CancellationToken cancellationToken)
     {
-        if (command.Message == null && command.MessageId != default)
+        if (command.Message != null)
+        {
+            command.MessageId = command.Message.Id;
+        }
+        else if (command.MessageId != default)
         {
             var entity = _context.ConversationMessages
                 .AsNoTracking()

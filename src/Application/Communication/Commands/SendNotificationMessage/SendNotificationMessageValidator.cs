@@ -21,7 +21,11 @@ public class SendNotificationMessageValidator : AbstractValidator<SendNotificati
 
     private async Task<bool> BeValidAndExistingNotification(SendNotificationMessageCommand command, CancellationToken cancellationToken)
     {
-        if (command.Notification == null && command.NotificationId != default)
+        if (command.Notification != null)
+        {
+            command.NotificationId = command.Notification.Id;
+        }
+        else if (command.NotificationId != default)
         {
             var entity = _context.Notifications
                 .AsNoTracking()
@@ -30,6 +34,7 @@ public class SendNotificationMessageValidator : AbstractValidator<SendNotificati
 
             command.Notification = entity;
         }
+
 
         return command.Notification != null;
     }

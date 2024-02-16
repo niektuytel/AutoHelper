@@ -16,9 +16,17 @@ public class ReviewVehicleServiceLogCommandValidator : AbstractValidator<ReviewV
 
 
         RuleFor(x => x.ActionString)
-            .NotEmpty()
             .MustAsync(async (command, actionString, cancellationToken) =>
             {
+                if (command.ServiceLog != null)
+                {
+                    return true;
+                }
+                else if (string.IsNullOrWhiteSpace(actionString))
+                {
+                    return false;
+                }
+
                 var actionJson = aesEncryptionService.Decrypt(actionString);
                 if (actionJson == null)
                 {

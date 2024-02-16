@@ -1,11 +1,7 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
-using AutoHelper.Application.Common.Interfaces.Queue;
-using AutoHelper.Application.Messages.Commands.CreateNotificationMessage;
-using AutoHelper.Application.Messages.Commands.SendNotificationMessage;
 using AutoHelper.Application.Vehicles._DTOs;
-using AutoHelper.Application.Vehicles.Commands.CreateVehicleTimeline;
+using AutoHelper.Application.Vehicles.Commands.ReviewVehicleServiceLog;
 using AutoHelper.Domain;
-using AutoHelper.Domain.Entities.Communication;
 using AutoHelper.Domain.Entities.Garages;
 using AutoHelper.Domain.Entities.Vehicles;
 using AutoMapper;
@@ -66,58 +62,52 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
     private readonly ISender _sender;
-    private readonly IQueueService _queueService;
-    private readonly IIdentificationHelper _identificationHelper;
 
 
     public UpdateVehicleServiceLogAsGarageCommandHandler(
         IBlobStorageService blobStorageService,
         IApplicationDbContext context,
         IMapper mapper,
-        ISender sender,
-        IQueueService queueService,
-        IIdentificationHelper identificationHelper
+        ISender sender
     )
     {
         _blobStorageService = blobStorageService;
         _context = context;
         _mapper = mapper;
         _sender = sender;
-        _queueService = queueService;
-        _identificationHelper = identificationHelper;
     }
 
     public async Task<VehicleServiceLogAsGarageDtoItem> Handle(UpdateVehicleServiceLogAsGarageCommand request, CancellationToken cancellationToken)
     {
-        var serviceLog = await _context.GarageServices
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x =>
-                x.Id == request.GarageServiceId,
-                cancellationToken: cancellationToken
-            );
-
-        var entity = UpdateVehicleServiceLogEntity(request, serviceLog);
-        UploadAttachmentIfPresent(request, entity, cancellationToken);
-
-        // update entity
-        await _context.SaveChangesAsync(cancellationToken);
-        // entity.AddDomainEvent(new SomeDomainEvent(entity));
-
-        // insert timeline + send reporter a notification
-        if (entity.Status == VehicleServiceLogStatus.VerifiedByGarage)
+        // The status has changed? send a review command
+        if (request.Status != request.ServiceLog.Status)
         {
-            var timelineCommand = new CreateVehicleTimelineCommand(entity);
-            var timeline = await _sender.Send(timelineCommand, cancellationToken);
+            var approved = request.Status == VehicleServiceLogStatus.VerifiedByGarage;
+            var approveCommand = new ReviewVehicleServiceLogCommand(request.ServiceLog, approved);
+            var entity = await _sender.Send(approveCommand, cancellationToken);
 
-            await SendNotificationToReporter(
-                entity.VehicleLicensePlate,
-                request.ServiceLog.ReporterEmailAddress!,
-                request.ServiceLog.ReporterPhoneNumber!,
-                cancellationToken
-            );
+            request.ServiceLog.Status = entity.Status;
+            return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(request.ServiceLog);
+        }
+        else
+        {
+            var garageService = await _context.GarageServices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                    x.Id == request.GarageServiceId,
+                    cancellationToken: cancellationToken
+                );
+
+            var entity = UpdateVehicleServiceLogEntity(request, garageService);
+            UploadAttachmentIfPresent(request, entity, cancellationToken);
+
+            _context.VehicleServiceLogs.Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+            // entity.AddDomainEvent(new SomeDomainEvent(entity))
+
+            return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
         }
 
-        return _mapper.Map<VehicleServiceLogAsGarageDtoItem>(entity);
     }
 
     private VehicleServiceLogItem UpdateVehicleServiceLogEntity(UpdateVehicleServiceLogAsGarageCommand request, GarageServiceItem? serviceItem)
@@ -160,25 +150,6 @@ public class UpdateVehicleServiceLogAsGarageCommandHandler : IRequestHandler<Upd
 
             entity.AttachedFile = attachmentBlobName;
         }
-    }
-
-    private async Task SendNotificationToReporter(string licencePlate, string emailAddress, string whatsappNumber, CancellationToken cancellationToken)
-    {
-        var contactIdentifier = _identificationHelper.GetValidIdentifier(emailAddress, whatsappNumber);
-        var notificationCommand = new CreateNotificationCommand(
-            licencePlate,
-            NotificationGeneralType.VehicleServiceReviewApproved,
-            NotificationVehicleType.Other,
-            triggerDate: null,
-            contactIdentifier: contactIdentifier
-        );
-        var notification = await _sender.Send(notificationCommand, cancellationToken);
-
-        // schedule notification
-        var queue = nameof(SendNotificationMessageCommand);
-        var schuduleCommand = new SendNotificationMessageCommand(notification.Id);
-        var title = $"{notificationCommand.VehicleLicensePlate}_{notification.GeneralType.ToString()}";
-        _queueService.Enqueue(queue, title, schuduleCommand);
     }
 
 }
