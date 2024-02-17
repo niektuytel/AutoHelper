@@ -23,9 +23,9 @@ export default ({ expiryDate, isMobile }: NotificationIconProps) => {
             const diffDays = (expiry.getTime() - today.getTime()) / (1000 * 3600 * 24);
             const diffMonths = diffDays / 30;
 
-            return diffMonths <= 2 ? 'red' : 'darkgray';
+            return diffMonths <= 2 ? 'red' : COLORS.BLUE;
         }
-        return 'darkgray';
+        return COLORS.BLUE;
     };
 
     const iconColor = calculateIconColor(expiryDate);
