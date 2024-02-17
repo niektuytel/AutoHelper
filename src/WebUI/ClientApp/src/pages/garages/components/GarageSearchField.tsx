@@ -66,7 +66,7 @@ export default ({ loading, items }: IProps) => {
             <TextField
                 fullWidth
                 autoComplete="new-password" // Use this line instead of autoComplete="off", because it is not working
-                autoFocus={true}
+                autoFocus={false}
                 value={value}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
