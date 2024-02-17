@@ -25,6 +25,10 @@ public class CreateVehicleNotificationValidator : AbstractValidator<CreateVehicl
                 Regex.IsMatch(contactIdentifier, @"^\+?[0-9]{10,15}$") // Phone number format
             )
             .WithMessage("Invalid whatsapp number or email address.");
+
+        RuleFor(x => x.ContactIdentifier)
+            .MustAsync(BeUniqueNotification)
+            .WithMessage("Er bestaat al een melding voor dit voertuig en deze contactpersoon.");
     }
 
     private async Task<bool> BeValidAndExistingVehicle(CreateVehicleNotificationCommand command, string licensePlate, CancellationToken cancellationToken)
@@ -37,5 +41,24 @@ public class CreateVehicleNotificationValidator : AbstractValidator<CreateVehicl
             .FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
 
         return command.VehicleLookup != null;
+    }
+
+    private async Task<bool> BeUniqueNotification(CreateVehicleNotificationCommand command, string? contactIdentifier, CancellationToken cancellationToken)
+    {
+        if (contactIdentifier == null)
+        {
+            return true;
+        }
+
+        var licensePlate = command.VehicleLicensePlate;
+        licensePlate = licensePlate.ToUpper().Replace("-", "");
+
+        var foundMatch = await _context.Notifications.AnyAsync(x =>
+            x.VehicleLicensePlate == licensePlate &&
+            x.ReceiverContactIdentifier.ToLower() == contactIdentifier.ToLower(), 
+            cancellationToken
+        );
+
+        return foundMatch == false;
     }
 }
