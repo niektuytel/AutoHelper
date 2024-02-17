@@ -110,7 +110,7 @@ export default ({ msalInstance }:any) => {
                                 <PolicyPage />
                             </>
                         } />
-                        <Route path={`${ROUTES.THANKYOU}`} element={
+                        <Route path={`${ROUTES.THANKYOU}/:from`} element={
                             <>
                                 <Header showStaticDrawer={false} />
                                 <ThankYouPage />

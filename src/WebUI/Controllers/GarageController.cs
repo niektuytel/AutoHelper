@@ -26,7 +26,7 @@ public class GarageController : ApiControllerBase
     {
         var command = new ReviewVehicleServiceLogCommand(action);
         var servicelog = await Mediator.Send(command);
-        return Redirect($"/thankyou?from={nameof(ServiceLogReview)}");
+        return Redirect($"/thankyou/{nameof(ServiceLogReview)}");
     }
 
     [HttpGet($"{nameof(SearchLookups)}/{{licensePlate}}/{{latitude}}/{{longitude}}")]

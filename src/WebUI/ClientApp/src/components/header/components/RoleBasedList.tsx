@@ -1,5 +1,5 @@
 ﻿import React, { useContext, useEffect, useState } from 'react';
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SearchIcon from '@mui/icons-material/Search';
 import BuildIcon from '@mui/icons-material/Build';
@@ -68,7 +68,7 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
             <List component="nav" sx={{ width: "250px" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
                 <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />
-                <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={license_plate ? `${ROUTES.VEHICLE}/${license_plate}#service_logs` : ROUTES.VEHICLE} />
+                <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={`${ROUTES.VEHICLE}/${license_plate}#service_logs`} disabled={license_plate === undefined} />
             </List>
         </>;
     }
@@ -90,11 +90,18 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
         const onGarageAccount = location.pathname.startsWith(ROUTES.GARAGE_ACCOUNT.DEFAULT);
         return <>
             <List component="nav" sx={{ width: "250px" }}>
+                {!onGarageAccount && (
+                    <>
+                        <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
+                        <ListItemLink disabled={roleIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />
+                        <ListItemLink disabled={roleIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />
+                        <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />
+                        <Divider />
+                    </>
+                )}
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
-                {!onGarageAccount && <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />}
-                {!onGarageAccount && <ListItemLink disabled={roleIndex < 2} primary={t('servicelogs_camelcase')} icon={<ServicelogsIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICELOGS} />}
-                {!onGarageAccount && <ListItemLink disabled={roleIndex < 2} primary={t('services_camelcase')} icon={<BuildIcon />} to={ROUTES.GARAGE_ACCOUNT.SERVICES} />}
-                {!onGarageAccount && <ListItemLink primary={t('settings_camelcase')} icon={<SettingsIcon />} to={ROUTES.GARAGE_ACCOUNT.SETTINGS} />}
+                <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />
+                <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={`${ROUTES.VEHICLE}/${license_plate}#service_logs`} disabled={license_plate === undefined} />
             </List>
         </>;
     }
