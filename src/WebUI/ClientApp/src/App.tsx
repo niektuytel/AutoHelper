@@ -99,68 +99,70 @@ export default ({ msalInstance }:any) => {
             <ServiceLogDrawerProvider>
                 <MsalProvider instance={msalInstance}>
                     {/*TODO: Reduce rendertime, <Header showStaticDrawer={false} />*/}
-                    <Routes>
-                        <Route path="*" element={
-                            <>
-                                <Header showStaticDrawer={false} />
-                                <NotFoundPage />
-                            </>
-                        } />
-                        <Route path={`${ROUTES.POLICY}`} element={
-                            <>
-                                <Header showStaticDrawer={false} />
-                                <PolicyPage />
-                            </>
-                        } />
-                        <Route path={`${ROUTES.THANKYOU}/:from`} element={
-                            <>
-                                <Header showStaticDrawer={false} />
-                                <ThankYouPage />
-                            </>
-                        } />
-                        <Route path="/" element={
-                            <>
-                                <Header showStaticDrawer={false} />
-                                <HomePage />
-                            </>
-                        } />
-                        <Route path={`${ROUTES.VEHICLE}/:license_plate`} element={
-                            <>
-                                <Header showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
-                                <SelectVehiclePage />
-                            </>
-                        } />
-                        <Route path={`${ROUTES.GARAGES}/:license_plate/:lat/:lng`} element={
-                            <>
-                                <Header showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
-                                <SelectGarage />
-                            </>
-                        } />
-                        <Route path={`${ROUTES.GARAGE}/:identifier`} element={//?licensePlate= ?lat= &lng=
-                            <Garage />
-                        } />
-                        <Route path={`${ROUTES.GARAGE_ACCOUNT.OVERVIEW}`} element={
-                            <GarageRouteContent>
-                                <GarageOverview/>
-                            </GarageRouteContent>
-                        } />
-                        <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICELOGS}`} element={
-                            <GarageRouteContent>
-                                <GarageServicelogs />
-                            </GarageRouteContent>
-                        } />
-                        <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICES}`} element={
-                            <GarageRouteContent>
-                                <GarageServices />
-                            </GarageRouteContent>
-                        } />
-                        <Route path={`${ROUTES.GARAGE_ACCOUNT.SETTINGS}`} element={
-                            <GarageRouteContent>
-                                <GarageSettings />
-                            </GarageRouteContent>
-                        } />
-                    </Routes>
-                    <StatusSnackbar />
+                    <Box sx={{ minHeight: "calc(100vh - (65px + 92px))" }}>{/*(100% height - (header height + footer height)) */}
+                        <Routes>
+                            <Route path="*" element={
+                                <>
+                                    <Header showStaticDrawer={false} />
+                                    <NotFoundPage />
+                                </>
+                            } />
+                            <Route path={`${ROUTES.POLICY}`} element={
+                                <>
+                                    <Header showStaticDrawer={false} />
+                                    <PolicyPage />
+                                </>
+                            } />
+                            <Route path={`${ROUTES.THANKYOU}/:from`} element={
+                                <>
+                                    <Header showStaticDrawer={false} />
+                                    <ThankYouPage />
+                                </>
+                            } />
+                            <Route path="/" element={
+                                <>
+                                    <Header showStaticDrawer={false} />
+                                    <HomePage />
+                                </>
+                            } />
+                            <Route path={`${ROUTES.VEHICLE}/:license_plate`} element={
+                                <>
+                                    <Header showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
+                                    <SelectVehiclePage />
+                                </>
+                            } />
+                            <Route path={`${ROUTES.GARAGES}/:license_plate/:lat/:lng`} element={
+                                <>
+                                    <Header showStaticDrawer={false} navigateGoto={() => navigate(-1)} />
+                                    <SelectGarage />
+                                </>
+                            } />
+                            <Route path={`${ROUTES.GARAGE}/:identifier`} element={//?licensePlate= ?lat= &lng=
+                                <Garage />
+                            } />
+                            <Route path={`${ROUTES.GARAGE_ACCOUNT.OVERVIEW}`} element={
+                                <GarageRouteContent>
+                                    <GarageOverview/>
+                                </GarageRouteContent>
+                            } />
+                            <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICELOGS}`} element={
+                                <GarageRouteContent>
+                                    <GarageServicelogs />
+                                </GarageRouteContent>
+                            } />
+                            <Route path={`${ROUTES.GARAGE_ACCOUNT.SERVICES}`} element={
+                                <GarageRouteContent>
+                                    <GarageServices />
+                                </GarageRouteContent>
+                            } />
+                            <Route path={`${ROUTES.GARAGE_ACCOUNT.SETTINGS}`} element={
+                                <GarageRouteContent>
+                                    <GarageSettings />
+                                </GarageRouteContent>
+                            } />
+                        </Routes>
+                        <StatusSnackbar />
+                    </Box>
                     <Footer />
                 </MsalProvider>
             </ServiceLogDrawerProvider>

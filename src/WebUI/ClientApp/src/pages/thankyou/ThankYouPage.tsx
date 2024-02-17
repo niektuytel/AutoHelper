@@ -1,12 +1,12 @@
 ﻿import React from "react";
-import { Container, useTheme, useMediaQuery, Fab, Typography, Box, Button, CardContent, Card, CardActions} from "@mui/material";
+import { Container, useTheme, useMediaQuery, Fab, Typography, Box, Button, CardContent, Card, CardActions, Paper, Grid} from "@mui/material";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 // own imports
-import GradientBox from "../../components/GradientBox";
+import { ROUTES } from "../../constants/routes";
 
 interface IProps {}
 
@@ -15,12 +15,12 @@ export default ({ }: IProps) => {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { from } = useParams();
     const { t } = useTranslation();
-
+    const navigate = useNavigate();
 
     const getMessage = () => {
         switch (from) {
             case 'ServiceLogReview':
-                return t('ThankYouPage.ServiceLogReview');
+                return t('ThankYouPage.ServiceLogReview.Description');
             case 'Unsubscribe':
                 return t('ThankYouPage.Unsubscribe');
             case 'Payment':
@@ -28,6 +28,10 @@ export default ({ }: IProps) => {
             default:
                 return t('ThankYouPage.Default');
         }
+    };
+
+    const handleServiceLogsClick = () => {
+        navigate(ROUTES.GARAGE_ACCOUNT.SERVICELOGS);
     };
 
     return (
@@ -39,45 +43,56 @@ export default ({ }: IProps) => {
                     </svg>
                 </Box>
                 <Typography variant="h4">
-                    {t('ThankYouPage.Title')}
+                    {t('ThankYouPage.ServiceLogReview.Title')}
                 </Typography>
                 <Typography variant="body1" sx={{ marginTop: 2 }}>
                     {getMessage()}
                 </Typography>
-
-                {/* New Cards Section */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%', marginTop: 4 }}>
-                    <Card sx={{ maxWidth: 345 }}>
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                Contact Informatie
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                E-mail: info@voorbeeld.nl
-                                <br />
-                                Tel: 123-456-7890
-                            </Typography>
-                        </CardContent>
-                        <CardActions>
-                            <Button size="small">Meer Info</Button>
-                        </CardActions>
-                    </Card>
-
-                    <Card sx={{ maxWidth: 345 }}>
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                Terug naar Website
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Ontdek meer over onze diensten en aanbiedingen op onze website.
-                            </Typography>
-                        </CardContent>
-                        <CardActions>
-                            <Button size="small" component={Link} to="/">
-                                Ga naar Website
-                            </Button>
-                        </CardActions>
-                    </Card>
+                <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-around', width: '100%', marginTop: 4, gap: 2 }}>
+                    <Paper sx={{ padding: 2, maxWidth: isMobile ? '100%' : '100%', width: '100%' }}>
+                        <Grid container direction="column" spacing={1}>
+                            <Grid item>
+                                <Typography gutterBottom variant="h5">
+                                    {t('ThankYouPage.ServiceLogReview.OpenGarageLogbookTitle')}
+                                </Typography>
+                            </Grid>
+                            <Grid item>
+                                <Typography gutterBottom variant="body2">
+                                    {t('ThankYouPage.ServiceLogReview.OpenGarageLogbookDescription')}
+                                </Typography>
+                            </Grid>
+                            <Grid item>
+                                <Button
+                                    variant="contained"
+                                    onClick={handleServiceLogsClick}
+                                >
+                                    {t('ThankYouPage.ServiceLogReview.ManageLogbookButton')}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                    <Paper sx={{ padding: 2, maxWidth: isMobile ? '100%' : '100%', width: '100%' }}>
+                        <Grid container direction="column" spacing={1}>
+                            <Grid item>
+                                <Typography gutterBottom variant="h5">
+                                    {t('ThankYouPage.ServiceLogReview.QuestionsOrCommentsTitle')}
+                                </Typography>
+                            </Grid>
+                            <Grid item>
+                                <Typography gutterBottom variant="body2">
+                                    {t('ThankYouPage.ServiceLogReview.ContactDeveloperDescription')}
+                                </Typography>
+                            </Grid>
+                            <Grid item>
+                                <Typography gutterBottom variant="body2">
+                                    {t('ThankYouPage.ServiceLogReview.DeveloperName')} Niek Tuijtel
+                                </Typography>
+                                <Typography variant="body2">
+                                    {t('ThankYouPage.ServiceLogReview.DeveloperEmail')} <a href="mailto:n.tuijtel@autohelper.nl">n.tuijtel@autohelper.nl</a>
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </Paper>
                 </Box>
             </Box>
         </Container>

@@ -261,6 +261,19 @@
 
 
 
+  "ThankYouPage": {
+    "ServiceLogReview": {
+      "Title": "Thank you!",
+      "Description": "Your honest feedback is very important, both for customers and for your business. It helps to keep the cars you service safe and reliable, which is very important for customers looking for good quality.",
+      "OpenGarageLogbookTitle": "Open garage logbook",
+      "OpenGarageLogbookDescription": "Here you can view and manage outstanding requests.",
+      "ManageLogbookButton": "Manage logbook",
+      "QuestionsOrCommentsTitle": "Questions or comments?",
+      "ContactDeveloperDescription": "Feel free to contact the developer of this website.",
+      "DeveloperName": "Name:",
+      "DeveloperEmail": "Email:"
+    }
+  },
 
 
 
