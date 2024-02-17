@@ -25,6 +25,7 @@ import ThankYouPage from './pages/thankyou/ThankYouPage';
 import { ServiceLogDrawerProvider } from './context/ServiceLogDrawerContext';
 import { garageLoginRequest } from './authConfig';
 import PolicyPage from './pages/policy/PolicyPage';
+import useScrollToTop from './hooks/useScrollToTop';
 
 
 function ErrorComponent({ error }: any) {
@@ -92,6 +93,7 @@ export default ({ msalInstance }:any) => {
         </>;
     }
 
+    useScrollToTop();
     return <>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <ServiceLogDrawerProvider>
