@@ -58,9 +58,9 @@ public static class ConfigureServices
     public static void UseInfrastructureServices(this IServiceProvider services)
     {
         using var scope = services.CreateScope();
-        //var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        //initialiser.InitialiseAsync().Wait();
-        //initialiser.SeedAsync().Wait();
+        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        initialiser.InitialiseAsync().Wait();
+        initialiser.SeedAsync().Wait();
     }
 
 }
