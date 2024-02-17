@@ -1,4 +1,5 @@
-import { Divider, Drawer, Toolbar } from "@mui/material";
+import { Box, Divider, Drawer, IconButton, Toolbar, useMediaQuery, useTheme } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 
 // Custom imports 
 import LoginButton from './LoginButton';
@@ -11,21 +12,33 @@ interface IProps {
 }
 
 export default ({ onMenu, setOnMenu, showStaticDrawer }: IProps) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
     return (
         <Drawer
             anchor="right"
             open={onMenu}
-            onClose={() => setOnMenu(!onMenu)}>
+            onClose={() => setOnMenu(!onMenu)}
+            sx={{
+                '& .MuiDrawer-paper': {
+                    width: isMobile ? '100%' : '250px',
+                },
+            }}
+        >
             <Toolbar
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'flex-end',
+                    justifyContent: "space-between",
                     width: "100%",
-                    padding: "12px!important",
+                    padding: "12px!important"
                 }}
             >
-                <LoginButton />
+                <Box sx={{ flexGrow: 1 }} />
+                <IconButton onClick={() => setOnMenu(false)}>
+                    <CloseIcon />
+                </IconButton>
             </Toolbar>
             <Divider />
             <RoleBasedList setOnMenu={setOnMenu} showStaticDrawer={showStaticDrawer} />

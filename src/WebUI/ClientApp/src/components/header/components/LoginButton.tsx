@@ -117,9 +117,11 @@ export default ({ asIcon }:IProps) => {
                 :
                 <Button
                     variant="contained"
-                    fullWidth
                     onClick={handleLogout}
-                    sx={{ height: "100%" }}
+                    sx={{
+                        m: 1,
+                        p: 1
+                    }}
                 >
                     Logout
                 </Button>
@@ -127,7 +129,15 @@ export default ({ asIcon }:IProps) => {
         </AuthenticatedTemplate>
         <UnauthenticatedTemplate>
             <>
-                <StyledLoginButton ref={buttonRef} variant="contained" fullWidth onClick={handleClick}>
+                <StyledLoginButton
+                    ref={buttonRef}
+                    variant="contained"
+                    onClick={handleClick}
+                    sx={{
+                        m: 1,
+                        p: 1
+                    }}
+                >
                     Login
                 </StyledLoginButton>
                 <Menu

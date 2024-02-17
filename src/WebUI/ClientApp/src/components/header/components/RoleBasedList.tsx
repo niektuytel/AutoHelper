@@ -17,6 +17,7 @@ import useUserRole from '../../../hooks/useUserRole';
 import { ServiceLogDrawerContext } from '../../../context/ServiceLogDrawerContext';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import useRoleIndex from '../../../hooks/useRoleIndex';
+import LoginButton from './LoginButton';
 
 interface RoleBasedListProps {
     setOnMenu?: (value: boolean) => void;
@@ -65,7 +66,8 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
 
     if (!isAuthenticated) {
         return <>
-            <List component="nav" sx={{ width: "250px" }}>
+            <LoginButton />
+            <List component="nav" sx={{ width: "100%" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
                 <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />
                 <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={`${ROUTES.VEHICLE}/${license_plate}#service_logs`} disabled={license_plate === undefined} />
@@ -89,7 +91,8 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
 
         const onGarageAccount = location.pathname.startsWith(ROUTES.GARAGE_ACCOUNT.DEFAULT);
         return <>
-            <List component="nav" sx={{ width: "250px" }}>
+            <LoginButton />
+            <List component="nav" sx={{ width: "100%" }}>
                 {!onGarageAccount && (
                     <>
                         <ListItemLink disabled={roleIndex < 2} primary={t('overview_camelcase')} icon={<DashboardIcon />} to={ROUTES.GARAGE_ACCOUNT.OVERVIEW} />
@@ -108,7 +111,8 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     else
     {
         return <>
-            <List component="nav" sx={{ width: "250px" }}>
+            <LoginButton />
+            <List component="nav" sx={{ width: "100%" }}>
                 <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
             </List>
         </>;
