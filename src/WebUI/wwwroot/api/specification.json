@@ -1748,6 +1748,49 @@
         }
       }
     },
+    "/api/Vehicle/UnsubscribeNotification/{notificationId}": {
+      "get": {
+        "tags": [
+          "Vehicle"
+        ],
+        "operationId": "Vehicle_UnsubscribeNotification",
+        "parameters": [
+          {
+            "name": "notificationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Vehicle/CreateServiceLog": {
       "post": {
         "tags": [
@@ -1840,18 +1883,18 @@
         }
       }
     },
-    "/api/Vehicle/CreateServiceEventNotifier": {
+    "/api/Vehicle/CreateNotification": {
       "post": {
         "tags": [
           "Vehicle"
         ],
-        "operationId": "Vehicle_CreateServiceEventNotifier",
+        "operationId": "Vehicle_CreateNotification",
         "requestBody": {
           "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVehicleEventNotifierCommand"
+                "$ref": "#/components/schemas/CreateVehicleNotificationCommand"
               }
             }
           },
@@ -3242,7 +3285,7 @@
           }
         }
       },
-      "CreateVehicleEventNotifierCommand": {
+      "CreateVehicleNotificationCommand": {
         "type": "object",
         "additionalProperties": false,
         "required": [

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { EnumValues } from 'enum-values';
-import { CreateVehicleEventNotifierCommand, VehicleClient } from '../../../../app/web-api-client';
+import { CreateVehicleNotificationCommand, VehicleClient } from '../../../../app/web-api-client';
 import { showOnSuccess } from '../../../../redux/slices/statusSnackbarSlice';
 import { useParams } from 'react-router';
 
@@ -45,11 +45,11 @@ export default ({ open, onClose }: QuestionDialogProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const vehicleClient = new VehicleClient(process.env.PUBLIC_URL);
 
-    const createNotification = async (command: CreateVehicleEventNotifierCommand) => {
+    const createNotification = async (command: CreateVehicleNotificationCommand) => {
         setLoading(true);
         try {
             console.log(command);
-            const response = await vehicleClient.createServiceEventNotifier(command);
+            const response = await vehicleClient.createNotification(command);
 
             setLoading(false);
             return response;
@@ -69,7 +69,7 @@ export default ({ open, onClose }: QuestionDialogProps) => {
             return;
         }
 
-        var command = new CreateVehicleEventNotifierCommand({
+        var command = new CreateVehicleNotificationCommand({
             vehicleLicensePlate: license_plate || '',
             contactIdentifier: whatsappOrEmail,
         });

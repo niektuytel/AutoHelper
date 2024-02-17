@@ -1,4 +1,5 @@
 ﻿using AutoHelper.Application.Common.Interfaces;
+using AutoHelper.Application.Messages.Commands.DeleteNotification;
 using AutoHelper.Application.Vehicles._DTOs;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 using AutoHelper.Application.Vehicles.Commands.CreateVehicleServiceLog;
@@ -56,6 +57,17 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
     }
 
+    [HttpGet($"{nameof(UnsubscribeNotification)}/{{notificationId}}")]
+    [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UnsubscribeNotification([FromRoute] Guid notificationId, CancellationToken cancellationToken)
+    {
+        var deleteNotificationCommand = new DeleteNotificationCommand(notificationId);
+        var deleteNotification =  await Mediator.Send(deleteNotificationCommand, cancellationToken);
+
+        return Redirect($"/thankyou/{nameof(UnsubscribeNotification)}");
+    }
+
     [HttpPost($"{nameof(CreateServiceLog)}")]
     [ProducesResponseType(typeof(VehicleServiceLogDtoItem), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -80,10 +92,10 @@ public class VehicleController : ApiControllerBase
         return await Mediator.Send(command, cancellationToken);
     }
 
-    [HttpPost(nameof(CreateServiceEventNotifier))]
+    [HttpPost(nameof(CreateNotification))]
     [ProducesResponseType(typeof(NotificationItemDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<NotificationItemDto> CreateServiceEventNotifier([FromBody] CreateVehicleEventNotifierCommand command, CancellationToken cancellationToken)
+    public async Task<NotificationItemDto> CreateNotification([FromBody] CreateVehicleNotificationCommand command, CancellationToken cancellationToken)
     {
         return await Mediator.Send(command, cancellationToken);
     }

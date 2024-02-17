@@ -1596,9 +1596,11 @@ export interface IVehicleClient {
      */
     getTimeline(licensePlate: string | null | undefined, maxAmount: number | undefined): Promise<VehicleTimelineDtoItem[]>;
 
+    unsubscribeNotification(notificationId: string): Promise<FileResponse>;
+
     createServiceLog(vehicleLicensePlate: string | null | undefined, garageLookupIdentifier: string | null | undefined, garageServiceId: string | null | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, reporterName: string | null | undefined, reporterPhoneNumber: string | null | undefined, reporterEmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem>;
 
-    createServiceEventNotifier(command: CreateVehicleEventNotifierCommand): Promise<NotificationItemDto>;
+    createNotification(command: CreateVehicleNotificationCommand): Promise<NotificationItemDto>;
 }
 
 export class VehicleClient implements IVehicleClient {
@@ -1805,6 +1807,54 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleTimelineDtoItem[]>(null as any);
     }
 
+    unsubscribeNotification(notificationId: string): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/Vehicle/UnsubscribeNotification/{notificationId}";
+        if (notificationId === undefined || notificationId === null)
+            throw new Error("The parameter 'notificationId' must be defined.");
+        url_ = url_.replace("{notificationId}", encodeURIComponent("" + notificationId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUnsubscribeNotification(_response);
+        });
+    }
+
+    protected processUnsubscribeNotification(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            let fileNameMatch = contentDisposition ? /filename\*=(?:(\\?['"])(.*?)\1|(?:[^\s]+'.*?')?([^;\n]*))/g.exec(contentDisposition) : undefined;
+            let fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[3] || fileNameMatch[2] : undefined;
+            if (fileName) {
+                fileName = decodeURIComponent(fileName);
+            } else {
+                fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+                fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            }
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ValidationProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(null as any);
+    }
+
     createServiceLog(vehicleLicensePlate: string | null | undefined, garageLookupIdentifier: string | null | undefined, garageServiceId: string | null | undefined, description: string | null | undefined, date: string | null | undefined, expectedNextDate: string | null | undefined, odometerReading: number | undefined, expectedNextOdometerReading: number | null | undefined, reporterName: string | null | undefined, reporterPhoneNumber: string | null | undefined, reporterEmailAddress: string | null | undefined, attachmentFile: FileParameter | null | undefined): Promise<VehicleServiceLogDtoItem> {
         let url_ = this.baseUrl + "/api/Vehicle/CreateServiceLog";
         url_ = url_.replace(/[?&]$/, "");
@@ -1875,8 +1925,8 @@ export class VehicleClient implements IVehicleClient {
         return Promise.resolve<VehicleServiceLogDtoItem>(null as any);
     }
 
-    createServiceEventNotifier(command: CreateVehicleEventNotifierCommand): Promise<NotificationItemDto> {
-        let url_ = this.baseUrl + "/api/Vehicle/CreateServiceEventNotifier";
+    createNotification(command: CreateVehicleNotificationCommand): Promise<NotificationItemDto> {
+        let url_ = this.baseUrl + "/api/Vehicle/CreateNotification";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1891,11 +1941,11 @@ export class VehicleClient implements IVehicleClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreateServiceEventNotifier(_response);
+            return this.processCreateNotification(_response);
         });
     }
 
-    protected processCreateServiceEventNotifier(response: Response): Promise<NotificationItemDto> {
+    protected processCreateNotification(response: Response): Promise<NotificationItemDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -3833,11 +3883,11 @@ export interface IVehicleServiceLogDtoItem {
     metaData?: string;
 }
 
-export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNotifierCommand {
+export class CreateVehicleNotificationCommand implements ICreateVehicleNotificationCommand {
     vehicleLicensePlate!: string;
     contactIdentifier!: string;
 
-    constructor(data?: ICreateVehicleEventNotifierCommand) {
+    constructor(data?: ICreateVehicleNotificationCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -3853,9 +3903,9 @@ export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNot
         }
     }
 
-    static fromJS(data: any): CreateVehicleEventNotifierCommand {
+    static fromJS(data: any): CreateVehicleNotificationCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateVehicleEventNotifierCommand();
+        let result = new CreateVehicleNotificationCommand();
         result.init(data);
         return result;
     }
@@ -3868,7 +3918,7 @@ export class CreateVehicleEventNotifierCommand implements ICreateVehicleEventNot
     }
 }
 
-export interface ICreateVehicleEventNotifierCommand {
+export interface ICreateVehicleNotificationCommand {
     vehicleLicensePlate: string;
     contactIdentifier: string;
 }

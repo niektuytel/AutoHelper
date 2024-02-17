@@ -12,7 +12,7 @@ using MediatR;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 
-public record CreateVehicleEventNotifierCommand : IRequest<NotificationItemDto>
+public record CreateVehicleNotificationCommand : IRequest<NotificationItemDto>
 {
     public string VehicleLicensePlate { get; set; } = null!;
 
@@ -23,7 +23,7 @@ public record CreateVehicleEventNotifierCommand : IRequest<NotificationItemDto>
 
 }
 
-public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVehicleEventNotifierCommand, NotificationItemDto>
+public class CreateVehicleNotificationCommandHandler : IRequestHandler<CreateVehicleNotificationCommand, NotificationItemDto>
 {
     private readonly IBlobStorageService _blobStorageService;
     private readonly IApplicationDbContext _context;
@@ -31,7 +31,7 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
     private readonly IMapper _mapper;
     private readonly ISender _sender;
 
-    public CreateVehicleEventNotifierCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IQueueService queueService, IMapper mapper, ISender sender)
+    public CreateVehicleNotificationCommandHandler(IBlobStorageService blobStorageService, IApplicationDbContext context, IQueueService queueService, IMapper mapper, ISender sender)
     {
         _blobStorageService = blobStorageService;
         _context = context;
@@ -40,7 +40,7 @@ public class CreateVehicleEventNotifierCommandHandler : IRequestHandler<CreateVe
         _sender = sender;
     }
 
-    public async Task<NotificationItemDto> Handle(CreateVehicleEventNotifierCommand request, CancellationToken cancellationToken)
+    public async Task<NotificationItemDto> Handle(CreateVehicleNotificationCommand request, CancellationToken cancellationToken)
     {
         // get next notifier, and avoid db call to parse instance
         var nextNotifierQuery = new GetVehicleNextNotificationQuery(request.VehicleLicensePlate)

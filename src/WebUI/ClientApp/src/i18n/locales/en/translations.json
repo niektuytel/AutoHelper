@@ -272,6 +272,10 @@
       "ContactDeveloperDescription": "Feel free to contact the developer of this website.",
       "DeveloperName": "Name:",
       "DeveloperEmail": "Email:"
+    },
+    "UnsubscribeNotification": {
+      "Title": "Successfully Unsubscribed",
+      "Description": "Will no longer receive notifications/tips about the specific vehicle for which you have unsubscribed."
     }
   },
 

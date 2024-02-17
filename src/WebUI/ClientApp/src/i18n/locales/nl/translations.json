@@ -271,6 +271,10 @@
       "ContactDeveloperDescription": "Neem gerust contact op met de ontwikkelaar van deze website.",
       "DeveloperName": "Naam:",
       "DeveloperEmail": "Email:"
+    },
+    "UnsubscribeNotification": {
+      "Title": "Succesvol Uitgeschreven",
+      "Description": "U zult geen verdere notifacties/tips ontvangen over het specifieke voertuig waarvoor u zich heeft uitgeschreven."
     }
   },
   

@@ -15,4 +15,5 @@ public partial class VehicleServiceNotification_TyreChangeToSummer
 
     public string VehicleUrl => $"{DomainUrl}/vehicle/{Notification.VehicleLicensePlate}";
 
+    public string UnsubscribeUrl => $"{DomainUrl}/api/vehicle/UnsubscribeNotification/{Notification.Id}";
 }

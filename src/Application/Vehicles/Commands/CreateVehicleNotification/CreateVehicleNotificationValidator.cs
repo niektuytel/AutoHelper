@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoHelper.Application.Vehicles.Commands.CreateVehicleEventNotifier;
 
-public class CreateVehicleEventNotifierValidator : AbstractValidator<CreateVehicleEventNotifierCommand>
+public class CreateVehicleNotificationValidator : AbstractValidator<CreateVehicleNotificationCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public CreateVehicleEventNotifierValidator(IApplicationDbContext applicationDbContext)
+    public CreateVehicleNotificationValidator(IApplicationDbContext applicationDbContext)
     {
         _context = applicationDbContext;
 
@@ -27,7 +27,7 @@ public class CreateVehicleEventNotifierValidator : AbstractValidator<CreateVehic
             .WithMessage("Invalid whatsapp number or email address.");
     }
 
-    private async Task<bool> BeValidAndExistingVehicle(CreateVehicleEventNotifierCommand command, string licensePlate, CancellationToken cancellationToken)
+    private async Task<bool> BeValidAndExistingVehicle(CreateVehicleNotificationCommand command, string licensePlate, CancellationToken cancellationToken)
     {
         licensePlate = licensePlate.ToUpper().Replace("-", "");
 
