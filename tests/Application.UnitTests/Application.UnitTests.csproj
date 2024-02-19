@@ -27,8 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Application\AutoHelper.Application.csproj" />
-        <ProjectReference Include="..\..\src\Infrastructure\AutoHelper.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\src\Application\Application.csproj" />
+        <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
