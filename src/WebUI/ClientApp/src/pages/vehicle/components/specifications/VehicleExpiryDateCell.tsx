@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, CSSProperties } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { useSpring, animated } from 'react-spring';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { COLORS } from '../../../../constants/colors';
@@ -10,12 +10,10 @@ interface NotificationIconProps {
     isMobile: boolean;
 }
 
-export default ({ expiryDate, isMobile }: NotificationIconProps) => {
+export default function NotificationIcon({ expiryDate, isMobile }: NotificationIconProps) {
     const [showDialog, setShowDialog] = useState(false);
-    const [animationToggle, setAnimationToggle] = useState(false);
-    const [shakeCount, setShakeCount] = useState(0);
+    const iconRef = useRef<SVGSVGElement>(null);
 
-    // Refactor color logic into a separate function
     const calculateIconColor = (expiryDate?: Date) => {
         if (expiryDate) {
             const expiry = new Date(expiryDate);
@@ -30,31 +28,25 @@ export default ({ expiryDate, isMobile }: NotificationIconProps) => {
 
     const iconColor = calculateIconColor(expiryDate);
 
-    useEffect(() => {
-        if (shakeCount < 10) {
-            const interval = setInterval(() => {
-                setAnimationToggle(toggle => !toggle);
-                setShakeCount(count => count + 1);
-            }, 200);
-            return () => clearInterval(interval);
-        } else {
-            const timeout = setTimeout(() => setShakeCount(0), 1000);
-            return () => clearTimeout(timeout);
-        }
-    }, [shakeCount]);
-
+    // Inside your component
     const animationStyles = useSpring({
-        to: { transform: animationToggle ? 'rotate(10deg)' : 'rotate(-10deg)' },
-        config: { duration: 100 },
+        to: async (next, cancel) => {
+            while (true) {
+                await next({ transform: 'rotate(10deg)' });
+                await new Promise(resolve => setTimeout(resolve, 200)); // pause at 10deg
+                await next({ transform: 'rotate(-10deg)' });
+                await new Promise(resolve => setTimeout(resolve, 200)); // pause at -10deg
+            }
+        },
+        from: { transform: 'rotate(-10deg)' },
+        config: { duration: 200 },
+        reset: true,
     });
 
-    const iconRef = useRef<SVGSVGElement>(null);
-
-    // Simplify hover handlers
     const handleMouseOver = () => iconRef.current?.style.setProperty('color', COLORS.BLUE);
     const handleMouseOut = () => iconRef.current?.style.setProperty('color', iconColor);
+    const handleClick = () => setShowDialog(true);
 
-    // Styled TableCell
     const ClickableTableCell = styled(TableCell)({
         cursor: 'pointer',
         '&:hover': {
@@ -62,12 +54,10 @@ export default ({ expiryDate, isMobile }: NotificationIconProps) => {
         },
     });
 
-    const cellStyle: CSSProperties = {
+    const cellStyle:any = {
         textAlign: 'left',
         paddingRight: isMobile ? '' : '0',
     };
-
-    const handleClick = () => setShowDialog(true);
 
     return (
         <>
@@ -90,5 +80,4 @@ export default ({ expiryDate, isMobile }: NotificationIconProps) => {
             {showDialog && <NotificationDialog open={showDialog} onClose={() => setShowDialog(false)} />}
         </>
     );
-};
-
+}

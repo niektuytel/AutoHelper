@@ -4,8 +4,6 @@ import Slider from 'react-slick';
 import { useTranslation } from 'react-i18next';
 
 export default () => {
-    const { t } = useTranslation();
-    // TODO: add translations
 
     const settings = {
         dots: true,

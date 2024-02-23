@@ -14,9 +14,6 @@ interface IProps {}
 
 export default ({ }: IProps) => {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const { license_plate } = useParams();
-    const { t } = useTranslation();
 
     return <>
         <GradientBox>

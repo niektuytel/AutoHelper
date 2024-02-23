@@ -70,7 +70,6 @@ export default ({ }: IProps) => {
             <TextField
                 fullWidth
                 autoComplete="new-password" // Use this line instead of autoComplete="off", because it is not working
-                autoFocus={true}
                 value={value}
                 onChange={handleInput}
                 variant="outlined"
