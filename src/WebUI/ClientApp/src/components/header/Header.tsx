@@ -1,7 +1,7 @@
 import React, { useState, MouseEvent, useEffect, useRef, RefObject } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, Box, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Avatar, Box, Breadcrumbs, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, Link, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
@@ -62,6 +62,21 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                     <Grid container>
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small navigateGoto={navigateGoto} />
+                            <Breadcrumbs maxItems={2} aria-label="breadcrumb">
+                                <Link underline="hover" color="inherit" href="#">
+                                    Home
+                                </Link>
+                                <Link underline="hover" color="inherit" href="#">
+                                    Catalog
+                                </Link>
+                                <Link underline="hover" color="inherit" href="#">
+                                    Accessories
+                                </Link>
+                                <Link underline="hover" color="inherit" href="#">
+                                    New Collection
+                                </Link>
+                                <Typography color="text.primary">Belts</Typography>
+                            </Breadcrumbs>
                         </Grid>
                         { has3Sections &&
                             <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

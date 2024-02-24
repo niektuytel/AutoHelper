@@ -1,0 +1,208 @@
+{
+    "version": "1.0",
+    "object": {
+        "Id": "pen001",
+        "Type": "Pen",
+        "Description": "Pen to write with on the paper",
+        "OkState": {}
+    },
+    "Parts": [
+        {
+            "Id": "spring001",
+            "Type": "Spring",
+            "Description": "Metal compression spring for energy storage",
+            "Weight": 8,
+            "HealthChecks": [
+                {
+                    "Name": "Integrity",
+                    "Detail": "No cracks or deformities",
+                    "Weight": 10
+                },
+                {
+                    "Name": "Elasticity",
+                    "Detail": "Returns to shape after compression",
+                    "Weight": 8
+                },
+                {
+                    "Name": "Performance",
+                    "Detail": "Consistent force and compression rate",
+                    "Weight": 9
+                },
+                {
+                    "Name": "Corrosion",
+                    "Detail": "Minimal rust or corrosion",
+                    "Weight": 6
+                },
+                {
+                    "Name": "Wear",
+                    "Detail": "Acceptable wear level",
+                    "Weight": 7
+                }
+            ],
+            "RefInfo": {
+                "Procurement": "How to purchase or order",
+                "Identification": "Guidelines for identifying the spring",
+                "Visual": "Image or diagram URL for identification"
+            }
+        },
+        {
+            "Id": "penRefill001",
+            "Type": "PenRefill",
+            "Description": "Refillable cartridge for a ballpoint pen, contains ink",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "ballpoint001",
+            "Type": "Ballpoint",
+            "Description": "Steel ball used to roll ink onto the paper",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "ink001",
+            "Type": "Ink",
+            "Description": "Liquid ink used in pens for writing or drawing",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "sleeve001",
+            "Type": "Sleeve",
+            "Description": "Cylindrical cover for a pen, providing protection and design",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "titaniumSpring001",
+            "Type": "TitaniumSpring",
+            "Description": "A spring made of titanium, known for its strength and lightweight properties.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "plasticSpring001",
+            "Type": "PlasticSpring",
+            "Description": "A spring made of plastic, offering flexibility and corrosion resistance.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "fountainPenRefill001",
+            "Type": "FountainPenRefill",
+            "Description": "A refillable cartridge for a fountain pen, typically using water-based ink.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "gelPenRefill001",
+            "Type": "GelPenRefill",
+            "Description": "A refillable cartridge for a gel pen, using gel ink.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "ceramicBallpoint001",
+            "Type": "CeramicBallpoint",
+            "Description": "A ballpoint made of ceramic, offering a smooth writing experience.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "tungstenCarbideBallpoint001",
+            "Type": "TungstenCarbideBallpoint",
+            "Description": "A ballpoint made of tungsten carbide, known for its durability and precision.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "gelInk001",
+            "Type": "GelInk",
+            "Description": "A type of ink with a gel consistency, used in gel pens.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "oilBasedInk001",
+            "Type": "OilBasedInk",
+            "Description": "A type of ink that uses an oil base, offering a smooth and consistent writing experience.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "waterBasedInk001",
+            "Type": "WaterBasedInk",
+            "Description": "An ink that uses water as a solvent, commonly found in fountain pens.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "plasticSleeve001",
+            "Type": "PlasticSleeve",
+            "Description": "A cylindrical cover for a pen made of plastic, offering a lightweight and versatile design.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "metalSleeve001",
+            "Type": "MetalSleeve",
+            "Description": "A cylindrical cover for a pen made of metal, providing durability and a premium feel.",
+            "OkStateFunctions": {}
+        },
+        {
+            "Id": "woodenSleeve001",
+            "Type": "WoodenSleeve",
+            "Description": "A cylindrical cover for a pen made of wood, offering a unique and natural design.",
+            "OkStateFunctions": {}
+        }
+    ],
+    "Dependencies": [
+        {
+            "PartId": "pen001",
+            "DependsOn": [
+                "sleeve001"
+            ]
+        },
+        {
+            "PartId": "sleeve001",
+            "DependsOn": [
+                "spring001",
+                "penRefill001"
+            ]
+        },
+        {
+            "PartId": "penRefill001",
+            "DependsOn": [
+                "ballpoint001",
+                "ink001"
+            ]
+        }
+    ],
+    "Alternatives": [
+        {
+            "PartId": "spring001",
+            "Alternatives": [
+                "titaniumSpring001",
+                "plasticSpring001"
+            ]
+        },
+        {
+            "PartId": "penRefill001",
+            "Alternatives": [
+                "fountainPenRefill001",
+                "gelPenRefill001"
+            ]
+        },
+        {
+            "PartId": "ink001",
+            "Alternatives": [
+                "gelInk001",
+                "oilBasedInk001",
+                "waterBasedInk001"
+            ]
+        },
+        {
+            "PartId": "sleeve001",
+            "Alternatives": [
+                "plasticSleeve001",
+                "metalSleeve001",
+                "woodenSleeve001"
+            ]
+        }
+    ],
+    "Rules": [
+        "Each 'Type' SHOULD be defined ONCE as 'Part'",
+        "Each 'DependsOn' SHOULD be defined ONCE as 'Part'",
+        "Each 'Alternatives' SHOULD be defined ONCE as 'Part'",
+        "IF the part itself contains more than one material type -> 'DependsOn' is REQUIRED",
+        "Specs 'Description' is REQUIRED",
+        "Alternatives are NOT allowed on Dependencies & 'DependsOn' values",
+        "Ids in Alternatives can only been used ONCE"
+    ]
+}

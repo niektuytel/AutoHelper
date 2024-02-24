@@ -22,6 +22,9 @@ export const getLicenseFromPath = (path: string): string | undefined => {
 }
 
 export const getFormatedLicense = (license: string): string => {
+    license = license.toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+        .replace(/[- ]/g, '');
 
     switch (license.length) {
         case 6:
