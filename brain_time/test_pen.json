@@ -203,6 +203,7 @@
         "IF the part itself contains more than one material type -> 'DependsOn' is REQUIRED",
         "Specs 'Description' is REQUIRED",
         "Alternatives are NOT allowed on Dependencies & 'DependsOn' values",
-        "Ids in Alternatives can only been used ONCE"
+        "Ids in Alternatives can only been used ONCE",
+        "For debugging the issue, which weights are we ignoring"
     ]
 }
