@@ -9,23 +9,6 @@ import ClearIcon from '@mui/icons-material/Clear';
 // own imports
 import { GarageLookupDtoItem, GarageServiceType } from "../../../app/web-api-client";
 
-
-function useDebounce(value: any, delay: number) {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedValue(value);
-        }, delay);
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [value, delay]);
-
-    return debouncedValue;
-}
-
 interface IProps
 {
     loading: boolean;

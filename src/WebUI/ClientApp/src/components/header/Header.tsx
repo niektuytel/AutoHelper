@@ -3,6 +3,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Box, Breadcrumbs, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, Link, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import HomeIcon from '@mui/icons-material/Home';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
@@ -22,6 +24,7 @@ import { ROUTES } from "../../constants/routes";
 import { GarageLookupDtoItem, VehicleService } from "../../app/web-api-client";
 import { getServices, removeService } from "../../redux/slices/storedServicesSlice";
 import SelectedServicesCard from "./components/SelectedServicesCard";
+import { useTranslation } from "react-i18next";
 
 
 interface IProps {
@@ -34,11 +37,15 @@ interface IProps {
 const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigateGoto }: IProps) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { license_plate } = useParams<{ license_plate: string }>();
     const [onMenu, setOnMenu] = useState(false);
     const [isCardVisible, setIsCardVisible] = useState(false);
     const services: VehicleService[] = useSelector((state: any) => state.storedServices);
     const headerRef = React.useRef<HTMLDivElement | null>(null);
     const [headerHeight, setHeaderHeight] = useState(75);
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+
 
     React.useEffect(() => {
         if (headerRef.current) {
@@ -62,21 +69,48 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                     <Grid container>
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small navigateGoto={navigateGoto} />
-                            <Breadcrumbs maxItems={2} aria-label="breadcrumb">
-                                <Link underline="hover" color="inherit" href="#">
-                                    Home
-                                </Link>
-                                <Link underline="hover" color="inherit" href="#">
-                                    Catalog
-                                </Link>
-                                <Link underline="hover" color="inherit" href="#">
-                                    Accessories
-                                </Link>
-                                <Link underline="hover" color="inherit" href="#">
-                                    New Collection
-                                </Link>
-                                <Typography color="text.primary">Belts</Typography>
-                            </Breadcrumbs>
+                            {location.pathname !== '/' &&
+                                <>
+                                    <Hidden mdUp>
+                                        <IconButton
+                                            onClick={() => navigate('/')}
+                                            sx={{ color: 'white', backgroundColor: COLORS.BLUE, marginLeft: 2, '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}
+                                        >
+                                            <HomeIcon />
+                                        </IconButton>
+                                    </Hidden>
+                                    <Hidden mdDown>
+                                        <Button
+                                            startIcon={<HomeIcon />}
+                                            onClick={() => navigate('/')}
+                                            sx={{ color: 'white', backgroundColor: COLORS.BLUE, marginLeft: 2, '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}
+                                        >
+                                            {t("AboutUs")}
+                                        </Button>
+                                    </Hidden>
+                                </>
+                            }
+                            {license_plate && location.pathname != `/vehicle/${license_plate}` &&
+                                <>
+                                    <Hidden mdUp>
+                                        <IconButton
+                                            onClick={() => navigate(`/vehicle/${license_plate}`)}
+                                            sx={{ color: 'white', backgroundColor: COLORS.BLUE, marginLeft: 2, '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}
+                                        >
+                                            <DirectionsCarIcon />
+                                        </IconButton>
+                                    </Hidden>
+                                    <Hidden mdDown>
+                                        <Button
+                                            startIcon={<DirectionsCarIcon />}
+                                            onClick={() => navigate(`/vehicle/${license_plate}`)}
+                                            sx={{ color: 'white', backgroundColor: COLORS.BLUE, marginLeft: 2, '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}
+                                        >
+                                            {license_plate}
+                                        </Button>
+                                    </Hidden>
+                                </>
+                            }
                         </Grid>
                         { has3Sections &&
                             <Grid item xs={4} md={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -112,9 +146,16 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                                     <LoginButton />
                                 </Box>
                                 :
-                                <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
-                                    <MenuIcon />
-                                </StyledIconButton>
+                                <>
+                                    <Hidden mdUp>
+                                        <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
+                                            <MenuIcon />
+                                        </StyledIconButton>
+                                    </Hidden>
+                                    <Hidden mdDown>
+                                        <LoginButton />
+                                    </Hidden>
+                                </>
                             }
                             <SelectedServicesCard isCardVisible={isCardVisible} services={services} onClose={() => setIsCardVisible(false)} />
                         </Grid>

@@ -1,12 +1,12 @@
 ﻿import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Button, Menu, MenuItem, styled, IconButton } from "@mui/material";
+import { Button, Menu, MenuItem, styled, IconButton, Hidden } from "@mui/material";
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 import PersonIcon from '@mui/icons-material/Person';
 import GarageIcon from '@mui/icons-material/Garage';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
 import jwtDecode from "jwt-decode";
 import { useTranslation } from 'react-i18next';
-
+import LoginIcon from '@mui/icons-material/Login';
 
 // own imports
 import { ROLES } from '../../../constants/roles';
@@ -14,6 +14,7 @@ import { COLORS } from '../../../constants/colors';
 import useUserRole from '../../../hooks/useUserRole';
 import useRoleIndex from '../../../hooks/useRoleIndex';
 import { garageLoginRequest, userLoginRequest } from '../../../authConfig';
+import { t } from 'i18next';
 
 interface IProps {
     asIcon?: boolean;
@@ -129,22 +130,34 @@ export default ({ asIcon }:IProps) => {
         </AuthenticatedTemplate>
         <UnauthenticatedTemplate>
             <>
-                <StyledLoginButton
-                    ref={buttonRef}
-                    variant="contained"
-                    onClick={handleClick}
-                    sx={{
-                        m: 1,
-                        p: 1
-                    }}
-                >
-                    Login
-                </StyledLoginButton>
+                <Hidden mdUp>
+                    <StyledLoginButton
+                        ref={buttonRef}
+                        variant="contained"
+                        onClick={handleClick}
+                        sx={{
+                            m: 1,
+                            p: 1
+                        }}
+                    >
+                        Login
+                    </StyledLoginButton>
+                </Hidden>
+                <Hidden mdDown>
+                    <IconButton
+                        onClick={handleClick}
+                        style={{ color: 'black' }}
+                        aria-label="logout"
+                        title={t('login_camelcase')}
+                    >
+                        <LoginIcon />
+                    </IconButton>
+                </Hidden>
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
-                    sx={{ left: "-3px" }}
+                    sx={{ left: "8px" }}
                     MenuListProps={{ style: { width: buttonRef.current?.offsetWidth } }}
                 >
                     <LoginMenu onLogin={handleLogin} />
