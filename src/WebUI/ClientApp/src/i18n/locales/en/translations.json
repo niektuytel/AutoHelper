@@ -226,11 +226,7 @@
   "ServiceLogsIsEmpty.Title": "Servicelogs are empty",
   "ServiceLogsIsEmpty.Button": "Click here",
 
-
-
-
-
-
+  "TimelineDialog.Description": "These comments are made available to all users, offering a lucid and transparent narrative of the vehicle's history. They furnish other garages with essential insights into the vehicle's background.",
 
   "GarageServiceDialog.Title.Create": "Create",
   "GarageServiceDialog.Title.Update": "Update",

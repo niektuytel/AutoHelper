@@ -14,6 +14,8 @@ import { Tooltip } from '@mui/material';
 
 // custom imports
 import { VehicleTimelineDtoItem, VehicleTimelineType } from '../../../../app/web-api-client';
+import TimelineDialog from './TimelineDialog';
+import { useState } from 'react';
 
 // CSS for the ellipsis
 const ellipsisStyle:any = {
@@ -28,7 +30,13 @@ interface IProps {
     timelineItem: VehicleTimelineDtoItem
 }
 
-export default ({ textColor="white", timelineItem }: IProps) => {
+export default ({ textColor = "white", timelineItem }: IProps) => {
+    const [showDialog, setShowDialog] = useState(false);
+
+    const handleOpenDialog = () => {
+        setShowDialog(true);
+    };
+
     const getTimelineDot = (type: VehicleTimelineType) => {
         switch (type) {
             case VehicleTimelineType.Repair:
@@ -53,7 +61,7 @@ export default ({ textColor="white", timelineItem }: IProps) => {
         return <TimelineDot color="success" variant="filled" sx={{ bgcolor: 'white', mx:"12px" }}></TimelineDot>
     }
 
-    return (
+    return <>
         <TimelineItem sx={{ width: "min-content" }} key={`TimelineItem-${timelineItem.date?.toDateString()}`}>
             <TimelineOppositeContent
                 sx={{ m: 'auto 0' }}
@@ -68,24 +76,27 @@ export default ({ textColor="white", timelineItem }: IProps) => {
                 {getTimelineDot(timelineItem.type!)}
                 <TimelineConnector />
             </TimelineSeparator>
-            <TimelineContent sx={{
-                py: '12px',
-                px: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-            }}>
+            <TimelineContent
+                sx={{
+                    py: '12px',
+                    px: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    cursor: timelineItem?.description ? 'pointer' : 'auto',
+                }}
+                onClick={() => timelineItem?.description && handleOpenDialog()}
+            >
                 <Typography variant="h6" component="span" color={textColor} sx={{ width: "max-content" }}>
                     {timelineItem.title}
                 </Typography>
-                {timelineItem?.description &&  
-                    <Tooltip title={timelineItem.description || ''}>
-                        <Typography color={textColor} style={ellipsisStyle}>
-                            {timelineItem.description}
-                        </Typography>
-                    </Tooltip>
+                {timelineItem?.description &&
+                    <Typography color={textColor} style={ellipsisStyle}>
+                        {timelineItem.description}
+                    </Typography>
                 }
             </TimelineContent>
         </TimelineItem>
-    );
+        {timelineItem.extraData && showDialog && <TimelineDialog open={showDialog} onClose={() => setShowDialog(false)} timeline={timelineItem} />}
+    </>;
 }

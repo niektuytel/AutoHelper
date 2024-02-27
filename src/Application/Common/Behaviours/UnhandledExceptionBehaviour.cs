@@ -22,7 +22,8 @@ public class UnhandledExceptionBehaviour<TRequest, TResponse> : IPipelineBehavio
     {
         try
         {
-            return await next();
+            var response = await next().WaitAsync(cancellationToken);
+            return response;
         }
         catch (Exception ex)
         when (ex is ForbiddenAccessException || ex is NotFoundException || ex is ValidationException)

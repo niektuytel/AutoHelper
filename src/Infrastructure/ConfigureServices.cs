@@ -17,7 +17,7 @@ public static class ConfigureServices
         //services.AddDbContextCheck<ApplicationDbContext>();
 
         CultureConfig.SetGlobalCultureToNL();
-        services.AddScoped<AuditableEntitySaveChangesInterceptor>();
+        services.AddTransient<AuditableEntitySaveChangesInterceptor>();
 
         if (bool.Parse(configuration["UseInMemoryDatabase"]!) == true)
         {
@@ -37,11 +37,12 @@ public static class ConfigureServices
                         builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
                         builder.UseNetTopologySuite();
                     }
-                )
+                ),
+                ServiceLifetime.Transient
             );
         }
 
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        services.AddTransient<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ApplicationDbContextInitialiser>();
         services.AddScoped<IDateTime, DateTimeService>();
 
@@ -57,10 +58,10 @@ public static class ConfigureServices
 
     public static void UseInfrastructureServices(this IServiceProvider services)
     {
-        using var scope = services.CreateScope();
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        initialiser.InitialiseAsync().Wait();
-        initialiser.SeedAsync().Wait();
+        //using var scope = services.CreateScope();
+        //var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
+        //initialiser.InitialiseAsync().Wait();
+        //initialiser.SeedAsync().Wait();
     }
 
 }

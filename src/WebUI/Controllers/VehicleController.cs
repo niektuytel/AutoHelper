@@ -52,9 +52,12 @@ public class VehicleController : ApiControllerBase
     [HttpGet($"{nameof(GetTimeline)}")]
     [ProducesResponseType(typeof(VehicleTimelineDtoItem[]), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, [FromQuery] int maxAmount = 5)
+    public async Task<VehicleTimelineDtoItem[]> GetTimeline([FromQuery] string licensePlate, CancellationToken cancellationToken, [FromQuery] int maxAmount = 5)
     {
-        return await Mediator.Send(new GetVehicleTimelineQuery(licensePlate, maxAmount));
+        var vehicleTimelineQuery = new GetVehicleTimelineQuery(licensePlate, maxAmount);
+        var vehicleTimeline = await Mediator.Send(vehicleTimelineQuery, cancellationToken);
+
+        return vehicleTimeline;
     }
 
     [HttpGet($"{nameof(UnsubscribeNotification)}/{{notificationId}}")]
