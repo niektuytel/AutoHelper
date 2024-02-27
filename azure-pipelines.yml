@@ -53,14 +53,14 @@ jobs:
         displayName: '.NET Build WebUI'
         inputs:
           command: 'build'
-          projects: '**/AutoHelper.WebUI.csproj'
+          projects: '**/WebUI.csproj'
           arguments: '--configuration $(buildConfiguration)'
 
       - task: DotNetCoreCLI@2
         displayName: '.NET Build Hangfire'
         inputs:
           command: 'build'
-          projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
+          projects: '**/Hangfire.Dashboard.csproj'
           arguments: '--configuration $(buildConfiguration)'
       
   - job: Publish
@@ -72,8 +72,8 @@ jobs:
         inputs:
           command: 'publish'
           publishWebProjects: false
-          projects: '**/AutoHelper.WebUI.csproj'
-          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/AutoHelper.WebUI'
+          projects: '**/WebUI.csproj'
+          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
           modifyOutputPath: false
 
       - task: DotNetCoreCLI@2
@@ -81,8 +81,8 @@ jobs:
         inputs:
           command: 'publish'
           publishWebProjects: false
-          projects: '**/AutoHelper.Hangfire.Dashboard.csproj'
-          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/AutoHelper.Hangfire.Dashboard'
+          projects: '**/Hangfire.Dashboard.csproj'
+          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Upload Artifacts'
@@ -104,7 +104,7 @@ jobs:
           appName: 'autohelper-webui'
           resourceGroupName: 'AutoHelper'
           slotName: 'production'
-          package: '$(Pipeline.Workspace)/**/AutoHelper.WebUI.zip'
+          package: '$(Pipeline.Workspace)/**/WebUI.zip'
           runtimeStack: 'DOTNETCORE|7.0'
 
       - task: AzureWebApp@1
