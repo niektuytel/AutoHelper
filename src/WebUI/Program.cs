@@ -5,6 +5,7 @@ using AutoHelper.Messaging;
 using AutoHelper.WebUI;
 using AutoHelper.WebUI.Filters;
 using AutoHelper.WebUI.Services;
+using Hangfire;
 using LinqKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
@@ -105,6 +106,8 @@ internal class Program
         _ = app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapHangfireDashboard();
+
             endpoints.MapFallbackToFile("index.html");
         });
 
