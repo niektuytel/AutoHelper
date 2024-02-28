@@ -56,13 +56,6 @@ jobs:
           projects: '**/WebUI.csproj'
           arguments: '--configuration $(buildConfiguration)'
 
-      - task: DotNetCoreCLI@2
-        displayName: '.NET Build Hangfire'
-        inputs:
-          command: 'build'
-          projects: '**/Hangfire.Dashboard.csproj'
-          arguments: '--configuration $(buildConfiguration)'
-      
   - job: Publish
     displayName: 'Publish Projects'
     dependsOn: RestoreAndBuild
@@ -75,14 +68,6 @@ jobs:
           projects: '**/WebUI.csproj'
           arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/WebUI'
           modifyOutputPath: false
-
-      - task: DotNetCoreCLI@2
-        displayName: 'Publish Hangfire'
-        inputs:
-          command: 'publish'
-          publishWebProjects: false
-          projects: '**/Hangfire.Dashboard.csproj'
-          arguments: '--configuration $(buildConfiguration) -r linux-x64 --self-contained --output $(Build.ArtifactStagingDirectory)/Hangfire.Dashboard'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Upload Artifacts'
@@ -107,13 +92,3 @@ jobs:
           package: '$(Pipeline.Workspace)/**/WebUI.zip'
           runtimeStack: 'DOTNETCORE|7.0'
 
-      - task: AzureWebApp@1
-        displayName: 'Deploy to hangfire.autohelper.nl'
-        inputs:
-          azureSubscription: 'Niek Tuijtel(c01f95dd-b3fa-4a0e-a85c-5b68a7d4270e)'
-          appType: 'webAppLinux'
-          appName: 'autohelper-hangfire'
-          resourceGroupName: 'AutoHelper'
-          slotName: 'production'
-          package: '$(Pipeline.Workspace)/**/Hangfire.Dashboard.zip'
-          runtimeStack: 'DOTNETCORE|7.0'
