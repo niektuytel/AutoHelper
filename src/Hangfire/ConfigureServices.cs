@@ -93,11 +93,6 @@ public static class ConfigureServices
             context.Database.Migrate();
         }
 
-        //// production we use the dashboard web service to run the dashboard
-        //if (app.Environment.IsDevelopment())
-        //{
-        //}
-
         app.UseHangfireDashboardInstance();
     }
 

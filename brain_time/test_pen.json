@@ -1,199 +1,203 @@
 {
     "version": "1.0",
-    "object": {
-        "Id": "pen001",
-        "Type": "Pen",
-        "Description": "Pen to write with on the paper",
-        "OkState": {}
+    "product": {
+        "id": "PEN001",
+        "type": "Pen",
+        "description": "A pen used for writing on paper"
     },
-    "Parts": [
+    "components": [
         {
-            "Id": "spring001",
-            "Type": "Spring",
-            "Description": "Metal compression spring for energy storage",
-            "Weight": 8,
-            "HealthChecks": [
+            "id": "SPRING001",
+            "type": "Spring",
+            "description": "Metal compression spring for energy storage",
+            "visualReference": "URL for identification image or diagram",
+            "functions": [
                 {
-                    "Name": "Integrity",
-                    "Detail": "No cracks or deformities",
-                    "Weight": 10
+                    "name": "Integrity",
+                    "detail": "Secures the refill when the pen is closed",
+                    "importance": 10
                 },
                 {
-                    "Name": "Elasticity",
-                    "Detail": "Returns to shape after compression",
-                    "Weight": 8
+                    "name": "Elasticity",
+                    "detail": "Returns to original shape after compression",
+                    "importance": 8
                 },
                 {
-                    "Name": "Performance",
-                    "Detail": "Consistent force and compression rate",
-                    "Weight": 9
+                    "name": "Performance",
+                    "detail": "Provides consistent force and compression",
+                    "importance": 9
                 },
                 {
-                    "Name": "Corrosion",
-                    "Detail": "Minimal rust or corrosion",
-                    "Weight": 6
-                },
-                {
-                    "Name": "Wear",
-                    "Detail": "Acceptable wear level",
-                    "Weight": 7
+                    "name": "Corrosion Resistance",
+                    "detail": "Resists rust and corrosion",
+                    "importance": 6
                 }
-            ],
-            "RefInfo": {
-                "Procurement": "How to purchase or order",
-                "Identification": "Guidelines for identifying the spring",
-                "Visual": "Image or diagram URL for identification"
-            }
+            ]
         },
         {
             "Id": "penRefill001",
             "Type": "PenRefill",
             "Description": "Refillable cartridge for a ballpoint pen, contains ink",
-            "OkStateFunctions": {}
+            "HappyFlowFunctions": [
+                {
+                    "Name": "Ink Flow",
+                    "Detail": "Consistent and smooth ink delivery without leakage",
+                    "Weight": 10
+                },
+                {
+                    "Name": "Compatibility",
+                    "Detail": "Fits securely in the pen housing",
+                    "Weight": 9
+                }
+            ],
+            "RefInfo": {
+                "Procurement": "Instructions on how to buy or replace",
+                "Identification": "Specifications for matching refill to pen model",
+                "Visual": "Image or diagram URL for correct installation"
+            }
         },
         {
             "Id": "ballpoint001",
             "Type": "Ballpoint",
             "Description": "Steel ball used to roll ink onto the paper",
-            "OkStateFunctions": {}
+            "HappyFlowFunctions": [
+                {
+                    "Name": "Smooth Operation",
+                    "Detail": "Rolls smoothly across different paper textures without skipping",
+                    "Weight": 10
+                },
+                {
+                    "Name": "Ink Transfer",
+                    "Detail": "Transfers ink uniformly to create consistent lines",
+                    "Weight": 9
+                }
+            ],
+            "RefInfo": {
+                "Procurement": "Guidelines for sourcing quality ballpoints",
+                "Identification": "Features to identify the correct ballpoint type",
+                "Visual": "Image or diagram URL for size and shape comparison"
+            }
         },
         {
             "Id": "ink001",
             "Type": "Ink",
             "Description": "Liquid ink used in pens for writing or drawing",
-            "OkStateFunctions": {}
+            "HappyFlowFunctions": [
+                {
+                    "Name": "Consistency",
+                    "Detail": "The ink flows smoothly without clotting, ensuring a consistent line width and color saturation.",
+                    "Weight": 10
+                },
+                {
+                    "Name": "Durability",
+                    "Detail": "Once on paper, the ink is fast-drying and resistant to fading, water, and smudging.",
+                    "Weight": 9
+                }
+            ]
         },
         {
             "Id": "sleeve001",
             "Type": "Sleeve",
             "Description": "Cylindrical cover for a pen, providing protection and design",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "titaniumSpring001",
-            "Type": "TitaniumSpring",
-            "Description": "A spring made of titanium, known for its strength and lightweight properties.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "plasticSpring001",
-            "Type": "PlasticSpring",
-            "Description": "A spring made of plastic, offering flexibility and corrosion resistance.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "fountainPenRefill001",
-            "Type": "FountainPenRefill",
-            "Description": "A refillable cartridge for a fountain pen, typically using water-based ink.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "gelPenRefill001",
-            "Type": "GelPenRefill",
-            "Description": "A refillable cartridge for a gel pen, using gel ink.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "ceramicBallpoint001",
-            "Type": "CeramicBallpoint",
-            "Description": "A ballpoint made of ceramic, offering a smooth writing experience.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "tungstenCarbideBallpoint001",
-            "Type": "TungstenCarbideBallpoint",
-            "Description": "A ballpoint made of tungsten carbide, known for its durability and precision.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "gelInk001",
-            "Type": "GelInk",
-            "Description": "A type of ink with a gel consistency, used in gel pens.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "oilBasedInk001",
-            "Type": "OilBasedInk",
-            "Description": "A type of ink that uses an oil base, offering a smooth and consistent writing experience.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "waterBasedInk001",
-            "Type": "WaterBasedInk",
-            "Description": "An ink that uses water as a solvent, commonly found in fountain pens.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "plasticSleeve001",
-            "Type": "PlasticSleeve",
-            "Description": "A cylindrical cover for a pen made of plastic, offering a lightweight and versatile design.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "metalSleeve001",
-            "Type": "MetalSleeve",
-            "Description": "A cylindrical cover for a pen made of metal, providing durability and a premium feel.",
-            "OkStateFunctions": {}
-        },
-        {
-            "Id": "woodenSleeve001",
-            "Type": "WoodenSleeve",
-            "Description": "A cylindrical cover for a pen made of wood, offering a unique and natural design.",
-            "OkStateFunctions": {}
-        }
-    ],
-    "Dependencies": [
-        {
-            "PartId": "pen001",
-            "DependsOn": [
-                "sleeve001"
-            ]
-        },
-        {
-            "PartId": "sleeve001",
-            "DependsOn": [
-                "spring001",
-                "penRefill001"
-            ]
-        },
-        {
-            "PartId": "penRefill001",
-            "DependsOn": [
-                "ballpoint001",
-                "ink001"
+            "HappyFlowFunctions": [
+                {
+                    "Name": "Protection",
+                    "Detail": "The sleeve protects the internal components of the pen from physical damage and environmental factors.",
+                    "Weight": 10
+                },
+                {
+                    "Name": "Compatibility",
+                    "Detail": "The sleeve is designed to fit securely with specific pen models, ensuring that all parts align correctly for optimal functionality.",
+                    "Weight": 7
+                }
             ]
         }
     ],
-    "Alternatives": [
+    "dependencies": [
+      {"componentId": "PEN001", "dependsOn": [{"id": "SLEEVE001", "connectionType": "Not Specified"}]},
+      {"componentId": "SLEEVE001", "dependsOn": [{"id": "SPRING001", "connectionType": "Friction Fit"}, {"id": "REFILL001", "connectionType": "Containment"}]},
+      {"componentId": "REFILL001", "dependsOn": [{"id": "BALLPOINT001", "connectionType": "Friction Fit"}, {"id": "INK001", "connectionType": "Containment"}]}
+    ],
+    "connectionTypes": [
         {
-            "PartId": "spring001",
-            "Alternatives": [
-                "titaniumSpring001",
-                "plasticSpring001"
-            ]
+            "Type": "Screw",
+            "Explanation": "A helical ridge used for converting rotational motion into linear motion, commonly used to hold objects together.",
+            "SampleUsage": "Assembling flat-pack furniture."
         },
         {
-            "PartId": "penRefill001",
-            "Alternatives": [
-                "fountainPenRefill001",
-                "gelPenRefill001"
-            ]
+            "Type": "Containment",
+            "Explanation": "A method of holding a material within another, ensuring that the contained material does not escape from its carrier.",
+            "SampleUsage": "Ink inside a pen refill cartridge."
         },
         {
-            "PartId": "ink001",
-            "Alternatives": [
-                "gelInk001",
-                "oilBasedInk001",
-                "waterBasedInk001"
-            ]
+            "Type": "Nut and Bolt",
+            "Explanation": "A combination of a bolt (a threaded pin or rod) and a nut (a type of fastener with a threaded hole) used to fasten materials together.",
+            "SampleUsage": "Securing wheels on a car's axle."
         },
         {
-            "PartId": "sleeve001",
-            "Alternatives": [
-                "plasticSleeve001",
-                "metalSleeve001",
-                "woodenSleeve001"
-            ]
+            "Type": "Rivet",
+            "Explanation": "A permanent mechanical fastener. Before installation, a rivet consists of a smooth cylindrical shaft with a head on one end. The end opposite the head is called the tail.",
+            "SampleUsage": "Joining metal sheets in aircraft construction."
+        },
+        {
+            "Type": "Adhesive",
+            "Explanation": "A substance used for sticking objects or materials together.",
+            "SampleUsage": "Gluing a broken ceramic vase."
+        },
+        {
+            "Type": "Welding",
+            "Explanation": "A fabrication process that joins materials, usually metals or thermoplastics, by causing fusion.",
+            "SampleUsage": "Constructing a metal frame for a building."
+        },
+        {
+            "Type": "Friction Fit",
+            "Explanation": "A method of joining parts by using interference fit to secure them together.",
+            "SampleUsage": "Mounting bearings into a machine housing."
+        },
+        {
+            "Type": "Snap Fit",
+            "Explanation": "A quick way of fastening two parts together without the need for additional fasteners.",
+            "SampleUsage": "Assembly of a plastic USB drive case."
+        },
+        {
+            "Type": "Dovetail",
+            "Explanation": "A joint technique most commonly used in woodworking joinery that's noted for its resistance to being pulled apart.",
+            "SampleUsage": "Joining the sides of a drawer to the front."
+        },
+        {
+            "Type": "Mortise and Tenon",
+            "Explanation": "A joint that connects two pieces of wood or other material.",
+            "SampleUsage": "Traditional wooden door frames."
+        },
+        {
+            "Type": "Bayonet Mount",
+            "Explanation": "A fastening mechanism consisting of a cylindrical male side with one or more radial pins, and a female receptor with matching L-shaped slots and a spring to keep the two parts locked together.",
+            "SampleUsage": "Attaching a camera lens."
+        },
+        {
+            "Type": "Threaded Connection",
+            "Explanation": "A connection made by screwing together two pieces with complementary threads.",
+            "SampleUsage": "Pipe fittings in plumbing."
+        },
+        {
+            "Type": "Magnetic Connection",
+            "Explanation": "Using magnetic forces to attach and align components quickly and easily.",
+            "SampleUsage": "Magnetic phone chargers."
+        },
+        {
+            "Type": "Latch",
+            "Explanation": "A type of mechanical fastener that is used to join two objects or surfaces together while allowing for the regular or eventual separation of the objects or surfaces.",
+            "SampleUsage": "Door or gate latches."
+        },
+        {
+            "Type": "Crimping",
+            "Explanation": "Deforming metal or other materials to join two components together.",
+            "SampleUsage": "Securing a wire connector to the end of a cable."
+        },
+        {
+            "Type": "Swaging",
+            "Explanation": "A forging process that involves fitting smaller diameter tubing or rods into a larger diameter counterpart.",
+            "SampleUsage": "Attaching fittings to the end of a metal cable."
         }
     ],
     "Rules": [
