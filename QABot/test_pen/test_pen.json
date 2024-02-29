@@ -1,0 +1,185 @@
+{
+    "version": "1.0",
+    "product": {
+      "id": "PEN001",
+      "name": "Pen",
+      "description": "A pen used for writing on paper"
+    },
+    "components": [
+        {
+            "id": "TIP001",
+            "name": "Tip",
+            "description": "Keeps the tip point/ball on its place and keep the pressure on the pen",
+            "visualReference": "/images/1000000083_1.jpg",
+            "capabilities": [
+                "Firmness",
+                "Precision",
+                "Resilience"
+            ]
+        },
+        {
+            "id": "BARREL001",
+            "name": "Barrel",
+            "description": "Keeps all the components on 1 place",
+            "visualReference": "/images/1000000083_2.jpg",
+            "capabilities": [
+                "Firmness",
+                "Ergonomics"
+            ]
+        },
+        {
+            "id": "BARRELBACK001",
+            "name": "Barrel on the Back",
+            "description": "Keeps all the components on 1 place, and has teeths inside to slide components under pressure in a other horizontal movement",
+            "visualReference": "/images/1000000083_3.jpg",
+            "capabilities": [
+                "Firmness",
+                "Ergonomics",
+                "Resilience"
+            ]
+        },
+        {
+            "id": "SPRING001",
+            "name": "Spring on the tip",
+            "description": "Metal compression spring for energy storage, designed to facilitate the click mechanism of a ballpen by providing consistent force and immediate return to its original state after compression. This component is crucial for the pen's reliability and longevity, ensuring smooth and seamless operation.",
+            "visualReference": "/images/1000000083_4.jpg",
+            "capabilities": [
+                "Resilience", 
+                "SmoothOperation", 
+                "Springiness", 
+                "Flexibility", 
+                "Bouncebackability" 
+            ]
+        },
+        {
+            "id": "INKCHAMBER001",
+            "name": "Ink Chamber",
+            "description": "Refillable cartridge for a ballpoint pen, contains ink",
+            "visualReference": "/images/1000000083_5.jpg",
+            "capabilities": [
+                "FlowControl", 
+                "Performance",
+                "Protection",  
+                "Consistency", 
+                "Durability", 
+                "SmoothOperation"
+            ]
+        },      
+        {
+            "id": "BALLPOINT001",
+            "name": "Ballpoint Tip",
+            "description": "Steel ball used to roll ink onto the paper",
+            "visualReference": "/images/1000000083_5.jpg",
+            "capabilities": [ 
+                "FlowControl", 
+                "SmoothOperation", 
+                "TransferEfficiency"
+            ]
+        },
+        {
+            "id": "TRUSTDEVICE001",
+            "name": "Thrust Spacer",
+            "description": "The thrust spacer is a small component situated near the tip of a ballpoint pen. Its primary function is to maintain the optimal position of the ball in the tip, ensuring smooth rolling action and consistent ink flow. It is designed to withstand the pressure exerted during writing, preventing ink leakage and maintaining the integrity of the pen's point.",
+            "visualReference": "/images/1000000083_6.jpg",
+            "capabilities": [
+              "Precision",
+              "Durability",
+              "Ink Flow Regulation",
+              "Leak Prevention",
+              "Smooth Operation",
+              "Consistency"
+            ]
+        },
+        {
+            "id": "TRUSTDEVICE002",
+            "name": "Push Button Mechanism",
+            "description": "The push button mechanism is a crucial component of retractable ballpoint pens, responsible for controlling the extension and retraction of the pen tip. It allows the user to expose the tip for writing or to retract it for safe storage. This mechanism typically consists of a push button, a spring, and a locking system to maintain the desired position of the tip.",
+            "visualReference": "/images/1000000083_7.jpg",
+            "capabilities": [
+              "SmoothOperation",
+              "Precision",
+              "Consistency"
+            ]
+        },
+        {
+            "id": "TRUSTDEVICESPRING001",
+            "name": "Trust device Spring",
+            "description": "The trustdevice spring is an integral component of retractable pens that provides the necessary tension for the pen's click action. It works in tandem with the push button mechanism to extend and retract the pen tip smoothly and ensures that the pen tip is securely locked in place when not in use.",
+            "visualReference": "/images/1000000083_8.jpg",
+            "capabilities": [
+              "Elasticity",
+              "Consistency",
+              "SmoothOperation"
+            ]
+        },
+        {
+            "id": "BUTTON001",
+            "name": "Pen button",
+            "description": "Button to press the pen refillment outside and make it possible to make a horizontal movement on the truster",
+            "visualReference": "/images/1000000083_9.jpg",
+            "capabilities": [
+                "Firmness",
+                "SmoothOperation"
+            ]
+        },
+        {
+            "id": "HOLDER001",
+            "name": "Pen holder",
+            "description": "Holder to be able to hang the pen on somthing like a blouse",
+            "visualReference": "/images/1000000083_10.jpg",
+            "capabilities": [
+                "Holder"
+            ]
+        } 
+    ],
+    "dependencies": [
+        {
+            "componentId": "PEN001",
+            "dependsOn": [
+                {
+                    "id": "SLEEVE001",
+                    "connectionType": null
+                }
+            ]
+        },
+        {
+            "componentId": "SLEEVE001",
+            "dependsOn": [
+                {
+                    "id": "SPRING001",
+                    "connectionType": "FrictionFit"
+                },
+                {
+                    "id": "REFILL001",
+                    "connectionType": "Containment"
+                }
+            ]
+        },
+        {
+            "componentId": "REFILL001",
+            "dependsOn": [
+                {
+                    "id": "BALLPOINT001",
+                    "connectionType": "FrictionFit"
+                },
+                {
+                    "id": "INK001",
+                    "connectionType": "Containment"
+                }
+            ]
+        }
+    ],
+    "rules": [
+      "Each 'Type' SHOULD be defined ONCE as 'Part'",
+      "Each 'DependsOn' SHOULD be defined ONCE as 'Part'",
+      "Each 'Alternatives' SHOULD be defined ONCE as 'Part'",
+      "IF the part itself contains more than one material type -> 'DependsOn' is REQUIRED",
+      "Specs 'Description' is REQUIRED",
+      "Alternatives are NOT allowed on Dependencies & 'DependsOn' values",
+      "Ids in Alternatives can only been used ONCE",
+      "Functions should be defined in a happy flow state",
+      "Importance value is always based on the unhappy flow, how more often it failed how higher the number",
+      "Weight on connections define how weak or maintainable this connections is"
+    ]
+  }
+  
