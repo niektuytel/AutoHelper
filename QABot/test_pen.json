@@ -254,6 +254,7 @@
 
         "functions should been defined in a happy flow state",
         "importance value is always based on the unhappy flow, how more often it failed how higher the number",
-        
+        "weight on connections define how weak or maintainable this connections is"
+
     ]
 }
