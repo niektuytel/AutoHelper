@@ -19,6 +19,15 @@ public class AdminAccountController : ApiControllerBase
         _queueService = queueService;
     }
 
+    [HttpPut($"{nameof(IsAdminUser)}")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<string> IsAdminUser([FromQuery] string emailaddress)
+    {
+        //var command = new SyncVehicleLookupCommand(licensePlate);
+        //return await Mediator.Send(command);
+    }
+
     /// <param name="maxInsertAmount">-1 is all of them</param>
     /// <param name="maxUpdateAmount">-1 is all of them</param>
     [HttpPut($"{nameof(SyncGarageLookups)}")]

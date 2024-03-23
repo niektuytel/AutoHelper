@@ -1,5 +1,5 @@
 ﻿import React, { useContext, useEffect, useState } from 'react';
-import { Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Button, Divider, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SearchIcon from '@mui/icons-material/Search';
 import BuildIcon from '@mui/icons-material/Build';
@@ -18,6 +18,8 @@ import { ServiceLogDrawerContext } from '../../../context/ServiceLogDrawerContex
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import useRoleIndex from '../../../hooks/useRoleIndex';
 import LoginButton from './LoginButton';
+import HomeIcon from '@mui/icons-material/Home';
+import { COLORS } from '../../../constants/colors';
 
 interface RoleBasedListProps {
     setOnMenu?: (value: boolean) => void;
@@ -35,20 +37,19 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
     const { t } = useTranslation();
     const context = useContext(ServiceLogDrawerContext);
     const isAuthenticated = useIsAuthenticated();
+    const { instance } = useMsal();
 
     if (!context) {
         throw new Error("DrawerComponent must be used within a DrawerProvider");
     }
     
     useEffect(() => {
-        // Your existing logic
         if (prevIndex !== roleIndex) {
             setPrevIndex(roleIndex);
         }
 
-        // Toggle the shouldRender state to force a re-render
         setShouldRender(prev => !prev);
-    }, [roleIndex, prevIndex]); // Dependency on prevIndex
+    }, [roleIndex, prevIndex]);
 
     const ListItemLink = ({ primary, icon, to, disabled = false }: { primary: string; icon: JSX.Element; to: string, disabled?: boolean }) => (
         <ListItem
@@ -64,13 +65,27 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
         </ListItem>
     );
 
+
+
+
     if (!isAuthenticated) {
         return <>
             <LoginButton />
             <List component="nav" sx={{ width: "100%" }}>
-                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
-                <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />
-                <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={`${ROUTES.VEHICLE}/${license_plate}#service_logs`} disabled={license_plate === undefined} />
+                <ListItemLink primary={t('AboutUs')} icon={<HomeIcon />} to="/" />
+                {/*<ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />*/}
+                {/*<ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={`${ROUTES.VEHICLE}/${license_plate}#service_logs`} disabled={license_plate === undefined} />*/}
+            </List>
+        </>;
+    }
+
+    // admin handle
+    if (userRole == ROLES.ADMIN)
+    {
+        return <>
+            <LoginButton />
+            <List component="nav" sx={{ width: "100%" }}>
+                <ListItemLink primary={t('AboutUs')} icon={<HomeIcon />} to="/" />
             </List>
         </>;
     }
@@ -102,9 +117,7 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
                         <Divider />
                     </>
                 )}
-                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
-                <ListItemLink primary={t('Header.Menu.MyVehicles.Title')} icon={<MyVehiclesIcon />} to={ROUTES.VEHICLE} disabled={true} />
-                <ListItemLink primary={t('Header.Menu.MyMaintenance.Title')} icon={<MyMaintenanceIcon />} to={`${ROUTES.VEHICLE}/${license_plate}#service_logs`} disabled={license_plate === undefined} />
+                <ListItemLink primary={t('AboutUs')} icon={<HomeIcon />} to="/" />
             </List>
         </>;
     }
@@ -113,7 +126,7 @@ export default ({ setOnMenu, showStaticDrawer }: RoleBasedListProps) => {
         return <>
             <LoginButton />
             <List component="nav" sx={{ width: "100%" }}>
-                <ListItemLink primary={t('vehicle_search_camelcase')} icon={<SearchIcon />} to="/" />
+                <ListItemLink primary={t('AboutUs')} icon={<HomeIcon />} to="/" />
             </List>
         </>;
     }

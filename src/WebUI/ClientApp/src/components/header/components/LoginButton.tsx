@@ -92,6 +92,16 @@ export default ({ asIcon }:IProps) => {
             });
         } else {
             instance.loginRedirect(userLoginRequest).then((response) => {
+                console.log(response);
+
+
+                //let activeAccount: any;
+                //if (instance) {
+                //    activeAccount = instance.getActiveAccount();
+                //}
+                //console.log(activeAccount.idToken);
+
+
                 setUserRole(ROLES.USER);
                 setRoleIndex(100, ROLES.USER);
             });
