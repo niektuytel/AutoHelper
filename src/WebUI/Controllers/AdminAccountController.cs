@@ -26,6 +26,7 @@ public class AdminAccountController : ApiControllerBase
     {
         //var command = new SyncVehicleLookupCommand(licensePlate);
         //return await Mediator.Send(command);
+        return "Not implemented yet";
     }
 
     /// <param name="maxInsertAmount">-1 is all of them</param>
