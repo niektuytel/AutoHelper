@@ -48,57 +48,23 @@
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
         <Compile Remove="ClientApp\public\background\**" />
-        <Compile Remove="ClientApp\src\pages\admin-account\**" />
+        <Compile Remove="ClientApp\src\pages\**" />
         <Compile Remove="Filters\**" />
         <Content Remove="$(SpaRoot)**" />
         <Content Remove="ClientApp\public\background\**" />
-        <Content Remove="ClientApp\src\pages\admin-account\**" />
+        <Content Remove="ClientApp\src\pages\**" />
         <Content Remove="Filters\**" />
         <EmbeddedResource Remove="ClientApp\public\background\**" />
-        <EmbeddedResource Remove="ClientApp\src\pages\admin-account\**" />
+        <EmbeddedResource Remove="ClientApp\src\pages\**" />
         <EmbeddedResource Remove="Filters\**" />
         <EntityDeploy Remove="ClientApp\public\background\**" />
-        <EntityDeploy Remove="ClientApp\src\pages\admin-account\**" />
+        <EntityDeploy Remove="ClientApp\src\pages\**" />
         <EntityDeploy Remove="Filters\**" />
         <None Remove="$(SpaRoot)**" />
         <None Remove="ClientApp\public\background\**" />
-        <None Remove="ClientApp\src\pages\admin-account\**" />
+        <None Remove="ClientApp\src\pages\**" />
         <None Remove="Filters\**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="ClientApp\src\pages\admin-account\defaultGarageService.ts" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\components\ServedVehiclesCard.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\components\ServedVehiclesChart.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\components\ServiceLogsCard.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\components\ServiceLogsList.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\components\ServicesCard.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\components\ServicesList.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\GarageOverview.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\overview\useGarageOverview.ts" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\components\ServiceLogDrawer.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\components\ServiceLogTableRow.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\components\StepConfirmation.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\components\StepVehicle.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\GarageServicelogs.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\useGarageServicelogs.ts" />
-      <None Remove="ClientApp\src\pages\admin-account\servicelogs\useGarageServiceTypes.ts" />
-      <None Remove="ClientApp\src\pages\admin-account\services\components\GarageServiceCard.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\services\components\GarageServiceDeleteDialog.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\services\components\GarageServiceDialog.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\services\components\GarageServicesCollectionCard.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\services\GarageServices.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\services\useGarageServices.ts" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\ProfileContactBox.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\ProfileConversationBox.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\ProfileGeneralBox.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\SearchGarageLookup.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\ServicesBankingSection.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\ServicesDeliverySection.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\components\ServicesGeneralSection.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\GarageSettings.tsx" />
-      <None Remove="ClientApp\src\pages\admin-account\settings\useGarageSettings.ts" />
     </ItemGroup>
 
     <ItemGroup>
