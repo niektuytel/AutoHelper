@@ -48,16 +48,21 @@
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
         <Compile Remove="ClientApp\public\background\**" />
+        <Compile Remove="ClientApp\src\pages\**" />
         <Compile Remove="Filters\**" />
         <Content Remove="$(SpaRoot)**" />
         <Content Remove="ClientApp\public\background\**" />
+        <Content Remove="ClientApp\src\pages\**" />
         <Content Remove="Filters\**" />
         <EmbeddedResource Remove="ClientApp\public\background\**" />
+        <EmbeddedResource Remove="ClientApp\src\pages\**" />
         <EmbeddedResource Remove="Filters\**" />
         <EntityDeploy Remove="ClientApp\public\background\**" />
+        <EntityDeploy Remove="ClientApp\src\pages\**" />
         <EntityDeploy Remove="Filters\**" />
         <None Remove="$(SpaRoot)**" />
         <None Remove="ClientApp\public\background\**" />
+        <None Remove="ClientApp\src\pages\**" />
         <None Remove="Filters\**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     </ItemGroup>

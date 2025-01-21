@@ -1,0 +1,128 @@
+[
+  {
+      "id": "Integrity",
+      "detail": "Ensures the product remains sealed or intact under normal use conditions",
+      "importance": 10,
+      "sample": "A water bottle that doesn't leak when closed",
+      "description": "Maintains the product's structure and functionality, preventing leakage or breakage."
+  },
+  {
+      "id": "Elasticity",
+      "detail": "Ability to return to original form after deformation",
+      "importance": 8,
+      "sample": "A phone case that absorbs impacts and regains shape",
+      "description": "Provides flexibility and durability, allowing materials to withstand stretching or compression."
+  },
+  {
+      "id": "Performance",
+      "detail": "Delivers consistent output or service under varying conditions",
+      "importance": 9,
+      "sample": "A flashlight offering steady brightness even as battery power wanes",
+      "description": "Ensures reliable functionality, regardless of external factors or prolonged use."
+  },
+  {
+      "id": "CorrosionResistance",
+      "detail": "Withstands degradation from environmental exposure",
+      "importance": 6,
+      "sample": "Outdoor furniture that resists rust and fading from sunlight",
+      "description": "Protects against chemical, water, and air exposure, extending product life."
+  },
+  {
+      "id": "FlowControl",
+      "detail": "Regulates the movement or output of a substance",
+      "importance": 10,
+      "sample": "A showerhead that maintains consistent water pressure",
+      "description": "Ensures a steady and controlled release or distribution of material, such as liquid or air."
+  },
+  {
+      "id": "SmoothOperation",
+      "detail": "Operates seamlessly across various conditions without hindrance",
+      "importance": 10,
+      "sample": "A computer mouse that glides effortlessly over different surfaces",
+      "description": "Ensures ease of use and user satisfaction by preventing interruptions or malfunctions."
+  },
+  {
+      "id": "TransferEfficiency",
+      "detail": "Efficiently moves or applies material from one point to another",
+      "importance": 9,
+      "sample": "A paintbrush that evenly distributes paint without streaking",
+      "description": "Optimizes the application or movement process, ensuring even and effective distribution."
+  },
+  {
+      "id": "Consistency",
+      "detail": "Provides uniform output or results over time",
+      "importance": 10,
+      "sample": "A mixer that maintains speed regardless of mixture thickness",
+      "description": "Guarantees steady performance, ensuring reliability and predictability in output."
+  },
+  {
+      "id": "Durability",
+      "detail": "Withstands wear, pressure, or damage over time",
+      "importance": 9,
+      "sample": "A smartphone screen resistant to scratches and cracks",
+      "description": "Ensures longevity and resilience, offering protection against physical stressors."
+  },
+  {
+      "id": "Protection",
+      "detail": "Shields against external harm or damage",
+      "importance": 10,
+      "sample": "A laptop sleeve that guards against impacts and water damage",
+      "description": "Provides a safeguard for the product, preserving its integrity against environmental and physical threats."
+  },
+  {
+      "id": "Resilience",
+      "detail": "Ability of a material to absorb energy when deformed elastically and release that energy upon unloading",
+      "importance": 8,
+      "sample": "A rubber band that stretches under tension and returns to its original size without losing elasticity",
+      "description": "Characterizes materials that can withstand stress and strain, then recover to their original state, critical for components subjected to cyclic loading."
+  },
+  {
+      "id": "Flexibility",
+      "detail": "The quality of bending easily without breaking, allowing adaptation to force without permanent deformation",
+      "importance": 7,
+      "sample": "Flexible electronics that can bend without damage to functionality",
+      "description": "Essential for materials and designs that must adapt to dynamic forces or shapes while maintaining integrity and function."
+  },
+  {
+      "id": "Springiness",
+      "detail": "The capacity to return to original shape after compression or stretching",
+      "importance": 8,
+      "sample": "A mattress that regains shape after being compressed",
+      "description": "Indicates the material's ability to store mechanical energy and release it efficiently, ideal for applications requiring repetitive motion."
+  },
+  {
+      "id": "Ductility",
+      "detail": "The ability of a material to deform under tensile stress",
+      "importance": 6,
+      "sample": "Metal wires that are drawn to thin diameters without breaking",
+      "description": "Important for materials that must be shaped or elongated under load without failing, such as in construction and manufacturing."
+  },
+  {
+      "id": "Compliance",
+      "detail": "The measure of a material's deformability, the inverse of stiffness",
+      "importance": 5,
+      "sample": "A soft silicone seal that conforms to surfaces to prevent leaks",
+      "description": "Critical for applications where material must fit or adapt to irregular shapes under minimal force, ensuring tight seals or fitments."
+  },
+  {
+      "id": "Elastance",
+      "detail": "The property of a material that returns it to its original shape after deformation",
+      "importance": 4,
+      "sample": "Elastic waistbands that stretch to fit and then return to their original size",
+      "description": "Useful in applications where materials must undergo temporary deformation and recovery without permanent change."
+  },
+  {
+      "id": "Tensility",
+      "detail": "The capability of being stretched or extended",
+      "importance": 7,
+      "sample": "Tights that expand to fit the body but do not sag or lose shape",
+      "description": "Valuable for materials that require elongation while maintaining a return path to their original state post-application."
+  },
+  {
+      "id": "Bouncebackability",
+      "detail": "Colloquial term for a material's quick recovery to original form after deformation",
+      "importance": 5,
+      "sample": "Sports balls that retain their shape and bounce after impact",
+      "description": "Highlights the dynamic recovery ability of materials, crucial for products designed for resilience and immediate rebound."
+  }
+]

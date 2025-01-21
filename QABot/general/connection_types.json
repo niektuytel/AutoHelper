@@ -1,0 +1,834 @@
+[
+    {
+        "id": "SCREW",
+        "name": "Screw",
+        "explanation": "A helical ridge used for converting rotational motion into linear motion, commonly used to hold objects together.",
+        "sampleUsage": "Assembling flat-pack furniture.",
+        "metrics": {
+            "maintainability": {
+                "score": 8,
+                "reason": "Screws can be easily assembled and disassembled with common tools, making maintenance straightforward."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "High efficiency in binding materials together with minimal effort."
+            },
+            "scalability": {
+                "score": 5,
+                "reason": "Suitable for various sizes of projects, but scalability is limited by manual installation."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Provides a strong, long-lasting hold under most conditions."
+            },
+            "usability": {
+                "score": 8,
+                "reason": "Easy to use with standard tools; requires minimal training."
+            },
+            "security": {
+                "score": 6,
+                "reason": "Provides physical security, but can be easily removed if accessed."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Compatible with a wide range of materials and other fasteners."
+            },
+            "efficiency": {
+                "score": 7,
+                "reason": "Optimizes material use and installation time, though not the most efficient for all applications."
+            },
+            "flexibility": {
+                "score": 5,
+                "reason": "Fixed use in binding materials; limited flexibility in application beyond its primary function."
+            },
+            "testability": {
+                "score": 9,
+                "reason": "Easily tested for strength and durability with standard industry methods."
+            },
+            "portability": {
+                "score": 10,
+                "reason": "Highly portable and can be used in diverse environments and applications."
+            }
+        }
+    },
+    {
+        "id": "CONTAINMENT",
+        "name": "Containment",
+        "explanation": "A method of holding a material within another, ensuring that the contained material does not escape from its carrier.",
+        "sampleUsage": "Ink inside a pen refill cartridge.",
+        "metrics": {
+            "maintainability": {
+                "score": 7,
+                "reason": "The ease of replacing the contained material makes it quite maintainable, though the container itself may not require maintenance."
+            },
+            "performance": {
+                "score": 8,
+                "reason": "Effectively contains materials, preventing leakage and ensuring proper function of the containment system."
+            },
+            "scalability": {
+                "score": 6,
+                "reason": "Can be scaled to different sizes, but effectiveness might vary with scale due to physical and chemical properties of the materials involved."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Highly reliable in preventing the escape of materials, ensuring safety and functionality."
+            },
+            "usability": {
+                "score": 8,
+                "reason": "Typically designed for easy use, with specific attention to the method of inserting and removing contained materials."
+            },
+            "security": {
+                "score": 7,
+                "reason": "Ensures material is securely contained, but effectiveness can depend on the design of the containment system."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Needs to be compatible with the physical and chemical properties of the contained material to prevent reactions or degradation."
+            },
+            "efficiency": {
+                "score": 7,
+                "reason": "Designed for efficient use of space and materials, but efficiency can vary based on the complexity of containment requirements."
+            },
+            "flexibility": {
+                "score": 5,
+                "reason": "Limited by the specificity of containment needs; not all containment systems are adaptable to different materials or conditions."
+            },
+            "testability": {
+                "score": 8,
+                "reason": "The efficacy and integrity of containment can be readily tested through standard industry methods."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Containment systems are often portable, allowing for the safe transport of materials across different environments."
+            }
+        }
+    },
+    {
+        "id": "NUT_BOLT",
+        "name": "Nut and Bolt",
+        "explanation": "A combination of a bolt (a threaded pin or rod) and a nut (a type of fastener with a threaded hole) used to fasten materials together.",
+        "sampleUsage": "Securing wheels on a car's axle.",
+        "metrics": {
+            "maintainability": {
+                "score": 9,
+                "reason": "Nut and bolt connections allow for easy disassembly and reassembly, making them highly maintainable."
+            },
+            "performance": {
+                "score": 8,
+                "reason": "Provides a strong, secure connection capable of withstanding high levels of stress and vibration."
+            },
+            "scalability": {
+                "score": 7,
+                "reason": "Easily scalable to different sizes and loads, making it versatile for various applications."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Offers a reliable connection that remains tight under a wide range of conditions, reducing the need for frequent maintenance."
+            },
+            "usability": {
+                "score": 8,
+                "reason": "Simple to install and remove with basic tools, making it user-friendly for both professionals and DIY enthusiasts."
+            },
+            "security": {
+                "score": 8,
+                "reason": "When properly tightened, nut and bolt connections are very secure, with options for locking mechanisms to prevent loosening."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Highly compatible with a wide range of materials and other fastening systems, offering flexibility in use."
+            },
+            "efficiency": {
+                "score": 7,
+                "reason": "Efficient in terms of material use and the strength of the connection, though installation may require more time compared to other fasteners."
+            },
+            "flexibility": {
+                "score": 6,
+                "reason": "While adjustable and reversible, their application is somewhat limited by the need for precise alignment and access for tightening."
+            },
+            "testability": {
+                "score": 9,
+                "reason": "The integrity of the connection can be easily tested through torque testing and other standardized methods."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Components are small and lightweight, making them portable and easy to store in bulk."
+            }
+        }
+    },
+    {
+        "id": "RIVET",
+        "name": "Rivet",
+        "explanation": "A permanent mechanical fastener. Before installation, a rivet consists of a smooth cylindrical shaft with a head on one end. The end opposite the head is called the tail.",
+        "sampleUsage": "Joining metal sheets in aircraft construction.",
+        "metrics": {
+            "maintainability": {
+                "score": 4,
+                "reason": "Rivets are difficult to remove without damaging the materials, making maintenance more challenging."
+            },
+            "performance": {
+                "score": 9,
+                "reason": "Provides a very strong, durable connection suitable for high-stress applications like aircraft construction."
+            },
+            "scalability": {
+                "score": 6,
+                "reason": "Applicable to a range of sizes and materials, though effectiveness may vary with the scale of the project."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Highly reliable due to their permanent nature, ensuring a long-lasting bond."
+            },
+            "usability": {
+                "score": 5,
+                "reason": "Requires specialized tools and skills for installation, making it less accessible for casual or DIY use."
+            },
+            "security": {
+                "score": 9,
+                "reason": "The permanent nature of rivets provides a secure connection that is resistant to tampering."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Compatible with a wide range of materials, particularly metals, but requires consideration of thermal expansion and material strength."
+            },
+            "efficiency": {
+                "score": 8,
+                "reason": "Efficient in providing a permanent connection with minimal weight addition, crucial in applications like aerospace."
+            },
+            "flexibility": {
+                "score": 3,
+                "reason": "Limited flexibility due to the permanent nature of the connection; not suitable for applications requiring disassembly."
+            },
+            "testability": {
+                "score": 8,
+                "reason": "The integrity of riveted connections can be assessed through non-destructive testing methods, though direct inspection is challenging."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Rivets are lightweight and easy to transport, although the installation equipment may be more cumbersome."
+            }
+        }
+    },
+    {
+        "id": "ADHESIVE",
+        "name": "Adhesive",
+        "explanation": "A substance used for sticking objects or materials together.",
+        "sampleUsage": "Gluing a broken ceramic vase.",
+        "metrics": {
+            "maintainability": {
+                "score": 3,
+                "reason": "Adhesive bonds are often permanent and can be difficult to repair without damaging the materials involved."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "Effective for creating strong bonds between surfaces, but performance can vary widely based on the materials and conditions."
+            },
+            "scalability": {
+                "score": 5,
+                "reason": "Can be used for a wide range of project sizes, but effectiveness might diminish or require different formulations for larger scale applications."
+            },
+            "reliability": {
+                "score": 7,
+                "reason": "Provides a reliable bond under appropriate conditions, but can degrade over time due to environmental factors."
+            },
+            "usability": {
+                "score": 8,
+                "reason": "Generally easy to apply with minimal equipment, but requires knowledge of proper application techniques for best results."
+            },
+            "security": {
+                "score": 5,
+                "reason": "Creates a secure bond, but can be vulnerable to tampering or environmental degradation over time."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Wide range of adhesives available for different materials, but selecting the correct type is crucial for compatibility."
+            },
+            "efficiency": {
+                "score": 6,
+                "reason": "Efficient for bonding materials without additional hardware, but curing time and preparation can affect overall efficiency."
+            },
+            "flexibility": {
+                "score": 4,
+                "reason": "Once cured, adhesives offer limited flexibility in terms of adjustments or repairs to the bond."
+            },
+            "testability": {
+                "score": 6,
+                "reason": "Bond strength can be tested, but often destructive testing methods are required, limiting the assessment of existing applications."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Adhesives are typically lightweight and easy to transport, making them highly portable."
+            }
+        }
+    },
+    {
+        "id": "WELDING",
+        "name": "Welding",
+        "explanation": "A fabrication process that joins materials, usually metals or thermoplastics, by causing fusion.",
+        "sampleUsage": "Constructing a metal frame for a building.",
+        "metrics": {
+            "maintainability": {
+                "score": 2,
+                "reason": "Welded connections are permanent and require specialized equipment to repair, making them less maintainable."
+            },
+            "performance": {
+                "score": 9,
+                "reason": "Provides a strong, durable bond that is highly resistant to stress and environmental conditions."
+            },
+            "scalability": {
+                "score": 8,
+                "reason": "Suitable for a wide range of project sizes, from small repairs to large-scale constructions."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Welding creates a bond that is as strong as or stronger than the original materials, offering high reliability."
+            },
+            "usability": {
+                "score": 4,
+                "reason": "Requires significant expertise and specialized equipment, limiting usability to trained professionals."
+            },
+            "security": {
+                "score": 9,
+                "reason": "The permanent nature of welding provides a high level of security against tampering and separation."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Highly effective for metals and thermoplastics, but material compatibility and thermal properties must be carefully considered."
+            },
+            "efficiency": {
+                "score": 6,
+                "reason": "While welding is efficient in terms of material use and bond strength, the process can be time-consuming and energy-intensive."
+            },
+            "flexibility": {
+                "score": 3,
+                "reason": "The permanence of welding limits flexibility; modifications or repairs can be challenging and require cutting and re-welding."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The strength and quality of welds can be tested using non-destructive methods, though assessing internal flaws can be complex."
+            },
+            "portability": {
+                "score": 5,
+                "reason": "While portable welding equipment exists, the process typically requires a controlled environment and access to power, limiting portability."
+            }
+        }
+    },
+    {
+        "id": "FRICTION_FIT",
+        "name": "Friction Fit",
+        "explanation": "A method of joining parts by using interference fit to secure them together.",
+        "sampleUsage": "Mounting bearings into a machine housing.",
+        "metrics": {
+            "maintainability": {
+                "score": 6,
+                "reason": "Can be dismantled with the right tools, but repeated disassembly may wear down the parts."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "Provides a solid connection without the need for additional fasteners, though effectiveness can vary with load and conditions."
+            },
+            "scalability": {
+                "score": 5,
+                "reason": "Effective for a range of sizes and applications, but precision requirements for fit may increase with scale."
+            },
+            "reliability": {
+                "score": 8,
+                "reason": "Highly reliable for many applications, as long as the fit is precisely engineered and maintained."
+            },
+            "usability": {
+                "score": 7,
+                "reason": "Relatively easy to assemble and disassemble with minimal tools, though precise alignment is critical."
+            },
+            "security": {
+                "score": 6,
+                "reason": "Offers a secure fit, but may loosen over time with vibration or thermal expansion and contraction."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Compatible with a wide range of materials, assuming the thermal and mechanical properties are closely matched."
+            },
+            "efficiency": {
+                "score": 8,
+                "reason": "Efficient in terms of material and space usage, with no need for additional fastening elements."
+            },
+            "flexibility": {
+                "score": 4,
+                "reason": "Limited flexibility for adjustments post-assembly; the fit is static and may not tolerate significant changes in load or environment."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The integrity of the fit can be tested with tools like pull testers, but assessing long-term wear and fit degradation can be challenging."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Highly portable, as it does not require any additional fasteners or tools for the connection itself."
+            }
+        }
+    },
+    {
+        "id": "SNAP_FIT",
+        "name": "Snap Fit",
+        "explanation": "A quick way of fastening two parts together without the need for additional fasteners.",
+        "sampleUsage": "Assembly of a plastic USB drive case.",
+        "metrics": {
+            "maintainability": {
+                "score": 7,
+                "reason": "Easy to assemble and disassemble, though plastic parts may wear out with repeated use."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "Provides a secure fit for many applications, particularly in low-stress environments."
+            },
+            "scalability": {
+                "score": 6,
+                "reason": "Suitable for a variety of sizes and applications, though effectiveness can diminish in high-stress or high-load scenarios."
+            },
+            "reliability": {
+                "score": 6,
+                "reason": "Generally reliable for intended applications, but long-term durability can be affected by material fatigue."
+            },
+            "usability": {
+                "score": 9,
+                "reason": "Very user-friendly, allowing for quick assembly and disassembly without special tools."
+            },
+            "security": {
+                "score": 6,
+                "reason": "Offers a reasonable level of security for casual use, but may not be ideal for applications requiring high strength or tamper resistance."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Highly versatile, suitable for various materials and designs, especially in consumer products."
+            },
+            "efficiency": {
+                "score": 8,
+                "reason": "Efficient in terms of assembly time and cost, reducing the need for additional fasteners or adhesives."
+            },
+            "flexibility": {
+                "score": 5,
+                "reason": "Some designs offer limited adjustability once assembled; may not be suitable for all adjustments or reconfigurations."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "Can be tested for fit and fatigue, but evaluating long-term wear and tear requires extended use or simulation."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Lightweight and compact, making it ideal for portable devices and applications where space and weight are concerns."
+            }
+        }
+    },
+    {
+        "id": "DOVETAIL",
+        "name": "Dovetail",
+        "explanation": "A joint technique most commonly used in woodworking joinery that's noted for its resistance to being pulled apart.",
+        "sampleUsage": "Joining the sides of a drawer to the front.",
+        "metrics": {
+            "maintainability": {
+                "score": 5,
+                "reason": "Extremely strong and durable but difficult to disassemble once glued."
+            },
+            "performance": {
+                "score": 9,
+                "reason": "Offers exceptional strength and durability, particularly against tensile forces."
+            },
+            "scalability": {
+                "score": 4,
+                "reason": "Best suited for smaller-scale applications; complexity increases with size, making it less scalable."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Highly reliable due to its mechanical strength and interlocking design."
+            },
+            "usability": {
+                "score": 6,
+                "reason": "Requires precise craftsmanship and tools for cutting, making it less accessible for beginners."
+            },
+            "security": {
+                "score": 8,
+                "reason": "The interlocking nature provides a secure connection, especially when combined with adhesives."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Highly effective with wood and similar materials, but not applicable to metals or plastics."
+            },
+            "efficiency": {
+                "score": 5,
+                "reason": "While efficient in terms of material use, the labor-intensive process can be seen as less efficient compared to other methods."
+            },
+            "flexibility": {
+                "score": 3,
+                "reason": "Offers little flexibility once assembled; adjustments or disassembly can be challenging."
+            },
+            "testability": {
+                "score": 6,
+                "reason": "The strength and fit can be tested through physical inspection and stress testing, though not as easily quantifiable as other connections."
+            },
+            "portability": {
+                "score": 8,
+                "reason": "The connection itself does not impact the portability of the assembled product."
+            }
+        }
+    },
+    {
+        "id": "MORTISE_TENON",
+        "name": "Mortise and Tenon",
+        "explanation": "A joint that connects two pieces of wood or other material, typically one end of a piece is inserted into a cutout in another.",
+        "sampleUsage": "Traditional wooden door frames.",
+        "metrics": {
+            "maintainability": {
+                "score": 5,
+                "reason": "Strong and durable but challenging to disassemble for repairs without causing damage."
+            },
+            "performance": {
+                "score": 8,
+                "reason": "Provides a strong, stable connection that resists tensile and compressive forces well."
+            },
+            "scalability": {
+                "score": 6,
+                "reason": "Versatile for various sizes and applications, though complexity can increase with the size of the project."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Highly reliable due to its mechanical locking, making it ideal for structural applications."
+            },
+            "usability": {
+                "score": 6,
+                "reason": "Requires knowledge and skill to craft properly, especially for tight-fitting joints."
+            },
+            "security": {
+                "score": 7,
+                "reason": "Offers a secure connection, particularly when glued, which can be enhanced with pins or wedges."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Primarily used with wood, but can be adapted for use with certain types of composite materials."
+            },
+            "efficiency": {
+                "score": 5,
+                "reason": "Material-efficient but labor-intensive, requiring precise cutting and fitting."
+            },
+            "flexibility": {
+                "score": 4,
+                "reason": "The joint is relatively inflexible once assembled, limiting adjustments after construction."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The fit and strength of the joint can be tested manually or with stress tests, though disassembly for inspection can be difficult."
+            },
+            "portability": {
+                "score": 8,
+                "reason": "Does not significantly affect the portability of the assembled item."
+            }
+        }
+    },
+    {
+        "id": "BAYONET_MOUNT",
+        "name": "Bayonet Mount",
+        "explanation": "A fastening mechanism consisting of a cylindrical male side with one or more radial pins, and a female receptor with matching L-shaped slots and a spring to keep the two parts locked together.",
+        "sampleUsage": "Attaching a camera lens.",
+        "metrics": {
+            "maintainability": {
+                "score": 8,
+                "reason": "Allows for quick assembly and disassembly, offering good maintainability."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "Provides a secure and stable connection quickly, suitable for applications requiring frequent changes."
+            },
+            "scalability": {
+                "score": 6,
+                "reason": "Can be scaled for different sizes and applications, though effectiveness may vary with weight and size of the components."
+            },
+            "reliability": {
+                "score": 8,
+                "reason": "Reliable for repeated use, with a design that ensures a secure lock when properly engaged."
+            },
+            "usability": {
+                "score": 9,
+                "reason": "Extremely user-friendly, allowing for fast and easy changes without tools."
+            },
+            "security": {
+                "score": 7,
+                "reason": "Secure for most applications, but may be less suitable for high-vibration environments without additional locking mechanisms."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Widely used in photography, military, and electrical applications, indicating good compatibility across different domains."
+            },
+            "efficiency": {
+                "score": 8,
+                "reason": "Efficient in terms of time and ease of use, minimizing downtime during component changes."
+            },
+            "flexibility": {
+                "score": 8,
+                "reason": "Offers flexibility in quickly changing or adjusting components as needed."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The connection can be easily tested for security and stability through manual checks."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Does not significantly add to the weight or bulk of components, maintaining their portability."
+            }
+        }
+    },
+    {
+        "id": "THREADED_CONNECTION",
+        "name": "Threaded Connection",
+        "explanation": "A connection made by screwing together two pieces with complementary threads.",
+        "sampleUsage": "Pipe fittings in plumbing.",
+        "metrics": {
+            "maintainability": {
+                "score": 9,
+                "reason": "Easy to assemble and disassemble, making it highly maintainable."
+            },
+            "performance": {
+                "score": 8,
+                "reason": "Provides a strong, tight seal that is adjustable and can be made leak-proof with the use of sealants."
+            },
+            "scalability": {
+                "score": 7,
+                "reason": "Suitable for a wide range of sizes and applications, from small screws to large industrial pipes."
+            },
+            "reliability": {
+                "score": 8,
+                "reason": "Highly reliable when properly installed, especially with the correct torque and possibly thread locking compounds."
+            },
+            "usability": {
+                "score": 9,
+                "reason": "Straightforward to use, requiring minimal tools for assembly and disassembly."
+            },
+            "security": {
+                "score": 7,
+                "reason": "Secure for most applications, but can loosen over time due to vibration or thermal cycling without proper precautions."
+            },
+            "compatibility": {
+                "score": 9,
+                "reason": "Highly compatible across a wide range of materials and applications, with standardized sizes and threads."
+            },
+            "efficiency": {
+                "score": 8,
+                "reason": "Efficient in terms of assembly time and cost, with reusability of components."
+            },
+            "flexibility": {
+                "score": 8,
+                "reason": "Allows for easy adjustments, tightening, and repositioning as needed."
+            },
+            "testability": {
+                "score": 8,
+                "reason": "Can be easily tested for tightness and integrity, using pressure tests for sealed systems or visual inspection for mechanical strength."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Lightweight and does not significantly impact the portability of the assembly."
+            }
+        }
+    },
+    {
+        "id": "MAGNETIC_CONNECTION",
+        "name": "Magnetic Connection",
+        "explanation": "Using magnetic forces to attach and align components quickly and easily.",
+        "sampleUsage": "Magnetic phone chargers.",
+        "metrics": {
+            "maintainability": {
+                "score": 8,
+                "reason": "Very maintainable due to easy connect and disconnect, though the holding strength might be less compared to mechanical fastenings."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "Provides sufficient holding force for many applications without physical locking mechanisms, though may not be suitable for high-stress applications."
+            },
+            "scalability": {
+                "score": 6,
+                "reason": "Effective for small to medium-sized applications; scalability limited by the magnetic field strength and the weight of connected components."
+            },
+            "reliability": {
+                "score": 8,
+                "reason": "Reliable for consistent connection and disconnection, with minimal wear and tear due to the non-contact nature of the mechanism."
+            },
+            "usability": {
+                "score": 9,
+                "reason": "Extremely user-friendly, allowing for quick and effortless connections without precise alignment."
+            },
+            "security": {
+                "score": 5,
+                "reason": "Provides a secure enough connection for low-impact applications but can be easily disconnected, potentially unintentionally."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Highly compatible with a variety of applications, especially in consumer electronics, where non-invasive connections are beneficial."
+            },
+            "efficiency": {
+                "score": 9,
+                "reason": "Highly efficient in terms of energy and time for connecting and disconnecting, with minimal physical resistance."
+            },
+            "flexibility": {
+                "score": 9,
+                "reason": "Offers great flexibility for modular designs and applications requiring frequent changes or adjustments."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The strength and reliability of the magnetic connection can be easily tested, but assessing long-term magnetic degradation may require specialized equipment."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Enhances portability by facilitating easier assembly and disassembly of components, making it ideal for mobile applications."
+            }
+        }
+    },
+    {
+        "id": "LATCH",
+        "name": "Latch",
+        "explanation": "A type of mechanical fastener that is used to join two objects or surfaces together while allowing for the regular or eventual separation of the objects or surfaces.",
+        "sampleUsage": "Door or gate latches.",
+        "metrics": {
+            "maintainability": {
+                "score": 7,
+                "reason": "Easily opened and closed for good maintainability, depending on design and materials used."
+            },
+            "performance": {
+                "score": 7,
+                "reason": "Provides secure fastening for doors, gates, etc., with performance depending on the latch design and the application."
+            },
+            "scalability": {
+                "score": 5,
+                "reason": "Suitable for a range of sizes and applications, though larger or more heavily used doors may require more robust latching mechanisms."
+            },
+            "reliability": {
+                "score": 8,
+                "reason": "Typically reliable for everyday use, with durability and longevity dependent on construction materials and frequency of use."
+            },
+            "usability": {
+                "score": 9,
+                "reason": "Designed for easy operation by a wide range of users, often requiring minimal effort to engage or disengage."
+            },
+            "security": {
+                "score": 6,
+                "reason": "While effective for casual security, many latches can be easily bypassed without additional locking mechanisms."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Highly adaptable to various door and gate designs, with numerous styles available to match different functional and aesthetic needs."
+            },
+            "efficiency": {
+                "score": 7,
+                "reason": "Efficient in terms of ease of installation and use, with minimal maintenance required for continued operation."
+            },
+            "flexibility": {
+                "score": 7,
+                "reason": "Offers flexibility in application, with options for temporary or permanent installation and suitability for various opening mechanisms."
+            },
+            "testability": {
+                "score": 8,
+                "reason": "The effectiveness and durability of latches can be readily assessed through regular use or specific testing procedures."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "Latches themselves are lightweight and compact, contributing negligibly to the overall weight or portability of the item they are attached to."
+            }
+        }
+    },
+    {
+        "id": "CRIMPING",
+        "name": "Crimping",
+        "explanation": "Deforming metal or other materials to join two components together.",
+        "sampleUsage": "Securing a wire connector to the end of a cable.",
+        "metrics": {
+            "maintainability": {
+                "score": 4,
+                "reason": "Intended to be a permanent connection, not designed to be easily disassembled."
+            },
+            "performance": {
+                "score": 8,
+                "reason": "Provides a strong and reliable electrical and mechanical connection when done correctly."
+            },
+            "scalability": {
+                "score": 7,
+                "reason": "Suitable for a wide range of sizes and applications, from small electronics to large electrical installations."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Highly reliable, as the connection is resistant to vibration and does not loosen over time."
+            },
+            "usability": {
+                "score": 6,
+                "reason": "Requires specific tools and some skill to achieve a proper crimp, making it less accessible for untrained individuals."
+            },
+            "security": {
+                "score": 8,
+                "reason": "Creates a secure connection that is difficult to tamper with without visible damage."
+            },
+            "compatibility": {
+                "score": 7,
+                "reason": "Highly compatible with a variety of cable types and connectors, but requires matching the correct crimper and connector sizes."
+            },
+            "efficiency": {
+                "score": 8,
+                "reason": "Efficient in terms of creating a permanent bond without the need for soldering or welding, though it requires precise tooling."
+            },
+            "flexibility": {
+                "score": 3,
+                "reason": "The connection is not designed to be flexible once made, limiting adjustments or re-use of components."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The quality of the crimp can be tested with pull tests and electrical tests, though not all faults may be visible or detectable without specific equipment."
+            },
+            "portability": {
+                "score": 9,
+                "reason": "The tools and components for crimping are generally portable, allowing for field installations and repairs."
+            }
+        }
+    },
+    {
+        "id": "SWAGING",
+        "name": "Swaging",
+        "explanation": "A forging process that involves fitting smaller diameter tubing or rods into a larger diameter counterpart.",
+        "sampleUsage": "Attaching fittings to the end of a metal cable.",
+        "metrics": {
+            "maintainability": {
+                "score": 3,
+                "reason": "Permanent deformation to join materials, not intended to be maintainable."
+            },
+            "performance": {
+                "score": 9,
+                "reason": "Creates a very strong and durable connection, ideal for critical applications where a secure bond is essential."
+            },
+            "scalability": {
+                "score": 7,
+                "reason": "Can be applied to a wide range of sizes and materials, although equipment size may limit the maximum size of the components."
+            },
+            "reliability": {
+                "score": 9,
+                "reason": "Highly reliable due to the permanent nature of the connection and its resistance to mechanical stress and environmental conditions."
+            },
+            "usability": {
+                "score": 5,
+                "reason": "Requires specialized tools and knowledge to perform correctly, limiting its usability to trained professionals."
+            },
+            "security": {
+                "score": 9,
+                "reason": "The connection is very secure, with little risk of accidental disconnection or tampering."
+            },
+            "compatibility": {
+                "score": 8,
+                "reason": "Versatile in terms of material compatibility, especially with metals, but requires proper matching of component sizes."
+            },
+            "efficiency": {
+                "score": 6,
+                "reason": "While the process is efficient in creating strong connections, it can be time-consuming and energy-intensive compared to other methods."
+            },
+            "flexibility": {
+                "score": 2,
+                "reason": "Offers very limited flexibility after the connection is made, with no practical way to adjust or disassemble without cutting."
+            },
+            "testability": {
+                "score": 7,
+                "reason": "The integrity of a swaged connection can be tested through non-destructive methods, though assessing the internal bond quality may require destructive testing."
+            },
+            "portability": {
+                "score": 5,
+                "reason": "The swaging tools, especially for larger components, can be bulky and not easily portable, limiting on-site applications."
+            }
+        }
+    }
+]

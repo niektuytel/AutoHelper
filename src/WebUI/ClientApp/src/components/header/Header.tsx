@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Box, Breadcrumbs, Button, Card, CardContent, CardHeader, Container, Divider, Grid, Hidden, IconButton, Link, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Skeleton, Theme, Typography, useMediaQuery, useTheme } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import HomeIcon from '@mui/icons-material/Home';
 
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
@@ -25,6 +24,7 @@ import { GarageLookupDtoItem, VehicleService } from "../../app/web-api-client";
 import { getServices, removeService } from "../../redux/slices/storedServicesSlice";
 import SelectedServicesCard from "./components/SelectedServicesCard";
 import { useTranslation } from "react-i18next";
+import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 
 
 interface IProps {
@@ -69,27 +69,6 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                     <Grid container>
                         <Grid item xs={has3Sections ? 4 : 6} sx={isMobile ? { paddingLeft: "24px", display: 'flex', alignItems: 'center' } : { display: 'flex', alignItems: 'center' }}>
                             <ImageLogo small navigateGoto={navigateGoto} />
-                            {location.pathname !== '/' &&
-                                <>
-                                    <Hidden mdUp>
-                                        <IconButton
-                                            onClick={() => navigate('/')}
-                                            sx={{ color: 'white', backgroundColor: COLORS.BLUE, marginLeft: 2, '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}
-                                        >
-                                            <HomeIcon />
-                                        </IconButton>
-                                    </Hidden>
-                                    <Hidden mdDown>
-                                        <Button
-                                            startIcon={<HomeIcon />}
-                                            onClick={() => navigate('/')}
-                                            sx={{ color: 'white', backgroundColor: COLORS.BLUE, marginLeft: 2, '&:hover': { backgroundColor: COLORS.HOVERED_BLUE } }}
-                                        >
-                                            {t("AboutUs")}
-                                        </Button>
-                                    </Hidden>
-                                </>
-                            }
                             {license_plate && location.pathname != `/vehicle/${license_plate}` &&
                                 <>
                                     <Hidden mdUp>
@@ -147,14 +126,21 @@ const Header = ({ garageLookupIsLoading, garageLookup, showStaticDrawer, navigat
                                 </Box>
                                 :
                                 <>
-                                    <Hidden mdUp>
+                                    <AuthenticatedTemplate>
                                         <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
                                             <MenuIcon />
                                         </StyledIconButton>
-                                    </Hidden>
-                                    <Hidden mdDown>
-                                        <LoginButton />
-                                    </Hidden>
+                                    </AuthenticatedTemplate>
+                                    <UnauthenticatedTemplate>
+                                        <Hidden mdUp>
+                                            <StyledIconButton onClick={() => setOnMenu(!onMenu)}>
+                                                <MenuIcon />
+                                            </StyledIconButton>
+                                        </Hidden>
+                                        <Hidden mdDown>
+                                            <LoginButton />
+                                        </Hidden>
+                                    </UnauthenticatedTemplate>
                                 </>
                             }
                             <SelectedServicesCard isCardVisible={isCardVisible} services={services} onClose={() => setIsCardVisible(false)} />
